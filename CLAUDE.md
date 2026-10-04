@@ -68,6 +68,7 @@ Node.js is installed at `C:\Program Files\nodejs`. A shell started before it was
 - **Escaping in shell edit scripts:** don't write JS containing `\b` or `\n` through Python heredoc scripts; they turn into backspace characters and real newlines. Use the Edit tool for those. `grep -c $'\x08' file` finds stray backspaces.
 - **Use `127.0.0.1`, not `localhost`.** On this machine `localhost` resolves to IPv6 first, and every request is about 300 ms slower.
 - **The .exe bundles a copy of `web/` and `data/`.** Source edits don't reach `dist/` until you rebuild. Day to day, run from source.
+- **Never rebuild the .exe or refresh the zip unless the user asks.** Finish changes in source and commit only.
 - **Desktop window storage:** it keeps localStorage in `%LOCALAPPDATA%\Pathfinder Sheet\webview` (`private_mode=False`). Without that, the theme and last-open character are forgotten on every launch.
 - **Stale async responses:** pickers and search guard against them with a sequence counter (`seq`). Copy that pattern for any new async search UI.
 - **Class progression comes from parsed PSRD tables in `data/classes.json`.**
