@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pathfinder Sheet</title>
+<meta name="description" content="A Windows desktop character sheet for Pathfinder 1st Edition with a level-up wizard, compendium and companion stat blocks.">
+<link rel="icon" href="icon.png">
+<style>
+  :root { --bg:#14151a; --panel:#1d1f27; --line:#2d303b; --ink:#e8e6e1; --muted:#9a9ba3; --accent:#e0594f; --gold:#d9a441; }
+  @media (prefers-color-scheme: light) { :root { --bg:#f6f3ec; --panel:#fff; --line:#ddd6c8; --ink:#222; --muted:#666; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui,Segoe UI,sans-serif; }
+  .wrap { max-width:980px; margin:0 auto; padding:0 20px; }
+  header { padding:64px 0 36px; text-align:center; }
+  header img { width:112px; height:112px; border-radius:22px; }
+  h1 { font:700 42px/1.1 Georgia,serif; margin:18px 0 8px; }
+  .tag { color:var(--muted); font-size:18px; max-width:620px; margin:0 auto 26px; }
+  .btn { display:inline-block; padding:11px 22px; border-radius:8px; background:var(--accent); color:#fff; text-decoration:none; font-weight:600; margin:4px; }
+  .btn.alt { background:transparent; border:1px solid var(--line); color:var(--ink); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin:20px 0 40px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+  .card h3 { margin:0 0 8px; font:600 19px Georgia,serif; color:var(--gold); }
+  .card ul { margin:0; padding-left:18px; color:var(--muted); }
+  .card li { margin:3px 0; }
+  h2 { font:600 26px Georgia,serif; margin:40px 0 4px; }
+  code { background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:1px 6px; }
+  footer { border-top:1px solid var(--line); padding:26px 0 50px; color:var(--muted); font-size:13px; }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<header class="wrap">
+  <img src="icon.png" alt="">
+  <h1>Pathfinder Sheet</h1>
+  <p class="tag">A character sheet for Pathfinder 1st Edition that does the math. Level up, search the rules, and keep your companions in one Windows app.</p>
+  <a class="btn" href="https://github.com/OWNER/REPO/releases/latest">Download for Windows</a>
+  <a class="btn alt" href="https://github.com/OWNER/REPO">View the source</a>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <section class="card"><h3>Live character sheet</h3><ul>
+      <li>Ability scores, HP, AC, saves, skills, CMB/CMD and weapons all update as you type</li>
+      <li>Correct bonus stacking, with buffs and conditions such as Haste, Rage and Shaken</li>
+      <li>Spellbooks with slots, save DCs and prepare/cast tracking</li>
+      <li>Portrait and name icon on the sheet</li>
+    </ul></section>
+    <section class="card"><h3>Level-up wizard</h3><ul>
+      <li>Before and after numbers for HP, BAB, saves and spells per day</li>
+      <li>Archetypes with their class changes applied</li>
+      <li>Spell picking that only offers what you can learn, with a counter of what is left</li>
+      <li>Feats, skill ranks and favored class bonuses</li>
+    </ul></section>
+    <section class="card"><h3>Companions</h3><ul>
+      <li>68 animal companion species with advancement</li>
+      <li>Eidolons with an evolution point tracker</li>
+      <li>26 familiar kinds that scale with your master level</li>
+    </ul></section>
+    <section class="card"><h3>Compendium and quick rules</h3><ul>
+      <li>Search about 2,250 spells, 1,200 feats, items, classes and rules text</li>
+      <li>Cheat-sheet cards and a concentration odds calculator</li>
+      <li>Open any entry in a side panel straight from your sheet</li>
+    </ul></section>
+    <section class="card"><h3>Import</h3><ul>
+      <li>Bring in a sheet from charactersheet.co.uk with a link or a downloaded file</li>
+      <li>Preview and fix class levels before saving</li>
+      <li>Your account details from that site are never saved</li>
+    </ul></section>
+    <section class="card"><h3>Yours to keep</h3><ul>
+      <li>Characters are plain <code>.json</code> files in <code>Documents\Pathfinder Characters</code></li>
+      <li>Works offline; nothing leaves your computer</li>
+      <li>32 classes, including APG and the Advanced Class Guide hybrids</li>
+    </ul></section>
+  </div>
+
+  <h2>Install</h2>
+  <p>Download the zip from the latest release, unzip it anywhere and run <code>Pathfinder Sheet.exe</code>. To run from source you need Python 3.10 or newer; see the README in the repository.</p>
+</main>
+
+<footer class="wrap">
+  Game rules text is Open Game Content under the Open Game License v1.0a. This app is not published, endorsed, or approved by Paizo Inc.
+  Data from <a href="https://github.com/devonjones/PSRD-Data">PSRD-Data</a> and <a href="https://github.com/sturlabragason/pathfinder_spells">pathfinder_spells</a>.
+</footer>
+</body>
+</html>
