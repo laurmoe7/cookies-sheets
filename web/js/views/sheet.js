@@ -231,7 +231,7 @@ function overview(body, c, d) {
 function wireImages(body, c) {
   $$('[data-img]', body).forEach(b => (b.onclick = async () => {
     const kind = b.dataset.img;
-    const url = await pickImage(kind === 'avatar' ? 128 : 900, { square: kind === 'avatar' });
+    const url = await pickImage(kind === 'avatar' ? 192 : 900, { square: kind === 'avatar' });
     if (url) { c[kind] = url; changed({ rerender: true }); }
   }));
   $$('[data-img-clear]', body).forEach(b => (b.onclick = () => { c[b.dataset.imgClear] = ''; changed({ rerender: true }); }));
