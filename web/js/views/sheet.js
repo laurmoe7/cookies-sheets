@@ -5,7 +5,7 @@ import {
   ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS,
   BUFF_PRESETS, SCHOOLS, CASTING_STAT_NAMES,
 } from '../data.js';
-import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom } from '../ui.js';
+import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom, pickImage } from '../ui.js';
 import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
 import { renderCompanions } from './companions.js';
@@ -67,6 +67,18 @@ function overview(body, c, d) {
     <button class="btn small ghost" data-quick-buff>＋ Buff / condition</button>
   </div>
   <div class="grid overview-grid">
+    <section class="card portrait-card span2">
+      ${c.portrait ? `<img class="portrait" src="${c.portrait}" alt="Character portrait">` : ''}
+      <div class="portrait-actions">
+        ${c.portrait ? '' : '<div class="muted small">No portrait yet.</div>'}
+        <button class="btn small" data-img="portrait">${c.portrait ? 'Change portrait' : '🖼 Add portrait'}</button>
+        ${c.portrait ? '<button class="btn small ghost" data-img-clear="portrait">Remove</button>' : ''}
+        <span class="avatar-slot">${c.avatar ? `<img class="avatar-lg" src="${c.avatar}" alt="">` : ''}
+          <button class="btn small" data-img="avatar">${c.avatar ? 'Change icon' : '＋ Name icon'}</button>
+          ${c.avatar ? '<button class="btn small ghost" data-img-clear="avatar">Remove</button>' : ''}</span>
+        <span class="muted small">The icon shows beside your name at the top.</span>
+      </div>
+    </section>
     <section class="card abilities">
       <h3>Ability Scores</h3>
       <table class="tbl">
@@ -179,6 +191,12 @@ function overview(body, c, d) {
     </section>
   </div>`;
   wireCommon(body);
+  $$('[data-img]', body).forEach(b => (b.onclick = async () => {
+    const kind = b.dataset.img;
+    const url = await pickImage(kind === 'avatar' ? 128 : 900, { square: kind === 'avatar' });
+    if (url) { c[kind] = url; changed({ rerender: true }); }
+  }));
+  $$('[data-img-clear]', body).forEach(b => (b.onclick = () => { c[b.dataset.imgClear] = ''; changed({ rerender: true }); }));
 
   const updateDyn = () => {
     const dd = state.derived;

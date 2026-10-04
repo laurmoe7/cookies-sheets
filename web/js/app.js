@@ -55,6 +55,9 @@ export function refreshCalc(root = document) {
 
 function updateHeader() {
   const c = state.char;
+  const av = $('#char-avatar');
+  av.hidden = !(c && c.avatar);
+  if (c && c.avatar && av.getAttribute('src') !== c.avatar) av.src = c.avatar;
   $('#char-title').textContent = c ? c.name || 'Unnamed' : 'No character loaded';
   const d = state.derived;
   $('#char-sub').textContent = c && d

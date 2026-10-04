@@ -16,6 +16,8 @@ export function newCharacter() {
     abilities,
     levelUps: [], // {cls, hp, fcb, fcbNote, abilityIncrease, feats:[], ranks:{skillKey:n}, spells:[], features}
     archetypes: {}, // {Class: [archetype data from features.bakeArchetype]}
+    portrait: '', // data URL, large picture on the Overview tab
+    avatar: '',   // data URL, small picture beside the name in the top bar
     companions: [], // animal companions, eidolons, familiars (see companions.js)
     hp: { current: null, temp: 0, nonlethal: 0, misc: 0 },
     ac: { natural: 0, deflection: 0, dodge: 0, misc: 0 },
