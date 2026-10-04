@@ -17,5 +17,7 @@ python -m PyInstaller --noconfirm --clean --windowed --onedir `
     --add-data 'data;data' `
     app.py
 
+Copy-Item 'tools\dist_readme.txt' 'dist\Pathfinder Sheet\READ ME FIRST.txt'
+
 Write-Host ''
 Write-Host 'Done. Run: dist\Pathfinder Sheet\Pathfinder Sheet.exe'

@@ -16,3 +16,4 @@ tools/sources/spells.tsv
 *.lnk
 
 node_modules/
+*.zip
