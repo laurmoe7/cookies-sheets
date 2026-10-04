@@ -3,6 +3,7 @@ import {
   ABILITIES, SKILL_BY_NAME, SIZES, RACES, STACKING_TYPES, NON_TOUCH_AC, CMD_AC_TYPES, carryingCapacity, XP_TRACKS,
 } from './data.js';
 import { skillKey } from './model.js';
+import { archetypesOf } from './features.js';
 
 export const mod = score => Math.floor((score - 10) / 2);
 export const sign = n => (n == null || isNaN(n) ? '—' : (n >= 0 ? '+' : '') + n);
@@ -74,7 +75,14 @@ export function classLevels(c) {
 
 export function classSkillSet(c, classesByName) {
   const set = new Set();
-  for (const cls of Object.keys(classLevels(c))) for (const s of classesByName[cls]?.class_skills || []) set.add(s);
+  for (const cls of Object.keys(classLevels(c))) {
+    const own = new Set(classesByName[cls]?.class_skills || []);
+    for (const a of archetypesOf(c, cls)) {
+      for (const sk of a.classSkills?.remove || []) own.delete(sk);
+      for (const sk of a.classSkills?.add || []) own.add(sk);
+    }
+    for (const sk of own) set.add(sk);
+  }
   return set;
 }
 
@@ -268,6 +276,8 @@ export function compute(c, classesByName) {
     const row = def.levels[Math.min(n, 20) - 1];
     const cast = def.casting;
     const statMod = M(cast.stat);
+    // Diminished Spellcasting archetypes (e.g. kensai): one fewer spell per day of each level.
+    const diminished = archetypesOf(c, cls).some(a => a.diminished);
     const cl = Math.max(0, n + (cast.cl_offset || 0)) + clSt.total;
     const book = c.spellbooks?.[cls] || {};
     const slots = [], known = [], dcs = [], prepared = [];
@@ -275,7 +285,7 @@ export function compute(c, classesByName) {
       const base = row.spells_per_day?.[sl];
       const canCast = d.abilities[cast.stat].score >= 10 + sl;
       if (base == null || !canCast) slots.push(sl === 0 && (cast.kind === 'spontaneous') && row.spells_known?.[0] != null ? Infinity : null);
-      else slots.push(base + bonusSpells(statMod, sl) + (book.extraSlot && sl > 0 ? 1 : 0));
+      else slots.push(Math.max(0, base - (diminished && sl > 0 ? 1 : 0)) + bonusSpells(statMod, sl) + (book.extraSlot && sl > 0 ? 1 : 0));
       known.push(row.spells_known?.[sl] ?? null);
       prepared.push(row.spells_prepared?.[sl] ?? null);
       dcs.push(10 + sl + statMod);

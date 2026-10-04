@@ -78,6 +78,17 @@ class Compendium(unittest.TestCase):
         self.assertGreater(counts['Feat'], 1000)
         self.assertGreater(counts['Trait'], 200)
 
+    def test_archetypes_by_class(self):
+        rogue = {a['name']: a for a in app.archetypes('Rogue')}
+        self.assertIn('Acrobat', rogue)
+        acro = rogue['Acrobat']
+        self.assertEqual(acro['cls'], 'Rogue')
+        self.assertTrue(acro['description'])
+        self.assertEqual([(f['name'], f['level']) for f in acro['features'] if not f['advice']],
+                         [('Expert Acrobat', 1), ('Second Chance', 3)])
+        self.assertTrue(any(a['diminished'] for a in app.archetypes('Magus')), 'kensai and myrmidarch')
+        self.assertEqual(app.archetypes('Nonexistent'), [])
+
     def test_resolve_names(self):
         hits = app.resolve_names({'items': [
             {'variants': ['Weapon Finesse'], 'cats': ['Feat']},
@@ -129,6 +140,12 @@ class HttpApi(unittest.TestCase):
         status, data = self.call('/api/classes')
         self.assertEqual(status, 200)
         self.assertEqual(len(data), 32)
+
+    def test_companion_data(self):
+        status, data = self.call('/api/companions')
+        self.assertEqual(status, 200)
+        self.assertEqual(len(data['animal']['species']), 68)
+        self.assertTrue(data['eidolon']['evolutions'])
 
     def test_save_and_load(self):
         status, r = self.call('/api/character', {'name': 'Ezren'})

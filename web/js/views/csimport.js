@@ -47,9 +47,14 @@ async function preview(body, close, src) {
   const classes = state.classes;
   let rows = guessClasses(src.level, classes);
   let built;
+  const archetypeData = {};
+  const loadArchetypes = async () => {
+    for (const r of rows) if (r.archetype && !archetypeData[r.cls]) archetypeData[r.cls] = await api.archetypes(r.cls).catch(() => []);
+  };
+  await loadArchetypes();
 
   const draw = () => {
-    built = buildCharacter(src, rows, resolved, state.classesByName);
+    built = buildCharacter(src, rows, resolved, state.classesByName, archetypeData);
     const cmp = compareSheets(src, built.char, state.classesByName);
     const diffs = cmp.filter(r => !r.same).length;
     const c = built.char;
@@ -89,7 +94,7 @@ async function preview(body, close, src) {
     const r = rows[+t.dataset.row];
     if (t.dataset.f === 'levels') r.levels = Math.max(1, Math.min(20, parseInt(t.value) || 1));
     else r[t.dataset.f] = t.value;
-    if (e.type === 'change') draw();
+    if (e.type === 'change') loadArchetypes().then(draw);
   };
   body.onclick = async e => {
     const rm = e.target.closest('[data-rm]');

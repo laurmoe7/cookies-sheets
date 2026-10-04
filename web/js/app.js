@@ -1,7 +1,7 @@
 import { api } from './api.js';
 import { compute, sign } from './calc.js';
 import { newCharacter, migrate } from './model.js';
-import { $, $$, getPath, setPath, toast, showEntry, closeDrawer, debounce, modal } from './ui.js';
+import { $, $$, getPath, setPath, toast, showEntry, closeDrawer, debounce, modal, initTextFields } from './ui.js';
 import { renderHome } from './views/home.js';
 import { renderSheet } from './views/sheet.js';
 import { renderLevelUp } from './views/levelup.js';
@@ -23,8 +23,9 @@ export function go(view, opts = {}) {
   render();
 }
 
-export function render() {
+export function render({ keepScroll = false } = {}) {
   const main = $('#main');
+  const top = main.scrollTop;
   document.dispatchEvent(new Event('view-leave'));
   main.innerHTML = '';
   main.scrollTop = 0;
@@ -32,6 +33,7 @@ export function render() {
   VIEWS[state.view](main);
   refreshCalc();
   updateHeader();
+  if (keepScroll) main.scrollTop = top; // edits re-draw the page; don't jump back to the top
 }
 
 export function recalc() {
@@ -76,7 +78,7 @@ const saveNow = debounce(async () => {
 
 export function changed({ rerender = false } = {}) {
   state.dirty = true;
-  if (rerender) render(); else { recalc(); refreshCalc(); updateHeader(); }
+  if (rerender) render({ keepScroll: true }); else { recalc(); refreshCalc(); updateHeader(); }
   saveNow();
 }
 
@@ -108,6 +110,10 @@ function onInput(e) {
 
 async function init() {
   document.addEventListener('input', onInput);
+  initTextFields({
+    get: path => (state.char ? getPath(state.char, path) : ''),
+    set: (path, v) => { if (state.char) { setPath(state.char, path, v); changed(); } },
+  });
   document.addEventListener('change', e => { if (e.target.type === 'checkbox' || e.target.tagName === 'SELECT' || 'rerender' in (e.target.dataset || {})) onInput(e); });
   $$('#nav [data-view]').forEach(b => (b.onclick = () => go(b.dataset.view)));
   // Any element with data-entry="Name" (and optional data-cat) opens the reference drawer.

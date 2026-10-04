@@ -260,3 +260,50 @@ input.sub { margin-left: 6px; font-size: 12px; padding: 2px 5px; }
 .toast { background: var(--ink); color: var(--bg); padding: 8px 16px; border-radius: 8px; box-shadow: var(--shadow); transition: opacity .3s; }
 .toast.good { background: var(--good); color: #fff; } .toast.err { background: var(--bad); color: #fff; }
 .toast.out { opacity: 0; }
+
+/* ---------- read-first text fields (double-click to edit) ---------- */
+.tf { display: inline-block; min-width: 4em; max-width: 100%; padding: 2px 4px; border-radius: 4px; border: 1px solid transparent; cursor: default; white-space: pre-wrap; overflow-wrap: break-word; vertical-align: middle; }
+.tf:hover { border-color: var(--line); background: var(--panel-2); }
+.tf:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.tf.empty { color: var(--muted); font-style: italic; font-size: .92em; }
+.tf.readable:not(.empty) { cursor: pointer; }
+.tf.readable:not(.empty):hover { color: var(--accent); }
+.tf.ml:not(.editing) { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: .92em; line-height: 1.35; }
+.tf.editing { display: block; padding: 0; border: none; background: none; }
+.tf-edit { width: 100%; font: inherit; padding: 4px 6px; border: 1px solid var(--accent); border-radius: 6px; background: var(--input); color: var(--ink); }
+textarea.tf-edit { resize: vertical; min-height: 4.5em; line-height: 1.4; }
+td .tf { display: block; }
+td.w12 { min-width: 170px; } td.w10 { min-width: 140px; }
+td .tf.ml:not(.editing) { display: -webkit-box; }
+
+/* ---------- archetypes ---------- */
+.arch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.arch-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; background: var(--panel); cursor: pointer; display: flex; flex-direction: column; gap: 6px; }
+.arch-card:hover { border-color: var(--accent); }
+.arch-card.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent) inset; }
+.arch-card.blocked { opacity: .55; cursor: not-allowed; }
+.arch-card h4 { margin: 0; font-family: var(--serif); font-size: 16px; }
+.arch-card .desc { font-size: 13px; color: var(--muted); }
+.arch-card ul { margin: 0; padding-left: 0; list-style: none; font-size: 12.5px; }
+.arch-card li { padding: 1px 0; }
+.arch-card li .lv { display: inline-block; min-width: 34px; color: var(--muted); }
+.arch-card .rep { color: var(--muted); }
+.arch-card .why { font-size: 12px; color: var(--bad); }
+.features .arch-badge, .arch-badge { font-size: 10.5px; padding: 0 6px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); margin-left: 4px; white-space: nowrap; }
+.features .rep { font-size: 11.5px; color: var(--muted); }
+.features .mod { font-size: 11.5px; color: var(--warn); }
+
+/* ---------- spell chooser ---------- */
+.pick-status { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 8px; background: var(--accent-soft); border: 1px solid var(--accent); }
+.pick-status.done { background: transparent; border-color: var(--good); color: var(--good); }
+.pick-status .left { font-weight: 600; }
+.pick-row.known { opacity: .55; cursor: default; }
+
+/* ---------- companions ---------- */
+.companion { margin-bottom: 14px; }
+.statblock { font-family: var(--serif); font-size: 14px; line-height: 1.45; border-top: 2px solid var(--accent); border-bottom: 2px solid var(--accent); padding: 8px 2px; }
+.statblock h4 { font-family: var(--font); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 8px 0 2px; border-bottom: 1px solid var(--line); }
+.statblock p { margin: 1px 0; }
+.statblock b { font-family: var(--font); font-size: 12.5px; }
+.evo-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 4px 12px; font-size: 13px; }
+.evo-list label { display: flex; gap: 6px; align-items: center; }

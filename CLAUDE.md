@@ -14,6 +14,10 @@ Windows desktop app for Pathfinder 1st Edition characters: live character sheet,
   - `js/app.js`: state, routing (`go(view)`), saving, and the two-way binding.
   - `js/views/*.js`: one module per page. `sheet.js` is the character sheet tabs; `levelup.js` is the wizard; `csimport.js` is the import dialog.
   - `js/importcs.js`: charactersheet.co.uk to our model (pure functions, no DOM).
+  - `js/features.js`: class features with **archetypes applied**. An archetype chosen for a class is stored on the character (`c.archetypes[cls] = [bakeArchetype(...)]`), so saves don't depend on the database. Its class-skill changes and diminished spellcasting apply in `calc.js`.
+  - `js/spellrules.js`: how many spells a class learns per level (spells-known table, spellbook classes, or none).
+  - `js/companions.js`: animal companion and eidolon stat blocks from `data/companions.json`. The UI is `views/companions.js` (the sheet's Companions tab).
+  - `views/archetypes.js` is the archetype chooser; `views/spellpicker.js` is the multi-pick spell chooser that stays open until the allowance is used.
 - **`tools/build_data.py`**: builds `data/pf1e.db` and `data/classes.json` from `tools/sources/`.
 
 ### UI conventions (follow these when adding fields)
@@ -27,6 +31,8 @@ Windows desktop app for Pathfinder 1st Edition characters: live character sheet,
 - **Bonuses:** go through `stack()` with a bonus type so the stacking rules apply. Buffs and conditions are `{target, value, type, scale?}` effects. `value` may be a formula using `bab`, `lvl`, `floor`, `ceil`, `min` or `max`. Valid targets are in `MOD_TARGETS`.
 - **Save-format changes:** adding a field means giving it a default in `newCharacter()`; `migrate()` back-fills old saves automatically. Renaming or reshaping a field needs explicit code in `migrate()`. Never break old save files.
 - **Escaping:** use `esc()` for anything user- or data-supplied that goes into HTML.
+- **Text fields:** names and notes use `textField()` (`tf()` in `sheet.js`), which shows readable text. Double-click edits it; single click opens the full text in the drawer when `read` is set. Numeric fields stay as normal inputs. Use `showCustom({name, cat, html})` to put non-compendium content in the drawer.
+- **Re-drawing:** `changed({ rerender: true })` keeps the scroll position.
 
 ## Commands
 
@@ -58,7 +64,8 @@ Node.js is installed at `C:\Program Files\nodejs`. A shell started before it was
 
 ## Gotchas
 
-- **Stop any running app/server before `tools/build_data.py`.** The server holds `data/pf1e.db` open, and the rebuild fails with WinError 32 (file in use).
+- **Rebuilding while the app runs:** `tools/build_data.py` writes `data/pf1e.db.new` when the database is in use, and the app installs it on next start (`install_new_db`). Delete a stale `.new` if you rebuild again after closing the app. `PF_DB` points the server at a different database file.
+- **Escaping in shell edit scripts:** don't write JS containing `\b` or `\n` through Python heredoc scripts; they turn into backspace characters and real newlines. Use the Edit tool for those. `grep -c $'\x08' file` finds stray backspaces.
 - **Use `127.0.0.1`, not `localhost`.** On this machine `localhost` resolves to IPv6 first, and every request is about 300 ms slower.
 - **The .exe bundles a copy of `web/` and `data/`.** Source edits don't reach `dist/` until you rebuild. Day to day, run from source.
 - **Desktop window storage:** it keeps localStorage in `%LOCALAPPDATA%\Pathfinder Sheet\webview` (`private_mode=False`). Without that, the theme and last-open character are forgotten on every launch.
@@ -75,6 +82,8 @@ Node.js is installed at `C:\Program Files\nodejs`. A shell started before it was
   - `psrd/*.db`: 19 book databases from https://github.com/devonjones/PSRD-Data, covering the Core Rulebook through the Advanced Class Guide (2015).
   - `spells.tsv`: the community spell spreadsheet from https://github.com/sturlabragason/pathfinder_spells. It adds about 700 later-book spells.
 - **Output:** `data/pf1e.db` is generated and git-ignored. `data/classes.json` is generated but committed, because the tests use it; diff it after parser changes.
+- **Archetypes:** `tools/archetypes.py` parses each archetype into features (level, replaces/modifies targets, advice lists), class-skill changes and diminished spellcasting. The result is stored as JSON in `entries.meta` and served by `/api/archetypes?cls=`. The app matches about 82% of "replaces X" targets against the class table; the rest (proficiencies, deeds, bonus spells) are not table features and are shown as text.
+- **Companions:** `tools/companions.py` writes `data/companions.json` (committed): both progression tables, 68 animal species with advancement, eidolon base forms and evolutions.
 - **Categories:** `build_data.py` maps PSRD section types to app categories in `TYPE_CATEGORY`. "Rules" entries come from `RULE_BOOKS`. Search ranking order is `CAT_ORDER` in `app.py`.
 
 ## Repo

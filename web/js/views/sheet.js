@@ -5,12 +5,18 @@ import {
   ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS,
   BUFF_PRESETS, SCHOOLS, CASTING_STAT_NAMES,
 } from '../data.js';
-import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce } from '../ui.js';
+import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom } from '../ui.js';
+import { classFeatures, archetypesOf } from '../features.js';
+import { chooseArchetypes } from './archetypes.js';
+import { renderCompanions } from './companions.js';
 
 const TABS = [
   ['overview', 'Overview'], ['skills', 'Skills'], ['feats', 'Feats & Abilities'], ['spells', 'Spells'],
-  ['gear', 'Gear'], ['buffs', 'Buffs & Conditions'], ['bio', 'Bio & Notes'],
+  ['gear', 'Gear'], ['companions', 'Companions'], ['buffs', 'Buffs & Conditions'], ['bio', 'Bio & Notes'],
 ];
+
+/** Read-first text bound to a character path: click to read in full, double-click to edit. */
+const tf = (path, opts = {}) => textField(path, getPath(state.char, path), opts);
 
 // ---------- small template helpers ----------
 const val = p => { const v = getPath(state.char, p); return v ?? ''; };
@@ -46,7 +52,7 @@ export function renderSheet(main) {
   const lu = $('[data-goto-levelup]', main);
   if (lu) lu.onclick = () => go('levelup');
   const body = $('#tab-body', main);
-  ({ overview, skills, feats, spells, gear, buffs, bio })[state.sheetTab](body, c, d);
+  ({ overview, skills, feats, spells, gear, companions: renderCompanions, buffs, bio })[state.sheetTab](body, c, d);
 }
 
 // =====================================================================
@@ -154,7 +160,7 @@ function overview(body, c, d) {
         <th title="Misc attack bonus (masterwork +1, Weapon Focus, etc.)">Atk+</th><th>Dice</th><th title="Strength to damage">Str dmg</th><th title="Misc damage">Dmg+</th>
         <th>Range</th><th>Type</th><th></th></tr></thead><tbody>
         ${c.weapons.map((w, i) => `<tr>
-          <td>${inp(`weapons.${i}.name`, { cls: 'w10', ph: 'Longsword' })}</td>
+          <td class="w10">${tf(`weapons.${i}.name`, { placeholder: 'Name (double-click)' })}</td>
           <td class="big accent nowrap">${calc(`weapons.${i}.attackText`)}</td>
           <td class="big nowrap">${calc(`weapons.${i}.damageText`)}</td>
           <td>${inp(`weapons.${i}.crit`, { cls: 'w5', ph: '19-20/x2' })}</td>
@@ -319,26 +325,12 @@ function skills(body, c, d) {
 // =====================================================================
 // FEATS & ABILITIES
 // =====================================================================
-function splitFeatures(text) {
-  const out = []; let depth = 0, cur = '';
-  for (const ch of text || '') {
-    if (ch === '(') depth++;
-    if (ch === ')') depth--;
-    if (ch === ',' && depth === 0) { out.push(cur.trim()); cur = ''; } else cur += ch;
-  }
-  if (cur.trim()) out.push(cur.trim());
-  return out.filter(x => x && x !== '—' && x !== '-');
-}
 export const featureLookupName = f => f.replace(/\s*[+−-]?\d+d\d+.*$/, '').replace(/\s*\(.*?\)/g, '').replace(/\s*[+−-]?\d+(\/day)?.*$/, '').replace(/\s+\d+(st|nd|rd|th).*$/, '').trim();
 
 function feats(body, c, d) {
   const lv = classLevels(c);
-  const features = [];
-  for (const [cls, n] of Object.entries(lv)) {
-    const def = state.classesByName[cls];
-    if (!def) continue;
-    for (let i = 0; i < n; i++) for (const f of splitFeatures(def.levels[i].special)) features.push({ cls, level: i + 1, name: f });
-  }
+  const features = classFeatures(c, state.classesByName);
+  const KIND = { feats: 'Custom feat', traits: 'Custom trait', specials: 'Custom ability' };
   const listBlock = (key, title, cat, pickTitle) => `
     <section class="card">
       <div class="row"><h3 class="grow">${title}</h3>
@@ -346,9 +338,11 @@ function feats(body, c, d) {
         <button class="btn small" data-pick="${key}" data-cat="${cat}" data-title="${esc(pickTitle)}">＋ Add from compendium</button>
         <button class="btn small ghost" data-custom="${key}">＋ Custom</button></div>
       ${c[key].length ? `<table class="tbl"><tbody>${c[key].map((f, i) => `<tr>
-        <td class="nowrap">${f.id ? refId(f.id, f.name) : inp(`${key}.${i}.name`, { cls: 'w12', ph: 'Name' })}</td>
+        <td class="nowrap w12">${f.id ? refId(f.id, f.name)
+          : tf(`${key}.${i}.name`, { placeholder: 'Name', read: { title: f.name || 'Untitled', titlePath: `${key}.${i}.name`, cat: KIND[key], path: `${key}.${i}.notes` } })}</td>
         <td class="muted small">${esc(f.sub || '')}${f.level ? ` · L${f.level}` : ''}</td>
-        <td class="grow-cell">${inp(`${key}.${i}.notes`, { cls: 'full', ph: 'Notes (e.g. Weapon Focus: longsword)' })}</td>
+        <td class="grow-cell">${tf(`${key}.${i}.notes`, { multiline: true, placeholder: f.id ? 'Add notes' : 'Add a description',
+          read: { title: f.name || 'Notes', titlePath: `${key}.${i}.name`, cat: f.id ? 'Your notes' : KIND[key] } })}</td>
         <td><button class="icon-btn" data-del="${key}.${i}">✕</button></td></tr>`).join('')}</tbody></table>`
         : '<p class="muted">None yet.</p>'}
     </section>`;
@@ -356,13 +350,21 @@ function feats(body, c, d) {
     <div>${listBlock('feats', 'Feats', 'Feat', 'Add feat')}${listBlock('traits', 'Traits', 'Trait', 'Add trait')}</div>
     <div>
       <section class="card">
-        <h3>Class Features <span class="muted small">(from your class levels; click to read)</span></h3>
-        ${features.length ? `<ul class="features">${features.map(f => `<li><span class="lvl">${esc(f.cls)} ${f.level}</span>${ref(featureLookupName(f.name), '', f.name)}</li>`).join('')}</ul>` : '<p class="muted">Take a level to see class features.</p>'}
+        <h3>Class Features <span class="muted small">(from your class levels and archetypes; click to read)</span></h3>
+        ${features.length ? `<ul class="features">${features.map((f, i) => `<li><span class="lvl">${esc(f.cls)} ${f.level}</span>${f.kind === 'archetype'
+          ? `<a href="#" class="ref" data-feature="${i}">${esc(f.name)}</a><span class="arch-badge" title="${esc(f.replaces.length ? 'Replaces ' + f.replaces.join(', ') : f.archetype)}">${esc(f.archetype)}</span>`
+          : `${ref(featureLookupName(f.name), '', f.name)}${f.modified ? ` <span class="mod" title="Changed by your archetype">✱</span>` : ''}`}</li>`).join('')}</ul>`
+          : '<p class="muted">Take a level to see class features.</p>'}
       </section>
       ${listBlock('specials', 'Special Abilities & Racial Traits', 'Racial Trait', 'Add racial trait / ability')}
       <section class="card"><h3>Archetypes</h3>
-        ${Object.keys(lv).map(cls => `<label class="kv-line">${esc(cls)} ${inp(`archetypes.${cls}`, { cls: 'w16', ph: 'Archetype(s)' })}
-          <button class="btn small ghost" data-arch="${esc(cls)}">Browse</button></label>`).join('') || '<p class="muted">No classes yet.</p>'}
+        ${Object.keys(lv).map(cls => {
+          const archs = archetypesOf(c, cls);
+          return `<div class="kv-line"><b class="w8">${esc(cls)}</b>
+            <span class="grow">${archs.length ? archs.map(a => a.id ? refId(a.id, a.name) : `${esc(a.name)} <span class="small warn" title="Open the chooser to link it to the compendium">(not linked)</span>`).join(', ') : '<span class="muted">Standard class</span>'}</span>
+            <button class="btn small ghost" data-arch="${esc(cls)}">${archs.length ? 'Change' : 'Choose'}</button></div>`;
+        }).join('') || '<p class="muted">No classes yet.</p>'}
+        <p class="small muted">Archetype features replace the class features they say they replace, and their class-skill and spellcasting changes apply automatically.</p>
       </section>
     </div></div>`;
   wireCommon(body);
@@ -377,12 +379,15 @@ function feats(body, c, d) {
       c[cu.dataset.custom].push({ name: '', notes: '' });
       changed({ rerender: true });
     } else if (ar) {
-      const r = await pickEntry(`${ar.dataset.arch} archetypes`, 'Archetype', { extraFilter: x => true });
-      if (r) {
-        const cur = c.archetypes[ar.dataset.arch];
-        c.archetypes[ar.dataset.arch] = cur ? cur + ', ' + r.name : r.name;
-        changed({ rerender: true });
-      }
+      const cls = ar.dataset.arch;
+      const picked = await chooseArchetypes(cls, archetypesOf(c, cls));
+      if (picked) { c.archetypes[cls] = picked; changed({ rerender: true }); }
+    } else if (e.target.closest('[data-feature]')) {
+      e.preventDefault();
+      const f = features[+e.target.closest('[data-feature]').dataset.feature];
+      showCustom({ name: f.name, cat: 'Archetype feature', sub: `${f.archetype} · ${f.cls} ${f.level}`,
+        html: (f.replaces.length ? `<p class="field"><b>Replaces:</b> ${esc(f.replaces.join(', '))}</p>` : '')
+          + (f.unmatched?.length ? `<p class="field"><b>Also replaces:</b> ${esc(f.unmatched.join(', '))}</p>` : '') + f.html });
     }
   });
 }
@@ -432,11 +437,13 @@ function spells(body, c, d) {
         const list = book.spells.map((s, i) => ({ ...s, i })).filter(s => s.level === l);
         return `<div class="spell-level">
           <div class="row"><h4 class="grow">${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>
-            <button class="btn small ghost" data-add-spell="${l}">＋ Add</button></div>
+            <button class="btn small ghost" data-add-spell="${l}">＋ Add</button>
+            <button class="btn small ghost" data-custom-spell="${l}" title="A spell that isn't in the compendium">＋ Custom</button></div>
           ${list.length ? `<table class="tbl spell-tbl"><tbody>${list.map(s => `<tr>
-            <td class="nowrap">${s.id ? refId(s.id, s.name) : esc(s.name)}</td>
+            <td class="nowrap">${s.id ? refId(s.id, s.name)
+              : tf(`spellbooks.${cls}.spells.${s.i}.name`, { placeholder: 'Spell name', read: { title: s.name, titlePath: `spellbooks.${cls}.spells.${s.i}.name`, cat: 'Custom spell', path: `spellbooks.${cls}.spells.${s.i}.notes` } })}</td>
             <td class="muted small">${esc(s.school || '')}</td>
-            <td class="muted small summary">${esc(s.summary || '')}</td>
+            <td class="muted small summary">${s.id ? esc(s.summary || '') : tf(`spellbooks.${cls}.spells.${s.i}.notes`, { multiline: true, placeholder: 'Add a description', read: { title: s.name, titlePath: `spellbooks.${cls}.spells.${s.i}.name`, cat: 'Custom spell' } })}</td>
             ${prepared && !(l === 0 && sc.kind !== 'arcanist' && false) ? `<td class="nowrap small">Prep ${inp(`spellbooks.${cls}.spells.${s.i}.prepared`, { type: 'num', cls: 'w2', rerender: true })}</td>` : ''}
             ${sc.kind === 'prepared' && l > 0 ? `<td class="nowrap"><button class="btn small" data-cast="${s.i}" ${num(s.cast) >= num(s.prepared) ? 'disabled' : ''}>Cast</button>
               <span class="small dim">${num(s.cast)}/${num(s.prepared)}</span></td>` : ''}
@@ -455,8 +462,13 @@ function spells(body, c, d) {
     const cls = sbEl.dataset.cls;
     const book = c.spellbooks[cls];
     const sc = d.spellcasting[cls];
-    const t = e.target.closest('[data-add-spell],[data-cast],[data-cast-spont],[data-rest]');
+    const t = e.target.closest('[data-add-spell],[data-custom-spell],[data-cast],[data-cast-spont],[data-rest]');
     if (!t) return;
+    if (t.dataset.customSpell !== undefined) {
+      book.spells.push({ name: '', level: +t.dataset.customSpell, school: '', notes: '', prepared: 0, cast: 0 });
+      changed({ rerender: true });
+      return;
+    }
     if (t.dataset.addSpell !== undefined) {
       const picked = await pickSpell(cls, sc, +t.dataset.addSpell);
       if (picked) {
@@ -530,7 +542,7 @@ function gear(body, c, d) {
     <div class="row"><h3 class="grow">Armor & Shields</h3><button class="btn small" data-add="armor">＋ Add armor/shield</button></div>
     ${c.armor.length ? `<table class="tbl"><thead><tr><th>Worn</th><th>Name</th><th>Type</th><th>Category</th><th title="Armor/shield bonus">Bonus</th><th title="Enhancement">Enh</th>
       <th title="Max Dex bonus (blank = none)">Max Dex</th><th title="Armor check penalty">ACP</th><th title="Arcane spell failure %">ASF %</th><th>Weight</th><th></th></tr></thead><tbody>
-      ${c.armor.map((a, i) => `<tr><td>${chk(`armor.${i}.equipped`)}</td><td>${inp(`armor.${i}.name`, { cls: 'w10', ph: 'Chain shirt' })}</td>
+      ${c.armor.map((a, i) => `<tr><td>${chk(`armor.${i}.equipped`)}</td><td class="w10">${tf(`armor.${i}.name`, { placeholder: 'Name' })}</td>
         <td>${sel(`armor.${i}.type`, [['armor', 'Armor'], ['shield', 'Shield']])}</td>
         <td>${sel(`armor.${i}.category`, [['light', 'Light'], ['medium', 'Medium'], ['heavy', 'Heavy']])}</td>
         <td>${inp(`armor.${i}.bonus`, { type: 'num', cls: 'w2' })}</td><td>${inp(`armor.${i}.enh`, { type: 'num', cls: 'w2' })}</td>
@@ -542,9 +554,11 @@ function gear(body, c, d) {
     <div class="row"><h3 class="grow">Equipment</h3>
       <button class="btn small" data-pick-item>＋ Magic item</button><button class="btn small" data-add="gear">＋ Item</button></div>
     ${c.gear.length ? `<table class="tbl"><thead><tr><th>Item</th><th>Qty</th><th>Wt (each)</th><th>Value</th><th>Notes</th><th></th></tr></thead><tbody>
-      ${c.gear.map((g, i) => `<tr><td>${g.id ? refId(g.id, g.name) : inp(`gear.${i}.name`, { cls: 'w12' })}</td>
+      ${c.gear.map((g, i) => `<tr><td class="w12">${g.id ? refId(g.id, g.name)
+          : tf(`gear.${i}.name`, { placeholder: 'Item name', read: { title: g.name || 'Item', titlePath: `gear.${i}.name`, cat: 'Custom item', path: `gear.${i}.notes` } })}</td>
         <td>${inp(`gear.${i}.qty`, { type: 'num', cls: 'w2' })}</td><td>${inp(`gear.${i}.weight`, { type: 'num', cls: 'w3' })}</td>
-        <td>${inp(`gear.${i}.value`, { cls: 'w5' })}</td><td class="grow-cell">${inp(`gear.${i}.notes`, { cls: 'full' })}</td>
+        <td>${inp(`gear.${i}.value`, { cls: 'w5' })}</td>
+        <td class="grow-cell">${tf(`gear.${i}.notes`, { multiline: true, placeholder: 'Add notes', read: { title: g.name || 'Item', titlePath: `gear.${i}.name`, cat: g.id ? 'Your notes' : 'Custom item' } })}</td>
         <td><button class="icon-btn" data-del="gear.${i}">✕</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted">Nothing carried.</p>'}
   </section>
   <section class="card">
@@ -700,7 +714,7 @@ function bio(body, c, d) {
       ${c.levelUps.map((l, i) => `<tr><td>${i + 1}</td><td>${esc(l.cls)}</td><td>${inp(`levelUps.${i}.hp`, { type: 'num', cls: 'w3', title: 'Hit die roll for this level (before Con)' })}</td>
         <td>${sel(`levelUps.${i}.fcb`, [['', '—'], ['hp', '+1 HP'], ['skill', '+1 skill rank'], ['other', 'Other']])}</td>
         <td>${(i + 1) % 4 === 0 ? sel(`levelUps.${i}.abilityIncrease`, [['', '—'], ...ABILITIES.map(a => [a, a.toUpperCase()])]) : ''}</td>
-        <td>${inp(`levelUps.${i}.notes`, { cls: 'full' })}</td></tr>`).join('')}</tbody></table>
+        <td>${tf(`levelUps.${i}.notes`, { multiline: true, placeholder: 'Add notes', read: { title: `Level ${i + 1} notes`, cat: l.cls } })}</td></tr>`).join('')}</tbody></table>
       <div class="row"><button class="btn small danger" data-undo-level>Undo last level</button></div>` : '<p class="muted">No levels yet.</p>'}
   </section></div>`;
   wireCommon(body);

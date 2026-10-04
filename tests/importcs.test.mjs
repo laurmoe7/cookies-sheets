@@ -39,10 +39,19 @@ test('Fumu: levels, archetype, scores and HP carry over', () => {
   assert.equal(char.race, 'Kitsune');
   assert.equal(char.levelUps.length, 8);
   assert.ok(char.levelUps.every(l => l.cls === 'Arcanist'));
-  assert.equal(char.archetypes.Arcanist, 'White Mage');
+  assert.deepEqual(char.archetypes.Arcanist, [{ name: 'White Mage' }], 'name kept; linked when compendium data is passed');
   assert.deepEqual(Object.fromEntries(Object.entries(d.abilities).map(([k, v]) => [k, v.score])),
     { str: 8, dex: 18, con: 12, int: 20, wis: 8, cha: 10 });
   assert.equal(d.hp.max, 50);
+});
+
+test('Fumu: the White Mage archetype is linked when compendium data is available', () => {
+  const whiteMage = { id: 7, name: 'White Mage', source: 'ACG', description: 'healer', diminished: false, classSkills: { add: [], remove: [] },
+    features: [{ name: 'Spontaneous Healing', level: 1, replaces: [{ name: 'arcanist exploit', parts: [], levels: [1, 9] }], modifies: [], advice: false, html: '' }] };
+  const src = fixture('cs_fumu.json');
+  const { char } = buildCharacter(src, guessClasses(src.level, classes), {}, classesByName, { Arcanist: [whiteMage] });
+  assert.equal(char.archetypes.Arcanist[0].id, 7);
+  assert.equal(char.archetypes.Arcanist[0].features[0].name, 'Spontaneous Healing');
 });
 
 test('Fumu: spells, money, saves and bonuses', () => {

@@ -15,12 +15,15 @@ import re
 import sqlite3
 import sys
 
+import archetypes
+import companions
 from htmltable import parse_table
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'tools', 'sources')
 OUT_DB = os.path.join(ROOT, 'data', 'pf1e.db')
 OUT_CLASSES = os.path.join(ROOT, 'data', 'classes.json')
+OUT_COMPANIONS = os.path.join(ROOT, 'data', 'companions.json')
 
 # Book priority (earlier wins when the same entry appears twice)
 BOOKS = ['cr', 'apg', 'acg', 'um', 'uc', 'ucampaign', 'arg', 'ue', 'gmg', 'ma', 'tech', 'mc', 'npc',
@@ -290,6 +293,14 @@ def build_entries(books):
                 sub = sub.replace('_', ' ').title()
             elif t == 'class' and sid in b.class_details:
                 meta = dict(hit_die=b.class_details[sid]['hit_die'])
+            elif t == 'class_archetype':
+                kids = []
+                for c in b.children.get(sid, []):
+                    k = b.sections[c]
+                    feature_html = (k['body'] or '') + ''.join(b.render(g, 2) for g in b.children.get(c, []))
+                    kids.append((k['type'], k['name'], k['body'], feature_html))
+                meta = archetypes.parse_archetype(s['name'], (sub or '').title(), s['body'], kids)
+                sub = meta['cls'].lower()
             if sub:
                 sub = sub.replace('_', ' ')
                 if t in ('trait', 'racial_trait', 'ability'):
@@ -459,9 +470,17 @@ def build_classes(books):
 
 def write_db(entries):
     os.makedirs(os.path.dirname(OUT_DB), exist_ok=True)
-    if os.path.exists(OUT_DB):
-        os.remove(OUT_DB)
-    db = sqlite3.connect(OUT_DB)
+    out = OUT_DB
+    try:
+        if os.path.exists(out):
+            os.remove(out)
+    except PermissionError:
+        # The app has the database open. Write alongside it; app.py swaps it in on next start.
+        out = OUT_DB + '.new'
+        if os.path.exists(out):
+            os.remove(out)
+        print(f'NOTE: {OUT_DB} is in use (app running?), wrote {out}; it will be installed when the app restarts.')
+    db = sqlite3.connect(out)
     db.executescript('''
         create table entries (id integer primary key, cat text, sub text, name text, source text,
                               summary text, html text, meta text);
@@ -508,6 +527,10 @@ def main():
     with open(OUT_CLASSES, 'w', encoding='utf-8') as f:
         json.dump(classes, f, indent=1)
     print('wrote', len(classes), 'classes')
+    comp = companions.build(books)
+    with open(OUT_COMPANIONS, 'w', encoding='utf-8') as f:
+        json.dump(comp, f, indent=1)
+    print('wrote companions:', len(comp['animal']['species']), 'animals,', len(comp['eidolon']['evolutions']), 'evolutions')
 
 
 if __name__ == '__main__':

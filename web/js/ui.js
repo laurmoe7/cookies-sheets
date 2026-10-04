@@ -68,6 +68,16 @@ export async function showEntry(idOrName, cat) {
   renderDrawer(entry);
 }
 
+/** Show something that isn't a compendium entry (an archetype feature, a custom trait's notes) in the drawer. */
+export function showCustom({ name, cat = '', sub = '', html = '', source = '' }) {
+  const entry = { id: null, name, cat, sub, html, source };
+  drawerHistory.push(entry);
+  renderDrawer(entry);
+}
+
+/** Plain text (with blank-line paragraphs) as HTML. */
+export const textToHtml = t => String(t || '').trim().split(/\n\s*\n/).map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
+
 function renderDrawer(entry) {
   const dr = $('#drawer');
   dr.classList.add('open');
@@ -79,7 +89,11 @@ function renderDrawer(entry) {
     <div class="entry-body">${entryHtml(entry)}</div>`;
   $('[data-close]', dr).onclick = closeDrawer;
   const back = $('[data-back]', dr);
-  if (back) back.onclick = async () => { drawerHistory.pop(); renderDrawer(await api.entry(drawerHistory[drawerHistory.length - 1])); };
+  if (back) back.onclick = async () => {
+    drawerHistory.pop();
+    const prev = drawerHistory[drawerHistory.length - 1];
+    renderDrawer(typeof prev === 'object' ? prev : await api.entry(prev));
+  };
   wireEntryLinks($('.entry-body', dr));
   document.dispatchEvent(new CustomEvent('entry-shown', { detail: { entry, actions: $('.entry-actions', dr) } }));
 }
@@ -140,4 +154,96 @@ export function pickEntry(title, cat, { extraFilter, renderRow } = {}) {
     });
     run();
   }, { wide: true });
+}
+
+// ---------- Read-first text fields ----------
+// Text shows as plain, readable text. Click a "readable" field to open its full text in the drawer;
+// double-click to edit (Enter saves, Escape cancels; Ctrl+Enter saves multi-line text).
+
+/**
+ * @param path   data path inside the character (e.g. "feats.2.notes")
+ * @param value  current text
+ * @param opts   multiline: textarea editing and 2-line preview; read: {title, cat} opens the full text on click;
+ *               placeholder: shown when empty
+ */
+export function textField(path, value, { multiline = false, read = null, placeholder = 'Double-click to add', cls = '' } = {}) {
+  const v = String(value ?? '');
+  const tip = v ? (v.length > 400 ? v.slice(0, 400) + '…' : v) + '\n\n' : '';
+  return `<span class="tf ${multiline ? 'ml' : ''} ${v ? '' : 'empty'} ${read ? 'readable' : ''} ${cls}" data-tf="${esc(path)}"${multiline ? ' data-ml' : ''}
+    ${read ? `data-read-title="${esc(read.title || '')}" data-read-cat="${esc(read.cat || '')}" data-read-path="${esc(read.path || path)}"
+      ${read.titlePath ? `data-read-title-path="${esc(read.titlePath)}"` : ''}` : ''}
+    tabindex="0" title="${esc(tip)}${read ? 'Click to read · ' : ''}Double-click to edit">${v ? esc(v) : esc(placeholder)}</span>`;
+}
+
+/** Wire text fields once for the whole app. get(path) reads, set(path, value) saves. */
+export function initTextFields({ get, set }) {
+  let clickTimer = null;
+  // A click anywhere in a table cell that holds a single text field counts as a click on that field.
+  const fieldAt = target => {
+    const tf = target.closest('.tf');
+    if (tf) return tf;
+    const cell = target.closest('td');
+    const inner = cell && cell.querySelectorAll('.tf');
+    return inner && inner.length === 1 && !target.closest('a,button,input,select,textarea') ? inner[0] : null;
+  };
+  document.addEventListener('click', e => {
+    const el = fieldAt(e.target);
+    if (!el || !el.classList.contains('readable') || el.querySelector('input,textarea')) return;
+    const text = get(el.dataset.readPath) || '';
+    if (!text) return; // nothing to read yet; double-click to write it
+    clearTimeout(clickTimer);
+    clickTimer = setTimeout(() => {
+      const title = (el.dataset.readTitlePath && get(el.dataset.readTitlePath)) || el.dataset.readTitle || 'Notes';
+      showCustom({ name: title, cat: el.dataset.readCat || '',
+        html: textToHtml(text) + '<p class="muted small">Double-click the text on the sheet to edit it.</p>' });
+    }, 260);
+  });
+  document.addEventListener('dblclick', e => {
+    const el = fieldAt(e.target);
+    if (!el || el.querySelector('input,textarea')) return;
+    clearTimeout(clickTimer);
+    e.preventDefault();
+    startEdit(el);
+  });
+  document.addEventListener('keydown', e => {
+    const el = e.target.closest?.('.tf');
+    if (el && e.key === 'Enter' && !el.querySelector('input,textarea')) { e.preventDefault(); startEdit(el); }
+  });
+
+  function startEdit(el) {
+    const path = el.dataset.tf;
+    const ml = 'ml' in el.dataset;
+    const old = String(get(path) ?? '');
+    const box = document.createElement(ml ? 'textarea' : 'input');
+    box.className = 'tf-edit';
+    box.value = old;
+    if (ml) box.rows = Math.min(14, Math.max(3, old.split('\n').length + 1));
+    const display = el.innerHTML;
+    el.innerHTML = '';
+    el.appendChild(box);
+    el.classList.add('editing');
+    box.focus();
+    box.select();
+    let done = false;
+    const finish = save => {
+      if (done) return;
+      done = true;
+      const v = box.value;
+      el.classList.remove('editing');
+      if (save && v !== old) {
+        set(path, v);
+        el.innerHTML = v ? esc(v) : esc('Double-click to add');
+        el.classList.toggle('empty', !v);
+        el.title = (v ? v.slice(0, 400) + '\n\n' : '') + (el.classList.contains('readable') ? 'Click to read · ' : '') + 'Double-click to edit';
+      } else el.innerHTML = display;
+    };
+    box.addEventListener('blur', () => finish(true));
+    box.addEventListener('keydown', e => {
+      e.stopPropagation();
+      if (e.key === 'Escape') { e.preventDefault(); finish(false); }
+      else if (e.key === 'Enter' && (!ml || e.ctrlKey)) { e.preventDefault(); finish(true); }
+    });
+    box.addEventListener('click', e => e.stopPropagation());
+    box.addEventListener('dblclick', e => e.stopPropagation());
+  }
 }

@@ -15,7 +15,8 @@ export function newCharacter() {
     favoredClass: '',
     abilities,
     levelUps: [], // {cls, hp, fcb, fcbNote, abilityIncrease, feats:[], ranks:{skillKey:n}, spells:[], features}
-    archetypes: {},
+    archetypes: {}, // {Class: [archetype data from features.bakeArchetype]}
+    companions: [], // animal companions, eidolons, familiars (see companions.js)
     hp: { current: null, temp: 0, nonlethal: 0, misc: 0 },
     ac: { natural: 0, deflection: 0, dodge: 0, misc: 0 },
     saveMisc: { fort: 0, ref: 0, will: 0 },
@@ -40,6 +41,10 @@ export function migrate(c) {
   const base = newCharacter();
   for (const k of Object.keys(base)) if (c[k] === undefined) c[k] = base[k];
   for (const a of ABILITIES) c.abilities[a] = { ...base.abilities[a], ...(c.abilities[a] || {}) };
+  // Archetypes used to be free text ("Acrobat, Scout"); keep the names so they can be looked up again.
+  for (const [cls, v] of Object.entries(c.archetypes || {})) {
+    if (typeof v === 'string') c.archetypes[cls] = v.split(',').map(n => ({ name: n.trim() })).filter(x => x.name);
+  }
   c.version = MODEL_VERSION;
   return c;
 }

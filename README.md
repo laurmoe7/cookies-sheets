@@ -32,6 +32,9 @@ Feats, traits, abilities, spells, and magic items are matched to the compendium 
 - Feats, traits, and racial/special abilities picked from the compendium; class features listed automatically per level
 - Spellbooks for every casting class: slots with bonus spells, spells known, save DCs, concentration, casting-defensively DCs, prepare/cast tracking, domain/school slot, and a rest button
 - Gear, money, magic items, and encumbrance
+- Archetypes: choose them when you take a class (descriptions and what each replaces). Their features replace the class features they replace, and class-skill and spellcasting changes apply automatically.
+- Companions tab: animal companions (68 species, advancing at 4th/7th level) and eidolons (base forms, evolution points) with full stat blocks, plus free-form entries for familiars, mounts and cohorts
+- Custom traits, feats, items and spells read like official ones: click to read the full text, double-click to edit
 - **Buffs & conditions** with correct bonus-type stacking: Power Attack, Deadly Aim, and Combat Expertise scale with your BAB. Also Rage, Haste, Bless, Heroism, Enlarge Person, Shaken, Sickened, Fatigued, Grappled, and more, plus custom modifiers.
 
 **Level Up wizard**: choose a class and it shows the before → after for HP, BAB, saves, CMB/CMD, and spells per day. It also handles:
@@ -40,7 +43,7 @@ Feats, traits, abilities, spells, and magic items are matched to the compendium 
 - Feats every odd level, ability increases every 4th level
 - Skill rank allocation with a live budget
 - New class features (click any feature to read it)
-- Spells to learn
+- Spells to learn: only levels you can actually learn, with a "left to choose" counter (e.g. bard 1: 4 cantrips and 2 1st-level spells). Spellbook casters get every cantrip automatically.
 
 You can undo the last level from the Bio & Notes tab. 32 classes are supported: the 11 core classes, plus APG, Magus, Gunslinger, Ninja, Samurai, Antipaladin, and all 10 ACG hybrid classes.
 
@@ -85,4 +88,4 @@ Game rules text is Open Game Content under the Open Game License v1.0a (the full
 [PSRD-Data](https://github.com/devonjones/PSRD-Data) and the community spell spreadsheet via [pathfinder_spells](https://github.com/sturlabragason/pathfinder_spells).
 This app is not published, endorsed, or approved by Paizo Inc.
 
-Known gaps: PSRD-Data stops around 2015 (Advanced Class Guide). Later books (Occult Adventures, Ultimate Intrigue, and so on) are covered only for spells, through the spreadsheet. Prestige classes, eidolons, and animal companions are tracked in notes for now.
+Known gaps: PSRD-Data stops around 2015 (Advanced Class Guide). Later books (Occult Adventures, Ultimate Intrigue, and so on) are covered only for spells, through the spreadsheet. Prestige classes are tracked in notes for now. Unchained summoner eidolons aren't in the data.

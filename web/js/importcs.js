@@ -5,6 +5,7 @@ import { api } from './api.js';
 import { compute, sign } from './calc.js';
 import { ABILITIES, SKILL_BY_NAME, MULTI_SKILLS, RACES, SIZES } from './data.js';
 import { newCharacter, skillKey } from './model.js';
+import { bakeArchetype } from './features.js';
 
 export const CS_SOURCE = 'charactersheet.co.uk';
 
@@ -160,7 +161,7 @@ const matchSize = s => SIZE_NAMES.find(z => z.toLowerCase() === str(s).toLowerCa
  * Builds a character for this app. `classRows` is [{cls, levels, archetype}] (from guessClasses, possibly
  * edited by the user). Returns {char, notes} where notes lists what was carried over as text.
  */
-export function buildCharacter(src, classRows, resolved, classesByName) {
+export function buildCharacter(src, classRows, resolved, classesByName, archetypeData = {}) {
   const c = newCharacter();
   const notes = [];          // human-readable lines for the import report
   const extra = [];          // text appended to the character's Notes
@@ -200,7 +201,13 @@ export function buildCharacter(src, classRows, resolved, classesByName) {
   const rows = classRows.filter(r => classesByName[r.cls] && r.levels > 0);
   for (const r of rows) {
     for (let i = 0; i < r.levels; i++) c.levelUps.push({ cls: r.cls, hp: 0, fcb: '', fcbNote: '', abilityIncrease: '', ranks: {}, notes: 'Imported' });
-    if (r.archetype) c.archetypes[r.cls] = r.archetype;
+    if (r.archetype) c.archetypes[r.cls] = r.archetype.split(/\s*(?:,|\/|\band\b)\s*/).filter(Boolean).map(name => {
+      // Use the compendium's archetype (features, class-skill changes) when the name matches one.
+      const list = archetypeData[r.cls] || [];
+      const hit = list.find(a => a.name.toLowerCase() === name.toLowerCase())
+        || list.find(a => name.toLowerCase().includes(a.name.toLowerCase()) || a.name.toLowerCase().includes(name.toLowerCase()));
+      return hit ? bakeArchetype(hit) : { name };
+    });
   }
   if (rows.length) c.favoredClass = rows[0].cls;
   keepNote('Class/level on charactersheet.co.uk', src.level);

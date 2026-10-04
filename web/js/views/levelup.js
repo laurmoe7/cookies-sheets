@@ -2,15 +2,20 @@ import { state, changed, go, render } from '../app.js';
 import { compute, sign, num, classLevels, raceInfo, mod } from '../calc.js';
 import { ABILITIES, ABILITY_NAMES, RACES, POINT_BUY, SKILL_BY_NAME } from '../data.js';
 import { skillKey } from '../model.js';
-import { esc, $, $$, pickEntry, toast } from '../ui.js';
+import { api } from '../api.js';
+import { featuresFor, archetypesOf } from '../features.js';
+import { learnAllowance, remaining, describeRemaining } from '../spellrules.js';
+import { esc, $, $$, pickEntry, toast, confirmBox, showCustom } from '../ui.js';
 import { pickSpell, featureLookupName } from './sheet.js';
+import { renderArchetypeChooser } from './archetypes.js';
+import { chooseSpells } from './spellpicker.js';
 
 let draft = null;
 const ORD = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 - 20) % 10] || ['th', 'st', 'nd', 'rd'][n % 100] || 'th');
 
 function freshDraft(c) {
   return { forLevel: c.levelUps.length, charId: c.id, cls: null, hpMode: 'avg', hpRoll: null, hpManual: '', fcb: 'hp', fcbNote: '',
-    abilityIncrease: '', ranks: {}, feats: [], spells: [], notes: '', budget: 20 };
+    abilityIncrease: '', ranks: {}, feats: [], spells: [], archetypes: [], notes: '', budget: 20 };
 }
 
 export function renderLevelUp(main) {
@@ -35,6 +40,7 @@ export function renderLevelUp(main) {
   $$('[data-pick-class]', main).forEach(b => (b.onclick = () => {
     draft.cls = b.dataset.pickClass;
     draft.ranks = {}; draft.spells = [];
+    draft.archetypes = [...archetypesOf(c, draft.cls)];
     if (newLevel === 1) draft.hpMode = 'max';
     render();
   }));
@@ -103,6 +109,7 @@ function classPicker(c) {
 function applyDraft(c, dr, newLevel) {
   const clone = structuredClone(c);
   clone.levelUps.push(levelRecord(dr, clone, newLevel));
+  clone.archetypes = { ...clone.archetypes, [dr.cls]: dr.archetypes };
   for (const [key, n] of Object.entries(dr.ranks)) {
     const s = clone.skills.find(x => skillKey(x) === key);
     if (s) s.ranks = num(s.ranks) + n;
@@ -135,11 +142,15 @@ function detail(el, c, d, newLevel) {
   const ranksUsed = Object.values(draft.ranks).reduce((a, b) => a + b, 0);
   const getsFeat = newLevel % 2 === 1;
   const getsAbility = newLevel % 4 === 0;
-  const features = splitSpecial(row.special);
+  const features = featuresFor(draft.cls, clsLevel, draft.archetypes, def).filter(f => f.level === clsLevel);
   const hpGain = after.hp.max - d.hp.max;
   const delta = (a, b, f = sign) => `<span class="dim">${f(a)}</span> → <b>${f(b)}</b>${b !== a ? ` <span class="up">(${b > a ? '+' : ''}${b - a})</span>` : ''}`;
 
   el.innerHTML = `
+  ${lvBefore === 0 ? `<section class="card">
+    <h3>Archetype <span class="muted small">(optional; replaces some ${esc(def.name)} features with new ones)</span></h3>
+    <div id="lu-arch"></div></section>`
+    : draft.archetypes.length ? `<p class="small muted">Archetype: <b>${esc(draft.archetypes.map(a => a.name).join(', '))}</b> (change it on the sheet's Feats & Abilities tab).</p>` : ''}
   <div class="grid two">
     <section class="card">
       <h3>2 · What changes</h3>
@@ -156,7 +167,10 @@ function detail(el, c, d, newLevel) {
         ${after.iteratives.length > d.iteratives.length ? `<tr><th>Attacks</th><td class="good"><b>New iterative attack!</b> ${after.iteratives.map(sign).join('/')}</td></tr>` : ''}
       </tbody></table>
       <h4>New class features</h4>
-      ${features.length ? `<ul class="features">${features.map(f => `<li><a href="#" class="ref" data-entry="${esc(featureLookupName(f))}">${esc(f)}</a></li>`).join('')}</ul>` : '<p class="muted">No new features this level (numbers improve automatically).</p>'}
+      ${features.length ? `<ul class="features" style="columns:1">${features.map((f, i) => f.kind === 'archetype'
+        ? `<li><a href="#" class="ref" data-arch-feat="${i}">${esc(f.name)}</a><span class="arch-badge">${esc(f.archetype)}</span>${f.replaces.length ? ` <span class="rep">replaces ${esc(f.replaces.join(', '))}</span>` : ''}</li>`
+        : `<li><a href="#" class="ref" data-entry="${esc(featureLookupName(f.name))}">${esc(f.name)}</a>${f.modified ? ` <span class="mod">modified by ${esc(f.modified.join(', '))}</span>` : ''}</li>`).join('')}</ul>`
+        : '<p class="muted">No new features this level (numbers improve automatically).</p>'}
       ${spellDiff(def, row, prevRow, after)}
     </section>
 
@@ -236,25 +250,41 @@ function detail(el, c, d, newLevel) {
     if (r) { draft.feats.push(r); rerender(); }
   };
   $$('[data-rm-feat]', el).forEach(b => (b.onclick = () => { draft.feats.splice(+b.dataset.rmFeat, 1); rerender(); }));
+  const archEl = $('#lu-arch', el);
+  if (archEl) renderArchetypeChooser(archEl, draft.cls, draft.archetypes, sel => { draft.archetypes = sel; rerenderKeepArch(); });
+  // Re-render everything except the archetype cards (so the list doesn't jump while choosing).
+  function rerenderKeepArch() {
+    const keep = $('#lu-arch', el);
+    detail(el, c, d, newLevel);
+    const slot = $('#lu-arch', el);
+    if (keep && slot) slot.replaceWith(keep);
+  }
+  $$('[data-arch-feat]', el).forEach(a => (a.onclick = e => {
+    e.preventDefault();
+    const f = features[+a.dataset.archFeat];
+    showCustom({ name: f.name, cat: 'Archetype feature', sub: f.archetype,
+      html: (f.replaces.length ? `<p class="field"><b>Replaces:</b> ${esc(f.replaces.join(', '))}</p>` : '') + f.html });
+  }));
   $$('[data-add-lu-spell]', el).forEach(b => (b.onclick = async () => {
     const sc = after.spellcasting[draft.cls];
-    const lvl = +b.dataset.addLuSpell;
-    const r = await pickSpell(draft.cls, sc, lvl);
-    if (r) { draft.spells.push({ ...r, level: lvl === -1 ? r.level : lvl }); rerender(); }
+    const r = await pickSpell(draft.cls, sc, -1);
+    if (r) { draft.spells.push({ ...r }); rerender(); }
   }));
+  const choose = $('[data-choose-spells]', el);
+  if (choose) choose.onclick = async () => {
+    const sc = after.spellcasting[draft.cls];
+    const book = c.spellbooks[draft.cls] || { spells: [] };
+    await chooseSpells({ cls: draft.cls, lists: sc.lists, allowance: spellAllowance(c, def, clsLevel, after), picks: draft.spells,
+      known: book.spells.map(s => s.name) });
+    rerender();
+  };
   $$('[data-rm-spell]', el).forEach(b => (b.onclick = () => { draft.spells.splice(+b.dataset.rmSpell, 1); rerender(); }));
-  $('[data-apply]', el).onclick = () => apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility);
+  $('[data-apply]', el).onclick = () => apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after, clsLevel);
 }
 
-function splitSpecial(text) {
-  const out = []; let depth = 0, cur = '';
-  for (const ch of text || '') {
-    if (ch === '(') depth++;
-    if (ch === ')') depth--;
-    if (ch === ',' && depth === 0) { out.push(cur.trim()); cur = ''; } else cur += ch;
-  }
-  if (cur.trim()) out.push(cur.trim());
-  return out.filter(x => x && !/^[—–-]$/.test(x));
+function spellAllowance(c, def, clsLevel, after) {
+  const book = c.spellbooks[def.name] || { spells: [] };
+  return learnAllowance(def, clsLevel, book.spells, after.spellcasting[def.name], after.abilities.int.mod);
 }
 
 const SL = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
@@ -276,41 +306,54 @@ function spellDiff(def, row, prevRow, after) {
 
 function spellPicks(c, def, row, prevRow, after, newLevel) {
   if (!def.casting || !after.spellcasting[def.name]) return '';
-  const sc = after.spellcasting[def.name];
-  const book = c.spellbooks[def.name] || { spells: [] };
-  let guidance = '';
-  const isWizardLike = ['Wizard', 'Arcanist'].includes(def.name) || def.casting.kind === 'arcanist';
-  if (row.spells_known) {
-    const gains = [];
-    for (let l = 0; l <= 9; l++) {
-      const now = row.spells_known[l] ?? 0;
-      const have = book.spells.filter(s => s.level === l).length + draft.spells.filter(s => s.level === l).length;
-      if (now > have) gains.push(`${now - have} × ${l === 0 ? 'cantrip' : SL[l] + '-level'}`);
-    }
-    guidance = gains.length ? `Spells to learn: <b>${gains.join(', ')}</b>` : '<span class="good">All known-spell slots filled.</span>';
-  } else if (isWizardLike) {
-    guidance = newLevel === 1 || !c.spellbooks[def.name]
-      ? `Your spellbook starts with all cantrips plus 3 + Int modifier (${3 + after.abilities.int.mod}) 1st-level spells.`
-      : 'Add 2 new spells of any level you can cast to your spellbook (more can be copied from scrolls/books).';
-  } else if (def.name === 'Witch') {
-    guidance = 'Your familiar learns 2 new spells of any level you can cast.';
-  } else if (['Alchemist', 'Investigator'].includes(def.name)) {
-    guidance = 'Add 1 new formula of any level you can create to your formula book.';
+  const clsLevel = (classLevels(c)[def.name] || 0) + 1;
+  const allowance = spellAllowance(c, def, clsLevel, after);
+  const rem = remaining(allowance, draft.spells);
+  const word = def.casting.extracts ? 'formulae' : 'spells';
+  let guidance;
+  if (allowance.kind === 'known') {
+    guidance = `${def.name}s know a fixed number of spells. This level you learn the spells in the "known" row above that you don't have yet.`;
+  } else if (allowance.kind === 'book') {
+    const first = allowance.byLevel[1] != null || allowance.allCantrips;
+    guidance = first
+      ? `Your ${def.casting.extracts ? 'formula book' : def.name === 'Witch' ? 'familiar' : 'spellbook'} starts with ${allowance.allCantrips ? 'every cantrip (added automatically) plus ' : ''}${allowance.byLevel[1] ?? 0} 1st-level ${word} (base + Int modifier).`
+      : `Add ${allowance.any?.count ?? 0} new ${word} of any level you can cast. More can be copied from scrolls and books later on the Spells tab.`;
   } else {
-    guidance = 'Prepared divine casters have access to their entire spell list. Add spells you want to track on the Spells tab.';
+    guidance = `${def.name}s prepare from their entire spell list, so there's nothing to learn. Track favourites on the Spells tab.`;
   }
-  return `<section class="card"><div class="row"><h3 class="grow">${def.casting.extracts ? 'Formulae' : 'Spells'}</h3>
-      <button class="btn small" data-add-lu-spell="-1">＋ Add spell</button></div>
+  const chips = draft.spells.map((s, i) => `<span class="chip on">${s.level === 0 ? 'Cantrip' : 'L' + s.level} ${esc(s.name)} <button class="icon-btn" data-rm-spell="${i}">✕</button></span>`).join('');
+  if (allowance.kind === 'none') {
+    return `<section class="card"><div class="row"><h3 class="grow">Spells</h3><button class="btn small ghost" data-add-lu-spell="-1">＋ Track a spell</button></div>
+      <p>${guidance}</p><div class="chips">${chips}</div></section>`;
+  }
+  return `<section class="card"><div class="row"><h3 class="grow">${def.casting.extracts ? 'Formulae' : 'Spells'} to learn</h3>
+      <span class="pill ${rem.total ? 'warn' : 'good'}">${rem.total ? `Left: <b>${esc(describeRemaining(rem))}</b>` : 'All chosen ✓'}</span>
+      <button class="btn small ${rem.total ? 'primary' : ''}" data-choose-spells ${rem.total ? '' : 'disabled'}>Choose ${word}</button></div>
     <p>${guidance}</p>
-    <div class="chips">${draft.spells.map((s, i) => `<span class="chip on">L${s.level} ${esc(s.name)} <button class="icon-btn" data-rm-spell="${i}">✕</button></span>`).join('')}</div>
+    <div class="chips">${chips}</div>
   </section>`;
 }
 
-function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility) {
+async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after, clsLevel) {
   if (getsAbility && !draft.abilityIncrease) { toast('Choose an ability score to increase.', 'err'); return; }
   if (ranksUsed > rankBudget) { toast(`You assigned ${ranksUsed} ranks but only have ${rankBudget}.`, 'err'); return; }
   if (draft.hpMode === 'roll' && draft.hpRoll == null && newLevel > 1) { toast('Roll your hit die first (or pick another HP option).', 'err'); return; }
+  const allowance = def.casting && after.spellcasting[def.name] ? spellAllowance(c, def, clsLevel, after) : null;
+  if (allowance) {
+    const rem = remaining(allowance, draft.spells);
+    if (rem.total && !await confirmBox(`You still have ${describeRemaining(rem)} ${def.casting.extracts ? 'formulae' : 'spells'} to choose. Apply the level anyway? (You can add them later on the Spells tab.)`, 'Apply anyway')) return;
+  }
+  // Spellbook casters start with every cantrip on their list.
+  let cantrips = [];
+  if (allowance?.allCantrips) {
+    try {
+      const known = new Set((c.spellbooks[def.name]?.spells || []).map(s => s.name.toLowerCase()));
+      cantrips = (await api.spells(after.spellcasting[def.name].lists.join(','), 0)).filter(s => !known.has(s.name.toLowerCase()));
+    } catch { toast('Could not load cantrips; add them on the Spells tab.', 'err'); }
+  }
   if (!c.favoredClass && newLevel === 1) c.favoredClass = draft.cls;
+  if (draft.archetypes.length || c.archetypes[draft.cls]) c.archetypes[draft.cls] = draft.archetypes;
+  draft.spells.push(...cantrips.map(s => ({ id: s.id, name: s.name, level: 0, school: s.school, summary: s.summary })));
   c.levelUps.push(levelRecord(draft, c, newLevel));
   for (const [key, n] of Object.entries(draft.ranks)) {
     const s = c.skills.find(x => skillKey(x) === key);

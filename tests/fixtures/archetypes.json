@@ -1,0 +1,777 @@
+{
+ "Rogue": [
+  {
+   "id": 235,
+   "name": "Acrobat",
+   "source": "Advanced Player's Guide",
+   "cls": "Rogue",
+   "description": "Agility and daring are both excellent rogue traits, and their confluence can create spectacular feats of acrobatics. Whether they are daring thieves, infiltrating assassins, or intrepid spies, proper training in acrobatics is a valuable boon for rogues.",
+   "features": [
+    {
+     "name": "Expert Acrobat",
+     "level": 1,
+     "replaces": [
+      {
+       "name": "trapfinding",
+       "text": "trapfinding",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"expert-acrobat\">At 1st level, an acrobat does not suffer any armor check "
+    },
+    {
+     "name": "Second Chance",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "trap sense",
+       "text": "trap sense",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"second-chance\">At 3rd level, an acrobat can reroll any Acrobatics, Climb,"
+    },
+    {
+     "name": "Rogue Talents",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": true,
+     "html": "<p>The following rogue talents complement the acrobat archetype: expert leaper, "
+    },
+    {
+     "name": "Advanced Talents",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": true,
+     "html": "<p>The following advanced rogue talents complement the acrobat archetype: defens"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false
+  }
+ ],
+ "Fighter": [
+  {
+   "id": 244,
+   "name": "Archer",
+   "source": "Advanced Player's Guide",
+   "cls": "Fighter",
+   "description": "The archer is dedicated to the careful mastery of the bow, perfecting his skills with years of practice honed day after day on ranges and hunting for game, or else on the battlefield, raining destruction down on the enemy lines.",
+   "features": [
+    {
+     "name": "Hawkeye",
+     "level": 2,
+     "replaces": [
+      {
+       "name": "bravery",
+       "text": "bravery",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"hawkeye\">At 2nd level, an archer gains a +1 bonus on Perception checks, a"
+    },
+    {
+     "name": "Trick Shot",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "armor training 1",
+       "text": "armor training 1",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "armor training 2",
+       "text": "armor training 2",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "armor training 3",
+       "text": "armor training 3",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "armor training 4",
+       "text": "armor training 4",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"trick-shot\">At 3rd level, an archer can choose one of the following comba"
+    },
+    {
+     "name": "Expert Archer",
+     "level": 5,
+     "replaces": [
+      {
+       "name": "weapon training 1",
+       "text": "weapon training 1",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"expert-archer\">At 5th level, an archer gains a +1 bonus on attack and dam"
+    },
+    {
+     "name": "Safe Shot",
+     "level": 9,
+     "replaces": [
+      {
+       "name": "weapon training 2",
+       "text": "weapon training 2",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"safe-shot\">At 9th level, an archer does not provoke attacks of opportunit"
+    },
+    {
+     "name": "Evasive Archer",
+     "level": 13,
+     "replaces": [
+      {
+       "name": "weapon training 3",
+       "text": "weapon training 3",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"evasive-archer\">At 13th level, an archer gains a +2 dodge bonus to AC aga"
+    },
+    {
+     "name": "Volley",
+     "level": 17,
+     "replaces": [
+      {
+       "name": "weapon training 4",
+       "text": "weapon training 4",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"volley\">At 17th level, as a full-round action, an archer can make a singl"
+    },
+    {
+     "name": "Ranged Defense",
+     "level": 19,
+     "replaces": [
+      {
+       "name": "armor mastery",
+       "text": "armor mastery",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"ranged-defense\">At 19th level, an archer gains DR 5/&mdash; against range"
+    },
+    {
+     "name": "Weapon Mastery",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"weapon-mastery\">An archer must choose a type of bow. </p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false
+  },
+  {
+   "id": 518,
+   "name": "Two-Handed Fighter",
+   "source": "Advanced Player's Guide",
+   "cls": "Fighter",
+   "description": "Some fighters focus their efforts on finding the biggest, heaviest, most imposing weapon they can find and training to manage and harness the weight of their massive weapons for maximum impact. These fighting school benefits only apply when using two-handed weapons.",
+   "features": [
+    {
+     "name": "Shattering Strike",
+     "level": 2,
+     "replaces": [
+      {
+       "name": "bravery",
+       "text": "bravery",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"shattering-strike\">At 2nd level, a two-handed fighter gains a +1 bonus to"
+    },
+    {
+     "name": "Overhand Chop",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "armor training 1",
+       "text": "armor training 1",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"overhand-chop\">At 3rd level, when a two-handed fighter makes a single att"
+    },
+    {
+     "name": "Weapon Training",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"weapon-training\">As the fighter class feature, but the bonuses only apply"
+    },
+    {
+     "name": "Backswing",
+     "level": 7,
+     "replaces": [
+      {
+       "name": "armor training 2",
+       "text": "armor training 2",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"backswing\">At 7th level, when a two-handed fighter makes a full attack wi"
+    },
+    {
+     "name": "Piledriver",
+     "level": 11,
+     "replaces": [
+      {
+       "name": "armor training 3",
+       "text": "armor training 3",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"piledriver\">At 11th level, as a standard action, a two-handed fighter can"
+    },
+    {
+     "name": "Greater Power Attack",
+     "level": 15,
+     "replaces": [
+      {
+       "name": "armor training 4",
+       "text": "armor training 4",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"greater-power-attack\">At 15th level, when using Power Attack with a two-h"
+    },
+    {
+     "name": "Devastating Blow",
+     "level": 19,
+     "replaces": [
+      {
+       "name": "armor mastery",
+       "text": "armor mastery",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"devastating-blow\">At 19th level, as a standard action, a two-handed fight"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false
+  }
+ ],
+ "Barbarian": [
+  {
+   "id": 366,
+   "name": "Invulnerable Rager",
+   "source": "Advanced Player's Guide",
+   "cls": "Barbarian",
+   "description": "Some barbarians learn to take whatever comes their way, shrugging off mortal wounds with ease. These barbarians invite their enemies to attack them, and use pain to fuel their rage. An invulnerable rager has the following class features.",
+   "features": [
+    {
+     "name": "Invulnerability",
+     "level": 2,
+     "replaces": [
+      {
+       "name": "uncanny dodge",
+       "text": "uncanny dodge",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "improved uncanny dodge",
+       "text": "improved uncanny dodge",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "damage reduction",
+       "text": "damage reduction",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"invulnerability\">At 2nd level, the invulnerable rager gains DR/&mdash; eq"
+    },
+    {
+     "name": "Extreme Endurance",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "trap sense",
+       "text": "trap sense",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"extreme-endurance\">At 3rd level, the invulnerable rager is inured to eith"
+    },
+    {
+     "name": "Rage Powers",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": true,
+     "html": "<p>The following rage powers complement the invulnerable rager archetype: come a"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false
+  },
+  {
+   "id": 528,
+   "name": "Urban Barbarian",
+   "source": "Ultimate Combat",
+   "cls": "Barbarian",
+   "description": "Every barbarian knows that city life can soften the spirit and the body, but some barbarians take on the trappings and ways of their adoptive homes and bend their savage powers to its challenges. While these urban barbarians' rough edges are smoothed into civility, they can use their primal nature and upbringing to move with the ebb and flow of civilization's natural rhythms.",
+   "features": [
+    {
+     "name": "Weapon and Armor Proficiency",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"weapon-and-armor-proficiency\">An urban barbarian is not proficient with m"
+    },
+    {
+     "name": "Skills",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"skills\">An urban barbarian does not gain Handle Animal (Cha), Knowledge ("
+    },
+    {
+     "name": "Crowd Control",
+     "level": 1,
+     "replaces": [
+      {
+       "name": "fast movement",
+       "text": "fast movement",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"crowd-control\">At 1st level, an urban barbarian gains a +1 bonus on attac"
+    },
+    {
+     "name": "Controlled Rage",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"controlled-rage\">When an urban barbarian rages, instead of making a norma"
+    },
+    {
+     "name": "Rage Powers",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": true,
+     "html": "<p id=\"rage-powers\">The following rage powers complement the urban barbarian arc"
+    }
+   ],
+   "classSkills": {
+    "add": [
+     "Diplomacy",
+     "Knowledge (local)",
+     "Knowledge (nobility)",
+     "Linguistics",
+     "Profession"
+    ],
+    "remove": [
+     "Handle Animal",
+     "Knowledge (nature)",
+     "Survival"
+    ]
+   },
+   "diminished": false
+  }
+ ],
+ "Ranger": [
+  {
+   "id": 530,
+   "name": "Urban Ranger",
+   "source": "Advanced Player's Guide",
+   "cls": "Ranger",
+   "description": "For the urban ranger, the streets and sewers of the city are just as dangerous as the barren wastelands or the deep forests. An urban ranger has the following class features.",
+   "features": [
+    {
+     "name": "Urban Ranger",
+     "level": 1,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"urban-ranger\">At 1st level, an urban ranger adds Disable Device and Knowl"
+    },
+    {
+     "name": "Favored Community",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "favored terrain",
+       "text": "favored terrain",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"favored-community\">At 3rd level, the urban ranger forms a bond with a com"
+    },
+    {
+     "name": "Trapfinding",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "endurance",
+       "text": "endurance",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"trapfinding\">At 3rd level, an urban ranger can find and disable traps, as"
+    },
+    {
+     "name": "Push Through",
+     "level": 7,
+     "replaces": [
+      {
+       "name": "woodland stride",
+       "text": "woodland stride",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"push-through\">At 7th level, an urban ranger is never slowed by difficult "
+    },
+    {
+     "name": "Blend In",
+     "level": null,
+     "replaces": [
+      {
+       "name": "camouflage",
+       "text": "camouflage",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"blend-in\">An urban ranger of 12th level or higher can use his Stealth bon"
+    },
+    {
+     "name": "Invisibility Trick",
+     "level": 17,
+     "replaces": [
+      {
+       "name": "hide in plain sight",
+       "text": "hide in plain sight",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"invisibility-trick\">At 17th level, the urban ranger can cast <i>greater i"
+    }
+   ],
+   "classSkills": {
+    "add": [
+     "Disable Device",
+     "Knowledge (local)"
+    ],
+    "remove": [
+     "Handle Animal",
+     "Knowledge (nature)"
+    ]
+   },
+   "diminished": false
+  }
+ ],
+ "Magus": [
+  {
+   "id": 370,
+   "name": "Kensai",
+   "source": "Ultimate Combat",
+   "cls": "Magus",
+   "description": "A kensai spends his life focusing his training and meditation into a rapturous perfection of the use of a single weapon, which is usually but not always a sword, channeling his arcane might through it in a dizzying and deadly dance beyond the abilities of even the greatest of mundane warriors.",
+   "features": [
+    {
+     "name": "Weapon and Armor Proficiency",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"weapon-and-armor-proficiency\">A kensai is proficient in simple weapons an"
+    },
+    {
+     "name": "Diminished Spellcasting",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"diminished-spellcasting\">A kensai may cast one fewer spell of each level "
+    },
+    {
+     "name": "Canny Defense",
+     "level": 1,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"canny-defense\">At 1st level, when a kensai is wielding his chosen weapon,"
+    },
+    {
+     "name": "Weapon Focus",
+     "level": 1,
+     "replaces": [
+      {
+       "name": "spell recall",
+       "text": "spell recall",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"weapon-focus\">At 1st level, a kensai gains Weapon Focus with his chosen w"
+    },
+    {
+     "name": "Fighter Training",
+     "level": 7,
+     "replaces": [
+      {
+       "name": "knowledge pool",
+       "text": "knowledge pool",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"fighter-training\">Starting at 7th level, a kensai counts his magus level "
+    },
+    {
+     "name": "Iaijutsu",
+     "level": 7,
+     "replaces": [
+      {
+       "name": "medium armor",
+       "text": "medium armor",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"iaijutsu\">At 7th level, a kensai applies his Intelligence modifier as wel"
+    },
+    {
+     "name": "Critical Perfection",
+     "level": 9,
+     "replaces": [
+      {
+       "name": "magus arcana",
+       "text": "magus arcana",
+       "parts": [],
+       "levels": [
+        9
+       ]
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"critical-perfection\">At 9th level, a kensai adds his Intelligence bonus ("
+    },
+    {
+     "name": "Superior Reflexes",
+     "level": 11,
+     "replaces": [
+      {
+       "name": "improved spell recall",
+       "text": "improved spell recall",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"superior-reflexes\">At 11th level, kensai can make a number of attacks of "
+    },
+    {
+     "name": "Iaijutsu Focus",
+     "level": 13,
+     "replaces": [
+      {
+       "name": "heavy armor",
+       "text": "heavy armor",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"iaijutsu-focus\">At 13th level, a kensai may always act and may draw his w"
+    },
+    {
+     "name": "Iaijutsu Master",
+     "level": 19,
+     "replaces": [
+      {
+       "name": "greater spell access",
+       "text": "greater spell access",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"iaijutsu-master\">At 19th level, a kensai's initiative roll is automatical"
+    },
+    {
+     "name": "Weapon Mastery",
+     "level": 20,
+     "replaces": [
+      {
+       "name": "true magus",
+       "text": "true magus",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p id=\"weapon-mastery\">At 20th level, a kensai gains weapon mastery with his fav"
+    },
+    {
+     "name": "Magus Arcana",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": true,
+     "html": "<p id=\"magus-arcana\">The following magus arcana complement the kensai archetype:"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": true
+  }
+ ],
+ "Arcanist": [
+  {
+   "id": 541,
+   "name": "White Mage",
+   "source": "Advanced Class Guide",
+   "cls": "Arcanist",
+   "description": "A white mage is an arcanist touched by a divine power and gifted with the ability to heal others.",
+   "features": [
+    {
+     "name": "Spontaneous Healing",
+     "level": 1,
+     "replaces": [
+      {
+       "name": "arcanist exploit",
+       "text": "arcanist exploits",
+       "parts": [],
+       "levels": [
+        1,
+        9
+       ]
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 1st level, a white mage can expend 1 point from her arcane reservoir to us"
+    },
+    {
+     "name": "Greater Exploit",
+     "level": 11,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 11th level, a white mage can select the following greater exploit.</p><h5>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false
+  }
+ ]
+}

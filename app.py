@@ -26,12 +26,24 @@ DATA = os.path.join(BASE, 'data')
 CHAR_DIR = os.environ.get('PF_CHAR_DIR') or os.path.join(os.path.expanduser('~'), 'Documents', 'Pathfinder Characters')
 TRASH_DIR = os.path.join(CHAR_DIR, '.deleted')
 
+DB_PATH = os.environ.get('PF_DB') or os.path.join(DATA, 'pf1e.db')
+
 _local = threading.local()
+
+
+def install_new_db():
+    """tools/build_data.py writes pf1e.db.new when the app had the database open; swap it in at startup."""
+    new = DB_PATH + '.new'
+    if os.path.exists(new):
+        try:
+            os.replace(new, DB_PATH)
+        except OSError:
+            pass  # another copy of the app still has it open; try again next start
 
 
 def db():
     if not hasattr(_local, 'db'):
-        _local.db = sqlite3.connect(f'file:{os.path.join(DATA, "pf1e.db")}?mode=ro', uri=True)
+        _local.db = sqlite3.connect(f'file:{DB_PATH}?mode=ro', uri=True)
         _local.db.row_factory = sqlite3.Row
     return _local.db
 
@@ -116,6 +128,13 @@ def spells(cls='', level='', q='', school='', limit=1500):
         if len(out) >= limit:
             break
     return out
+
+
+def archetypes(cls):
+    """Archetypes for one class, with their parsed features (see tools/archetypes.py)."""
+    rows = db().execute("select id, name, source, meta from entries where cat='Archetype' and lower(sub)=lower(?) order by name",
+                        (cls or '',)).fetchall()
+    return [dict(id=r['id'], name=r['name'], source=r['source'], **json.loads(r['meta'] or '{}')) for r in rows]
 
 
 def categories():
@@ -280,6 +299,11 @@ class Handler(SimpleHTTPRequestHandler):
                 self._json(get_entry(p.get('id'), p.get('name'), p.get('cat')))
             elif route == ('GET', 'spells'):
                 self._json(spells(p.get('cls', ''), p.get('level', ''), p.get('q', ''), p.get('school', '')))
+            elif route == ('GET', 'archetypes'):
+                self._json(archetypes(p.get('cls', '')))
+            elif route == ('GET', 'companions'):
+                with open(os.path.join(DATA, 'companions.json'), encoding='utf-8') as f:
+                    self._json(json.load(f))
             elif route == ('GET', 'categories'):
                 self._json(categories())
             elif route == ('GET', 'characters'):
@@ -320,6 +344,7 @@ def start_server(port):
 
 
 def main():
+    install_new_db()
     browser = '--browser' in sys.argv
     port = int(os.environ.get('PF_PORT') or 8765)
     for p in range(port, port + 20):
