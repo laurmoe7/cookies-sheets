@@ -67,18 +67,6 @@ function overview(body, c, d) {
     <button class="btn small ghost" data-quick-buff>＋ Buff / condition</button>
   </div>
   <div class="grid overview-grid">
-    <section class="card portrait-card span2">
-      ${c.portrait ? `<img class="portrait" src="${c.portrait}" alt="Character portrait">` : ''}
-      <div class="portrait-actions">
-        ${c.portrait ? '' : '<div class="muted small">No portrait yet.</div>'}
-        <button class="btn small" data-img="portrait">${c.portrait ? 'Change portrait' : '🖼 Add portrait'}</button>
-        ${c.portrait ? '<button class="btn small ghost" data-img-clear="portrait">Remove</button>' : ''}
-        <span class="avatar-slot">${c.avatar ? `<img class="avatar-lg" src="${c.avatar}" alt="">` : ''}
-          <button class="btn small" data-img="avatar">${c.avatar ? 'Change icon' : '＋ Name icon'}</button>
-          ${c.avatar ? '<button class="btn small ghost" data-img-clear="avatar">Remove</button>' : ''}</span>
-        <span class="muted small">The icon shows beside your name at the top.</span>
-      </div>
-    </section>
     <section class="card abilities">
       <h3>Ability Scores</h3>
       <table class="tbl">
@@ -100,7 +88,8 @@ function overview(body, c, d) {
       <div class="row small muted"><span>Point buy: <b id="pointbuy"></b></span><span class="grow"></span><span>Buffs to ability scores are applied automatically.</span></div>
     </section>
 
-    <section class="card hp">
+    <section class="card hp ${c.portrait ? 'has-portrait' : ''}">
+      <div class="hp-main">
       <h3>Hit Points</h3>
       <div class="hp-big"><span class="calc" data-calc="hp.current"></span><span class="muted"> / </span>${calc('hp.max')}</div>
       <div class="hp-bar"><div id="hp-fill"></div></div>
@@ -117,6 +106,9 @@ function overview(body, c, d) {
         <label title="Toughness, items, etc.">Max adj. ${inp('hp.misc', { type: 'num', cls: 'w3' })}</label>
       </div>
       <p class="small muted" id="hp-status"></p>
+      </div>
+      ${c.portrait ? `<div class="portrait-frame"><img src="${c.portrait}" alt="Character portrait">
+        <div class="portrait-tools"><button class="icon-btn" data-img="portrait" title="Change portrait">✎</button><button class="icon-btn" data-img-clear="portrait" title="Remove portrait">✕</button></div></div>` : ''}
     </section>
 
     <section class="card defense">
@@ -191,12 +183,7 @@ function overview(body, c, d) {
     </section>
   </div>`;
   wireCommon(body);
-  $$('[data-img]', body).forEach(b => (b.onclick = async () => {
-    const kind = b.dataset.img;
-    const url = await pickImage(kind === 'avatar' ? 128 : 900, { square: kind === 'avatar' });
-    if (url) { c[kind] = url; changed({ rerender: true }); }
-  }));
-  $$('[data-img-clear]', body).forEach(b => (b.onclick = () => { c[b.dataset.imgClear] = ''; changed({ rerender: true }); }));
+  wireImages(body, c);
 
   const updateDyn = () => {
     const dd = state.derived;
@@ -239,6 +226,15 @@ function overview(body, c, d) {
     $('#hp-amt').value = '';
     changed({ rerender: true });
   }));
+}
+
+function wireImages(body, c) {
+  $$('[data-img]', body).forEach(b => (b.onclick = async () => {
+    const kind = b.dataset.img;
+    const url = await pickImage(kind === 'avatar' ? 128 : 900, { square: kind === 'avatar' });
+    if (url) { c[kind] = url; changed({ rerender: true }); }
+  }));
+  $$('[data-img-clear]', body).forEach(b => (b.onclick = () => { c[b.dataset.imgClear] = ''; changed({ rerender: true }); }));
 }
 
 const POINTS = { 7: -4, 8: -2, 9: -1, 10: 0, 11: 1, 12: 2, 13: 3, 14: 5, 15: 7, 16: 10, 17: 13, 18: 17 };
@@ -694,6 +690,13 @@ function bio(body, c, d) {
   body.innerHTML = `<div class="grid two">
   <section class="card">
     <h3>Identity</h3>
+    <div class="img-row">
+      <span class="img-slot">${c.avatar ? `<img class="avatar-lg" src="${c.avatar}" alt="">` : ''}<span>
+        <button class="btn small" data-img="avatar">${c.avatar ? 'Change name icon' : '＋ Name icon'}</button>
+        ${c.avatar ? '<button class="btn small ghost" data-img-clear="avatar">Remove</button>' : ''}</span></span>
+      <span class="img-slot"><button class="btn small" data-img="portrait">${c.portrait ? 'Change portrait' : '＋ Portrait'}</button>
+        ${c.portrait ? '<button class="btn small ghost" data-img-clear="portrait">Remove</button>' : ''}</span>
+    </div>
     <div class="form">
       <label>Character name ${inp('name', { cls: 'full' })}</label>
       <label>Player ${inp('player', { cls: 'full' })}</label>
@@ -736,6 +739,7 @@ function bio(body, c, d) {
       <div class="row"><button class="btn small danger" data-undo-level>Undo last level</button></div>` : '<p class="muted">No levels yet.</p>'}
   </section></div>`;
   wireCommon(body);
+  wireImages(body, c);
   const g = $('[data-goto-lu]', body);
   if (g) g.onclick = () => go('levelup');
   const u = $('[data-undo-level]', body);
