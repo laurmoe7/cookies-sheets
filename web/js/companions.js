@@ -38,6 +38,12 @@ export function animalCompanionLevel(levels) {
   return (levels.Druid || 0) + (levels.Hunter || 0) + Math.max(0, (levels.Ranger || 0) - 3) + (levels.Cavalier || 0) + (levels.Samurai || 0);
 }
 
+/** Levels that count toward a familiar (wizard, sorcerer and witch levels stack). */
+export function familiarLevel(levels) {
+  return (levels.Wizard || 0) + (levels.Sorcerer || 0) + (levels.Witch || 0);
+}
+export const FAMILIAR_CLASS_SKILLS = ['Acrobatics', 'Climb', 'Fly', 'Perception', 'Stealth', 'Swim'];
+
 const hasFeat = (comp, name) => (comp.feats || []).some(f => (f.name || '').toLowerCase() === name.toLowerCase());
 const featCount = (comp, name) => (comp.feats || []).filter(f => (f.name || '').toLowerCase() === name.toLowerCase()).length;
 
@@ -45,8 +51,10 @@ const featCount = (comp, name) => (comp.feats || []).filter(f => (f.name || '').
  * @param comp     companion record from c.companions
  * @param levels   owner's class levels ({Druid: 5, ...})
  * @param data     companions.json
+ * @param master   the owner's numbers a familiar borrows: {bab, saves: {fort, ref, will}, hp, ranks: {skill: ranks}}
  */
-export function computeCompanion(comp, levels, data) {
+export function computeCompanion(comp, levels, data, master = {}) {
+  if (comp.kind === 'familiar') return computeFamiliar(comp, levels, data.familiar, master);
   if (comp.kind === 'animal') return computeAnimal(comp, levels, data.animal);
   if (comp.kind === 'eidolon') return computeEidolon(comp, levels, data.eidolon);
   return null;
@@ -62,7 +70,8 @@ function finish(out, comp) {
     flat: 10 + out.natural + Math.min(0, M('dex')) + sz.ac + num(comp.acMisc), natural: out.natural };
   const conHp = out.abilities.con == null ? 0 : M('con') * out.hd;
   const toughness = hasFeat(comp, 'Toughness') ? Math.max(3, out.hd) : 0;
-  out.hp = Math.max(1, Math.floor(out.hd * out.hdAvg) + conHp + toughness + num(comp.hpMisc));
+  out.hp = out.hpFixed != null ? Math.max(1, out.hpFixed + num(comp.hpMisc))
+    : Math.max(1, Math.floor(out.hd * out.hdAvg) + conHp + toughness + num(comp.hpMisc));
   out.saves.fort += M('con') + (hasFeat(comp, 'Great Fortitude') ? 2 : 0);
   out.saves.ref += M('dex') + (hasFeat(comp, 'Lightning Reflexes') ? 2 : 0);
   out.saves.will += M('wis') + (hasFeat(comp, 'Iron Will') ? 2 : 0);
@@ -70,7 +79,7 @@ function finish(out, comp) {
   out.cmb = out.bab + M('str') + sz.cmb;
   out.cmd = 10 + out.bab + M('str') + M('dex') + sz.cmb + dodge;
   // Natural attacks: full BAB; Str (or Dex with Weapon Finesse); secondary attacks -5 (-2 with Multiattack) and ½ Str.
-  const finesse = hasFeat(comp, 'Weapon Finesse') && M('dex') > M('str');
+  const finesse = (out.finesseAlways || hasFeat(comp, 'Weapon Finesse')) && M('dex') > M('str');
   const multi = hasFeat(comp, 'Multiattack') || (out.multiattackSpecial && out.attacks.reduce((n, a) => n + a.count, 0) >= 3);
   const totalAttacks = out.attacks.reduce((n, a) => n + a.count, 0);
   const strM = M('str');
@@ -136,6 +145,47 @@ function computeAnimal(comp, levels, data) {
   return finish(out, comp);
 }
 
+function computeFamiliar(comp, levels, data, master) {
+  const auto = familiarLevel(levels);
+  const level = Math.max(1, Math.min(20, num(comp.levelOverride) || auto || 1));
+  const sp = data.species.find(x => x.name === comp.species) || data.species[0];
+  const rows = data.progression.filter(r => r.minLevel <= level);
+  const row = rows[rows.length - 1];
+  const specials = [];
+  for (const r of rows) for (const x of r.special) specials.push(x[0].toUpperCase() + x.slice(1));
+  if (level >= 11) specials.push(`Spell resistance ${level + 5}`);
+  const abilities = { ...sp.abilities, int: row.int };
+  const ranks = master.ranks || {};
+  const mBase = master.saves || {};
+  const out = {
+    kind: 'familiar', level, autoLevel: auto, species: sp, size: sp.size, speed: sp.speed, abilities,
+    hd: Math.max(1, level), hdAvg: 4.5, hdDie: 8, hpFixed: Math.floor((master.hp ?? Math.floor(level * 4.5)) / 2),
+    bab: master.bab ?? 0,
+    // Base saves: the familiar's own (2/2/0) or the master's, whichever is better.
+    saves: { fort: Math.max(2, mBase.fort ?? 0), ref: Math.max(2, mBase.ref ?? 0), will: Math.max(0, mBase.will ?? 0) },
+    natural: sp.natural + row.natural, attacks: (sp.attacks || []).map(a => ({ ...a })), specials, increases: 0,
+    skillRanks: 0, featSlots: 0, finesseAlways: true, multiattackSpecial: false,
+    qualities: sp.specialQualities, specialAttacks: sp.specialAttacks, bonusFeats: sp.feats.join(', '), classSkills: FAMILIAR_CLASS_SKILLS,
+  };
+  finish(out, comp);
+  // Skills: the better of the animal's listed bonus or the master's ranks with the familiar's own ability modifier.
+  const sz = out.sizeMods;
+  const names = [...new Set([...Object.keys(sp.skills), ...Object.keys(ranks).filter(k => num(ranks[k]) > 0)])]
+    .filter(n => !n.includes('(') && !/ when | to /.test(n));
+  out.skills = names.map(name => {
+    const r = num(ranks[name]);
+    const ab = skillAbility(name);
+    const isClass = FAMILIAR_CLASS_SKILLS.includes(name);
+    let own = r > 0 ? r + (out.mods[ab] ?? 0) + (isClass ? 3 : 0) + (sp.racial[name] || 0) : -Infinity;
+    if (r > 0 && name === 'Stealth') own += sz.stealth;
+    if (r > 0 && name === 'Fly') own += sz.fly;
+    const book = sp.skills[name];
+    return { name, ranks: r, total: Math.max(book ?? -Infinity, own), isClass, fromMaster: own > (book ?? -Infinity) };
+  }).sort((a, b) => a.name.localeCompare(b.name));
+  out.skillRanksUsed = 0;
+  return out;
+}
+
 function computeEidolon(comp, levels, data) {
   const auto = levels.Summoner || 0;
   const level = Math.max(1, Math.min(20, num(comp.levelOverride) || auto || 1));
@@ -188,5 +238,6 @@ export function newCompanion(kind, data) {
     extraClassSkills: [], hpMisc: 0, acMisc: 0, attackMisc: 0, tricks: '', notes: '' };
   if (kind === 'animal') return { ...base, name: 'Animal companion', species: 'Wolf' };
   if (kind === 'eidolon') return { ...base, name: 'Eidolon', form: data?.eidolon?.forms?.[0]?.name || 'Biped', evolutions: [] };
+  if (kind === 'familiar') return { ...base, name: 'Familiar', species: data?.familiar?.species?.[0]?.name || 'Cat' };
   return { ...base, name: 'Companion', statblock: '' };
 }

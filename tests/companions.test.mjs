@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { computeCompanion, newCompanion, animalCompanionLevel, stepDice } from '../web/js/companions.js';
+import { computeCompanion, newCompanion, animalCompanionLevel, familiarLevel, stepDice } from '../web/js/companions.js';
 
 const data = JSON.parse(readFileSync(new URL('../data/companions.json', import.meta.url), 'utf-8'));
 const animal = (species, extra = {}) => ({ ...newCompanion('animal', data), species, ...extra });
@@ -92,4 +92,45 @@ test('large evolution steps damage dice up', () => {
   assert.equal(s.size, 'Large');
   assert.equal(s.attacks[0].dice, '1d6', 'claws 1d4 -> 1d6');
   assert.equal(s.abilities.str, 16 + 3 + 8);
+});
+
+const master5 = { bab: 2, hp: 27, saves: { fort: 1, ref: 1, will: 4 }, ranks: {} };
+const familiar = (species, extra = {}) => ({ ...newCompanion('familiar', data), species, ...extra });
+
+test('familiar level: wizard + sorcerer + witch levels', () => {
+  assert.equal(familiarLevel({ Wizard: 3, Sorcerer: 2 }), 5);
+  assert.equal(familiarLevel({ Fighter: 5 }), 0);
+  assert.ok(data.familiar.species.length >= 24);
+});
+
+test('cat familiar of a 5th-level wizard', () => {
+  const s = computeCompanion(familiar('Cat'), { Wizard: 5 }, data, master5);
+  // Cat: Tiny, Str 3 (-4), Dex 15 (+2), Con 8 (-1), Wis 12 (+1). 5th-level row: natural armor +3, Int 8.
+  assert.equal(s.level, 5);
+  assert.equal(s.abilities.int, 8);
+  assert.equal(s.ac.total, 10 + 3 + 2 + 2, 'AC = 10 + 3 natural + 2 Dex + 2 size');
+  assert.equal(s.hp, 13, 'half of 27, rounded down');
+  assert.deepEqual(s.saves, { fort: 2 - 1, ref: 2 + 2, will: 4 + 1 }, 'better of own (2/2/0) and master (1/1/4), plus own ability mods');
+  const claw = s.attacks.find(a => a.name === 'claw');
+  assert.equal(claw.bonus, 2 + 2 + 2, 'master BAB 2 + Dex 2 (better than Str -4) + Tiny size 2');
+  assert.equal(claw.damage, '1d2-4');
+  assert.ok(s.specials.includes('Deliver touch spells') && s.specials.includes('Speak with master'));
+  assert.ok(!s.specials.includes('Speak with animals of its kind'));
+});
+
+test('familiar skills: master ranks beat the printed bonus when higher', () => {
+  const m = { ...master5, ranks: { Stealth: 5, Bluff: 5 } };
+  const s = computeCompanion(familiar('Cat'), { Wizard: 5 }, data, m);
+  // Stealth: 5 ranks + 2 Dex + 3 class skill + 4 racial + 8 Tiny = 22 (printed +14)
+  assert.equal(s.skills.find(x => x.name === 'Stealth').total, 22);
+  assert.equal(s.skills.find(x => x.name === 'Climb').total, 6, 'no master ranks: printed bonus stands');
+  // Bluff: 5 ranks + Cha 7 (-2) = 3, not a class skill
+  assert.equal(s.skills.find(x => x.name === 'Bluff').total, 3);
+});
+
+test('familiar at 11th level has spell resistance equal to master level + 5', () => {
+  const s = computeCompanion(familiar('Bat'), { Wizard: 11 }, data, { ...master5, hp: 60 });
+  assert.ok(s.specials.includes('Spell resistance 16'));
+  assert.equal(s.abilities.int, 11);
+  assert.equal(s.hp, 30);
 });

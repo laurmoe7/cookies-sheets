@@ -84,7 +84,7 @@ Node.js is installed at `C:\Program Files\nodejs`. A shell started before it was
   - `spells.tsv`: the community spell spreadsheet from https://github.com/sturlabragason/pathfinder_spells. It adds about 700 later-book spells.
 - **Output:** `data/pf1e.db` is generated and git-ignored. `data/classes.json` is generated but committed, because the tests use it; diff it after parser changes.
 - **Archetypes:** `tools/archetypes.py` parses each archetype into features (level, replaces/modifies targets, advice lists), class-skill changes and diminished spellcasting. The result is stored as JSON in `entries.meta` and served by `/api/archetypes?cls=`. The app matches about 82% of "replaces X" targets against the class table; the rest (proficiencies, deeds, bonus spells) are not table features and are shown as text.
-- **Companions:** `tools/companions.py` writes `data/companions.json` (committed): both progression tables, 68 animal species with advancement, eidolon base forms and evolutions.
+- **Companions:** `tools/companions.py` writes `data/companions.json` (committed): both progression tables, 68 animal species with advancement, eidolon base forms and evolutions, and 26 familiar kinds (stat blocks from the `Familiar, X` creatures plus the master-bonus tables, and the wizard familiar progression). Familiar stats borrow the master's BAB, base saves, HP and skill ranks (`computeCompanion(..., master)`). Familiar variants (Improved Familiar, archetypes) are not modelled.
 - **Categories:** `build_data.py` maps PSRD section types to app categories in `TYPE_CATEGORY`. "Rules" entries come from `RULE_BOOKS`. Search ranking order is `CAT_ORDER` in `app.py`.
 
 ## Repo

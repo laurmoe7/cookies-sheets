@@ -175,6 +175,104 @@ def evolutions(books):
     return sorted(out, key=lambda e: (e['cost'], e['name']))
 
 
+# ---------------------------------------------------------------- familiars
+
+def familiar_key(name):
+    """'Familiar, Scorpion, Greensting' -> 'greensting scorpion'; table names like 'Raven*' -> 'raven'."""
+    n = re.sub(r'^familiar,\s*', '', (name or '').strip(), flags=re.I).replace('*', '').strip().lower()
+    parts = [x.strip() for x in n.split(',')]
+    return ' '.join(reversed(parts))
+
+
+def familiar_progression(books):
+    """Master class level -> natural armor adjustment, Int, and new abilities (Core Rulebook wizard table)."""
+    t = find_table(books, 'Master Class Level')
+    rows = []
+    for r in t['rows']:
+        rows.append(dict(minLevel=num(r[0]) or 1, natural=num(r[1]) or 0, int=num(r[2]) or 6,
+                         special=[x.strip().lower() for x in text_of(r[3]).split(',') if re.search(r'[a-z]', x)]))
+    return rows
+
+
+def familiar_bonuses(books):
+    """{'bat': 'Master gains a +3 bonus on Fly checks'} from every 'Familiar / Special Ability' table."""
+    out = {}
+    for b in books:
+        for s in b.sections.values():
+            if s['type'] != 'table' or not s['body'] or not re.fullmatch(r'(?:Table: )?Familiars?', s['name'] or ''):
+                continue
+            try:
+                t = parse_table(s['body'])
+            except Exception:
+                continue
+            if [h.lower() for h in t['headers'][:2]] != ['familiar', 'special ability']:
+                continue
+            for r in t['rows']:
+                if len(r) >= 2 and r[0] != r[1] and r[1].lower().startswith('master'):
+                    out.setdefault(familiar_key(r[0]), (text_of(r[1]), b.key))
+    return out
+
+
+def parse_melee(s):
+    """'2 claws +4 (1d2-4), bite +4 (1d3-4)' -> [{name, count, dice, extra}] (damage recomputed by the app)."""
+    out = []
+    for part in re.split(r',(?![^(]*\))', s or ''):
+        m = re.match(r'\s*(?:(\d+)\s+)?([a-z][a-z \-]*?)\s+[+-]\d+(?:/[+-]\d+)*\s*\((.*)\)\s*$', part, re.I)
+        if not m:
+            continue
+        dm = re.match(r'(\d+d\d+)\s*(?:[+-]\d+)?\s*(.*)', m.group(3).strip())
+        name = m.group(2).strip().lower()
+        out.append(dict(name=_singular(name) if m.group(1) else name, count=int(m.group(1) or 1),
+                        dice=dm.group(1) if dm else '', extra=(dm.group(2) if dm else m.group(3)).strip()))
+    return out
+
+
+def familiar_skill_totals(s):
+    """'Climb +6, Perception +5' -> {'Climb': 6, ...}; '(+5 when jumping)' notes are dropped."""
+    out = {}
+    for m in re.finditer(r'([A-Z][A-Za-z ]+?(?:\([^)]*\))?)\s*([+-]\d+)(?:\s*\([^)]*\))?', s or ''):
+        out[m.group(1).strip()] = int(m.group(2))
+    return out
+
+
+def racial_modifiers(s):
+    """'+4 Climb, +4 Stealth' -> {'Climb': 4, 'Stealth': 4} (conditional ones like '+4 Survival to find food' are kept as-is)."""
+    out = {}
+    for m in re.finditer(r'([+-]\d+)\s+([A-Z][A-Za-z ]+?)(?=,|$)', s or ''):
+        out[m.group(2).strip()] = int(m.group(1))
+    return out
+
+
+def familiars(books):
+    bonuses = familiar_bonuses(books)
+    out, seen = [], set()
+    for b in books:
+        rows = b.db.execute("select s.section_id, s.name, s.source from sections s where s.type='creature' and s.name like 'Familiar,%'").fetchall()
+        det = {r['section_id']: dict(r) for r in b.db.execute('select * from creature_details')}
+        for r in rows:
+            d = det.get(r['section_id'])
+            key = familiar_key(r['name'])
+            if not d or key in seen:
+                continue
+            seen.add(key)
+            bonus = bonuses.get(key)
+            senses = text_of(d['senses']).split(';')[0].strip()
+            base = text_of(d['ac'])
+            out.append(dict(
+                name=' '.join(w.capitalize() if w != 'and' else w for w in key.split(' ')).replace('-Ringed', '-Ringed'),
+                source=r['source'] or b.key, size=(d['size'] or 'Tiny').strip(), speed=text_of(d['speed']),
+                natural=num(re.search(r'([+-]\d+)\s*natural', base).group(1)) if re.search(r'([+-]\d+)\s*natural', base) else 0, senses=senses, space=text_of(d['space']), reach=text_of(d['reach']),
+                attacks=parse_melee(d['melee']), abilities={a: num(d[k]) for a, k in zip(ABIL, ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'])},
+                feats=[x.strip() for x in text_of(d['feats']).split(',') if x.strip()],
+                skills=familiar_skill_totals(text_of(d['skills'])), racial=racial_modifiers(text_of(d['racial_modifiers'])),
+                racialText=text_of(d['racial_modifiers']),
+                specialQualities=text_of(d['special_qualities']), specialAttacks=text_of(d['special_attacks']),
+                masterBonus=bonus[0] if bonus else '',
+            ))
+    return sorted(out, key=lambda x: x['name'])
+
+
 def build(books):
     return dict(animal=dict(progression=animal_progression(books), species=animal_species(books)),
-                eidolon=dict(progression=eidolon_progression(books), forms=eidolon_forms(books), evolutions=evolutions(books)))
+                eidolon=dict(progression=eidolon_progression(books), forms=eidolon_forms(books), evolutions=evolutions(books)),
+                familiar=dict(progression=familiar_progression(books), species=familiars(books)))

@@ -7,6 +7,14 @@ import { computeCompanion, newCompanion, ANIMAL_SKILLS, EIDOLON_SKILLS, skillAbi
 import { SKILLS } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom } from '../ui.js';
 
+// What a familiar borrows from its master: base attack bonus, base saves, hit points and skill ranks.
+function masterOf(c) {
+  const d = state.derived;
+  if (!d) return {};
+  return { bab: d.bab, hp: d.hp.max, saves: { fort: d.saves.fort.base, ref: d.saves.ref.base, will: d.saves.will.base },
+    ranks: Object.fromEntries((c.skills || []).map(s => [s.name, num(s.ranks)])) };
+}
+
 let dataPromise = null;
 const loadData = () => (dataPromise ||= api.companions().catch(e => { dataPromise = null; throw e; }));
 const ABIL = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
@@ -23,11 +31,12 @@ export async function renderCompanions(body, c) {
     <div class="row"><h3 class="grow" style="margin:0">Companions</h3>
       <button class="btn small" data-new="animal">＋ Animal companion</button>
       <button class="btn small" data-new="eidolon">＋ Eidolon</button>
-      <button class="btn small ghost" data-new="custom">＋ Other (familiar, mount, cohort)</button></div>
+      <button class="btn small" data-new="familiar">＋ Familiar</button>
+      <button class="btn small ghost" data-new="custom">＋ Other (mount, cohort)</button></div>
     ${c.companions.length ? '' : `<section class="card"><p class="muted">No companions yet.</p>
-      <p class="small muted">Animal companions come from druid, hunter, ranger (from 4th level), cavalier and samurai levels; eidolons from summoner levels.
+      <p class="small muted">Animal companions come from druid, hunter, ranger (from 4th level), cavalier and samurai levels; eidolons from summoner levels; familiars from wizard, sorcerer and witch levels.
       Levels are worked out from your classes automatically, and you can override them.</p></section>`}
-    ${c.companions.map((comp, i) => companionCard(comp, i, levels, data)).join('')}`;
+    ${c.companions.map((comp, i) => companionCard(comp, i, levels, data, masterOf(c))).join('')}`;
 
   body.onclick = async e => {
     const t = e.target.closest('[data-new],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
@@ -64,16 +73,17 @@ const select = (path, cur, options) => `<select data-bind="${path}" data-rerende
   return `<option value="${esc(v)}" ${String(v) === String(cur ?? '') ? 'selected' : ''}>${esc(l)}</option>`;
 }).join('')}</select>`;
 
-function companionCard(comp, i, levels, data) {
+function companionCard(comp, i, levels, data, master) {
   const p = `companions.${i}`;
   const head = `<div class="row"><h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>
-    <span class="pill">${{ animal: 'Animal companion', eidolon: 'Eidolon', custom: 'Companion' }[comp.kind]}</span>
+    <span class="pill">${{ animal: 'Animal companion', eidolon: 'Eidolon', familiar: 'Familiar', custom: 'Companion' }[comp.kind]}</span>
     <button class="icon-btn" data-del-comp title="Remove">✕</button></div>`;
   if (comp.kind === 'custom') {
     return `<section class="card companion" data-comp="${i}">${head}
       <div class="grid two"><div><h4>Stat block</h4>${tf(`${p}.statblock`, { multiline: true, placeholder: 'Double-click to paste or type a stat block', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion stat block' } })}</div>
       <div><h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Double-click to add notes', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}</div></div></section>`;
   }
+  if (comp.kind === 'familiar') return familiarCard(comp, i, levels, data, master, head);
   const s = computeCompanion(comp, levels, data);
   const isAnimal = comp.kind === 'animal';
   const levelNote = s.autoLevel
@@ -128,6 +138,38 @@ function companionCard(comp, i, levels, data) {
   </div></section>`;
 }
 
+function familiarCard(comp, i, levels, data, master, head) {
+  const p = `companions.${i}`;
+  const s = computeCompanion(comp, levels, data, master);
+  const levelNote = s.autoLevel
+    ? `From your classes: <b>${s.autoLevel}</b>${num(comp.levelOverride) ? ` (overridden to ${s.level})` : ''}`
+    : '<span class="warn">None of your classes grant a familiar; set the level here.</span>';
+  const sp = s.species;
+  return `<section class="card companion" data-comp="${i}">${head}
+  <div class="grid two">
+    <div>
+      <div class="form">
+        <label>Kind ${select(`${p}.species`, comp.species, data.familiar.species.map(x => [x.name, `${x.name} (${x.size})`]))}</label>
+        <p class="small muted">${esc(sp.source)} · <a href="#" class="ref" data-entry="Familiar" data-cat="Rules">familiar rules</a></p>
+        <label>Effective master level ${bind(`${p}.levelOverride`, comp.levelOverride, { type: 'num', ph: String(s.autoLevel || 1) })}
+          <span class="small muted">${levelNote}</span></label>
+      </div>
+      <h4>Master gains</h4>
+      <p>${esc(sp.masterBonus || 'No bonus listed in the books for this kind. Check with your GM.')}</p>
+      <h4>Familiar abilities</h4>
+      <ul class="small">${s.specials.map(x => `<li><a href="#" class="ref" data-entry="${esc(x.replace(/ \d+$/, ''))}" data-cat="Class Feature">${esc(x)}</a></li>`).join('')}</ul>
+      <p class="small muted">Hit points are half the master's, attacks use the master's base attack bonus, and saves and skill ranks are the better of the familiar's or the master's.
+        Feats and conditional skill bonuses (such as Skill Focus) are shown as printed. Variants (the Improved Familiar feat, archetypes and other changes) aren't calculated; note them below.</p>
+      <h4>Adjustments</h4>
+      <div class="kv"><label title="Barding, items">AC misc ${bind(`${p}.acMisc`, comp.acMisc, { type: 'num' })}</label>
+        <label>HP misc ${bind(`${p}.hpMisc`, comp.hpMisc, { type: 'num' })}</label>
+        <label>Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
+      <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Variants, gear, personality…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
+    </div>
+    <div>${statBlock(comp, s)}</div>
+  </div></section>`;
+}
+
 function evolutionsBlock(comp, s, data, p) {
   const left = s.pool - s.spent;
   return `<h4>Evolutions <span class="pill ${left < 0 ? 'bad' : left ? 'warn' : 'good'}">${s.spent} / ${s.pool} points</span>
@@ -149,15 +191,16 @@ function evolutionsBlock(comp, s, data, p) {
 function statBlock(comp, s) {
   const M = a => (s.mods[a] == null ? '—' : sign(s.mods[a]));
   const ab = a => `${a[0].toUpperCase() + a.slice(1)} ${s.abilities[a] ?? '—'}`;
-  const typ = s.kind === 'animal' ? 'animal' : 'outsider';
+  const typ = s.kind === 'animal' ? 'animal' : s.kind === 'familiar' ? 'magical beast (augmented animal)' : 'outsider';
+  const fam = s.kind === 'familiar';
   return `<div class="statblock">
     <p><b style="font-size:15px">${esc(comp.name || (s.kind === 'animal' ? s.species.name : 'Eidolon'))}</b>
-      <span class="muted"> · ${s.kind === 'animal' ? esc(s.species.name) : esc(s.form.name) + ' eidolon'} · level ${s.level}</span></p>
-    <p>${esc(s.size)} ${typ}</p>
-    <p><b>Init</b> ${sign(s.init)}; <b>Senses</b> ${s.kind === 'animal' ? esc(s.qualities.match(/low-light vision|darkvision[^,]*|scent|tremorsense[^,]*/gi)?.join(', ') || '—') : 'darkvision 60 ft.'}; Perception ${sign((s.skills.find(x => x.name === 'Perception')?.total) ?? s.mods.wis)}</p>
+      <span class="muted"> · ${s.kind === 'eidolon' ? esc(s.form.name) + ' eidolon' : esc(s.species.name)} · ${fam ? 'master level' : 'level'} ${s.level}</span></p>
+    <p>${esc(s.size)} ${typ}${fam ? `<span class="muted small"> · space ${esc(s.species.space || '—')}, reach ${esc(s.species.reach || '—')}</span>` : ''}</p>
+    <p><b>Init</b> ${sign(s.init)}; <b>Senses</b> ${fam ? esc(s.species.senses || '—') : s.kind === 'animal' ? esc(s.qualities.match(/low-light vision|darkvision[^,]*|scent|tremorsense[^,]*/gi)?.join(', ') || '—') : 'darkvision 60 ft.'}; Perception ${sign((s.skills.find(x => x.name === 'Perception')?.total) ?? s.mods.wis)}</p>
     <h4>Defense</h4>
     <p><b>AC</b> ${s.ac.total}, touch ${s.ac.touch}, flat-footed ${s.ac.flat} <span class="muted small">(${[`${M('dex')} Dex`, `+${s.natural} natural`, s.sizeMods.ac ? `${sign(s.sizeMods.ac)} size` : ''].filter(Boolean).join(', ')})</span></p>
-    <p><b>hp</b> ${s.hp} (${s.hd}d${s.hdDie}${s.mods.con ? sign(s.mods.con * s.hd) : ''})</p>
+    <p><b>hp</b> ${s.hp} ${fam ? '(half the master’s)' : `(${s.hd}d${s.hdDie}${s.mods.con ? sign(s.mods.con * s.hd) : ''})`}</p>
     <p><b>Fort</b> ${sign(s.saves.fort)}, <b>Ref</b> ${sign(s.saves.ref)}, <b>Will</b> ${sign(s.saves.will)}${s.specials.some(x => /devotion/i.test(x)) ? ' (+4 vs. enchantment)' : ''}</p>
     ${s.specials.some(x => /evasion/i.test(x)) ? `<p><b>Defensive Abilities</b> ${esc(s.specials.filter(x => /evasion/i.test(x)).join(', ').toLowerCase())}</p>` : ''}
     <h4>Offense</h4>
@@ -169,7 +212,7 @@ function statBlock(comp, s) {
     <p><b>Base Atk</b> ${sign(s.bab)}; <b>CMB</b> ${sign(s.cmb)}; <b>CMD</b> ${s.cmd}</p>
     <p><b>Feats</b> ${esc([...(comp.feats || []).map(f => f.name), s.bonusFeats].filter(Boolean).join(', ') || '—')}</p>
     <p><b>Skills</b> ${esc(s.skills.map(x => `${x.name} ${sign(x.total)}`).join(', ') || '—')}</p>
-    ${s.kind === 'animal' ? `<p><b>SQ</b> ${esc([...s.specials.filter(x => !/evasion|devotion/i.test(x)), s.qualities].filter(Boolean).join(', ').toLowerCase())}</p>`
+    ${fam ? `<p><b>SQ</b> ${esc([...s.specials, s.qualities].filter(Boolean).join(', ').toLowerCase())}</p>` : s.kind === 'animal' ? `<p><b>SQ</b> ${esc([...s.specials.filter(x => !/evasion|devotion/i.test(x)), s.qualities].filter(Boolean).join(', ').toLowerCase())}</p>`
       : `<p><b>SQ</b> ${esc(s.specials.join(', ').toLowerCase())}</p>
          <p><b>Evolutions</b> ${esc([...s.free, ...(comp.evolutions || []).map(e => e.name.toLowerCase() + (e.choice ? ` (${e.choice})` : ''))].join(', '))}</p>`}
     ${s.kind === 'animal' && comp.tricks ? `<p><b>Tricks</b> ${esc(comp.tricks)}</p>` : ''}

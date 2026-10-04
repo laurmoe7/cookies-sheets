@@ -4672,5 +4672,1135 @@
     "summary": "An eidolon learns to cast a powerful spell as a spell-like ability."
    }
   ]
+ },
+ "familiar": {
+  "progression": [
+   {
+    "minLevel": 1,
+    "natural": 1,
+    "int": 6,
+    "special": [
+     "alertness",
+     "improved evasion",
+     "share spells",
+     "empathic link"
+    ]
+   },
+   {
+    "minLevel": 3,
+    "natural": 2,
+    "int": 7,
+    "special": [
+     "deliver touch spells"
+    ]
+   },
+   {
+    "minLevel": 5,
+    "natural": 3,
+    "int": 8,
+    "special": [
+     "speak with master"
+    ]
+   },
+   {
+    "minLevel": 7,
+    "natural": 4,
+    "int": 9,
+    "special": [
+     "speak with animals of its kind"
+    ]
+   },
+   {
+    "minLevel": 9,
+    "natural": 5,
+    "int": 10,
+    "special": []
+   },
+   {
+    "minLevel": 11,
+    "natural": 6,
+    "int": 11,
+    "special": [
+     "spell resistance"
+    ]
+   },
+   {
+    "minLevel": 13,
+    "natural": 7,
+    "int": 12,
+    "special": [
+     "scry on familiar"
+    ]
+   },
+   {
+    "minLevel": 15,
+    "natural": 8,
+    "int": 13,
+    "special": []
+   },
+   {
+    "minLevel": 17,
+    "natural": 9,
+    "int": 14,
+    "special": []
+   },
+   {
+    "minLevel": 19,
+    "natural": 10,
+    "int": 15,
+    "special": []
+   }
+  ],
+  "species": [
+   {
+    "name": "Bat",
+    "source": "Bestiary",
+    "size": "Diminutive",
+    "speed": "5 ft., fly 40 ft. (good)",
+    "natural": 0,
+    "senses": "blindsense 20 ft., low-light vision",
+    "space": "1 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 1,
+     "dex": 15,
+     "con": 6,
+     "int": 2,
+     "wis": 14,
+     "cha": 5
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Fly": 16,
+     "Perception": 6
+    },
+    "racial": {
+     "Perception": 4
+    },
+    "racialText": "+4 Perception",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on Fly checks"
+   },
+   {
+    "name": "Blue-ringed Octopus",
+    "source": "Ultimate Magic",
+    "size": "Tiny",
+    "speed": "20 ft., swim 30 ft., jet 60 ft.",
+    "natural": 0,
+    "senses": "low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d2",
+      "extra": "plus poison"
+     },
+     {
+      "name": "tentacles",
+      "count": 1,
+      "dice": "",
+      "extra": "grab"
+     }
+    ],
+    "abilities": {
+     "str": 8,
+     "dex": 21,
+     "con": 10,
+     "int": 2,
+     "wis": 13,
+     "cha": 3
+    },
+    "feats": [
+     "MultiattackB",
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Escape Artist": 15,
+     "Stealth": 25,
+     "Swim": 13
+    },
+    "racial": {
+     "Escape Artist": 10,
+     "Stealth": 8
+    },
+    "racialText": "+10 Escape Artist, +8 Stealth",
+    "specialQualities": "",
+    "specialAttacks": "poison",
+    "masterBonus": "Master gains a +3 bonus on Swim checks"
+   },
+   {
+    "name": "Cat",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "30 ft.",
+    "natural": 0,
+    "senses": "low-light vision, scent",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "claw",
+      "count": 2,
+      "dice": "1d2",
+      "extra": ""
+     },
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 3,
+     "dex": 15,
+     "con": 8,
+     "int": 2,
+     "wis": 12,
+     "cha": 7
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Climb": 6,
+     "Perception": 5,
+     "Stealth": 14
+    },
+    "racial": {
+     "Climb": 4,
+     "Stealth": 4
+    },
+    "racialText": "+4 Climb, +4 Stealth",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on Stealth checks"
+   },
+   {
+    "name": "Donkey Rat",
+    "source": "Ultimate Magic",
+    "size": "Small",
+    "speed": "30 ft., swim 20 ft.",
+    "natural": 0,
+    "senses": "low-light vision, scent",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 6,
+     "dex": 17,
+     "con": 13,
+     "int": 2,
+     "wis": 13,
+     "cha": 4
+    },
+    "feats": [
+     "Skill Focus (Perception)"
+    ],
+    "skills": {
+     "Perception": 4,
+     "Stealth": 15,
+     "Swim": 11
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +2 bonus on Fortitude saves"
+   },
+   {
+    "name": "Flying Squirrel",
+    "source": "Bestiary 3",
+    "size": "Tiny",
+    "speed": "20 ft., fly 40 ft. (clumsy)",
+    "natural": 0,
+    "senses": "low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 3,
+     "dex": 15,
+     "con": 8,
+     "int": 1,
+     "wis": 12,
+     "cha": 6
+    },
+    "feats": [
+     "AcrobaticB",
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Acrobatics": 16,
+     "Climb": 10,
+     "Fly": 4
+    },
+    "racial": {
+     "Acrobatics": 12,
+     "Climb": 8
+    },
+    "racialText": "+12 Acrobatics, +8 Climb",
+    "specialQualities": "glide",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on Fly checks"
+   },
+   {
+    "name": "Fox",
+    "source": "Ultimate Magic",
+    "size": "Tiny",
+    "speed": "40 ft.",
+    "natural": 0,
+    "senses": "low-light vision, scent",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 9,
+     "dex": 15,
+     "con": 13,
+     "int": 2,
+     "wis": 12,
+     "cha": 6
+    },
+    "feats": [
+     "Skill Focus (Perception)"
+    ],
+    "skills": {
+     "Acrobatics": 2,
+     "Perception": 8,
+     "Stealth": 10,
+     "Survival": 1
+    },
+    "racial": {
+     "Acrobatics when jumping": 4,
+     "Survival when tracking by scent": 4
+    },
+    "racialText": "+4 Acrobatics when jumping, +4 Survival when tracking by scent",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +2 bonus on Reflex saves"
+   },
+   {
+    "name": "Goat",
+    "source": "Ultimate Magic",
+    "size": "Small",
+    "speed": "30 ft.",
+    "natural": 1,
+    "senses": "low-light vision",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "gore",
+      "count": 1,
+      "dice": "1d4",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 12,
+     "dex": 13,
+     "con": 12,
+     "int": 2,
+     "wis": 11,
+     "cha": 5
+    },
+    "feats": [
+     "Nimble Moves"
+    ],
+    "skills": {
+     "Acrobatics": 1,
+     "Climb": 5,
+     "Survival": 0
+    },
+    "racial": {
+     "Acrobatics when jumping": 4,
+     "Survival to find food": 4
+    },
+    "racialText": "+4 Acrobatics when jumping, +4 Survival to find food",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on Survival checks"
+   },
+   {
+    "name": "Greensting Scorpion",
+    "source": "Ultimate Magic",
+    "size": "Tiny",
+    "speed": "30 ft.",
+    "natural": 3,
+    "senses": "darkvision 60 ft.",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "sting",
+      "count": 1,
+      "dice": "1d2",
+      "extra": "plus poison"
+     }
+    ],
+    "abilities": {
+     "str": 3,
+     "dex": 16,
+     "con": 10,
+     "int": null,
+     "wis": 10,
+     "cha": 2
+    },
+    "feats": [
+     "Weapon FinesseB"
+    ],
+    "skills": {
+     "Climb": 7,
+     "Perception": 4,
+     "Stealth": 15
+    },
+    "racial": {
+     "Climb": 4,
+     "Perception": 4,
+     "Stealth": 4
+    },
+    "racialText": "+4 Climb, +4 Perception, +4 Stealth",
+    "specialQualities": "",
+    "specialAttacks": "poison",
+    "masterBonus": "Master gains a +4 bonus on Initiative checks"
+   },
+   {
+    "name": "Hawk",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "10 ft., fly 60 ft. (average)",
+    "natural": 0,
+    "senses": "low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "talon",
+      "count": 2,
+      "dice": "1d4",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 6,
+     "dex": 17,
+     "con": 11,
+     "int": 2,
+     "wis": 14,
+     "cha": 7
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Fly": 7,
+     "Perception": 14
+    },
+    "racial": {
+     "Perception": 8
+    },
+    "racialText": "+8 Perception",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on sight-based and opposed Perception checks in bright light"
+   },
+   {
+    "name": "Hedgehog",
+    "source": "Ultimate Magic",
+    "size": "Diminutive",
+    "speed": "20 ft.",
+    "natural": 1,
+    "senses": "low-light vision",
+    "space": "1 ft.",
+    "reach": "0 ft.",
+    "attacks": [],
+    "abilities": {
+     "str": 1,
+     "dex": 16,
+     "con": 6,
+     "int": 2,
+     "wis": 12,
+     "cha": 7
+    },
+    "feats": [
+     "Athletic"
+    ],
+    "skills": {
+     "Climb": 5,
+     "Stealth": 19,
+     "Swim": 5
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +2 bonus on Will saves"
+   },
+   {
+    "name": "House Centipede",
+    "source": "Ultimate Magic",
+    "size": "Tiny",
+    "speed": "40 ft., climb 40 ft.",
+    "natural": 2,
+    "senses": "darkvision 60 ft.",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": "plus poison"
+     }
+    ],
+    "abilities": {
+     "str": 1,
+     "dex": 17,
+     "con": 10,
+     "int": null,
+     "wis": 10,
+     "cha": 2
+    },
+    "feats": [
+     "Weapon FinesseB"
+    ],
+    "skills": {
+     "Climb": 11,
+     "Perception": 4,
+     "Stealth": 19
+    },
+    "racial": {
+     "Perception": 4,
+     "Stealth": 8
+    },
+    "racialText": "+4 Perception, +8 Stealth",
+    "specialQualities": "",
+    "specialAttacks": "poison",
+    "masterBonus": "Master gains a +3 bonus on Stealth checks"
+   },
+   {
+    "name": "King Crab",
+    "source": "Ultimate Magic",
+    "size": "Tiny",
+    "speed": "30 ft., swim 20 ft.",
+    "natural": 4,
+    "senses": "darkvision 60 ft.",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "claw",
+      "count": 2,
+      "dice": "1d2",
+      "extra": "plus grab"
+     }
+    ],
+    "abilities": {
+     "str": 7,
+     "dex": 15,
+     "con": 12,
+     "int": null,
+     "wis": 10,
+     "cha": 2
+    },
+    "feats": [],
+    "skills": {
+     "Perception": 4,
+     "Swim": 10
+    },
+    "racial": {
+     "Perception": 4
+    },
+    "racialText": "+4 Perception",
+    "specialQualities": "water dependency",
+    "specialAttacks": "constrict (1d2-2)",
+    "masterBonus": "Master gains a +2 bonus on CMB checks to start and maintain a grapple"
+   },
+   {
+    "name": "Lizard",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "20 ft., climb 20 ft.",
+    "natural": 0,
+    "senses": "low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d4",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 3,
+     "dex": 15,
+     "con": 8,
+     "int": 1,
+     "wis": 12,
+     "cha": 2
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Acrobatics": 10,
+     "Climb": 10,
+     "Stealth": 14
+    },
+    "racial": {
+     "Acrobatics": 8
+    },
+    "racialText": "+8 Acrobatics",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on Climb checks"
+   },
+   {
+    "name": "Monkey",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "30 ft., climb 30 ft.",
+    "natural": 0,
+    "senses": "low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [],
+    "abilities": {
+     "str": 3,
+     "dex": 15,
+     "con": 10,
+     "int": 2,
+     "wis": 12,
+     "cha": 5
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Acrobatics": 10,
+     "Climb": 10,
+     "Perception": 5
+    },
+    "racial": {
+     "Acrobatics": 8
+    },
+    "racialText": "+8 Acrobatics",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on Acrobatics checks"
+   },
+   {
+    "name": "Otter",
+    "source": "Bestiary 3",
+    "size": "Tiny",
+    "speed": "20 ft., swim 30 ft.",
+    "natural": 0,
+    "senses": "low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 3,
+     "dex": 16,
+     "con": 10,
+     "int": 2,
+     "wis": 13,
+     "cha": 5
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Escape Artist": 4,
+     "Swim": 11
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on Swim checks"
+   },
+   {
+    "name": "Owl",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "10 ft., fly 60 ft. (average)",
+    "natural": 0,
+    "senses": "low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "talon",
+      "count": 2,
+      "dice": "1d4",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 6,
+     "dex": 17,
+     "con": 11,
+     "int": 2,
+     "wis": 15,
+     "cha": 6
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Fly": 7,
+     "Perception": 10,
+     "Stealth": 15
+    },
+    "racial": {
+     "Perception": 4,
+     "Stealth": 4
+    },
+    "racialText": "+4 Perception, +4 Stealth",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on sight-based and opposed Perception checks in shadows or darkness"
+   },
+   {
+    "name": "Pig",
+    "source": "Ultimate Magic",
+    "size": "Small",
+    "speed": "30 ft.",
+    "natural": 1,
+    "senses": "low-light vision, scent",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d4",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 11,
+     "dex": 12,
+     "con": 15,
+     "int": 2,
+     "wis": 13,
+     "cha": 4
+    },
+    "feats": [
+     "Great Fortitude"
+    ],
+    "skills": {
+     "Perception": 5
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on Diplomacy checks"
+   },
+   {
+    "name": "Raccoon",
+    "source": "Bestiary 3",
+    "size": "Tiny",
+    "speed": "20 ft., climb 20 ft.",
+    "natural": 1,
+    "senses": "low-light vision, scent",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 8,
+     "dex": 15,
+     "con": 11,
+     "int": 2,
+     "wis": 16,
+     "cha": 5
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Climb": 10,
+     "Sleight of Hand": 3
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on Sleight of Hand checks"
+   },
+   {
+    "name": "Rat",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "15 ft., climb 15 ft., swim 15 ft.",
+    "natural": 0,
+    "senses": "low-light vision, scent",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 2,
+     "dex": 15,
+     "con": 11,
+     "int": 2,
+     "wis": 13,
+     "cha": 2
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Climb": 10,
+     "Stealth": 18,
+     "Swim": 10
+    },
+    "racial": {
+     "Stealth": 4
+    },
+    "racialText": "+4 Stealth",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +2 bonus on Fortitude saves"
+   },
+   {
+    "name": "Raven",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "10 ft., fly 40 ft. (average)",
+    "natural": 0,
+    "senses": "low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 2,
+     "dex": 15,
+     "con": 8,
+     "int": 2,
+     "wis": 15,
+     "cha": 7
+    },
+    "feats": [
+     "Skill Focus (Perception)",
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Fly": 6,
+     "Perception": 3
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on Appraise checks"
+   },
+   {
+    "name": "Scarlet Spider",
+    "source": "Ultimate Magic",
+    "size": "Tiny",
+    "speed": "30 ft., climb 30 ft.",
+    "natural": 1,
+    "senses": "darkvision 60 ft.",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": "plus poison"
+     }
+    ],
+    "abilities": {
+     "str": 3,
+     "dex": 21,
+     "con": 10,
+     "int": null,
+     "wis": 10,
+     "cha": 2
+    },
+    "feats": [
+     "Weapon FinesseB"
+    ],
+    "skills": {
+     "Acrobatics": 13,
+     "Climb": 21,
+     "Perception": 4,
+     "Stealth": 17
+    },
+    "racial": {
+     "Acrobatics": 8,
+     "Climb": 8,
+     "Perception": 4,
+     "Stealth": 4
+    },
+    "racialText": "+8 Acrobatics, +8 Climb, +4 Perception, +4 Stealth",
+    "specialQualities": "",
+    "specialAttacks": "poison",
+    "masterBonus": "Master gains a +3 bonus on Climb checks"
+   },
+   {
+    "name": "Thrush",
+    "source": "Ultimate Magic",
+    "size": "Diminutive",
+    "speed": "10 ft., fly 40 ft. (average)",
+    "natural": 0,
+    "senses": "low-light vision",
+    "space": "1 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d2",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 1,
+     "dex": 15,
+     "con": 6,
+     "int": 2,
+     "wis": 15,
+     "cha": 6
+    },
+    "feats": [
+     "Skill Focus (Perception)"
+    ],
+    "skills": {
+     "Fly": 12,
+     "Perception": 5
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on Diplomacy checks"
+   },
+   {
+    "name": "Toad",
+    "source": "Bestiary",
+    "size": "Diminutive",
+    "speed": "5 ft.",
+    "natural": 0,
+    "senses": "low-light vision, scent",
+    "space": "1 ft.",
+    "reach": "0 ft.",
+    "attacks": [],
+    "abilities": {
+     "str": 1,
+     "dex": 12,
+     "con": 6,
+     "int": 1,
+     "wis": 15,
+     "cha": 4
+    },
+    "feats": [
+     "Skill Focus (Perception)"
+    ],
+    "skills": {
+     "Perception": 5,
+     "Stealth": 21
+    },
+    "racial": {
+     "Stealth": 4
+    },
+    "racialText": "+4 Stealth",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains +3 hit points"
+   },
+   {
+    "name": "Turtle",
+    "source": "Ultimate Magic",
+    "size": "Tiny",
+    "speed": "5 ft., swim 20 ft.",
+    "natural": 6,
+    "senses": "low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 3,
+     "dex": 6,
+     "con": 8,
+     "int": 2,
+     "wis": 12,
+     "cha": 3
+    },
+    "feats": [
+     "Skill Focus (Perception)"
+    ],
+    "skills": {
+     "Perception": 4,
+     "Swim": 10
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +1 natural armor bonus to AC"
+   },
+   {
+    "name": "Viper",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "20 ft., climb 20 ft., swim 20 ft.",
+    "natural": 1,
+    "senses": "low-light vision, scent",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d2",
+      "extra": "plus poison"
+     }
+    ],
+    "abilities": {
+     "str": 4,
+     "dex": 17,
+     "con": 8,
+     "int": 1,
+     "wis": 13,
+     "cha": 2
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Climb": 11,
+     "Perception": 9,
+     "Stealth": 15,
+     "Swim": 11
+    },
+    "racial": {
+     "Perception": 4,
+     "Stealth": 4
+    },
+    "racialText": "+4 Perception, +4 Stealth",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +3 bonus on Bluff checks"
+   },
+   {
+    "name": "Weasel",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "20 ft., climb 20 ft.",
+    "natural": 1,
+    "senses": "low-light vision, scent",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": "plus attach"
+     }
+    ],
+    "abilities": {
+     "str": 3,
+     "dex": 15,
+     "con": 10,
+     "int": 2,
+     "wis": 12,
+     "cha": 5
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Acrobatics": 10,
+     "Climb": 10,
+     "Escape Artist": 3,
+     "Stealth": 14
+    },
+    "racial": {
+     "Stealth": 4,
+     "Acrobatics": 8
+    },
+    "racialText": "+4 Stealth, +8 Acrobatics",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "Master gains a +2 bonus on Reflex saves"
+   }
+  ]
  }
 }

@@ -530,7 +530,7 @@ def main():
     comp = companions.build(books)
     with open(OUT_COMPANIONS, 'w', encoding='utf-8') as f:
         json.dump(comp, f, indent=1)
-    print('wrote companions:', len(comp['animal']['species']), 'animals,', len(comp['eidolon']['evolutions']), 'evolutions')
+    print('wrote companions:', len(comp['animal']['species']), 'animals,', len(comp['familiar']['species']), 'familiars,', len(comp['eidolon']['evolutions']), 'evolutions')
 
 
 if __name__ == '__main__':
