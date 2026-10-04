@@ -1,0 +1,18 @@
+# Build output (rebuild with build_exe.ps1)
+dist/
+build/
+*.spec
+__pycache__/
+*.pyc
+
+# Generated compendium database (rebuild with: python tools/build_data.py)
+data/pf1e.db
+
+# Raw source data (~65 MB, downloaded from public repos; see CLAUDE.md "Data pipeline")
+tools/sources/psrd/
+tools/sources/spells.tsv
+
+# Machine-specific shortcut (recreate with tools/make_shortcut.ps1)
+*.lnk
+
+node_modules/

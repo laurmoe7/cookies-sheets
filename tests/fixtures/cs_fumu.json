@@ -1,0 +1,1058 @@
+{
+ "_id": "6a60b420ed836300029ba18d",
+ "spells": [
+  {
+   "totalPerDay": "",
+   "slotted": [
+    {
+     "level": 0,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Drench",
+     "school": "Conjuration",
+     "subschool": "Creation"
+    },
+    {
+     "level": 0,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Detect Magic",
+     "school": "Divination",
+     "subschool": ""
+    },
+    {
+     "level": 0,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Read Magic",
+     "school": "Divination",
+     "subschool": ""
+    },
+    {
+     "level": 0,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Dancing Lights",
+     "school": "Evocation",
+     "subschool": ""
+    },
+    {
+     "level": 0,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Spark",
+     "school": "Evocation",
+     "subschool": ""
+    },
+    {
+     "level": 0,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Oath Of Anonymity",
+     "school": "Illusion",
+     "subschool": "Glamer"
+    },
+    {
+     "level": 0,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Mage Hand",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 0,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Mending",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 0,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Open/Close",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 0,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Prestidigitation",
+     "school": "Universal",
+     "subschool": ""
+    }
+   ],
+   "totalKnown": "8",
+   "dc": "15"
+  },
+  {
+   "totalPerDay": "4",
+   "slotted": [
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Cure Light Wounds",
+     "school": "Conjuration",
+     "subschool": "Healing",
+     "marked": true
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Shield",
+     "school": "Abjuration",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Air Bubble",
+     "school": "Conjuration",
+     "subschool": "Creation"
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Glue Seal",
+     "school": "Conjuration",
+     "subschool": "Creation"
+    },
+    {
+     "level": 1,
+     "prepared": 1,
+     "cast": 0,
+     "name": "Grease",
+     "school": "Conjuration",
+     "subschool": "Creation"
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Mount",
+     "school": "Conjuration",
+     "subschool": "Summoning"
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Obscuring Mist",
+     "school": "Conjuration",
+     "subschool": "Creation"
+    },
+    {
+     "level": 1,
+     "prepared": 1,
+     "cast": 0,
+     "name": "Snowball",
+     "school": "Evocation",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Summon Minor Monster",
+     "school": "Conjuration",
+     "subschool": "Summoning"
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Summon Monster I",
+     "school": "Conjuration",
+     "subschool": "Summoning"
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Comprehend Languages",
+     "school": "Divination",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Detect Undead",
+     "school": "Divination",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "True Strike",
+     "school": "Divination",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Charm Person",
+     "school": "Enchantment",
+     "subschool": "Charm"
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Hypnotism",
+     "school": "Enchantment",
+     "subschool": "Compulsion"
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Sleep",
+     "school": "Enchantment",
+     "subschool": "Compulsion"
+    },
+    {
+     "level": 1,
+     "prepared": 1,
+     "cast": 0,
+     "name": "Magic Missile",
+     "school": "Evocation",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Decrepit Disguise",
+     "school": "Illusion",
+     "subschool": "Glamer"
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Shadow Trap",
+     "school": "Illusion",
+     "subschool": "Shadow"
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Shadowfade",
+     "school": "Illusion",
+     "subschool": "Shadow"
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Silent Image",
+     "school": "Illusion",
+     "subschool": "Figment"
+    },
+    {
+     "level": 1,
+     "prepared": 1,
+     "cast": 0,
+     "name": "Vanish",
+     "school": "Illusion",
+     "subschool": "Glamer"
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Ant Haul",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Enlarge Person",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Expeditious Retreat",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Feather Fall",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Grappling Scarf",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Monkey Fish",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Reduce Person",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 1,
+     "prepared": 1,
+     "cast": 0,
+     "name": "Mage Armor",
+     "school": "Conjuration",
+     "subschool": "Creation"
+    },
+    {
+     "level": 1,
+     "prepared": 5,
+     "cast": 0,
+     "name": "*Slots"
+    }
+   ],
+   "totalKnown": "5",
+   "bonusSpells": "1",
+   "dc": "16"
+  },
+  {
+   "totalPerDay": "4",
+   "slotted": [
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Cure Moderate Wounds",
+     "school": "Conjuration",
+     "subschool": "Healing",
+     "marked": true
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Escaping Ward",
+     "school": "Abjuration",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Miserable Pity",
+     "school": "Abjuration",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Create Pit",
+     "school": "Conjuration",
+     "subschool": "Creation"
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Euphoric Cloud",
+     "school": "Conjuration",
+     "subschool": "Creation"
+    },
+    {
+     "level": 2,
+     "prepared": 1,
+     "cast": 0,
+     "name": "Mud Buddy",
+     "school": "Conjuration",
+     "subschool": "Creation"
+    },
+    {
+     "level": 2,
+     "prepared": 1,
+     "cast": 0,
+     "name": "Summon Monster II",
+     "school": "Conjuration",
+     "subschool": "Summoning"
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Summon Swarm",
+     "school": "Conjuration",
+     "subschool": "Summoning"
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Web",
+     "school": "Conjuration",
+     "subschool": "Creation"
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Commune With Birds",
+     "school": "Divination",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Create Treasure Map",
+     "school": "Divination",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Hideous Laughter",
+     "school": "Enchantment",
+     "subschool": "Compulsion"
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Touch of Idiocy",
+     "school": "Enchantment",
+     "subschool": "Compulsion"
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Unnatural Lust",
+     "school": "Enchantment",
+     "subschool": "Compulsion"
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Aggressive Thundercloud",
+     "school": "Evocation",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Flaming Sphere",
+     "school": "Evocation",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 1,
+     "cast": 0,
+     "name": "Flurry Of Snowballs",
+     "school": "Evocation",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Frost Fall",
+     "school": "Evocation",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Scorching Ray",
+     "school": "Evocation",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Spontaneous Immolation",
+     "school": "Evocation",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Invisibility",
+     "school": "Illusion",
+     "subschool": "Glamer"
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Mirror Image",
+     "school": "Illusion",
+     "subschool": "Figment"
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "False Life",
+     "school": "Necromancy",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Animal Aspect",
+     "school": "Transmutation",
+     "subschool": "Polymorph"
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Knock",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 1,
+     "cast": 0,
+     "name": "Levitate",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Rune Of Rule",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 2,
+     "prepared": 5,
+     "cast": 0,
+     "name": "*Slots"
+    }
+   ],
+   "totalKnown": "3",
+   "bonusSpells": "1",
+   "dc": "17"
+  },
+  {
+   "totalPerDay": "4",
+   "slotted": [
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Cure Serious Wounds",
+     "school": "Conjuration",
+     "subschool": "Healing",
+     "marked": true
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Dispel Magic",
+     "school": "Abjuration",
+     "subschool": ""
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Explosive Runes",
+     "school": "Abjuration",
+     "subschool": ""
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Stunning Barrier, Greater",
+     "school": "Abjuration",
+     "subschool": ""
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Conjure Carriage",
+     "school": "Conjuration",
+     "subschool": "Creation"
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Ice Spears",
+     "school": "Conjuration",
+     "subschool": ""
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Mad Monkeys",
+     "school": "Conjuration",
+     "subschool": "Summoning"
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Spiked Pit",
+     "school": "Conjuration",
+     "subschool": "Creation"
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Summon Monster III",
+     "school": "Conjuration",
+     "subschool": "Summoning"
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Revelation",
+     "school": "Divination",
+     "subschool": ""
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Tongues",
+     "school": "Divination",
+     "subschool": ""
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Heroism",
+     "school": "Enchantment",
+     "subschool": "Compulsion"
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Matchmaker",
+     "school": "Enchantment",
+     "subschool": "Charm"
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Pillow Talk",
+     "school": "Enchantment",
+     "subschool": "Compulsion"
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Pugwampi's Grace",
+     "school": "Enchantment",
+     "subschool": "Compulsion"
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Rage",
+     "school": "Enchantment",
+     "subschool": "Compulsion"
+    },
+    {
+     "level": 3,
+     "prepared": 1,
+     "cast": 0,
+     "name": "Fireball",
+     "school": "Evocation",
+     "subschool": ""
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Lightning Bolt",
+     "school": "Evocation",
+     "subschool": ""
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Displacement",
+     "school": "Illusion",
+     "subschool": "Glamer"
+    },
+    {
+     "level": 3,
+     "prepared": 1,
+     "cast": 0,
+     "name": "Invisibility Sphere",
+     "school": "Illusion",
+     "subschool": "Glamer"
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Black Sword Of War",
+     "school": "Necromancy",
+     "subschool": ""
+    },
+    {
+     "level": 3,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Fly",
+     "school": "Transmutation",
+     "subschool": ""
+    },
+    {
+     "level": 3,
+     "prepared": 4,
+     "cast": 0,
+     "name": "*Slots"
+    }
+   ],
+   "totalKnown": "2",
+   "bonusSpells": "1",
+   "dc": "18"
+  },
+  {
+   "slotted": [
+    {
+     "level": 4,
+     "prepared": 0,
+     "cast": 0,
+     "name": "Cure Critical Wounds",
+     "school": "Conjuration",
+     "subschool": "Healing",
+     "marked": true
+    },
+    {
+     "level": 4,
+     "prepared": 2,
+     "cast": 0,
+     "name": "*Slots"
+    }
+   ],
+   "totalPerDay": "2",
+   "dc": "19",
+   "totalKnown": "1"
+  },
+  {},
+  {},
+  {},
+  {},
+  {}
+ ],
+ "name": "Fumu",
+ "modified": "2026-09-23T18:14:36.668Z",
+ "level": "White Mage Arcanist, lvl 8",
+ "skills": {
+  "appraise": {
+   "classSkill": true,
+   "total": "16",
+   "ranks": "8"
+  },
+  "craft1": {
+   "classSkill": false
+  },
+  "fly": {
+   "classSkill": false,
+   "ranks": "",
+   "total": ""
+  },
+  "knowledgeArcana": {
+   "classSkill": false
+  },
+  "knowledgeDungeoneering": {
+   "classSkill": true,
+   "ranks": "8",
+   "total": "16"
+  },
+  "knowledgeEngineering": {
+   "classSkill": false
+  },
+  "knowledgeGeography": {
+   "classSkill": false
+  },
+  "knowledgeHistory": {
+   "classSkill": true,
+   "total": "16",
+   "ranks": "8"
+  },
+  "knowledgeLocal": {
+   "classSkill": false
+  },
+  "linguistics": {
+   "classSkill": true,
+   "total": "16",
+   "ranks": "8"
+  },
+  "profession1": {
+   "classSkill": false
+  },
+  "spellcraft": {
+   "classSkill": true,
+   "total": "16",
+   "ranks": "8"
+  },
+  "useMagicDevice": {
+   "classSkill": false,
+   "total": "",
+   "ranks": ""
+  },
+  "knowledgeNobility": {
+   "classSkill": true,
+   "total": "16",
+   "ranks": "8"
+  },
+  "perception": {
+   "total": "-1"
+  },
+  "stealth": {
+   "ranks": "1",
+   "total": "4"
+  }
+ },
+ "gender": "F",
+ "abilities": {
+  "str": "8",
+  "dex": "18",
+  "con": "12",
+  "int": "20",
+  "wis": "8",
+  "cha": "10"
+ },
+ "race": "Kitsune",
+ "languages": "Common, Sylvan, Celestial, Elven, Tengu, Gnome",
+ "bab": "4",
+ "saves": {
+  "fort": {
+   "base": "2",
+   "total": "5",
+   "miscModifier": "+2"
+  },
+  "reflex": {
+   "base": "2",
+   "total": "10",
+   "miscModifier": "+2",
+   "otherModifiers": "+2 weasel"
+  },
+  "will": {
+   "base": "6",
+   "total": "9",
+   "miscModifier": "+4"
+  }
+ },
+ "specialAbilities": [
+  {
+   "name": "Arcane Reservoir",
+   "type": "Su",
+   "notes": "An arcanist has an innate pool of magical energy that she can draw upon to fuel her arcanist exploits and enhance her spells. The arcanist’s arcane reservoir can hold a maximum amount of magical energy equal to 3 + the arcanist’s level. Each day, when preparing spells, the arcanist’s arcane reservoir fills with raw magical energy, gaining a number of points equal to 3 + 1/2 her arcanist level. Any points she had from the previous day are lost. She can also regain these points through the consume spells class feature and some arcanist exploits. The arcane reservoir can never hold more points than the maximum amount noted above; points gained in excess of this total are lost.\n\nPoints from the arcanist reservoir are used to fuel many of the arcanist’s powers. In addition, the arcanist can expend 1 point from her arcane reservoir as a free action whenever she casts an arcanist spell. If she does, she can choose to increase the caster level by 1 or increase the spell’s DC by 1. She can expend no more than 1 point from her reservoir on a given spell in this way."
+  },
+  {
+   "name": "Spontaneous Healing",
+   "type": "Su",
+   "notes": "At 1st level, a white mage can expend 1 point from her arcane reservoir to use one of her spell slots to cast a cure spell (any spell with “cure” in its name) from the cleric spell list as if it were on her spell list and prepared. The spell must be of a level the arcanist can cast. At 10th level, the white mage can expend 5 points from her arcane reservoir and a spell slot of at least 5th level to cast breath of life.\n\nThis ability replaces the arcanist exploits gained at 1st and 9th levels."
+  },
+  {
+   "name": "Keen Kitsune",
+   "notes": "Although amiable, kitsune are notoriously clever and cunning, often far more than they seem. Such characters gain a +2 bonus to Dexterity and Intelligence instead of Dexterity and Charisma. This racial trait alters the kitsune’s ability score modifiers."
+  },
+  {
+   "notes": "The arcanist can expend 1 point from her arcane reservoir to create a dimensional crack that she can step through to reach another location. This ability is used as part of a move action or withdraw action, allowing her to move up to 10 feet per arcanist level to any location she can see. This counts as 5 feet of movement. She can only use this ability once per round. She does not provoke attacks of opportunity when moving in this way, but any other movement she attempts as part of her move action provokes as normal.",
+   "type": "Exploit",
+   "name": "*Dimensional Slide (Su)"
+  },
+  {
+   "name": "*Quick Study (Su)",
+   "type": "Exploit",
+   "notes": "The arcanist can prepare a spell in place of an existing spell by expending 1 point from her arcane reservoir. Using this ability is a full-round action that provokes an attack of opportunity. The arcanist must be able to reference her spellbook when using this ability. The spell prepared must be of the same level as the spell being replaced."
+  },
+  {
+   "name": "Familiar (Exploit)",
+   "type": "Su"
+  }
+ ],
+ "spellLikes": [
+  {
+   "prepared": 12,
+   "cast": 0,
+   "name": "Arcane Reservoir"
+  }
+ ],
+ "traits": [
+  {
+   "type": "",
+   "name": "Low-Light Vision"
+  },
+  {
+   "type": "",
+   "notes": "A kitsune’s shapeshifting abilities make him resistant to mental attacks. The kitsune gains a +2 bonus on Will saves. Additionally, once per day the kitsune can roll twice when making a Will save and use the better result. He must choose to use this ability before attempting the saving throw. This racial trait replaces kitsune magic.",
+   "name": "Shifting Mind"
+  },
+  {
+   "notes": "Sophisticated kitsune hone graceful and precise movements at the expense of their skill with their natural attacks. The kitsune gains Weapon Finesse as a bonus feat at 1st level. This racial trait replaces natural weapons.",
+   "type": "",
+   "name": "Natural Finesse"
+  },
+  {
+   "name": "Nimble Dash",
+   "notes": "Kitsune are light on their feet and capable of quick movement in a pinch thanks to their lithe bodies and limber frames. The kitsune gains Run as a bonus feat at 1st level. Additionally, the kitsune receives a +5 foot bonus to his speed when using the charge, run, or withdrawal actions. In his true form, this bonus increases to +10 feet. This racial trait replaces agile."
+  },
+  {
+   "notes": "A kitsune can assume the appearance of a specific single human form of the same sex. The kitsune always takes this specific form when she uses this ability. A kitsune in human form cannot use her bite attack, but gains a +10 racial bonus on Disguise checks made to appear human. Changing shape is a standard action. This ability otherwise functions as alter self, except that the kitsune does not adjust her ability scores and can remain in this form indefinitely.",
+   "name": "Change Shape",
+   "type": "Su"
+  },
+  {
+   "notes": "At 1st level, an arcanist can expend an available arcanist spell slot as a move action, making it unavailable for the rest of the day, just as if she had used it to cast a spell. She can use this ability a number of times per day equal to her Charisma modifier (minimum 1). Doing this adds a number of points to her arcane reservoir equal to the level of the spell slot consumed. She cannot consume cantrips (0 level spells) in this way. Points gained in excess of the reservoir’s maximum are lost.",
+   "name": "Consume Spells",
+   "type": "Su"
+  }
+ ],
+ "feats": [
+  {
+   "name": "Weapon Finesse",
+   "notes": "Benefit: With a light weapon, elven curve blade, rapier, whip, or spiked chain made for a creature of your size category, you may use your Dexterity modifier instead of your Strength modifier on attack rolls. If you carry a shield, its armor check penalty applies to your attack rolls.\n\nSpecial: Natural weapons are considered light weapons."
+  },
+  {
+   "name": "Run",
+   "notes": "Benefit: When running, you move five times your normal speed (if wearing medium, light, or no armor and carrying no more than a medium load) or four times your speed (if wearing heavy armor or carrying a heavy load). If you make a jump after a running start (see Acrobatics), you gain a +4 bonus on your Acrobatics check. While running, you retain your Dexterity bonus to your Armor Class.\n\nNormal: You move four times your speed while running (if wearing medium, light, or no armor and carrying no more than a medium load) or three times your speed (if wearing heavy armor or carrying a heavy load), and you lose your Dexterity bonus to AC."
+  },
+  {
+   "notes": "Benefit: You gain three more points in your arcane reservoir, and the maximum number of points in your arcane reservoir increases by that amount.\n\nSpecial: You can take this feat multiple times. Its effects stack.",
+   "name": "Extra Reservoir x2"
+  },
+  {
+   "name": "Extra Arcanist Exploit",
+   "notes": "Benefit: You gain one additional arcanist exploit. You must meet the prerequisites for this arcanist exploit.\n\nSpecial: You can take this feat multiple times. Each time you do, you gain another arcanist exploit."
+  },
+  {
+   "notes": "The arcanist can select a metamagic feat as a bonus feat. She must meet the prerequisites of this feat. Each morning, when she prepares her spells, the arcanist can expend 1 point from her arcane reservoir to exchange this bonus feat for another metamagic feat, as long as she meets the prerequisites of the new feat. The arcanist must have the metamagic knowledge exploit to select this exploit.",
+   "name": "Greater Metamagic Knowledge"
+  }
+ ],
+ "speed": {
+  "tempModifiers": "+10 as fox",
+  "base": "30"
+ },
+ "gear": [
+  {
+   "name": "Cloak of Resistance +2",
+   "notes": "Flecks of silver or steel are often sown amid the fabric of these magical cloaks. This garment offers magical protection in the form of a +1 to +5 resistance bonus on all saving throws (Fortitude, Reflex, and Will)."
+  },
+  {
+   "name": "Headband of Vast Intelligence +2",
+   "notes": "This intricate gold headband is decorated with several small blue and deep purple gemstones. The headband grants the wearer an enhancement bonus to Intelligence of +2, +4, or +6. Treat this as a temporary ability bonus for the first 24 hours the headband is worn. A headband of vast intelligence has one skill associated with it per +2 bonus it grants. After being worn for 24 hours, the headband grants a number of skill ranks in those skills equal to the wearer’s total Hit Dice. These ranks do not stack with the ranks a creature already possesses. These skills are chosen when the headband is created. If no skill is listed, the headband is assumed to grant skill ranks in randomly determined Knowledge skills."
+  },
+  {
+   "name": "Ring of Protection +1",
+   "notes": "This ring offers continual magical protection in the form of a deflection bonus of +1 to +5 to AC."
+  },
+  {
+   "notes": "This amulet, usually containing some type of magically preserved monster hide or other natural armor—such as bone, horn, carapace, or beast scales—toughens the wearer’s body and flesh, giving him an enhancement bonus to his natural armor from +1 to +5, depending on the kind of amulet.",
+   "name": "Amulet of Natural Armor +1"
+  },
+  {
+   "name": "Runestone of Power (1)",
+   "notes": "A runestone of power is a small chip of polished stone etched with a rune.\n\nTraditionally, this rune is one of many runes for magic, but more recently created runestones of power often substitute runes from other cultures—the nature of the rune itself has no effect on the runestone’s actual powers. These objects are potent aids to all spellcasters who cast spells spontaneously (bards, inquisitors, oracles, sorcerers, and summoners, but not to spellcasters like clerics who have the option to spontaneously cast certain spells).\n\nOnce per day, a spontaneous caster can draw upon a runestone of power to cast a spell—doing so is part of the spellcasting action, and expends that runestone’s power for the day rather than one of the spellcaster’s actual spell slots for the day. An expended runestone of power recharges its capacity after 24 hours. The spell must be of a particular level, depending on the runestone."
+  },
+  {
+   "name": "Ration",
+   "quantity": "16"
+  },
+  {
+   "name": "Jewelry Box",
+   "notes": "Golden jewelry"
+  },
+  {
+   "name": "Mansion Map"
+  }
+ ],
+ "money": {
+  "gp": "100"
+ },
+ "notes": "cast defensively: caster level + ability score\nspell resist = d20 + caster lvl\ntouch attk: str bonus + caster level (+7) vs. target AC\nranged touch = d20 + BAB + DEX\nconcentration check: (1d20 + caster level + key ability modifier)\n\nhttps://www.d20pfsrd.com/bestiary/monster-listings/animals/weasel/\n\nhttps://www.d20pfsrd.com/magic/spell-lists-and-domains/spell-lists-sorcerer-and-wizard\n\nhttps://www.d20pfsrd.com/feats/metamagic-feats\n\nhttps://www.d20pfsrd.com/classes/core-classes/wizard/familiar",
+ "initiative": {
+  "total": "3"
+ },
+ "hp": {
+  "total": "50",
+  "wounds": ""
+ },
+ "ac": {
+  "miscModifier": "",
+  "armorBonus": "+4",
+  "shieldBonus": "",
+  "naturalArmor": "+1",
+  "deflectionModifier": "+1",
+  "total": "19"
+ },
+ "melee": [
+  {
+   "weapon": "Spiked Chain",
+   "damage": "1d4",
+   "attackBonus": "6",
+   "critical": "x2",
+   "type": "P"
+  }
+ ],
+ "cmd": {
+  "total": "15"
+ },
+ "cmb": {
+  "total": "2"
+ },
+ "hair": "Blonde",
+ "spellsSpeciality": "AR: 12"
+}
