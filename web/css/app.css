@@ -480,3 +480,6 @@ html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="
 .res-bar { position: relative; height: 10px; border-radius: 4px; }
 .res-bar::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(90deg, transparent 0, transparent calc(100% / var(--seg, 1) - 2px), var(--panel) calc(100% / var(--seg, 1) - 2px), var(--panel) calc(100% / var(--seg, 1))); }
+
+/* a page that is still loading fills the tab, so a theme's paper covers all of it */
+.loading-page { min-height: calc(100vh - 200px); }
