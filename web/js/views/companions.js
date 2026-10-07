@@ -9,6 +9,7 @@ import { linkTerms } from '../termlinks.js';
 import { hpSegments, segsHtml } from '../bars.js';
 import { hpFx } from '../healfx.js';
 import { playSfx } from '../sfx.js';
+import { event as petEvent } from '../pet/pet.js';
 import { SKILLS } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
@@ -92,6 +93,7 @@ export async function renderCompanions(body, c) {
           playSfx(cur < before ? 'hit' : 'heal');
         }
       }
+      remarkOnCompanion(comp, before, comp.hpCur == null || comp.hpCur === '' ? s.hp : num(comp.hpCur), s.hp, s.abilities.con ?? 0);
       return changed({ rerender: true });
     }
     if (t.dataset.syncLevel !== undefined) { comp.levelOverride = ''; return changed({ rerender: true }); }
@@ -128,6 +130,14 @@ const select = (path, cur, options) => `<select data-bind="${path}" data-rerende
   const [v, l] = Array.isArray(o) ? o : [o, o];
   return `<option value="${esc(v)}" ${String(v) === String(cur ?? '') ? 'selected' : ''}>${esc(l)}</option>`;
 }).join('')}</select>`;
+
+/** Lets Cookie react when a companion dies, goes down, or takes or gets a lot of hit points. */
+function remarkOnCompanion(comp, before, now, max, con) {
+  const delta = now - before, big = Math.max(8, 0.4 * max), pet = comp.name || 'Your companion';
+  const type = now <= -con && before > -con ? 'comp-dead' : now <= 0 && before > 0 ? 'comp-down'
+    : delta <= -big ? 'comp-hurt-big' : delta >= big ? 'comp-heal-big' : '';
+  if (type) petEvent(type, { pet, n: Math.abs(delta) });
+}
 
 /** A stored level override that just matches the sheet is dropped, so the level follows the sheet when you level up. */
 function syncLevel(comp, s) {

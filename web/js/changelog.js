@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Latest', date: '2026-10-07',
     items: [
+      'Cookie now reacts to your companions and summons: when one goes down or dies, takes a big hit, or is healed a lot.',
       'Dusty tome is now the default theme (Classic dark is still in Options). All sounds are leveled to about the same loudness. Cookie has new expressions (winking, dizzy, dead, evil, fake crying, shifty, sulking, gloating, panicking), new idle moves that use them, and he now lights his cigarette with a little lighter, the flame right on the tip. The forehead scar is gone for now.',
       'Damage now has its own reaction: the hit point bar flashes red and shakes, a falling number and red shards show how much, and one of four hit sounds plays at random. Companions and summons get the same heal and damage effects as the Overview bar. Heal plays the heal sound; Full heal has its own new sound.',
       'Cookie does a lot more: smoke rings, flicking ash, lighting up, spitting, tantrums, strutting and dancing; he comments on pages and tabs you open, on the time of day, when you come back after being away, when you stare at him, and on settings you change. He makes pranks, boasts about the Cookie Crumblers, threatens you and "steals" things from your gear list. His scar now curves with his head.',

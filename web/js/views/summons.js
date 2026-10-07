@@ -7,6 +7,7 @@ import { picAction, picFrame } from '../cropper.js';
 import { hpSegments, segsHtml } from '../bars.js';
 import { hpFx } from '../healfx.js';
 import { playSfx } from '../sfx.js';
+import { event as petEvent } from '../pet/pet.js';
 import { summonSpell, summonChoices, statBlockHtml, newSummon, templateNotes } from '../summons.js';
 
 let dataPromise = null;
@@ -136,6 +137,9 @@ export function renderSummons(el, c) {
         sumFx = { id: s.id, kind: s.hp < before ? 'hurt' : 'heal', amount: Math.abs(s.hp - before), frac: Math.abs(s.hp - before) / Math.max(1, s.hpMax), from: before / Math.max(1, s.hpMax) };
         playSfx(s.hp < before ? 'hit' : 'heal');
       }
+      const delta = s.hp - before, big = Math.max(8, 0.4 * s.hpMax);
+      if (delta <= -big && s.hp > 0) petEvent('summon-hurt-big', { summon: s.name, n: -delta });
+      else if (delta >= big) petEvent('summon-heal-big', { summon: s.name, n: delta });
       changed({ rerender: true });
     } else if (t.dataset.smR !== undefined) {
       s.rounds = Math.max(0, s.rounds + +t.dataset.smR);

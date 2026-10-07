@@ -54,6 +54,12 @@ const REACT = {
   summon: { prio: 3, face: 'shock', move: 'peek' },
   'summon-dead': { prio: 2, face: 'wink', move: 'wiggle' },
   'summon-gone': { prio: 1, face: 'smug', move: '' },
+  'summon-hurt-big': { prio: 2, face: 'laugh', move: 'wiggle' },
+  'summon-heal-big': { prio: 2, face: 'sneer', move: '' },
+  'comp-dead': { prio: 5, face: 'laugh', move: 'boogie' },
+  'comp-down': { prio: 4, face: 'laugh', move: 'wiggle' },
+  'comp-hurt-big': { prio: 3, face: 'laugh', move: 'twirl' },
+  'comp-heal-big': { prio: 3, face: 'sneer', move: 'bob' },
   companion: { prio: 3, face: 'evil', move: 'sniff' },
   item: { prio: 2, face: 'cute', move: 'peek' },
   'item-gone': { prio: 2, face: 'cute', move: '' },
@@ -399,6 +405,18 @@ function scheduleMoves() {
     }
     scheduleMoves();
   }, 5000 + Math.random() * 7000);
+}
+
+/**
+ * Companions and summons report their own hit point changes here (the sheet's diff only sees the character).
+ * @param {string} type 'comp-dead', 'comp-down', 'comp-hurt-big', 'comp-heal-big', 'summon-hurt-big' or 'summon-heal-big'.
+ * @param {{pet?: string, summon?: string, n?: number}} vars
+ */
+export function event(type, vars = {}) {
+  const r = REACT[type];
+  if (!r || !options().cookie || !willSpeak(r.prio)) return;
+  const line = pickLine(type, baseVars(vars));
+  if (line) speak(line, r.prio, type);
 }
 
 /** Now and then comments on something (a page you opened): `chance` stays low so he does not nag. */

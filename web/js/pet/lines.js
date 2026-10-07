@@ -2,7 +2,7 @@
 // Edit freely: each key is something that can happen, each line is a way he might react.
 //   {name} the character's name   {n} an amount   {item} an item, feat or buff   {spell} a spell
 //   {cls} the character's main class   {race} their race
-//   {summon} a summoned creature  {hp} current hit points   {con} the Con score   {level} the new level
+//   {pet} a companion's name   {summon} a summoned creature  {hp} current hit points   {con} the Con score   {level} the new level
 // A line that starts with "~" is Cookie doing his cute act (big sparkly eyes) to get away with something.
 // A line that starts with "*" is an action, shown in italics.
 
@@ -207,6 +207,44 @@ export const LINES = {
     "~Oh, a new friend! (Keep it away from my cigarettes.)",
     "Great. More competition for the good seat.",
     "Another mouth to feed. And another to take a bite out of you.",
+  ],
+
+  // ---- companions and summons
+  'comp-dead': [
+    "{pet} is dead. Don't cry. Okay, cry a little, I'll watch.",
+    "Well, there goes {pet}. Should've paid more attention, malaka.",
+    "RIP {pet}. Great pet. Terrible owner.",
+    "You got {pet} killed. You absolute fucking disaster.",
+    "{pet} is dead. I was always the better pet anyway.",
+  ],
+  'comp-down': [
+    "{pet} is down. Tickle it. See if it moves.",
+    "Look at {pet} on the floor. Must run in the family.",
+    "{pet} is bleeding out. Do something. Or don't. I'm enjoying this.",
+    "*pokes {pet} with a wing* Still breathing. Disappointing.",
+  ],
+  'comp-hurt-big': [
+    "{pet} just lost {n} HP! Do you even feed this thing?",
+    "Ouch. {n} to {pet}. I felt that in my feathers.",
+    "That's {n} damage to {pet}! Hope you got insurance.",
+    "{pet} took {n}. You're a terrible owner.",
+  ],
+  'comp-heal-big': [
+    "{pet} healed {n}. Spoiled. Nobody ever healed me like that.",
+    "Look at {pet}, back on its feet. Unfair.",
+    "{n} points back for {pet}. Meanwhile I get a pat on the head. Barely.",
+    "Healing {pet}? What about me? I'm literally right here.",
+  ],
+  'summon-hurt-big': [
+    "The {summon} just got wrecked. {n} damage! Look at that thing flail.",
+    "Poor {summon}. It didn't even get to eat breakfast.",
+    "{n} to the {summon}. It's not going to last. None of them do.",
+    "Meat shield's getting chewed up. Great plan, {name}.",
+  ],
+  'summon-heal-big': [
+    "You're healing the {summon}? It's disposable. Let it die.",
+    "Wasting {n} points on a summoned thing. Unbelievable.",
+    "Healing a {summon}. It's not even real. Take that {n} and eat it.",
   ],
 
   // ---- things you own
@@ -502,7 +540,7 @@ const SWEARS = /\b(fuck\w*|shit\w*|ass(?:hole)?|bastards?|piss\w*|dick\w*|bitch\
 export const bleep = text => text.replace(SWEARS, w => w[0] + '*'.repeat(w.length - 1));
 
 /** What a missing {value} turns into. */
-const FALLBACK = { name: 'malaka', cls: 'adventurer', race: 'creature', item: 'that' };
+const FALLBACK = { pet: 'your pet', summon: 'thing', name: 'malaka', cls: 'adventurer', race: 'creature', item: 'that' };
 
 const recent = {};
 /**
