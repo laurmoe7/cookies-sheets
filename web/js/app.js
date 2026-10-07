@@ -3,7 +3,7 @@ import { compute, sign } from './calc.js';
 import { newCharacter, migrate } from './model.js';
 import { $, $$, getPath, setPath, toast, showEntry, closeDrawer, debounce, modal, initTextFields, initTooltips } from './ui.js';
 import { initSheetSearch } from './sheetsearch.js';
-import { initOptions, showOptions, showChangelog, options } from './options.js';
+import { initOptions, showOptions, showChangelog } from './options.js';
 import { choosePicture, repositionPicture } from './cropper.js';
 import { initSummons } from './views/summons.js';
 import { mountPet, observe as petObserve, opened as petOpened } from './pet/pet.js';
@@ -174,7 +174,7 @@ async function init() {
   state.classesByName = Object.fromEntries(state.classes.map(c => [c.name, c]));
   let last = null;
   try { last = localStorage.getItem('lastChar'); } catch { /* ignore */ }
-  if (last && options().reopenLast) {
+  if (last) {
     try { await openCharacter(last); return; } catch { /* fall through to home */ }
   }
   go('home');

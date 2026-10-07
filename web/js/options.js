@@ -15,7 +15,7 @@ export const TEXT_SIZES = [[90, 'Small'], [100, 'Normal'], [112, 'Large'], [125,
 
 export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
 
-export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, motion: true, reopenLast: true, pageTurn: 'full', pageSound: true, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false };
+export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: 'full', pageSound: true, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
@@ -27,7 +27,7 @@ export function sanitize(raw) {
   if (!['full', 'light', 'off'].includes(o.pageTurn)) o.pageTurn = DEFAULTS.pageTurn;
   if (!['quiet', 'normal', 'chatty'].includes(o.cookieTalk)) o.cookieTalk = DEFAULTS.cookieTalk;
   if (!['full', 'bleep'].includes(o.cookieSwear)) o.cookieSwear = DEFAULTS.cookieSwear;
-  for (const k of ['compact', 'motion', 'reopenLast', 'pageSound', 'cookieSound']) o[k] = !!o[k];
+  for (const k of ['compact', 'motion', 'pageSound', 'cookieSound']) o[k] = !!o[k];
   o.cookie = true; // he is not going anywhere (unchecking the box only makes him laugh)
   return o;
 }
@@ -78,7 +78,6 @@ export function showOptions() {
         <div class="opt-row"><b>Text size</b><div class="seg">${TEXT_SIZES.map(([v, l]) => `<button class="seg-btn ${o.textSize === v ? 'on' : ''}" data-opt="textSize" data-v="${v}">${l}</button>`).join('')}</div></div>
         <label class="opt-row"><b>Compact layout</b><input type="checkbox" data-opt="compact" ${o.compact ? 'checked' : ''}></label>
         <label class="opt-row"><b>Animations</b><input type="checkbox" data-opt="motion" ${o.motion ? 'checked' : ''}></label>
-        <label class="opt-row"><b>Reopen the last character</b><input type="checkbox" data-opt="reopenLast" ${o.reopenLast ? 'checked' : ''}></label>
         <label class="opt-row"><b>Cookie, the rude bird</b><input type="checkbox" data-opt="cookie" ${o.cookie ? 'checked' : ''}></label>
         ${`<div class="opt-row"><b>How much he talks</b><div class="seg">${[['quiet', 'Quiet'], ['normal', 'Normal'], ['chatty', 'Chatty']].map(([k, l]) => `<button class="seg-btn ${o.cookieTalk === k ? 'on' : ''}" data-opt="cookieTalk" data-v="${k}">${l}</button>`).join('')}</div></div>
         <div class="opt-row"><b>Swearing</b><div class="seg">${[['full', 'Full'], ['bleep', 'Bleeped']].map(([k, l]) => `<button class="seg-btn ${o.cookieSwear === k ? 'on' : ''}" data-opt="cookieSwear" data-v="${k}">${l}</button>`).join('')}</div></div>

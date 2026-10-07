@@ -239,17 +239,30 @@
 @keyframes cig-smoke { 0% { stroke-dashoffset: 34; opacity: 0; } 15% { opacity: .9; } 70% { stroke-dashoffset: 0; opacity: .5; } 100% { stroke-dashoffset: 0; opacity: 0; transform: translate(3px, -8px); } }
 html[data-motion="off"] #cookie *, html[data-motion="off"] #cookie { animation: none !important; transition: none !important; }
 
-.cookie-bubble { position: absolute; left: calc(2px + 98px * var(--cs)); top: calc(92px * var(--cs)); transform: translateY(calc(-100% + 17px)); z-index: 55; width: max-content; max-width: min(320px, 40vw); padding: 10px 14px; border-radius: 14px 14px 14px 4px;
+.cookie-bubble { position: absolute; left: calc(2px + 142px * var(--cs)); top: calc(92px * var(--cs)); transform: translateY(-100%); z-index: 55; width: max-content; max-width: min(320px, 40vw); padding: 10px 14px; border-radius: 14px 14px 14px 4px;
   background: var(--panel); color: var(--ink); border: 2px solid var(--line, #3a3d46); box-shadow: 0 6px 22px rgba(0, 0, 0, .45); font-size: 14px; line-height: 1.35;
   animation: cookie-pop .22s cubic-bezier(.2, 1.4, .4, 1); pointer-events: none; transform-origin: left bottom; }
 .cookie-bubble[hidden] { display: none; }
 .cookie-bubble.action { font-style: italic; opacity: .92; }
-.cookie-bubble::before { content: ""; position: absolute; left: -9px; bottom: 10px; border: 7px solid transparent; border-right-color: var(--line, #3a3d46); border-left: 0; }
-@keyframes cookie-pop { from { transform: translateY(calc(-100% + 17px)) scale(.6); opacity: 0; } to { transform: translateY(calc(-100% + 17px)); opacity: 1; } }
+@keyframes cookie-pop { from { transform: translateY(-100%) scale(.6); opacity: 0; } to { transform: translateY(-100%); opacity: 1; } }
 html[data-theme="tome"] .cookie-bubble { background: #bba97f; color: #261a0b; border-color: #8a6a25; font-family: var(--serif, Georgia, serif); }
-html[data-theme="tome"] .cookie-bubble::before { border-right-color: #8a6a25; }
-@media (max-height: 520px) { #cookie-slot { display: none; } }
+html[data-theme="tome"] @media (max-height: 520px) { #cookie-slot { display: none; } }
 #cookie .brows path { fill: none; stroke: var(--pet-ink); stroke-width: 3.4; stroke-linecap: round; transition: transform .2s; }
-#cookie[data-eyes="sparkle"] .brows, #cookie[data-eyes="happy"] .brows, #cookie[data-eyes="closed"] .brows { opacity: 0; }
+#cookie[data-eyes="sparkle"] .brows, #cookie[data-eyes="happy"] .brows, #cookie[data-eyes="closed"] .brows, #cookie[data-eyes="squint"] .brows { opacity: 0; }
 #cookie[data-eyes="sparkle"] .brows { opacity: 0; }
 #cookie.eyewide .brows { transform: translateY(-4px); }
+
+/* ---- the bird's eye and line styles (the generic rules the filter above left out) ---- */
+#cookie { --pet-star: #ffe27a; }
+#cookie .ink { fill: var(--pet-ink); }
+#cookie .glint { fill: #fff; }
+#cookie .line, #cookie .line path { fill: none; stroke: var(--pet-ink); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+#cookie .star path { fill: var(--pet-star); stroke: var(--pet-ink); stroke-width: 1.8; stroke-linejoin: round; }
+#cookie .star path:not(.glint) { transform-box: fill-box; transform-origin: center; animation: star-flash 1.1s ease-in-out infinite; }
+#cookie .star .glint { fill: #fff; stroke: #e0a92a; stroke-width: .5; opacity: 0; animation: glint .9s ease-in-out infinite; }
+#cookie .tear { fill: #a9dcff; stroke: var(--pet-ink); stroke-width: 1.2; }
+@keyframes star-flash { 0%, 100% { fill: var(--pet-star); transform: scale(1); } 40% { fill: #fffbe8; transform: scale(1.15); } }
+@keyframes glint { 0%, 100% { opacity: 0; } 40%, 60% { opacity: 1; } }
+/* an old scar across his forehead: a faded, curved X */
+#cookie .scar path { fill: none; stroke: var(--pet-ink); stroke-width: 2.1; stroke-linecap: round; opacity: .28; }
+#cookie[data-eyes="squint"] .line path { stroke-width: 3.8; }
