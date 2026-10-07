@@ -18,6 +18,7 @@ if ($LASTEXITCODE -ge 8) { throw 'Could not stage the web folder' }
 
 python -m PyInstaller --noconfirm --clean --windowed --onedir `
     --name "Cookie's Sheets" `
+    --exclude-module setuptools --exclude-module pkg_resources `
     --icon 'web\icon.ico' `
     --add-data "$stage;web" `
     --add-data 'data;data' `
