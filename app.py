@@ -1,4 +1,4 @@
-"""Pathfinder 1e Character Sheet - desktop app entry point.
+"""Cookie's Sheets, a Pathfinder 1e character sheet - desktop app entry point.
 
 Runs a small local HTTP server (127.0.0.1 only) for the UI and the compendium API,
 then opens it in a native window via pywebview.
@@ -15,7 +15,9 @@ import subprocess
 import sys
 import threading
 import time
+import traceback
 import uuid
+import webbrowser
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
@@ -26,6 +28,17 @@ WEB = os.path.join(BASE, 'web')
 DATA = os.path.join(BASE, 'data')
 CHAR_DIR = os.environ.get('PF_CHAR_DIR') or os.path.join(os.path.expanduser('~'), 'Documents', 'Pathfinder Characters')
 TRASH_DIR = os.path.join(CHAR_DIR, '.deleted')
+
+
+def log_error(text):
+    """Appends to error.log in the app's settings folder; the windowed app has no console, so this is how problems get reported."""
+    try:
+        folder = os.path.join(os.environ.get('LOCALAPPDATA') or os.path.expanduser('~'), APP_NAME)
+        os.makedirs(folder, exist_ok=True)
+        with open(os.path.join(folder, 'error.log'), 'a', encoding='utf8') as f:
+            f.write(time.strftime('%Y-%m-%d %H:%M:%S ') + text.rstrip() + '\n')
+    except OSError:
+        pass
 
 DB_PATH = os.environ.get('PF_DB') or os.path.join(DATA, 'pf1e.db')
 
@@ -376,7 +389,7 @@ def main():
         # Own taskbar identity, so the window shows the d20 icon instead of grouping under Python.
         try:
             import ctypes
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('PathfinderSheet.App')
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('CookiesSheets.App')
         except Exception:
             pass
     # Keep browser storage (theme, last opened character) between launches.
@@ -389,10 +402,24 @@ def main():
             os.rename(old_storage, storage)
         except OSError:
             pass
-    webview.create_window(APP_NAME, url, width=1400, height=900, min_size=(1000, 650))
-    webview.start(icon=os.path.join(WEB, 'icon.ico'), private_mode=False, storage_path=storage)
+    try:
+        webview.create_window(APP_NAME, url, width=1400, height=900, min_size=(1000, 650))
+        webview.start(icon=os.path.join(WEB, 'icon.ico'), private_mode=False, storage_path=storage)
+    except Exception:
+        # No usable WebView2 runtime (or the window could not open): use the default browser instead, so the app still works.
+        log_error('Window failed, falling back to the browser:\n' + traceback.format_exc())
+        webbrowser.open(url)
+        try:
+            while True:
+                time.sleep(3600)
+        except KeyboardInterrupt:
+            pass
     srv.shutdown()
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception:
+        log_error(traceback.format_exc())
+        raise

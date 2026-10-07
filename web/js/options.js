@@ -1,6 +1,7 @@
 // App options (theme, accent colour, text size...) kept in localStorage and applied to the page.
 // `sanitize` and `ACCENTS` are pure; `applyOptions` and `showOptions` touch the DOM.
 import { modal, esc } from './ui.js';
+import { VERSION } from './version.js';
 import { CHANGELOG } from './changelog.js';
 
 export const ACCENTS = {
@@ -88,6 +89,7 @@ export function showOptions() {
         <div class="opt-row"><b>Swearing</b><div class="seg">${[['full', 'Full'], ['bleep', 'Bleeped']].map(([k, l]) => `<button class="seg-btn ${o.cookieSwear === k ? 'on' : ''}" data-opt="cookieSwear" data-v="${k}">${l}</button>`).join('')}</div></div>
         <label class="opt-row"><b>Cookie’s squawks</b><input type="checkbox" data-opt="cookieSound" ${o.cookieSound ? 'checked' : ''}></label>`}
       </div>
+      <p class="muted small" style="margin:10px 0 0">Cookie’s Sheets, version ${VERSION}</p>
       <div class="row end"><button class="btn ghost" data-changelog>What’s new</button><button class="btn ghost" data-ogl>Game content &amp; license</button>${devTools ? '<button class="btn ghost" data-dev>Developer tools</button>' : ''}</div>`;
     };
     const set = (k, v) => { current = sanitize({ ...current, [k]: v }); save(); applyOptions(); draw(); };

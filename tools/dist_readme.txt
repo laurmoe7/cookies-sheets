@@ -27,9 +27,17 @@ WHAT'S INSIDE
 - Level-up wizard for 32 classes
 - Searchable compendium: spells, feats, traits, races, items, rules (Ctrl+K)
 - Quick-reference rules cards
+- Cookie, a rude little bird who comments on everything you do (Options turns down his chatter, or bleeps the swearing)
 
 Needs Windows 10 or 11.
 
 Game rules text is Open Game Content under the Open Game License v1.0a
-(see the link at the bottom of the app's sidebar). This app is not published,
-endorsed, or approved by Paizo Inc.
+(Options > Game content & license). This app is not published, endorsed, or
+approved by Paizo Inc.
+
+TROUBLESHOOTING
+- The app needs the Microsoft Edge WebView2 runtime (already part of Windows 10
+  and 11). If it can't open its own window, it opens in your web browser instead.
+- If something goes wrong, a note is written to
+  %LOCALAPPDATA%\Cookie's Sheets\error.log  (send that file along with a bug report).
+- Your settings (theme, last character) are kept in %LOCALAPPDATA%\Cookie's Sheets.
