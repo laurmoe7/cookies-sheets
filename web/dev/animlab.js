@@ -19,6 +19,7 @@ export function showAnimLab() {
   const el = document.createElement('div');
   el.id = 'anim-lab';
   el.innerHTML = `<header><b>Animation lab</b><span class="muted small">developer tool</span><button class="icon-btn" data-x aria-label="Close">✕</button></header>
+    <input type="search" class="search" id="lab-q" placeholder="Search animations, faces, lines…" autocomplete="off">
     <div class="lab-body">
       ${group('Cookie: idle moves', IDLE_NAMES.map((n, i) => btn(n, `data-idle="${i}"`)).join(''))}
       ${group('Cookie: faces', Object.keys(FACES).map(k => btn(k, `data-face="${k}"`)).join(''))}
@@ -32,6 +33,23 @@ export function showAnimLab() {
     </div>`;
   document.body.appendChild(el);
   styleOnce();
+
+  // search: hides buttons that do not match, and groups left empty
+  const q = el.querySelector('#lab-q');
+  q.oninput = () => {
+    const t = q.value.trim().toLowerCase();
+    el.querySelectorAll('.lab-group').forEach(g => {
+      const title = g.querySelector('legend').textContent.toLowerCase();
+      let any = false;
+      g.querySelectorAll('button').forEach(b => {
+        const hit = !t || b.textContent.toLowerCase().includes(t) || title.includes(t);
+        b.hidden = !hit;
+        any ||= hit;
+      });
+      g.hidden = !any;
+    });
+  };
+  q.focus();
 
   // drag by the header
   const head = el.querySelector('header');
@@ -83,6 +101,8 @@ function styleOnce() {
       background: var(--panel); color: var(--ink); border: 2px solid var(--gold, #c9a24a); border-radius: 10px; box-shadow: 0 10px 34px rgba(0, 0, 0, .55); font-size: 13px; }
     #anim-lab header { display: flex; gap: 8px; align-items: center; padding: 8px 10px; cursor: move; border-bottom: 1px solid var(--line); }
     #anim-lab header .icon-btn { margin-left: auto; }
+    #anim-lab #lab-q { margin: 8px 10px 0; width: calc(100% - 20px); box-sizing: border-box; }
+    #anim-lab [hidden] { display: none !important; }
     #anim-lab .lab-body { overflow: auto; padding: 8px 10px 12px; }
     #anim-lab .lab-group { border: 1px solid var(--line); border-radius: 8px; margin: 0 0 8px; padding: 4px 8px 8px; }
     #anim-lab legend { padding: 0 6px; color: var(--muted); font-size: 12px; }

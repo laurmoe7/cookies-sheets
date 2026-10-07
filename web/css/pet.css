@@ -248,7 +248,7 @@ html[data-motion="off"] #cookie *, html[data-motion="off"] #cookie { animation: 
 html[data-theme="tome"] .cookie-bubble { background: #bba97f; color: #261a0b; border-color: #8a6a25; font-family: var(--serif, Georgia, serif); }
 html[data-theme="tome"] @media (max-height: 520px) { #cookie-slot { display: none; } }
 #cookie .brows path { fill: none; stroke: var(--pet-ink); stroke-width: 3.4; stroke-linecap: round; transition: transform .2s; }
-#cookie[data-eyes="sparkle"] .brows, #cookie[data-eyes="happy"] .brows, #cookie[data-eyes="closed"] .brows, #cookie[data-eyes="squint"] .brows { opacity: 0; }
+#cookie[data-eyes="sparkle"] .brows, #cookie[data-eyes="happy"] .brows, #cookie[data-eyes="closed"] .brows, #cookie[data-eyes="squint"] .brows, #cookie[data-eyes="xx"] .brows, #cookie[data-eyes="dizzy"] .brows { opacity: 0; }
 #cookie[data-eyes="sparkle"] .brows { opacity: 0; }
 #cookie.eyewide .brows { transform: translateY(-4px); }
 
@@ -263,11 +263,6 @@ html[data-theme="tome"] @media (max-height: 520px) { #cookie-slot { display: non
 #cookie .tear { fill: #a9dcff; stroke: var(--pet-ink); stroke-width: 1.2; }
 @keyframes star-flash { 0%, 100% { fill: var(--pet-star); transform: scale(1); } 40% { fill: #fffbe8; transform: scale(1.15); } }
 @keyframes glint { 0%, 100% { opacity: 0; } 40%, 60% { opacity: 1; } }
-/* an old scar on his forehead: two crossed welts with pointed ends, tinted to the skin and softened so it blends in */
-#cookie .scar { filter: blur(.3px); }
-#cookie .scar path { fill: #c18672; stroke: #94604f; stroke-width: .5; stroke-linejoin: miter; stroke-miterlimit: 10; opacity: .78; }
-#cookie .scar .scar-hi { fill: none; stroke: #e2b8a3; stroke-width: .8; stroke-linecap: butt; opacity: .55; }
-#cookie .scar .scar-st { fill: none; stroke: #7a4a3c; stroke-width: .7; stroke-linecap: butt; opacity: .4; }
 #cookie[data-eyes="squint"] .line path { stroke-width: 3.8; }
 #cookie.puff .cig-ember { opacity: 1; fill: #ff9a3c; }
 #cookie.puff .cig-smoke path { animation-duration: 1.3s; stroke-width: 3.4; }
@@ -278,10 +273,21 @@ html[data-theme="tome"] @media (max-height: 520px) { #cookie-slot { display: non
 .cookie-prop.ring.r2 { width: 9px; height: 5px; }
 .cookie-prop.ash { left: calc(2px + 94px * var(--cs)); top: calc(100px * var(--cs)); width: 3px; height: 3px; border-radius: 50%; background: #9a948e; opacity: 0; animation: cookie-ash 1.2s ease-in forwards; }
 .cookie-prop.ash.a2 { left: calc(2px + 98px * var(--cs)); background: #ff8a3c; width: 2px; height: 2px; }
-.cookie-prop.flame { left: calc(2px + 96px * var(--cs)); top: calc(86px * var(--cs)); width: 9px; height: 15px; border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%; background: radial-gradient(ellipse at 50% 75%, #fff6b0 0, #ffb53c 45%, rgba(255, 90, 20, .8) 100%); transform-origin: 50% 100%; animation: cookie-flame .9s ease-in-out forwards; }
+.cookie-prop.lighter { left: calc(2px + 93.4px * var(--cs) - 5px); top: calc(97.8px * var(--cs) - 13px); width: 10px; height: 30px; transform-origin: 50% 90%; animation: cookie-lighter 1.8s ease-in-out forwards; }
+.cookie-prop.lighter b { position: absolute; display: block; }
+.lt-body { left: 0; top: 14px; width: 10px; height: 15px; border-radius: 2px; border: 1px solid #3a2a22; background: linear-gradient(90deg, #8a8f98, #eef0f4 45%, #8a8f98); box-sizing: border-box; }
+.lt-body::before { content: ""; position: absolute; left: -1px; top: -1px; width: 10px; height: 4px; border-radius: 2px 2px 0 0; background: #c9a24a; border: 1px solid #3a2a22; box-sizing: content-box; }
+.lt-flame { left: .5px; top: 0; width: 9px; height: 15px; border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%; background: radial-gradient(ellipse at 50% 75%, #fff6b0 0, #ffb53c 45%, rgba(255, 90, 20, .8) 100%); transform-origin: 50% 100%; opacity: 0; animation: cookie-flame 1.8s ease-in-out forwards; }
 .cookie-prop.spit { left: calc(2px + 86px * var(--cs)); top: calc(96px * var(--cs)); width: 5px; height: 5px; border-radius: 50%; background: #cfe9ff; border: 1px solid #7fa8c9; animation: cookie-spit .8s cubic-bezier(.3, .6, .6, 1) forwards; }
 @keyframes cookie-ring { 0% { opacity: 0; transform: translate(0, 0) scale(.4); } 15% { opacity: .9; } 100% { opacity: 0; transform: translate(46px, -34px) scale(3.4); } }
 @keyframes cookie-ash { 0% { opacity: 0; transform: translateY(0); } 15% { opacity: 1; } 100% { opacity: 0; transform: translateY(calc(40px * var(--cs))); } }
-@keyframes cookie-flame { 0% { opacity: 0; transform: scale(.3, .3); } 25% { opacity: 1; transform: scale(1, 1.15); } 55% { opacity: 1; transform: scale(.85, 1.3) skewX(6deg); } 80% { opacity: .9; transform: scale(1, 1) skewX(-6deg); } 100% { opacity: 0; transform: scale(.3, .3); } }
+@keyframes cookie-flame { 0%, 26% { opacity: 0; transform: scale(.2); } 33% { opacity: 1; transform: scale(1, 1.2); } 46% { opacity: 1; transform: scale(.88, 1.3) skewX(6deg); } 60% { opacity: 1; transform: scale(1, 1.1) skewX(-6deg); } 72% { opacity: 1; transform: scale(.9, 1.25) skewX(4deg); } 80%, 100% { opacity: 0; transform: scale(.2); } }
 @keyframes cookie-spit { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(70px, 36px); } }
 html[data-motion="off"] .cookie-prop { display: none; }
+
+/* more eyes: wink, X (dead), dizzy spirals and slanted evil eyes */
+#cookie[data-eyes="wink"] [data-eyes="wink"], #cookie[data-eyes="xx"] [data-eyes="xx"], #cookie[data-eyes="dizzy"] [data-eyes="dizzy"], #cookie[data-eyes="evil"] [data-eyes="evil"] { display: inline; }
+#cookie [data-eyes="dizzy"] path { stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: cookie-dizzy .7s linear infinite; }
+#cookie [data-eyes="xx"] path { stroke-width: 3.4; }
+@keyframes cookie-dizzy { to { transform: rotate(360deg); } }
+@keyframes cookie-lighter { 0% { opacity: 0; transform: translate(28px, 24px) rotate(28deg); } 22% { opacity: 1; transform: none; } 78% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translate(28px, 24px) rotate(28deg); } }

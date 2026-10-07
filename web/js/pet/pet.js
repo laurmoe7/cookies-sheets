@@ -18,6 +18,16 @@ const FACES = {
   nervous: { eyes: 'open', mouth: 'wavy', arms: 'cover', x: ['sweat'] },
   scratch: { eyes: 'open', mouth: 'wavy', arms: 'scratch', x: [] },
   mad: { eyes: 'squint', mouth: 'open', arms: 'clench', x: [] },
+  wink: { eyes: 'wink', mouth: 'smile', arms: 'idle', x: [] },
+  dead: { eyes: 'xx', mouth: 'o', arms: 'rest', x: [] },
+  dizzy: { eyes: 'dizzy', mouth: 'wavy', arms: 'idle', x: [] },
+  evil: { eyes: 'evil', mouth: 'smile', arms: 'rub', x: [] },
+  fakecry: { eyes: 'teary', mouth: 'wavy', arms: 'eyerub', x: [] },
+  shifty: { eyes: 'open', mouth: 'wavy', arms: 'idle', x: ['sweat'] },
+  sulk: { eyes: 'closed', mouth: 'wavy', arms: 'cover', x: [] },
+  gloat: { eyes: 'evil', mouth: 'open', arms: 'cheer', x: [] },
+  lighting: { eyes: 'squint', mouth: 'smile', arms: 'hold', x: [] },
+  panic: { eyes: 'open', mouth: 'o', arms: 'cover', x: ['shock', 'sweat'] },
 };
 const EXTRAS = ['steam', 'question', 'sweat', 'shock'];
 
@@ -25,7 +35,7 @@ const EXTRAS = ['steam', 'question', 'sweat', 'shock'];
 const REACT = {
   hello: { prio: 5, face: 'smug', move: 'hop' },
   welcome_new: { prio: 5, face: 'laugh', move: 'wiggle' },
-  dead: { prio: 5, face: 'laugh', move: 'boogie' },
+  dead: { prio: 5, face: 'gloat', move: 'boogie' },
   downed: { prio: 4, face: 'laugh', move: 'wiggle' },
   revived: { prio: 4, face: 'sneer', move: 'bob' },
   'level-up': { prio: 4, face: 'sneer', move: 'peek' },
@@ -42,9 +52,9 @@ const REACT = {
   'pool-spend': { prio: 1, face: 'smug', move: '' },
   'pool-regain': { prio: 1, face: 'smug', move: '' },
   summon: { prio: 3, face: 'shock', move: 'peek' },
-  'summon-dead': { prio: 2, face: 'laugh', move: 'wiggle' },
+  'summon-dead': { prio: 2, face: 'wink', move: 'wiggle' },
   'summon-gone': { prio: 1, face: 'smug', move: '' },
-  companion: { prio: 3, face: 'mad', move: 'sniff' },
+  companion: { prio: 3, face: 'evil', move: 'sniff' },
   item: { prio: 2, face: 'cute', move: 'peek' },
   'item-gone': { prio: 2, face: 'cute', move: '' },
   feat: { prio: 2, face: 'sneer', move: '' },
@@ -52,7 +62,7 @@ const REACT = {
   'gold-up': { prio: 2, face: 'cute', move: 'bob' },
   rich: { prio: 3, face: 'cute', move: 'hop' },
   'gold-down': { prio: 2, face: 'cute', move: '' },
-  splurge: { prio: 3, face: 'shock', move: 'wiggle' },
+  splurge: { prio: 3, face: 'panic', move: 'wiggle' },
   'buff-on': { prio: 1, face: 'sneer', move: '' },
   'buff-off': { prio: 1, face: 'smug', move: '' },
   'ability-hurt': { prio: 2, face: 'laugh', move: 'wiggle' },
@@ -62,22 +72,22 @@ const REACT = {
   poke: { prio: 5, face: 'mad', move: 'wiggle' },
   'poke-many': { prio: 5, face: 'mad', move: 'hophop' },
   idle: { prio: 1, face: 'smug', move: 'sniff' },
-  prank: { prio: 1, face: 'laugh', move: 'wiggle' },
-  steal: { prio: 1, face: 'cute', move: 'peek' },
-  boast: { prio: 1, face: 'smug', move: 'bob' },
-  threat: { prio: 1, face: 'mad', move: 'hopsmall' },
-  complain: { prio: 1, face: 'sneer', move: 'shuffle' },
+  prank: { prio: 1, face: 'wink', move: 'wiggle' },
+  steal: { prio: 1, face: 'shifty', move: 'peek' },
+  boast: { prio: 1, face: 'gloat', move: 'bob' },
+  threat: { prio: 1, face: 'evil', move: 'hopsmall' },
+  complain: { prio: 1, face: 'sulk', move: 'shuffle' },
   cig: { prio: 1, face: 'huff', move: '' },
   late: { prio: 1, face: 'sneer', move: '' },
   morning: { prio: 1, face: 'huff', move: '' },
   back: { prio: 3, face: 'sneer', move: 'hop' },
   hover: { prio: 3, face: 'sneer', move: '' },
-  'theme-tome': { prio: 5, face: 'cute', move: 'peek' },
+  'theme-tome': { prio: 5, face: 'wink', move: 'peek' },
   'theme-dark': { prio: 5, face: 'sneer', move: '' },
   'bleep-on': { prio: 5, face: 'mad', move: 'hophop' },
-  'bleep-off': { prio: 5, face: 'laugh', move: 'boogie' },
+  'bleep-off': { prio: 5, face: 'gloat', move: 'boogie' },
   'quiet-on': { prio: 5, face: 'mad', move: 'wiggle' },
-  'chatty-on': { prio: 5, face: 'laugh', move: 'hop' },
+  'chatty-on': { prio: 5, face: 'evil', move: 'hop' },
 };
 // How likely a line is at each chattiness, and the quiet gap he leaves between lines (ms).
 const TALK = { quiet: { odds: 0.3, gap: 45000 }, normal: { odds: 0.75, gap: 10000 }, chatty: { odds: 1, gap: 3500 } };
@@ -189,10 +199,11 @@ function speak(line, prio, key) {
   void bubble.offsetWidth;
   bubble.hidden = false;
   const ms = Math.min(9000, 2600 + text.length * 62);
-  face(line.cute ? 'cute' : r.face, ms);
+  const cuteFace = line.cute ? (Math.random() < 0.4 ? 'fakecry' : 'cute') : r.face;
+  face(cuteFace, ms);
   move(r.move);
   pet.dataset.mouth = 'chew';
-  setTimeout(() => { if (pet.dataset.mouth === 'chew') pet.dataset.mouth = FACES[line.cute ? 'cute' : r.face].mouth; }, Math.min(ms, 1500));
+  setTimeout(() => { if (pet.dataset.mouth === 'chew') pet.dataset.mouth = FACES[cuteFace].mouth; }, Math.min(ms, 1500));
   squawk();
   clearTimeout(bubbleTimer);
   bubbleTimer = setTimeout(() => { bubble.hidden = true; }, ms);
@@ -318,16 +329,17 @@ function glance(stops) {
 }
 
 /** A little prop (smoke ring, ash, spit) floating near his beak; `cls` picks its look in pet.css. */
-function prop(cls, ms, style = {}) {
+function prop(cls, ms, style = {}, html = '') {
   const e = document.createElement('i');
   e.className = 'cookie-prop ' + cls;
+  e.innerHTML = html;
   Object.assign(e.style, style);
   wrap.appendChild(e);
   setTimeout(() => e.remove(), ms);
 }
 
 /** Names of the idle moves below, in the same order (shown in the developer tool). */
-export const IDLE_NAMES = ['blink', 'look around', 'roll eyes', 'long drag', 'yawn', 'scratch', 'tap feet', 'sway', 'sniff', 'flick ash', 'sit down', 'glare', 'peek', 'nod off', 'smoke ring', 'flick ash', 'light up', 'spit', 'tantrum', 'strut', 'boogie', 'twirl', 'roll about', 'stare you down'];
+export const IDLE_NAMES = ['blink', 'look around', 'roll eyes', 'long drag', 'yawn', 'scratch', 'tap feet', 'sway', 'sniff', 'flick ash', 'sit down', 'glare', 'peek', 'nod off', 'smoke ring', 'flick ash', 'light up', 'spit', 'tantrum', 'strut', 'boogie', 'twirl', 'roll about', 'stare you down', 'wink', 'scheme', 'play dead', 'fake cry', 'get dizzy', 'shifty look', 'sulk', 'gloat'];
 
 const IDLE_MOVES = [
   () => { face('smug'); pet.dataset.eyes = 'closed'; later(180, () => { pet.dataset.eyes = 'open'; }); return 300; },                       // blink
@@ -346,7 +358,13 @@ const IDLE_MOVES = [
   () => { face('smug'); pet.dataset.eyes = 'closed'; later(1800, () => { face('shock', 700); move('hop', 500); }); return 2600; },       // nods off, wakes with a start
   () => { face('huff', 2400); later(500, () => { prop('ring', 1800); prop('ring r2', 2000, { animationDelay: '.35s' }); }); return 2400; },                  // blows a smoke ring
   () => { face('smug', 1600); move('hopsmall', 450); later(200, () => { prop('ash', 1300); prop('ash a2', 1300, { animationDelay: '.15s' }); }); return 1600; }, // flicks his ash
-  () => { face('huff', 2200); prop('flame', 900); return 2200; },                                                                       // lights up
+  () => {                                                                                                                              // flicks his lighter and lights up
+    face('lighting', 1500);
+    prop('lighter', 1800, {}, '<b class="lt-flame"></b><b class="lt-body"></b>');
+    later(650, () => { pet.classList.add('puff'); });
+    later(1600, () => { pet.classList.remove('puff'); face('huff', 1500); });
+    return 3100;
+  },                                                                       // lights up
   () => { face('sneer', 1200); pet.dataset.mouth = 'o'; later(250, () => prop('spit', 800)); return 1200; },                              // spits
   () => { face('mad', 2200); move('hophop', 1500); pet.classList.add('eyewide'); later(1400, () => pet.classList.remove('eyewide')); return 2200; }, // throws a tantrum
   () => { face('smug', 3000); move('waddle', 1800); return 3000; },                                                                     // struts
@@ -354,6 +372,14 @@ const IDLE_MOVES = [
   () => { face('smug', 1000); move('twirl', 800); return 1000; },                                                                       // twirls
   () => { face('sneer', 2400); move('roly', 2800); return 2800; },                                                                      // rolls about
   () => { face('mad', 2600); look(0, 1); lookLock = Date.now() + 2800; pet.classList.add('eyesquint'); later(1300, () => pet.classList.remove('eyesquint')); return 2600; }, // stares you down
+  () => { face('wink', 1400); move('hopsmall', 450); return 1400; },                                                                    // winks at you
+  () => { face('evil', 2600); move('bob', 1400); return 2600; },                                                                        // schemes, rubbing his wings
+  () => { face('dead', 2200); move('sit', 2600); later(2200, () => { face('shock', 700); move('hop', 500); }); return 3000; },         // plays dead
+  () => { face('fakecry', 2000); later(2000, () => face('laugh', 900)); return 3000; },                                                  // fake cries, then laughs
+  () => { face('dizzy', 2200); move('roly', 2800); return 2800; },                                                                      // gets dizzy
+  () => { face('shifty', 2400); return glance([[-3.4, 0, 500], [3.4, 0, 500], [-3.4, 0, 400], [3.4, 0, 500], [0, 0, 100]]); },          // looks around shiftily
+  () => { face('sulk', 2400); return 2400; },                                                                                           // sulks
+  () => { face('gloat', 1800); move('hop', 500); return 1800; },                                                                        // gloats
 ];
 
 /** Plays idle move number `i` (for trying them out); with no number, a random one. */

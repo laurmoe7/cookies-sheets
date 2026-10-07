@@ -3,9 +3,9 @@
 import { options } from './options.js';
 
 const FILES = {
-  levelUp: [['sounds/level-up.ogg'], 0.6],
-  heal: [['sounds/heal.ogg'], 0.7],
-  fullHeal: [['sounds/full-heal.ogg'], 0.7],
+  levelUp: [['sounds/level-up.ogg'], 0.65],
+  heal: [['sounds/heal.ogg'], 0.65],
+  fullHeal: [['sounds/full-heal.ogg'], 0.65],
   hit: [['sounds/hit-1.mp3', 'sounds/hit-2.ogg', 'sounds/hit-3.ogg', 'sounds/hit-4.ogg'], 0.65],
 };
 
