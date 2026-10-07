@@ -181,6 +181,11 @@ function overview(body, c, d) {
       </tbody></table>` : '<p class="muted">No weapons yet. Add one to see its attack and damage calculated.</p>'}
       <p class="small muted">Full attack uses BAB iteratives (${d.iteratives.map(sign).join('/')}). Buffs such as Power Attack, Haste, and Bless apply automatically. ${ref('Two-Weapon Fighting', 'Rules')} · ${ref('Critical Hits', 'Rules')}</p>
     </section>
+
+    <section class="card span2 quick-notes">
+      <h3>Notes</h3>
+      <textarea class="full" data-bind="quickNotes" rows="5" placeholder="Session notes, reminders, anything you want to see at a glance…">${esc(c.quickNotes || '')}</textarea>
+    </section>
   </div>`;
   wireCommon(body);
   wireImages(body, c);
@@ -313,7 +318,7 @@ function skills(body, c, d) {
       const def = SKILL_BY_NAME[s.name] || {};
       const multi = MULTI_SKILLS.includes(s.name);
       return `<tr class="${sd.untrainedBlocked ? 'untrained' : ''}" data-skill-row>
-        <td>${sd.isClass && !s.classSkill ? '<span class="cs" title="Class skill">●</span>' : chk(`skills.${i}.classSkill`, { title: 'Mark as class skill (traits, etc.)' })}</td>
+        <td>${sd.isClass && !s.classSkill ? '<span class="cs-dot" title="Class skill"></span>' : chk(`skills.${i}.classSkill`, { title: 'Mark as class skill (traits, etc.)' })}</td>
         <td>${ref(s.name.startsWith('Knowledge') ? 'Knowledge' : s.name, 'Skill', s.name)}${def.trained ? '<sup title="Trained only">T</sup>' : ''}${def.acp ? '<sup title="Armor check penalty applies">A</sup>' : ''}
           ${multi ? inp(`skills.${i}.sub`, { cls: 'w8 sub', ph: 'type', rerender: true }) : ''}</td>
         <td class="dim">${(def.ability || '').toUpperCase()}</td>

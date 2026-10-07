@@ -177,7 +177,7 @@ export function textField(path, value, { multiline = false, read = null, placeho
 
 /** Wire text fields once for the whole app. get(path) reads, set(path, value) saves. */
 export function initTextFields({ get, set }) {
-  let clickTimer = null;
+  let openedByClick = false;
   // A click anywhere in a table cell that holds a single text field counts as a click on that field.
   const fieldAt = target => {
     const tf = target.closest('.tf');
@@ -191,18 +191,17 @@ export function initTextFields({ get, set }) {
     if (!el || !el.classList.contains('readable') || el.querySelector('input,textarea')) return;
     const text = get(el.dataset.readPath) || '';
     if (!text) return; // nothing to read yet; double-click to write it
-    clearTimeout(clickTimer);
-    clickTimer = setTimeout(() => {
-      const title = (el.dataset.readTitlePath && get(el.dataset.readTitlePath)) || el.dataset.readTitle || 'Notes';
-      showCustom({ name: title, cat: el.dataset.readCat || '',
-        html: textToHtml(text) + '<p class="muted small">Double-click the text on the sheet to edit it.</p>' });
-    }, 260);
+    // Open straight away; waiting to tell a double-click apart made the panel feel laggy.
+    const title = (el.dataset.readTitlePath && get(el.dataset.readTitlePath)) || el.dataset.readTitle || 'Notes';
+    showCustom({ name: title, cat: el.dataset.readCat || '',
+      html: textToHtml(text) + '<p class="muted small">Double-click the text on the sheet to edit it.</p>' });
+    openedByClick = true;
   });
   document.addEventListener('dblclick', e => {
     const el = fieldAt(e.target);
     if (!el || el.querySelector('input,textarea')) return;
-    clearTimeout(clickTimer);
     e.preventDefault();
+    if (openedByClick) { closeDrawer(); openedByClick = false; } // the first click of the double-click opened it
     startEdit(el);
   });
   document.addEventListener('keydown', e => {
@@ -274,4 +273,36 @@ export function pickImage(maxSize = 800, { square = false } = {}) {
     };
     input.click();
   });
+}
+
+/** Styled tooltips: any element with a title (or data-tip) gets a tooltip in the app's look instead of the browser's. */
+export function initTooltips() {
+  const tip = document.createElement('div');
+  tip.id = 'tooltip';
+  tip.setAttribute('role', 'tooltip');
+  document.body.appendChild(tip);
+  let timer = null, cur = null;
+  const hide = () => { clearTimeout(timer); tip.classList.remove('show'); cur = null; };
+  const show = (el, text) => {
+    tip.textContent = text;
+    tip.classList.add('show');
+    const r = el.getBoundingClientRect(), t = tip.getBoundingClientRect();
+    let x = Math.min(Math.max(8, r.left + r.width / 2 - t.width / 2), window.innerWidth - t.width - 8);
+    let y = r.bottom + 8;
+    if (y + t.height > window.innerHeight - 8) y = Math.max(8, r.top - t.height - 8);
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+  };
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest?.('[title],[data-tip]');
+    if (!el || el === cur) return;
+    hide();
+    if (el.hasAttribute('title')) { el.dataset.tip = el.getAttribute('title'); el.removeAttribute('title'); }
+    const text = (el.dataset.tip || '').trim();
+    if (!text) return;
+    cur = el;
+    timer = setTimeout(() => show(el, text), 350);
+  });
+  document.addEventListener('mouseout', e => { if (cur && !cur.contains(e.relatedTarget)) hide(); });
+  for (const ev of ['mousedown', 'keydown', 'wheel', 'scroll']) document.addEventListener(ev, hide, true);
 }

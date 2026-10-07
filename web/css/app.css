@@ -320,3 +320,29 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .statblock b { font-family: var(--font); font-size: 12.5px; }
 .evo-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 4px 12px; font-size: 13px; }
 .evo-list label { display: flex; gap: 6px; align-items: center; }
+
+/* ---------- tooltips ---------- */
+#tooltip { position: fixed; z-index: 400; max-width: 340px; padding: 7px 10px; border-radius: 8px; background: var(--panel-2, var(--panel)); color: var(--ink);
+  border: 1px solid var(--line); box-shadow: 0 6px 20px rgba(0,0,0,.35); font-size: 12.5px; line-height: 1.4; white-space: pre-line; pointer-events: none;
+  opacity: 0; transform: translateY(-3px); transition: opacity .12s, transform .12s; }
+#tooltip.show { opacity: 1; transform: none; }
+
+/* ---------- class-skill dot ---------- */
+.skills-tbl th:first-child, .skills-tbl td:first-child { text-align: center; width: 36px; }
+.cs-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); vertical-align: middle; }
+.quick-notes textarea { width: 100%; min-height: 110px; resize: vertical; }
+
+/* ---------- sheet search ---------- */
+#sheet-search-wrap { position: relative; }
+#sheet-search { width: 260px; }
+#sheet-results { position: absolute; right: 0; top: calc(100% + 6px); width: 360px; max-height: 60vh; overflow: auto; z-index: 150; background: var(--panel);
+  border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 4px; }
+#sheet-results[hidden] { display: none; }
+#sheet-results .res { display: flex; gap: 8px; align-items: baseline; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+#sheet-results .res:hover, #sheet-results .res.sel { background: var(--accent-soft); }
+#sheet-results .res .kind { flex: none; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); min-width: 74px; }
+#sheet-results .res .nm { font-weight: 600; }
+#sheet-results .res .snip { color: var(--muted); font-size: 12px; }
+#sheet-results .none { padding: 10px; color: var(--muted); }
+@keyframes flash-hit { 0%, 60% { box-shadow: 0 0 0 3px var(--accent); background: var(--accent-soft); } 100% { box-shadow: 0 0 0 3px transparent; } }
+.flash-hit { animation: flash-hit 1.8s ease-out; border-radius: 4px; }

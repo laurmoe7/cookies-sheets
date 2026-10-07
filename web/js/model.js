@@ -32,6 +32,7 @@ export function newCharacter() {
     gear: [], money: { pp: 0, gp: 0, sp: 0, cp: 0 },
     spellbooks: {},
     notes: '',
+    quickNotes: '', // the Notes box at the bottom of the Overview tab
   };
 }
 

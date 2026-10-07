@@ -1,7 +1,8 @@
 import { api } from './api.js';
 import { compute, sign } from './calc.js';
 import { newCharacter, migrate } from './model.js';
-import { $, $$, getPath, setPath, toast, showEntry, closeDrawer, debounce, modal, initTextFields } from './ui.js';
+import { $, $$, getPath, setPath, toast, showEntry, closeDrawer, debounce, modal, initTextFields, initTooltips } from './ui.js';
+import { initSheetSearch } from './sheetsearch.js';
 import { renderHome } from './views/home.js';
 import { renderSheet } from './views/sheet.js';
 import { renderLevelUp } from './views/levelup.js';
@@ -55,6 +56,7 @@ export function refreshCalc(root = document) {
 
 function updateHeader() {
   const c = state.char;
+  $('#sheet-search-wrap').hidden = !(c && state.view === 'sheet');
   const av = $('#char-avatar');
   av.hidden = !(c && c.avatar);
   if (c && c.avatar && av.getAttribute('src') !== c.avatar) av.src = c.avatar;
@@ -113,6 +115,8 @@ function onInput(e) {
 
 async function init() {
   document.addEventListener('input', onInput);
+  initTooltips();
+  initSheetSearch();
   initTextFields({
     get: path => (state.char ? getPath(state.char, path) : ''),
     set: (path, v) => { if (state.char) { setPath(state.char, path, v); changed(); } },
