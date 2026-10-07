@@ -13,6 +13,7 @@ import { summonSpell } from '../summons.js';
 import { renderSummons, chooseSummon } from './summons.js';
 import { renderCompanions } from './companions.js';
 import { playPageTurn, snapshotPage } from '../options.js';
+import { hpSegments } from '../bars.js';
 import { renderResources, resourceBlock, wire as wireResources } from './resources.js';
 
 const ICONS = {
@@ -227,6 +228,7 @@ function overview(body, c, d) {
     $('#bab-text').textContent = dd.iteratives.map(sign).join('/');
     const pct = Math.max(0, Math.min(100, dd.hp.current / Math.max(1, dd.hp.max) * 100));
     $('#hp-fill').style.width = pct + '%';
+    $('#hp-fill').parentElement.style.setProperty('--seg', hpSegments(dd.hp.max));
     $('#hp-fill').className = pct <= 25 ? 'low' : pct <= 50 ? 'mid' : '';
     const cur = dd.hp.current, nl = num(c.hp.nonlethal);
     const conScore = dd.abilities.con.score;

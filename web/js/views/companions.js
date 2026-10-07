@@ -6,6 +6,7 @@ import { classLevels, sign, num } from '../calc.js';
 import { computeCompanion, newCompanion, withCompanionSources, ANIMAL_SKILLS, EIDOLON_SKILLS, skillAbility } from '../companions.js';
 import { classFeatures, archetypesOf } from '../features.js';
 import { linkTerms } from '../termlinks.js';
+import { hpSegments } from '../bars.js';
 import { SKILLS } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
@@ -139,7 +140,7 @@ function topPanels(comp, s, p) {
     <section class="card hp has-portrait ${state}">
       <div class="hp-main"><h3>Hit Points</h3>
         <div class="hp-big">${cur}<span class="muted"> / </span>${max}</div>
-        <div class="hp-bar"><div class="${pct <= 25 ? 'low' : pct <= 50 ? 'mid' : ''}" style="width:${pct}%"></div></div>
+        <div class="hp-bar" style="--seg:${hpSegments(max)}"><div class="${pct <= 25 ? 'low' : pct <= 50 ? 'mid' : ''}" style="width:${pct}%"></div></div>
         <div class="row"><input type="number" class="num w4" data-chp-amt placeholder="0" min="0">
           <button class="btn danger" data-chp="dmg">Damage</button><button class="btn good" data-chp="heal">Heal</button>
           <button class="btn" data-chp="full" title="Heal to full hit points"><span class="heart">♥</span> Full heal</button></div>
