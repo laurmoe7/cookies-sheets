@@ -50,26 +50,28 @@ def burn(corner, seed, size=170):
     cx, cy = {'tl': (0, 0), 'tr': (1, 0), 'bl': (0, 1), 'br': (1, 1)}[corner]
     return uri(
         f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}'><defs>"
-        f"<radialGradient id='g' cx='{cx}' cy='{cy}' r='1' gradientUnits='objectBoundingBox'><stop offset='.12' stop-color='#000' stop-opacity='1'/><stop offset='.62' stop-color='#000' stop-opacity='0'/></radialGradient>"
+        f"<radialGradient id='g' cx='{cx}' cy='{cy}' r='1' gradientUnits='objectBoundingBox'><stop offset='.05' stop-color='#000' stop-opacity='.9'/><stop offset='.5' stop-color='#000' stop-opacity='0'/></radialGradient>"
         "<filter id='b' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>"
         f"<feTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='4' seed='{seed}' result='n'/>"
         "<feColorMatrix in='n' type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1 0 0 0 0' result='na'/>"
         "<feComposite in='SourceGraphic' in2='na' operator='arithmetic' k1='0' k2='1.6' k3='-.8' k4='0' result='m'/>"
-        "<feComponentTransfer in='m' result='char'><feFuncA type='linear' slope='9' intercept='-1.5'/></feComponentTransfer>"
-        "<feComponentTransfer in='m' result='rim'><feFuncA type='linear' slope='5' intercept='-.1'/></feComponentTransfer>"
-        "<feFlood flood-color='#6a3a14' flood-opacity='.75' result='f1'/><feComposite in='f1' in2='rim' operator='in' result='r1'/>"
-        "<feFlood flood-color='#150902' flood-opacity='.94' result='f2'/><feComposite in='f2' in2='char' operator='in' result='c1'/>"
-        "<feMerge><feMergeNode in='r1'/><feMergeNode in='c1'/></feMerge></filter></defs>"
+        "<feComponentTransfer in='m' result='char'><feFuncA type='linear' slope='4' intercept='-.55'/></feComponentTransfer>"
+        "<feComponentTransfer in='m' result='rim'><feFuncA type='linear' slope='3' intercept='-.05'/></feComponentTransfer>"
+        "<feFlood flood-color='#6a3a14' flood-opacity='.42' result='f1'/><feComposite in='f1' in2='rim' operator='in' result='r1'/>"
+        "<feFlood flood-color='#2a1608' flood-opacity='.6' result='f2'/><feComposite in='f2' in2='char' operator='in' result='c1'/>"
+        "<feMerge result='all'><feMergeNode in='r1'/><feMergeNode in='c1'/></feMerge><feGaussianBlur in='all' stdDeviation='1.1'/></filter></defs>"
         "<rect width='100%' height='100%' fill='url(#g)' filter='url(#b)'/></svg>")
 
 
 # Pages of one book: the same paper colour, but each sheet has its own crumples, light direction and burnt side.
 EDGE = 'rgba(255,238,196,.16) 0%, rgba(0,0,0,0) 40%, rgba(24,12,3,.5) 100%'
 PAPERS = [
-    dict(at='50% 38%', seed=11, az=225, freq='.011', scale=1.2, burn='inset 0 0 40px 2px rgba(25,12,4,.5)', marks=''),
-    dict(at='34% 54%', seed=23, az=300, freq='.014', scale=1.5, burn='inset 14px -8px 44px -6px rgba(25,12,4,.55)', marks='burn'),
-    dict(at='64% 42%', seed=37, az=140, freq='.009', scale=1.0, burn='inset -14px 10px 44px -8px rgba(25,12,4,.5)', marks='tear'),
-    dict(at='47% 62%', seed=52, az=20, freq='.016', scale=1.3, burn='inset 0 12px 40px -4px rgba(25,12,4,.5), inset 0 -8px 28px -8px rgba(25,12,4,.35)', marks='both'),
+    dict(at='50% 38%', seed=11, az=225, freq='.011', scale=1.2, burn='inset 0 0 40px 2px rgba(25,12,4,.5)', marks=[]),
+    dict(at='34% 54%', seed=23, az=300, freq='.014', scale=1.5, burn='inset 14px -8px 44px -6px rgba(25,12,4,.5)', marks=[('br', 7, 130)]),
+    dict(at='64% 42%', seed=37, az=140, freq='.009', scale=1.0, burn='inset -14px 10px 44px -8px rgba(25,12,4,.45)', marks=['tear']),
+    dict(at='42% 60%', seed=52, az=20, freq='.016', scale=1.3, burn='inset 0 12px 40px -4px rgba(25,12,4,.45), inset 0 -8px 28px -8px rgba(25,12,4,.3)', marks=[]),
+    dict(at='58% 34%', seed=66, az=200, freq='.012', scale=1.1, burn='inset 10px 6px 40px -6px rgba(25,12,4,.45)', marks=[('bl', 19, 110)]),
+    dict(at='36% 48%', seed=81, az=330, freq='.013', scale=1.4, burn='inset -8px -10px 42px -6px rgba(25,12,4,.5)', marks=['corner', ('tl', 31, 90)]),
 ]
 
 
@@ -82,19 +84,21 @@ TEAR_CORNER = ("polygon(0 0, calc(100% - 44px) 0, calc(100% - 37px) 8px, calc(10
 
 def paper_rules():
     out = []
+    n = len(PAPERS)
     for i, p in enumerate(PAPERS, 1):
-        sel = f'html[data-theme="tome"] .card:nth-of-type(4n+{i})' if i < 4 else 'html[data-theme="tome"] .card:nth-of-type(4n)'
+        sel = f'html[data-theme="tome"] .card:nth-of-type({n}n+{i})' if i < n else f'html[data-theme="tome"] .card:nth-of-type({n}n)'
         layers, extras = [], ''
-        if p['marks'] in ('burn',):
-            layers = [f"{burn('tr', 7)} no-repeat top right / 170px 170px", f"{burn('bl', 19, 120)} no-repeat bottom left / 120px 120px"]
-        if p['marks'] == 'tear':
-            extras = f"clip-path: {TEAR_EDGE}; "
-        if p['marks'] == 'both':
-            layers = [f"{burn('bl', 31, 150)} no-repeat bottom left / 150px 150px"]
-            extras = f"clip-path: {TEAR_CORNER}; "
+        for m in p['marks']:
+            if m == 'tear':
+                extras = f"clip-path: {TEAR_EDGE}; "
+            elif m == 'corner':
+                extras = f"clip-path: {TEAR_CORNER}; "
+            else:
+                corner, seed, size = m
+                pos = {'tl': 'top left', 'tr': 'top right', 'bl': 'bottom left', 'br': 'bottom right'}[corner]
+                layers.append(f"{burn(corner, seed, size)} no-repeat {pos} / {size}px {size}px")
         base = f"radial-gradient(ellipse at {p['at']}, {EDGE}), var(--grain), {paper(p['seed'], p['az'], p['freq'], p['scale'])}"
-        bg = ', '.join(layers + [base])
-        out.append(f"{sel} {{ background: {bg}; {extras}box-shadow: {p['burn']}, var(--shadow); }}")
+        out.append(f"{sel} {{ background: {', '.join(layers + [base])}; {extras}box-shadow: {p['burn']}, var(--shadow); }}")
     return '\n'.join(out)
 
 
@@ -159,11 +163,24 @@ html[data-theme="tome"] .res-bar::after { background: repeating-linear-gradient(
 html[data-theme="tome"] .tbl th, html[data-theme="tome"] .tbl td { border-color: #6f5e3c; }
 html[data-theme="tome"] .portrait-frame, html[data-theme="tome"] .pic-frame, html[data-theme="tome"] .char-icon.has { border-color: #b08a3e; outline: 1px solid #3a2a18; outline-offset: 2px; }
 
-/* ribbon bookmarks as tabs: unselected ones are pale linen-gold so they stand out from the leather */
-html[data-theme="tome"] .tabs { border-bottom: 2px solid #6a5535; padding-left: 8px; gap: 5px; }
-html[data-theme="tome"] .tab { background: #7b6741; color: #f0e3c0; border-radius: 0; padding: 19px 15px 8px; clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%); }
-html[data-theme="tome"] .tab:hover { background: #937c4d; color: #fff5d8; }
-html[data-theme="tome"] .tab.active, html[data-theme="tome"] .tab.active:hover { background: #8a3326; color: #f6ead0; }
+/* cloth bookmark ribbons as tabs: woven threads, darker selvedge bands, running stitches and a soft sheen, with a V-cut tail */
+html[data-theme="tome"] .tabs { border-bottom: 2px solid #6a5535; padding-left: 8px; gap: 6px; }
+html[data-theme="tome"] .tab { position: relative; border-radius: 0; padding: 19px 16px 9px; color: #f6ecce; text-shadow: 0 1px 1px rgba(30,16,4,.7);
+  clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%);
+  background-color: #7b6741;
+  background-image: linear-gradient(90deg, #5a4826 0, #5a4826 3px, transparent 3px, transparent calc(100% - 3px), #5a4826 calc(100% - 3px)),
+    linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,244,210,.13) 50%, rgba(0,0,0,.22)),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.10) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(255,240,200,.08) 0 1px, transparent 1px 3px); }
+html[data-theme="tome"] .tab::after { content: ""; position: absolute; top: 16px; bottom: 5px; left: 6px; right: 6px; pointer-events: none;
+  border-left: 1px dashed rgba(244,226,180,.55); border-right: 1px dashed rgba(244,226,180,.55); }
+html[data-theme="tome"] .tab:hover { background-color: #94804f; color: #fff6dc; }
+html[data-theme="tome"] .tab.active, html[data-theme="tome"] .tab.active:hover { background-color: #8e3427; color: #fbefd2;
+  background-image: linear-gradient(90deg, #5c1d14 0, #5c1d14 3px, transparent 3px, transparent calc(100% - 3px), #5c1d14 calc(100% - 3px)),
+    linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,200,170,.2) 50%, rgba(0,0,0,.28)),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.12) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(255,210,190,.08) 0 1px, transparent 1px 3px); }
+html[data-theme="tome"] .tab.active::after { border-left-color: rgba(232,190,100,.8); border-right-color: rgba(232,190,100,.8); }
 
 /* tome scroll bars: leather track, brass thumb */
 html[data-theme="tome"] ::-webkit-scrollbar-track { background: #1a1209; border-left: 1px solid #0e0905; }

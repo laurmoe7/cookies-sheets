@@ -27,7 +27,7 @@ const ord = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 - 20) % 10] || ['th', 's
 const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
 
 export async function renderCompanions(body, c) {
-  body.innerHTML = '<p class="muted pad">Loading companion rules…</p>';
+  body.innerHTML = '<section class="card"><p class="muted">Loading companion rules…</p></section>';
   let data;
   try { data = await loadData(); } catch (e) { body.innerHTML = `<p class="bad pad">Couldn't load companion data: ${esc(e.message)}</p>`; return; }
   c.companions ||= [];
