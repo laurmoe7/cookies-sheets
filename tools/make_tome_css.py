@@ -17,10 +17,10 @@ def uri(svg):
 def paper(seed, azimuth, freq, scale, size=520):
     """One sheet of dim parchment (opaque): the same colour every time, with its own crumples and fibres."""
     return uri(
-        f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}'><filter id='c' x='0' y='0' width='100%' height='100%'>"
+        f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}'><filter id='c' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>"
         f"<feTurbulence type='fractalNoise' baseFrequency='{freq}' numOctaves='3' seed='{seed}' stitchTiles='stitch' result='n'/>"
         f"<feDiffuseLighting in='n' surfaceScale='{scale}' diffuseConstant='1' lighting-color='#fff'><feDistantLight azimuth='{azimuth}' elevation='58'/></feDiffuseLighting>"
-        "<feColorMatrix values='1.2 0 0 0 -.717  0 1.2 0 0 -.776  0 0 1.2 0 -.874  0 0 0 0 1'/></filter>"
+        "<feColorMatrix values='1.2 0 0 0 -.3786  0 1.2 0 0 -.4416  0 0 1.2 0 -.5666  0 0 0 0 1'/></filter>"
         "<rect width='100%' height='100%' filter='url(#c)'/></svg>")
 
 
@@ -45,23 +45,56 @@ LEATHER = uri(
     "<rect width='100%' height='100%' filter='url(#k)' opacity='.16'/><rect width='100%' height='100%' filter='url(#p)' opacity='.16'/>"
     "<rect width='100%' height='100%' filter='url(#f)' opacity='.3'/></svg>")
 
+def burn(corner, seed, size=170):
+    """A scorched corner: charred, ragged, with a brown scorch rim. Drawn once at a fixed size and tucked into a corner of a page."""
+    cx, cy = {'tl': (0, 0), 'tr': (1, 0), 'bl': (0, 1), 'br': (1, 1)}[corner]
+    return uri(
+        f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}'><defs>"
+        f"<radialGradient id='g' cx='{cx}' cy='{cy}' r='1' gradientUnits='objectBoundingBox'><stop offset='.12' stop-color='#000' stop-opacity='1'/><stop offset='.62' stop-color='#000' stop-opacity='0'/></radialGradient>"
+        "<filter id='b' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>"
+        f"<feTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='4' seed='{seed}' result='n'/>"
+        "<feColorMatrix in='n' type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1 0 0 0 0' result='na'/>"
+        "<feComposite in='SourceGraphic' in2='na' operator='arithmetic' k1='0' k2='1.6' k3='-.8' k4='0' result='m'/>"
+        "<feComponentTransfer in='m' result='char'><feFuncA type='linear' slope='9' intercept='-1.5'/></feComponentTransfer>"
+        "<feComponentTransfer in='m' result='rim'><feFuncA type='linear' slope='5' intercept='-.1'/></feComponentTransfer>"
+        "<feFlood flood-color='#6a3a14' flood-opacity='.75' result='f1'/><feComposite in='f1' in2='rim' operator='in' result='r1'/>"
+        "<feFlood flood-color='#150902' flood-opacity='.94' result='f2'/><feComposite in='f2' in2='char' operator='in' result='c1'/>"
+        "<feMerge><feMergeNode in='r1'/><feMergeNode in='c1'/></feMerge></filter></defs>"
+        "<rect width='100%' height='100%' fill='url(#g)' filter='url(#b)'/></svg>")
+
+
 # Pages of one book: the same paper colour, but each sheet has its own crumples, light direction and burnt side.
-EDGE = 'rgba(255,232,180,.12) 0%, rgba(0,0,0,0) 38%, rgba(18,9,2,.6) 100%'
+EDGE = 'rgba(255,238,196,.16) 0%, rgba(0,0,0,0) 40%, rgba(24,12,3,.5) 100%'
 PAPERS = [
-    dict(at='50% 38%', seed=11, az=225, freq='.011', scale=1.2, burn='inset 0 0 40px 2px rgba(25,12,4,.5)'),
-    dict(at='34% 54%', seed=23, az=300, freq='.014', scale=1.5, burn='inset 14px -8px 44px -6px rgba(25,12,4,.55)'),
-    dict(at='64% 42%', seed=37, az=140, freq='.009', scale=1.0, burn='inset -14px 10px 44px -8px rgba(25,12,4,.5)'),
-    dict(at='47% 62%', seed=52, az=20, freq='.016', scale=1.3, burn='inset 0 12px 40px -4px rgba(25,12,4,.5), inset 0 -8px 28px -8px rgba(25,12,4,.35)'),
+    dict(at='50% 38%', seed=11, az=225, freq='.011', scale=1.2, burn='inset 0 0 40px 2px rgba(25,12,4,.5)', marks=''),
+    dict(at='34% 54%', seed=23, az=300, freq='.014', scale=1.5, burn='inset 14px -8px 44px -6px rgba(25,12,4,.55)', marks='burn'),
+    dict(at='64% 42%', seed=37, az=140, freq='.009', scale=1.0, burn='inset -14px 10px 44px -8px rgba(25,12,4,.5)', marks='tear'),
+    dict(at='47% 62%', seed=52, az=20, freq='.016', scale=1.3, burn='inset 0 12px 40px -4px rgba(25,12,4,.5), inset 0 -8px 28px -8px rgba(25,12,4,.35)', marks='both'),
 ]
+
+
+# Ragged tears are clip-paths on the page itself, so the leather shows through the gap.
+TEAR_EDGE = ("polygon(0 0, 100% 0, 100% 21%, calc(100% - 6px) 22.5%, calc(100% - 15px) 23.8%, calc(100% - 8px) 25.5%, calc(100% - 20px) 27%, calc(100% - 10px) 28.8%, "
+             "calc(100% - 17px) 30%, 100% 31.5%, 100% 100%, 38px 100%, 31px calc(100% - 8px), 24px calc(100% - 4px), 17px calc(100% - 12px), 9px calc(100% - 9px), 0 calc(100% - 22px))")
+TEAR_CORNER = ("polygon(0 0, calc(100% - 44px) 0, calc(100% - 37px) 8px, calc(100% - 28px) 4px, calc(100% - 21px) 15px, calc(100% - 12px) 11px, "
+               "calc(100% - 6px) 21px, 100% 18px, 100% 100%, 0 100%)")
 
 
 def paper_rules():
     out = []
     for i, p in enumerate(PAPERS, 1):
         sel = f'html[data-theme="tome"] .card:nth-of-type(4n+{i})' if i < 4 else 'html[data-theme="tome"] .card:nth-of-type(4n)'
-        out.append(
-            f"{sel} {{ background-image: radial-gradient(ellipse at {p['at']}, {EDGE}), var(--grain), {paper(p['seed'], p['az'], p['freq'], p['scale'])}; "
-            f"box-shadow: {p['burn']}, var(--shadow); }}")
+        layers, extras = [], ''
+        if p['marks'] in ('burn',):
+            layers = [f"{burn('tr', 7)} no-repeat top right / 170px 170px", f"{burn('bl', 19, 120)} no-repeat bottom left / 120px 120px"]
+        if p['marks'] == 'tear':
+            extras = f"clip-path: {TEAR_EDGE}; "
+        if p['marks'] == 'both':
+            layers = [f"{burn('bl', 31, 150)} no-repeat bottom left / 150px 150px"]
+            extras = f"clip-path: {TEAR_CORNER}; "
+        base = f"radial-gradient(ellipse at {p['at']}, {EDGE}), var(--grain), {paper(p['seed'], p['az'], p['freq'], p['scale'])}"
+        bg = ', '.join(layers + [base])
+        out.append(f"{sel} {{ background: {bg}; {extras}box-shadow: {p['burn']}, var(--shadow); }}")
     return '\n'.join(out)
 
 
@@ -109,18 +142,21 @@ html[data-theme="tome"] #topbar { background: var(--leather), #2c1f14; border-bo
 
 /* parchment pages: light in the middle, burnt toward the edges, each with its own crumples */
 html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-color: var(--panel); border: 1px solid #1f160c; box-shadow: var(--shadow); }
+html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer {
+  --ink: #261a0b; --muted: #3f2f18; --accent: #7a2415; --accent-soft: #c9b48a; --gold: #6b4f10; --good: #3b5714; --warn: #80520a; --bad: #8a2616;
+  --line: #5a4a2c; --panel-2: #9a8b68; --input: #3a2c19; color: var(--ink); }
 html[data-theme="tome"] .card { outline: 1px solid #2c1f10; outline-offset: -5px; padding: 17px 19px; }
 @PAPERS@
 html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-image: @SHEET@; }
-html[data-theme="tome"] .card .card { outline: none; background-image: none; box-shadow: none; background-color: #0000001f; }
+html[data-theme="tome"] .card .card { clip-path: none; outline: none; background-image: none; box-shadow: none; background-color: #0000001f; }
 html[data-theme="tome"] .stat, html[data-theme="tome"] .summon-card, html[data-theme="tome"] .mod { background-color: #00000026; border-color: #5a4a30; }
-html[data-theme="tome"] input, html[data-theme="tome"] select, html[data-theme="tome"] textarea { background: var(--input); border-color: #5a4a30; color: var(--ink); font-family: inherit; }
-html[data-theme="tome"] .btn { background: #5c4b2e; border-color: #7a6440; font-style: italic; }
+html[data-theme="tome"] input, html[data-theme="tome"] select, html[data-theme="tome"] textarea { background: var(--input); border-color: #5a4a30; color: #f0e3c0; font-family: inherit; }
+html[data-theme="tome"] .btn { background: #9a8b66; border-color: #5a4a2c; color: #261a0b; font-style: italic; }
 html[data-theme="tome"] .btn.primary { background: #8a3326; border-color: #8a3326; color: #f6ead0; font-style: normal; }
 html[data-theme="tome"] .hp-bar, html[data-theme="tome"] .res-bar { border-color: #5a4a30; background: #2a1d10; border-radius: 2px; }
 html[data-theme="tome"] #hp-fill, html[data-theme="tome"] .comp-top .hp-bar > div { background: #8a3326; }
 html[data-theme="tome"] .res-bar::after { background: repeating-linear-gradient(90deg, transparent 0, transparent calc(100% / var(--seg, 1) - 2px), #4a3c26 calc(100% / var(--seg, 1) - 2px), #4a3c26 calc(100% / var(--seg, 1))); }
-html[data-theme="tome"] .tbl th, html[data-theme="tome"] .tbl td { border-color: #6a5535; }
+html[data-theme="tome"] .tbl th, html[data-theme="tome"] .tbl td { border-color: #6f5e3c; }
 html[data-theme="tome"] .portrait-frame, html[data-theme="tome"] .pic-frame, html[data-theme="tome"] .char-icon.has { border-color: #b08a3e; outline: 1px solid #3a2a18; outline-offset: 2px; }
 
 /* ribbon bookmarks as tabs: unselected ones are pale linen-gold so they stand out from the leather */
@@ -141,6 +177,7 @@ html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
 @property --c { syntax: '<number>'; inherits: true; initial-value: 0; }
 .page-turn { position: absolute; z-index: 6; pointer-events: none; perspective: 1800px; perspective-origin: 15% 40%; }
 .pt-under, .pt-shadow { position: absolute; inset: 0; overflow: hidden; }
+.pt-under { background: var(--leather), #26190f; }
 .pt-shadow { background: linear-gradient(90deg, rgba(0,0,0,.55), rgba(0,0,0,0) 75%); opacity: 0; }
 .pt-sheet { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d; will-change: transform; }
 .pt-strip { position: absolute; top: 0; height: 100%; transform-style: preserve-3d; transform-origin: left center; transform: rotateY(calc(var(--c) * var(--k, -1.2deg))); }
@@ -153,7 +190,10 @@ html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
 .pt-clone { position: absolute; top: 0; }
 .page-turn.go .pt-sheet { animation: leaf-flip .95s linear forwards, leaf-bend .95s ease-in-out forwards; }
 .page-turn.go .pt-shadow { animation: leaf-shadow .95s ease-in-out forwards; }
-.page-turn.rev.go .pt-sheet, .page-turn.rev.go .pt-shadow { animation-direction: reverse; }
+.page-turn.go .pt-face { animation: leaf-fade .95s linear forwards; }
+.page-turn.rev.go .pt-sheet { animation: leaf-flip-rev .8s linear forwards, leaf-bend .8s ease-in-out forwards; }
+.page-turn.rev.go .pt-shadow { animation: leaf-shadow-rev .8s ease-in-out forwards; }
+.page-turn.rev.go .pt-face { animation: leaf-fade-rev .8s linear forwards; }
 @keyframes leaf-flip {
   0%   { transform: rotateY(0deg) skewY(0deg) rotateZ(0deg); animation-timing-function: cubic-bezier(.4, 0, .6, 1); }
   18%  { transform: rotateY(-22deg) skewY(-2.6deg) rotateZ(.6deg); animation-timing-function: cubic-bezier(.3, 0, .5, 1); }
@@ -161,6 +201,15 @@ html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
   76%  { transform: rotateY(-150deg) skewY(-1.4deg) rotateZ(.5deg); animation-timing-function: cubic-bezier(.2, .6, .4, 1); }
   100% { transform: rotateY(-180deg) skewY(0deg) rotateZ(0deg); }
 }
+@keyframes leaf-flip-rev {
+  0%   { transform: rotateY(-160deg) skewY(-1deg) rotateZ(.3deg); animation-timing-function: cubic-bezier(.2, .5, .5, 1); }
+  30%  { transform: rotateY(-104deg) skewY(2.2deg) rotateZ(-.7deg); animation-timing-function: cubic-bezier(.35, 0, .5, 1); }
+  62%  { transform: rotateY(-42deg) skewY(-1.8deg) rotateZ(.5deg); animation-timing-function: cubic-bezier(.3, 0, .4, 1); }
+  100% { transform: rotateY(0deg) skewY(0deg) rotateZ(0deg); }
+}
+@keyframes leaf-fade { 0%, 62% { opacity: 1; } 88%, 100% { opacity: 0; } }
+@keyframes leaf-fade-rev { 0% { opacity: 0; } 14%, 100% { opacity: 1; } }
+@keyframes leaf-shadow-rev { 0% { opacity: 0; } 55% { opacity: .75; } 100% { opacity: 0; } }
 @keyframes leaf-bend { 0% { --c: 0; } 28% { --c: 1; } 68% { --c: .8; } 100% { --c: 0; } }
 @keyframes leaf-shadow { 0% { opacity: 0; } 35% { opacity: .75; } 100% { opacity: 0; } }
 '''

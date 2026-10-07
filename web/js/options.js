@@ -17,7 +17,7 @@ export const START_TABS = [['overview', 'Overview'], ['skills', 'Skills'], ['fea
 
 export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
 
-export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, tooltips: true, motion: true, reopenLast: true, startTab: 'overview' };
+export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, tooltips: true, motion: true, reopenLast: true, startTab: 'overview', pageTurn: 'full' };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
@@ -27,6 +27,7 @@ export function sanitize(raw) {
   o.textSize = Number(o.textSize);
   if (!TEXT_SIZES.some(([v]) => v === o.textSize)) o.textSize = DEFAULTS.textSize;
   if (!START_TABS.some(([k]) => k === o.startTab)) o.startTab = DEFAULTS.startTab;
+  if (!['full', 'light', 'off'].includes(o.pageTurn)) o.pageTurn = DEFAULTS.pageTurn;
   for (const k of ['compact', 'tooltips', 'motion', 'reopenLast']) o[k] = !!o[k];
   return o;
 }
@@ -75,6 +76,7 @@ export function showOptions() {
         <label class="opt-row"><span><b>Compact layout</b><br><span class="muted small">Tighter cards and spacing, to fit more on screen.</span></span><input type="checkbox" data-opt="compact" ${o.compact ? 'checked' : ''}></label>
         <label class="opt-row"><span><b>Hover tooltips</b><br><span class="muted small">Short explanations when you hover a label or button.</span></span><input type="checkbox" data-opt="tooltips" ${o.tooltips ? 'checked' : ''}></label>
         <label class="opt-row"><span><b>Animations</b><br><span class="muted small">Turn off to remove fades and sliding bars.</span></span><input type="checkbox" data-opt="motion" ${o.motion ? 'checked' : ''}></label>
+        ${o.theme === 'tome' ? `<div class="opt-row"><span><b>Page turn</b><br><span class="muted small">Dusty tome only. Choose Light if page turns feel slow.</span></span><select data-opt="pageTurn">${[['full', 'Full (bending page)'], ['light', 'Light (flat page)'], ['off', 'Off']].map(([k, l]) => `<option value="${k}" ${o.pageTurn === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>` : ''}
         <label class="opt-row"><span><b>Reopen the last character</b><br><span class="muted small">On start, open the character you used last instead of the character list.</span></span><input type="checkbox" data-opt="reopenLast" ${o.reopenLast ? 'checked' : ''}></label>
         <div class="opt-row"><b>Sheet tab to open first</b><select data-opt="startTab">${START_TABS.map(([k, l]) => `<option value="${k}" ${o.startTab === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       </div>
@@ -115,7 +117,7 @@ function pruneBelow(live, clone, limit) {
 
 /** A copy of the page for the page turn, holding only the part that is on screen. null unless the tome theme and animations are on. */
 export function snapshotPage(body) {
-  if (current.theme !== 'tome' || !current.motion || !body) return null;
+  if (current.theme !== 'tome' || !current.motion || current.pageTurn === 'off' || !body) return null;
   const clone = body.cloneNode(true);
   clone.dataset.h = body.offsetHeight;
   clone.removeAttribute('id');
@@ -130,7 +132,7 @@ export function snapshotPage(body) {
  */
 export function playPageTurn(body, snapshot, back = false) {
   if (!snapshot || !body?.parentElement) return;
-  const STRIPS = 14;
+  const STRIPS = current.pageTurn === 'light' ? 1 : 14; // 'light' is one flat sheet: much less to draw on a slow machine
   const W = body.offsetWidth;
   const sw = W / STRIPS;
   const main = document.getElementById('main');
