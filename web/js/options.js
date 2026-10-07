@@ -104,15 +104,28 @@ export function showChangelog() {
   }, { wide: true });
 }
 
-/** Tome theme: a page turns over the tab body after you switch tabs. */
-export function playPageTurn(body) {
-  if (current.theme !== 'tome' || !current.motion || !body?.parentElement) return;
-  const page = document.createElement('div');
-  page.className = 'page-turn';
-  page.style.top = body.offsetTop + 'px';
-  page.style.height = Math.min(body.offsetHeight, 900) + 'px';
-  body.parentElement.appendChild(page);
-  void page.offsetWidth;
-  page.classList.add('go');
-  setTimeout(() => page.remove(), 700);
+/** A copy of the page being left, taken before it is redrawn, for the page turn. */
+export function snapshotPage(body) {
+  if (current.theme !== 'tome' || !current.motion || !body) return null;
+  const clone = body.cloneNode(true);
+  clone.removeAttribute('id');
+  clone.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+  return clone;
+}
+
+/** Tome theme: the old page (a snapshot) swings over from the spine like a turned leaf, uncovering the new page underneath. */
+export function playPageTurn(body, snapshot) {
+  if (!snapshot || !body?.parentElement) return;
+  const wrap = body.parentElement;
+  const h = Math.min(Math.max(body.offsetHeight, 240), (document.getElementById('main')?.clientHeight || 700) - body.offsetTop + 40);
+  const leaf = document.createElement('div');
+  leaf.className = 'page-turn';
+  leaf.style.top = body.offsetTop + 'px';
+  leaf.style.height = h + 'px';
+  leaf.innerHTML = '<div class="pt-front"></div><div class="pt-back"></div><div class="pt-shade"></div>';
+  leaf.firstChild.appendChild(snapshot);
+  wrap.appendChild(leaf);
+  void leaf.offsetWidth;
+  leaf.classList.add('go');
+  setTimeout(() => leaf.remove(), 1000);
 }

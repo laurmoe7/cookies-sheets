@@ -19,8 +19,8 @@ html[data-theme="tome"] {
   --font: Georgia, "Palatino Linotype", "Book Antiqua", serif;
   --serif: Georgia, "Palatino Linotype", "Book Antiqua", serif;
   --radius: 4px;
-  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 .30 0 0 0 0 .20 0 0 0 0 .08 0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  --stain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='.006' numOctaves='2' seed='9'/><feColorMatrix values='0 0 0 0 .36 0 0 0 0 .22 0 0 0 0 .08 0 0 0 1.1 -.35'/></filter><rect width='100%' height='100%' filter='url(%23b)'/></svg>");
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .30 0 0 0 0 .20 0 0 0 0 .08 0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --stain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='1600'><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='.004' numOctaves='2' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .36 0 0 0 0 .22 0 0 0 0 .08 0 0 0 1.1 -.35'/></filter><rect width='100%' height='100%' filter='url(%23b)'/></svg>");
 }
 html[data-theme="tome"] body { background: var(--bg); }
 html[data-theme="tome"] #main { background: var(--stain), var(--grain), #1f160d; box-shadow: inset 0 0 140px rgba(0, 0, 0, .65); }
@@ -49,12 +49,27 @@ html[data-theme="tome"] .portrait-frame, html[data-theme="tome"] .pic-frame, htm
 
 /* ribbon bookmarks as tabs */
 html[data-theme="tome"] .tabs { border-bottom: 2px solid #6a5535; padding-left: 8px; gap: 5px; }
-html[data-theme="tome"] .tab { background: #3a2a1a; color: #aa966c; border-radius: 0; padding: 9px 15px 17px; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%); }
+html[data-theme="tome"] .tab { background: #3a2a1a; color: #aa966c; border-radius: 0; padding: 19px 15px 8px; clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%); }
 html[data-theme="tome"] .tab:hover { background: #4a3721; color: var(--ink); }
 html[data-theme="tome"] .tab.active, html[data-theme="tome"] .tab.active:hover { background: #8a3326; color: #f6ead0; }
 
-/* the page turn drawn over the tab body when you switch tabs */
-.page-turn { position: absolute; left: 0; right: 0; z-index: 6; pointer-events: none; transform-origin: left center; transform: perspective(1400px) rotateY(0deg);
-  background: var(--grain), #7a6643; border-left: 4px solid #4a3822; border-radius: 0 3px 3px 0; opacity: 0; }
-.page-turn.go { opacity: .96; transform: perspective(1400px) rotateY(-179deg); transition: transform .65s ease-in-out, opacity .65s ease-in; }
-.page-turn.go.end { opacity: 0; }
+/* the page turn: the old page swings over from the spine, uncovering the new one */
+.page-turn { position: absolute; left: 0; right: 0; z-index: 6; pointer-events: none; transform-origin: left center; transform-style: preserve-3d;
+  transform: perspective(1500px) rotateY(0deg); }
+.page-turn.go { animation: leaf-turn .9s cubic-bezier(.45, .05, .35, 1) forwards; }
+.pt-front, .pt-back, .pt-shade { position: absolute; inset: 0; backface-visibility: hidden; overflow: hidden; border-radius: 0 3px 3px 0; }
+.pt-front { background: var(--stain), var(--grain), #1f160d; border-left: 4px solid #4a3822; }
+.pt-back { transform: rotateY(180deg); background: var(--grain), #6e5c3c; border-right: 4px solid #4a3822;
+  background-image: repeating-linear-gradient(0deg, transparent 0 16px, #00000022 16px 17px), var(--grain); }
+.pt-shade { background: linear-gradient(90deg, rgba(0,0,0,.55), rgba(0,0,0,0) 60%); opacity: 0; animation: leaf-shade .9s ease-in-out forwards; }
+@keyframes leaf-turn {
+  0% { transform: perspective(1500px) rotateY(0deg) skewY(0deg); }
+  45% { transform: perspective(1500px) rotateY(-80deg) skewY(-3deg); }
+  100% { transform: perspective(1500px) rotateY(-180deg) skewY(0deg); }
+}
+@keyframes leaf-shade { 0% { opacity: 0; } 40% { opacity: .85; } 100% { opacity: 0; } }
+
+/* tome scroll bars: leather track, brass thumb */
+html[data-theme="tome"] ::-webkit-scrollbar-track { background: #1a1209; border-left: 1px solid #0e0905; }
+html[data-theme="tome"] ::-webkit-scrollbar-thumb { background: #6a5535; border: 2px solid #1a1209; border-radius: 6px; }
+html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }

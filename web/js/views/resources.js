@@ -12,12 +12,15 @@ export function poolsFor(c) {
   return classResources(d.classLevels || {}, mods);
 }
 
+/** One segment per point, up to 40 (a bigger pool is drawn as 20 equal segments so the bar stays readable). */
+const segs = max => { const n = Math.max(1, Math.round(+max) || 1); return n <= 40 ? n : 20; };
+
 function counter(res, cur) {
   const pct = res.max ? Math.max(0, Math.min(100, cur / res.max * 100)) : 0;
   return `<div class="res-row" data-res="${esc(res.id)}">
     <div class="res-name"><a href="#" class="ref" data-entry="${esc(res.entry)}" data-cat="Class Feature">${esc(res.name)}</a>
       <span class="muted small">${esc(res.cls)}</span></div>
-    <div class="res-bar"><div style="width:${pct}%"></div></div>
+    <div class="res-bar" style="--seg:${segs(res.max)}"><div style="width:${pct}%"></div></div>
     <span class="stepper"><button data-res-d="-1" title="Spend one" aria-label="Spend one">−</button><button data-res-d="1" title="Regain one" aria-label="Regain one">＋</button></span>
     <b class="res-val">${cur} / ${res.max}</b>
     <button class="btn small ghost" data-res-reset title="Back to the start-of-day amount (${res.start})">Reset</button>
@@ -28,7 +31,7 @@ function custom(t, i) {
   const pct = t.max ? Math.max(0, Math.min(100, t.cur / t.max * 100)) : 0;
   return `<div class="res-row" data-tracker="${i}">
     <div class="res-name">${tf(`trackers.${i}.name`, { placeholder: 'Name (e.g. Bomb, Inspiration)' })}</div>
-    <div class="res-bar"><div style="width:${pct}%"></div></div>
+    <div class="res-bar" style="--seg:${segs(t.max)}"><div style="width:${pct}%"></div></div>
     <span class="stepper"><button data-tr-d="-1" aria-label="Spend one" title="Spend one">−</button><button data-tr-d="1" aria-label="Regain one" title="Regain one">＋</button></span>
     <b class="res-val">${t.cur} / <input type="number" class="num w3" data-bind="trackers.${i}.max" data-type="num" data-rerender value="${esc(t.max)}" title="Maximum"></b>
     <button class="btn small ghost" data-tr-reset title="Refill to maximum">Refill</button>

@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Latest', date: '2026-10-07',
     items: [
+      'Resource bars are split into one segment per point. Scroll bars match each theme. In the Dusty tome, the ribbon tabs now rise like bookmarks, the page turn swings the old page over, and the background texture tiles without a seam.',
       'New Dusty tome theme (Options → Theme): dim parchment pages on dark leather, ribbon-bookmark tabs, a page turn when you switch tabs. Light mode is gone; Classic dark is the default.',
       'Options window: theme, accent color, text size, compact layout, tooltips, animations, and what opens at start.',
       'Tab icons, and tabs that look like tabs. The picture beside the character name is now the button to change it.',

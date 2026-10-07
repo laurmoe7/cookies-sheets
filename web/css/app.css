@@ -467,3 +467,16 @@ html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="
 
 .warn-list { margin: 0 0 14px; padding-left: 20px; }
 .warn-list li { margin: 4px 0; }
+
+/* ---------- scroll bars ---------- */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--line); border: 2px solid var(--bg); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+::-webkit-scrollbar-corner { background: var(--bg); }
+::-webkit-scrollbar-button { display: none; }
+
+/* ---------- segmented resource bars ---------- */
+.res-bar { position: relative; height: 10px; border-radius: 4px; }
+.res-bar::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(90deg, transparent 0, transparent calc(100% / var(--seg, 1) - 2px), var(--panel) calc(100% / var(--seg, 1) - 2px), var(--panel) calc(100% / var(--seg, 1))); }

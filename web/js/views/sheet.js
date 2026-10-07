@@ -12,7 +12,7 @@ import { chooseArchetypes } from './archetypes.js';
 import { summonSpell } from '../summons.js';
 import { renderSummons, chooseSummon } from './summons.js';
 import { renderCompanions } from './companions.js';
-import { playPageTurn } from '../options.js';
+import { playPageTurn, snapshotPage } from '../options.js';
 import { renderResources, resourceBlock, wire as wireResources } from './resources.js';
 
 const ICONS = {
@@ -66,7 +66,7 @@ export function renderSheet(main) {
         <div class="grow"></div><span id="tabs-extra"></span>
       </div>
       <div id="tab-body"></div></div>`;
-    $$('.tab', main).forEach(b => (b.onclick = () => { if (state.sheetTab !== b.dataset.tab) { state.sheetTab = b.dataset.tab; state.turn = true; render(); } }));
+    $$('.tab', main).forEach(b => (b.onclick = () => { if (state.sheetTab !== b.dataset.tab) { state.turn = snapshotPage($('#tab-body')); state.sheetTab = b.dataset.tab; render(); } }));
   }
   $$('.tab', main).forEach(b => b.classList.toggle('active', b.dataset.tab === state.sheetTab));
   $('#tabs-extra', main).innerHTML = d.level === 0 ? '<button class="btn primary" data-goto-levelup>Choose 1st level class →</button>' : '';
@@ -79,7 +79,7 @@ export function renderSheet(main) {
   state.turn = false;
   const body = $('#tab-body', main);
   ({ overview, skills, feats, spells, gear, companions: renderCompanions, buffs, bio })[state.sheetTab](body, c, d);
-  if (turn) playPageTurn(body);
+  if (turn) playPageTurn(body, turn);
 }
 
 // =====================================================================
