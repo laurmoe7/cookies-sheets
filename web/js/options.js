@@ -32,6 +32,10 @@ export function sanitize(raw) {
   return o;
 }
 
+// The developer tools live in web/dev/, which is left out of the build and the zip, so there the button never appears.
+let devTools = null;
+fetch('dev/animlab.js', { method: 'HEAD' }).then(r => (r.ok ? import('../dev/animlab.js') : null)).then(m => { devTools = m; }).catch(() => {});
+
 let current = sanitize(null);
 export const options = () => current;
 
@@ -84,7 +88,7 @@ export function showOptions() {
         <div class="opt-row"><b>Swearing</b><div class="seg">${[['full', 'Full'], ['bleep', 'Bleeped']].map(([k, l]) => `<button class="seg-btn ${o.cookieSwear === k ? 'on' : ''}" data-opt="cookieSwear" data-v="${k}">${l}</button>`).join('')}</div></div>
         <label class="opt-row"><b>Cookie’s squawks</b><input type="checkbox" data-opt="cookieSound" ${o.cookieSound ? 'checked' : ''}></label>`}
       </div>
-      <div class="row end"><button class="btn ghost" data-changelog>What’s new</button><button class="btn ghost" data-ogl>Game content &amp; license</button><button class="btn ghost" data-reset>Reset to defaults</button></div>`;
+      <div class="row end"><button class="btn ghost" data-changelog>What’s new</button><button class="btn ghost" data-ogl>Game content &amp; license</button>${devTools ? '<button class="btn ghost" data-dev>Developer tools</button>' : ''}</div>`;
     };
     const set = (k, v) => { current = sanitize({ ...current, [k]: v }); save(); applyOptions(); draw(); };
     body.onclick = e => {
@@ -92,7 +96,7 @@ export function showOptions() {
       if (b) return set(b.dataset.opt, b.dataset.opt === 'textSize' ? +b.dataset.v : b.dataset.v);
       if (e.target.closest('[data-changelog]')) return showChangelog();
       if (e.target.closest('[data-ogl]')) return showLicense();
-      if (e.target.closest('[data-reset]')) { current = sanitize(null); save(); applyOptions(); draw(); }
+      if (e.target.closest('[data-dev]')) { e.target.closest('.modal-back')?.querySelector('[data-close]')?.click(); devTools.showAnimLab(); }
     };
     body.onchange = e => {
       const t = e.target.closest('[data-opt]');

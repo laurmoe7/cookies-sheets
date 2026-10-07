@@ -261,6 +261,9 @@ function glance(stops) {
   return t;
 }
 
+/** Names of the idle moves below, in the same order (shown in the developer tool). */
+export const IDLE_NAMES = ['blink', 'look around', 'roll eyes', 'long drag', 'yawn', 'scratch', 'tap feet', 'sway', 'sniff', 'flick ash', 'sit down', 'glare', 'peek', 'nod off'];
+
 const IDLE_MOVES = [
   () => { face('smug'); pet.dataset.eyes = 'closed'; later(180, () => { pet.dataset.eyes = 'open'; }); return 300; },                       // blink
   () => glance([[-3.4, 0, 700], [3.4, 0, 900], [0, 1.5, 300]]),                                                                          // look around
@@ -296,3 +299,12 @@ function scheduleMoves() {
     scheduleMoves();
   }, 5000 + Math.random() * 7000);
 }
+
+/** Says a line for any event type right now, ignoring his mood, options and cooldown (for the developer tool). */
+export function sayLine(type, vars = {}) {
+  const key = type;
+  const line = pickLine(key, { name: name || 'Fumu', n: 7, item: 'Longsword', spell: 'Fireball', summon: 'Eagle', hp: -3, con: 12, level: 5, max: 31, ...vars });
+  if (line) speak(line, 5, REACT[key] ? key : 'idle');
+}
+
+export { FACES, face, move };
