@@ -283,6 +283,7 @@ export function initTooltips() {
     const text = (el.dataset.tip || '').trim();
     if (!text) return;
     cur = el;
+    if (document.documentElement.dataset.tips === 'off') return;
     timer = setTimeout(() => show(el, text), 350);
   });
   document.addEventListener('mouseout', e => { if (cur && !cur.contains(e.relatedTarget)) hide(); });

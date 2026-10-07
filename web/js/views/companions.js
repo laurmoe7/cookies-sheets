@@ -144,13 +144,42 @@ function topPanels(comp, s, p) {
     <section class="card abilities"><h3>Ability Scores</h3>
       <table class="tbl"><thead><tr><th></th><th>Score</th><th>Mod</th></tr></thead><tbody>${ABIL.map(a => `<tr><th>${a.toUpperCase()}</th>
         <td class="big">${s.abilities[a] ?? '—'}</td><td class="big accent">${M(a)}</td></tr>`).join('')}</tbody></table></section>
-    <section class="card defense span2"><h3>Defense &amp; Offense</h3>
-      <div class="stat-row">${stat('AC', s.ac.total)}${stat('Touch', s.ac.touch)}${stat('Flat-footed', s.ac.flat)}${stat('CMD', s.cmd)}
-        ${stat('Fort', sign(s.saves.fort))}${stat('Ref', sign(s.saves.ref))}${stat('Will', sign(s.saves.will))}</div>
+    <section class="card defense"><h3>Defense</h3>
+      <div class="stat-row">${stat('AC', s.ac.total)}${stat('Touch', s.ac.touch)}${stat('Flat-footed', s.ac.flat)}${stat('CMD', s.cmd)}</div>
+      <p class="small muted">AC = 10 ${[s.mods.dex ? `${sign(s.mods.dex)} Dex` : '', s.natural ? `+${s.natural} natural` : '', s.sizeMods.ac ? `${sign(s.sizeMods.ac)} size` : ''].filter(Boolean).join(' ')}</p>
+      <table class="tbl saves"><thead><tr><th>Save</th><th>Total</th></tr></thead><tbody>
+        ${[['Fortitude', 'fort'], ['Reflex', 'ref'], ['Will', 'will']].map(([n, k]) => `<tr><th>${n}</th><td class="big accent">${sign(s.saves[k])}</td></tr>`).join('')}</tbody></table>
+      ${defenseLine(s)}
+    </section>
+    <section class="card offense"><h3>Offense</h3>
       <div class="stat-row">${stat('Init', sign(s.init))}${stat('BAB', sign(s.bab))}${stat('CMB', sign(s.cmb))}${stat('Speed', `${esc(String(s.speed))}`)}</div>
-      ${s.attacks.length ? `<p><b>Attacks</b> ${esc(s.attacks.map(a => a.text).join(', '))}</p>` : ''}
+      ${s.attacks.length ? `<table class="tbl"><thead><tr><th>Attack</th><th>Bonus</th><th>Damage</th></tr></thead><tbody>${s.attacks.map(a => `<tr>
+        <td>${a.count > 1 ? a.count + ' ' : ''}${esc(a.name)}${a.secondary ? ' <span class="dim small">(secondary)</span>' : ''}</td><td class="big accent">${sign(a.bonus)}</td>
+        <td>${esc(a.dice ? a.dice + (a.damage.slice(a.dice.length) || '') + (a.extra ? ' ' + a.extra : '') : '—')}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">No natural attacks.</p>'}
+      ${s.specialAttacks ? `<p><b>Special attacks</b> ${esc(s.specialAttacks)}</p>` : ''}
+    </section>
+    <section class="card span2"><h3>At a glance</h3>
+      <div class="chips">${glance(s).map(x => `<span class="chip on">${esc(x)}</span>`).join('')}</div>
+      ${s.specials.length ? `<h4>Special abilities</h4><div class="chips">${s.specials.map(x => `<a href="#" class="chip ref" data-entry="${esc(x.replace(/ \d+$/, ''))}" data-cat="Class Feature">${esc(x)}</a>`).join('')}</div>` : ''}
+      ${s.skills.length ? `<h4>Trained skills</h4><div class="stat-row">${s.skills.map(k => stat(esc(k.name), sign(k.total))).join('')}</div>` : ''}
     </section></div>`;
 }
+
+/** Short facts shown as chips: size and type, level, hit dice, senses, space and reach. */
+function glance(s) {
+  const type = s.kind === 'animal' ? 'animal' : s.kind === 'familiar' ? 'magical beast' : 'outsider';
+  const out = [`${s.size} ${type}`, `${s.kind === 'familiar' ? 'Master level' : 'Level'} ${s.level}`, `${s.hd} HD`];
+  if (s.kind === 'familiar') {
+    if (s.species.senses) out.push(s.species.senses);
+    if (s.species.space || s.species.reach) out.push(`Space ${s.species.space || '—'}, reach ${s.species.reach || '—'}`);
+  } else if (s.kind === 'animal') {
+    const sn = s.qualities.match(/low-light vision|darkvision[^,]*|scent|tremorsense[^,]*/gi);
+    if (sn) out.push(sn.join(', '));
+  } else out.push('Darkvision 60 ft.');
+  if (s.kind === 'animal') out.push(`${s.bonusTricks} bonus tricks`);
+  return out;
+}
+const defenseLine = s => (s.qualities && s.kind === 'animal' ? `<p class="small"><b>Qualities</b> ${esc(s.qualities)}</p>` : '');
 
 function companionCard(comp, i, levels, data, master) {
   const p = `companions.${i}`;

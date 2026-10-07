@@ -14,6 +14,18 @@ import { renderSummons, chooseSummon } from './summons.js';
 import { renderCompanions } from './companions.js';
 import { renderResources, resourceBlock, wire as wireResources } from './resources.js';
 
+const ICONS = {
+  overview: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  skills: '<path d="M4 6h10M18 6h2M4 12h3M11 12h9M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  feats: '<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/>',
+  spells: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
+  gear: '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V6a2 2 0 012-2h2a2 2 0 012 2v2M3 14h18"/>',
+  companions: '<circle cx="6" cy="10" r="1.8"/><circle cx="10" cy="6" r="1.8"/><circle cx="15" cy="6" r="1.8"/><circle cx="19" cy="10" r="1.8"/><path d="M12.5 12c-3 0-5.5 3-5.5 5.2 0 1.6 1.4 2.3 3 2 1-.2 1.6-.5 2.5-.5s1.5.3 2.5.5c1.6.3 3-.4 3-2 0-2.2-2.5-5.2-5.5-5.2z"/>',
+  buffs: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  bio: '<path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M8 8h7M8 12h7M8 16h4"/>',
+};
+const icon = k => `<svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
+
 const TABS = [
   ['overview', 'Overview'], ['skills', 'Skills'], ['feats', 'Feats & Abilities'], ['spells', 'Spells'],
   ['gear', 'Gear'], ['companions', 'Companions'], ['buffs', 'Buffs & Conditions'], ['bio', 'Bio & Notes'],
@@ -47,7 +59,7 @@ export function renderSheet(main) {
   const c = state.char;
   const d = state.derived;
   main.innerHTML = `<div class="page">
-    <div class="tabs" role="tablist">${TABS.map(([k, l]) => `<button class="tab ${state.sheetTab === k ? 'active' : ''}" data-tab="${k}">${l}</button>`).join('')}
+    <div class="tabs" role="tablist">${TABS.map(([k, l]) => `<button class="tab ${state.sheetTab === k ? 'active' : ''}" data-tab="${k}">${icon(k)}${l}</button>`).join('')}
       <div class="grow"></div>
       ${d.level === 0 ? '<button class="btn primary" data-goto-levelup>Choose 1st level class →</button>' : ''}
     </div>
@@ -735,9 +747,6 @@ function bio(body, c, d) {
   <section class="card">
     <h3>Identity</h3>
     <div class="img-row">
-      <span class="img-slot">${c.avatar ? `<img class="avatar-lg" src="${c.avatar}" alt="">` : ''}<span>
-        <button class="btn small" data-img="avatar">${c.avatar ? 'Change name icon' : '＋ Name icon'}</button>
-        ${c.avatar ? '<button class="btn small ghost" data-img-edit="avatar">Recenter</button><button class="btn small ghost" data-img-clear="avatar">Remove</button>' : ''}</span></span>
       <span class="img-slot"><button class="btn small" data-img="portrait">${c.portrait ? 'Change portrait' : '＋ Portrait'}</button>
         ${c.portrait ? '<button class="btn small ghost" data-img-edit="portrait">Recenter</button><button class="btn small ghost" data-img-clear="portrait">Remove</button>' : ''}</span>
     </div>

@@ -3,6 +3,8 @@ import { compute, sign } from './calc.js';
 import { newCharacter, migrate } from './model.js';
 import { $, $$, getPath, setPath, toast, showEntry, closeDrawer, debounce, modal, initTextFields, initTooltips } from './ui.js';
 import { initSheetSearch } from './sheetsearch.js';
+import { initOptions, showOptions, options } from './options.js';
+import { choosePicture, repositionPicture } from './cropper.js';
 import { initSummons } from './views/summons.js';
 import { renderHome } from './views/home.js';
 import { renderSheet } from './views/sheet.js';
@@ -59,6 +61,8 @@ function updateHeader() {
   const c = state.char;
   $('#sheet-search-wrap').hidden = !(c && state.view === 'sheet');
   const av = $('#char-avatar');
+  $('#char-icon').hidden = !c;
+  $('#char-icon').classList.toggle('has', !!(c && c.avatar));
   av.hidden = !(c && c.avatar);
   if (c && c.avatar && av.getAttribute('src') !== c.avatar) av.src = c.avatar;
   $('#char-title').textContent = c ? c.name || 'Unnamed' : 'No character loaded';
@@ -92,7 +96,7 @@ export async function openCharacter(id) {
   state.char = migrate(await api.character(id));
   state.dirty = false;
   try { localStorage.setItem('lastChar', id); } catch { /* storage may be unavailable */ }
-  go('sheet', { sheetTab: 'overview' });
+  go('sheet', { sheetTab: options().startTab });
 }
 
 export function createCharacter() {
@@ -100,6 +104,27 @@ export function createCharacter() {
   state.dirty = true;
   saveNow();
   go('levelup');
+}
+
+/** The picture beside the character name: click it to add, change, recenter or remove. */
+function editIcon() {
+  const c = state.char;
+  if (!c) return;
+  const opts = { w: 1, h: 1, out: 256 };
+  const choose = async () => { const r = await choosePicture(opts); if (r) { c.avatar = r.image; c.avatarSrc = r.src; changed({ rerender: true }); } };
+  if (!c.avatar) return choose();
+  modal('Character icon', (body, close) => {
+    body.innerHTML = `<div class="row" style="gap:16px;align-items:center"><img class="avatar-lg" src="${c.avatar}" alt="" style="width:96px;height:96px">
+      <div class="icon-actions"><button class="btn" data-a="change">Choose another picture</button><button class="btn" data-a="edit">Recenter or resize</button><button class="btn danger" data-a="clear">Remove</button></div></div>`;
+    body.onclick = async e => {
+      const a = e.target.closest('[data-a]')?.dataset.a;
+      if (!a) return;
+      close();
+      if (a === 'change') await choose();
+      else if (a === 'edit') { const r = await repositionPicture(c.avatarSrc || c.avatar, opts); if (r) { c.avatar = r.image; changed({ rerender: true }); } }
+      else { c.avatar = ''; c.avatarSrc = ''; changed({ rerender: true }); }
+    };
+  });
 }
 
 // Two-way binding: <input data-bind="abilities.str.base" data-type="num">
@@ -115,6 +140,7 @@ function onInput(e) {
 }
 
 async function init() {
+  initOptions();
   document.addEventListener('input', onInput);
   initTooltips();
   initSheetSearch();
@@ -139,18 +165,14 @@ async function init() {
     const text = await (await fetch('ogl.html')).text();
     modal('Open Game License', body => { body.innerHTML = `<div class="entry-body">${text}</div>`; }, { wide: true });
   };
-  $('#theme-toggle').onclick = () => {
-    const cur = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = cur;
-    try { localStorage.setItem('theme', cur); } catch { /* ignore */ }
-  };
-  try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch { /* ignore */ }
+  $('#options-btn').onclick = () => showOptions();
+  $('#char-icon').onclick = () => editIcon();
 
   state.classes = await api.classes();
   state.classesByName = Object.fromEntries(state.classes.map(c => [c.name, c]));
   let last = null;
   try { last = localStorage.getItem('lastChar'); } catch { /* ignore */ }
-  if (last) {
+  if (last && options().reopenLast) {
     try { await openCharacter(last); return; } catch { /* fall through to home */ }
   }
   go('home');

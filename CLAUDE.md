@@ -40,6 +40,8 @@ Windows desktop app for Pathfinder 1st Edition characters: live character sheet,
 - **Down vs. dead:** the Overview HP card and summon cards use an amber frame when down (0 or below) and a red, greyed frame once HP reaches minus the Con score. Summons store `con`.
 - **Pictures:** `cropper.js` is the picture chooser with a drag-to-recenter and zoom window (`imagecrop.js` holds the tested crop maths). `picFrame()`/`picAction()` give companions (large, 4:3) and summons (small square) an `image`; the uncropped original is kept in `imageSrc` (`portraitSrc`/`avatarSrc` on the character) so it can be repositioned later.
 - **Companion eligibility:** `companionSources()` in `companions.js` works out familiar and animal-companion levels from classes plus chosen abilities, feats and archetypes (arcanist Familiar exploit, shaman, Animal domain, Animal Ally, Boon Companion, paladin mount...). Add new grants there.
+- **Options:** `options.js` keeps app options (theme, accent, text size, compact layout, tooltips, animations, startup behaviour) in `localStorage.options`; `sanitize()` is pure and tested, `applyOptions()` sets CSS variables and `data-*` flags on `<html>`. The sidebar's Options button opens the window. Add a new option to `DEFAULTS`, `sanitize` and `showOptions`.
+- **Name icon:** the square beside the character name in the top bar is the button for adding, changing, recentering and removing it.
 - **Re-drawing:** `changed({ rerender: true })` keeps the scroll position.
 
 ## Commands
