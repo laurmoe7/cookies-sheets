@@ -6,6 +6,7 @@ import { initSheetSearch } from './sheetsearch.js';
 import { initOptions, showOptions, showChangelog, options } from './options.js';
 import { choosePicture, repositionPicture } from './cropper.js';
 import { initSummons } from './views/summons.js';
+import { mountPet, observe as petObserve, opened as petOpened } from './pet/pet.js';
 import { renderHome } from './views/home.js';
 import { renderSheet } from './views/sheet.js';
 import { renderLevelUp } from './views/levelup.js';
@@ -91,6 +92,7 @@ export function changed({ rerender = false } = {}) {
   state.dirty = true;
   if (rerender) render({ keepScroll: true }); else { recalc(); refreshCalc(); updateHeader(); }
   saveNow();
+  petObserve(state.char, state.derived);
 }
 
 export async function openCharacter(id) {
@@ -98,6 +100,7 @@ export async function openCharacter(id) {
   state.dirty = false;
   try { localStorage.setItem('lastChar', id); } catch { /* storage may be unavailable */ }
   go('sheet', { sheetTab: 'overview' });
+  petOpened(state.char, state.derived);
 }
 
 export function createCharacter() {
@@ -105,6 +108,7 @@ export function createCharacter() {
   state.dirty = true;
   saveNow();
   go('levelup');
+  petOpened(state.char, state.derived, true);
 }
 
 /** The picture beside the character name: click it to add, change, recenter or remove. */
@@ -142,6 +146,7 @@ function onInput(e) {
 
 async function init() {
   initOptions();
+  mountPet($('#cookie-slot'));
   document.addEventListener('input', onInput);
   initTooltips();
   initSheetSearch();

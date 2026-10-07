@@ -15,7 +15,7 @@ export const TEXT_SIZES = [[90, 'Small'], [100, 'Normal'], [112, 'Large'], [125,
 
 export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
 
-export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, motion: true, reopenLast: true, pageTurn: 'full', pageSound: true };
+export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, motion: true, reopenLast: true, pageTurn: 'full', pageSound: true, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
@@ -25,7 +25,9 @@ export function sanitize(raw) {
   o.textSize = Number(o.textSize);
   if (!TEXT_SIZES.some(([v]) => v === o.textSize)) o.textSize = DEFAULTS.textSize;
   if (!['full', 'light', 'off'].includes(o.pageTurn)) o.pageTurn = DEFAULTS.pageTurn;
-  for (const k of ['compact', 'motion', 'reopenLast', 'pageSound']) o[k] = !!o[k];
+  if (!['quiet', 'normal', 'chatty'].includes(o.cookieTalk)) o.cookieTalk = DEFAULTS.cookieTalk;
+  if (!['full', 'bleep'].includes(o.cookieSwear)) o.cookieSwear = DEFAULTS.cookieSwear;
+  for (const k of ['compact', 'motion', 'reopenLast', 'pageSound', 'cookie', 'cookieSound']) o[k] = !!o[k];
   return o;
 }
 
@@ -55,6 +57,7 @@ export function applyOptions() {
   root.style.zoom = current.textSize === 100 ? '' : String(current.textSize / 100);
   root.dataset.compact = current.compact ? 'on' : 'off';
   root.dataset.motion = current.motion ? 'on' : 'off';
+  document.dispatchEvent(new Event('optionschange'));
 }
 
 export function initOptions() {
@@ -75,6 +78,10 @@ export function showOptions() {
         <label class="opt-row"><b>Compact layout</b><input type="checkbox" data-opt="compact" ${o.compact ? 'checked' : ''}></label>
         <label class="opt-row"><b>Animations</b><input type="checkbox" data-opt="motion" ${o.motion ? 'checked' : ''}></label>
         <label class="opt-row"><b>Reopen the last character</b><input type="checkbox" data-opt="reopenLast" ${o.reopenLast ? 'checked' : ''}></label>
+        <label class="opt-row"><b>Cookie, the rude bird</b><input type="checkbox" data-opt="cookie" ${o.cookie ? 'checked' : ''}></label>
+        ${o.cookie ? `<div class="opt-row"><b>How much he talks</b><div class="seg">${[['quiet', 'Quiet'], ['normal', 'Normal'], ['chatty', 'Chatty']].map(([k, l]) => `<button class="seg-btn ${o.cookieTalk === k ? 'on' : ''}" data-opt="cookieTalk" data-v="${k}">${l}</button>`).join('')}</div></div>
+        <div class="opt-row"><b>Swearing</b><div class="seg">${[['full', 'Full'], ['bleep', 'Bleeped']].map(([k, l]) => `<button class="seg-btn ${o.cookieSwear === k ? 'on' : ''}" data-opt="cookieSwear" data-v="${k}">${l}</button>`).join('')}</div></div>
+        <label class="opt-row"><b>Cookie’s squawks</b><input type="checkbox" data-opt="cookieSound" ${o.cookieSound ? 'checked' : ''}></label>` : ''}
       </div>
       <div class="row end"><button class="btn ghost" data-changelog>What’s new</button><button class="btn ghost" data-reset>Reset to defaults</button></div>`;
     };

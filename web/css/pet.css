@@ -1,0 +1,255 @@
+/* Cookie, the rude thrush familiar mascot. Drawn from the Pet Shopper bird (thrush skin), trimmed to the bird only.
+   Everything is scoped under #cookie so the generic class names (.arm, .skin, .foot...) cannot touch the rest of the app. */
+#cookie{--pet-ink:#3a2a22;--pet-skin:#a98256;--pet-skin-shade:#e5bda6;--pet-size:1;--font-display:inherit;--muted:#6b5a50}
+#cookie{position: relative; width: 150px; height: 140px; z-index: 1; margin-bottom: 10px; cursor: pointer; touch-action: none;}
+#cookie .pet-svg{width: 100%; height: 100%; overflow: visible; display: block;}
+#cookie{width: calc(150px * var(--pet-size)); height: calc(140px * var(--pet-size));}
+#cookie .skin-under{fill: var(--pet-skin);}
+#cookie .skin{fill: var(--pet-skin); stroke: var(--pet-ink); stroke-width: 2.6; stroke-linejoin: round;}
+#cookie[data-state="happy"] .ear-l{animation: ear-flick-l 2.2s ease-in-out infinite;}
+#cookie[data-state="happy"] .ear-r{animation: ear-flick-r 2.2s ease-in-out .3s infinite;}
+#cookie[data-state="sleepy"] .ear-l,#cookie[data-state="stuffed"] .ear-l{transform: rotate(-6deg);}
+#cookie[data-state="sleepy"] .ear-r,#cookie[data-state="stuffed"] .ear-r{transform: rotate(6deg);}
+#cookie:is(.hop, .chomp, .wiggle, .twirl, .bob, .peek, .stretch, .pat, .spit) .ear-l{animation: ear-jiggle-l .7s ease-out;}
+#cookie:is(.shuffle, .boogie) .ear-l{animation: ear-jiggle-l .5s ease-out 3;}
+#cookie:is(.hop, .chomp, .wiggle, .twirl, .bob, .peek, .stretch, .pat, .spit) .ear-r{animation: ear-jiggle-r .7s ease-out .04s;}
+#cookie:is(.shuffle, .boogie) .ear-r{animation: ear-jiggle-r .5s ease-out .04s 3;}
+#cookie .tuft path{fill: var(--pet-skin); stroke: var(--pet-ink); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round;}
+#cookie .beak{fill: #ffb259; stroke: var(--pet-ink); stroke-width: 1.8; stroke-linejoin: round;}
+#cookie.beaked[data-mouth] [data-mouth]{display: none;}
+#cookie.beaked .beak{transform-box: fill-box; transform-origin: 50% 50%;}
+#cookie.beaked[data-mouth="chew"] .beak{animation: beak-chew .16s ease-in-out infinite alternate;}
+#cookie.beaked[data-mouth="open"] .beak,#cookie.beaked[data-mouth="o"] .beak{transform: scale(1.1, 1.45);}
+#cookie{--pet-skin: #fff8f2; --pet-skin-shade: #ffe4d8; --pet-ear-in: #ffc4cf; --pet-mark: #f3c9a8;}
+#cookie[data-species="birdie"]{--pet-skin: #fff1b0; --pet-skin-shade: #ffe07f;}
+#cookie .pet-svg [data-sp]{display: none;}
+#cookie[data-species="birdie"] [data-sp="birdie"]{display: inline;}
+#cookie .pet-svg [data-sk]{display: none;}
+#cookie .foot{fill: var(--pet-skin-shade); stroke: var(--pet-ink); stroke-width: 2.4;}
+#cookie .arm ellipse{fill: var(--pet-skin); stroke: var(--pet-ink); stroke-width: 2.2;}
+#cookie .arm .arm-hi{fill: #fff; stroke: none; opacity: .7;}
+#cookie .arm{transform-box: fill-box; transform-origin: 50% 12%; transition: transform .25s cubic-bezier(.3, 1.5, .5, 1);}
+#cookie .arm-l{transform: rotate(18deg);}
+#cookie .arm-r{transform: rotate(-18deg);}
+#cookie .question text{font-family: var(--font-display); fill: var(--muted);}
+#cookie .question text{font-size: 26px; fill: var(--pet-ink);}
+#cookie .steam path{fill: none; stroke: #d6c8c4; stroke-width: 2.6; stroke-linecap: round; animation: steam .7s ease-in-out infinite alternate;}
+#cookie .sweat path{fill: #a9dcff; stroke: var(--pet-ink); stroke-width: 1.5;}
+#cookie .shock path{stroke-width: 2.2;}
+#cookie .pet-svg [data-eyes],#cookie .pet-svg [data-mouth],#cookie .pet-svg [data-extra]{display: none;}
+#cookie[data-eyes="open"] [data-eyes="open"],#cookie[data-eyes="closed"] [data-eyes="closed"],#cookie[data-eyes="happy"] [data-eyes="happy"],#cookie[data-eyes="sparkle"] [data-eyes="sparkle"],#cookie[data-eyes="squint"] [data-eyes="squint"],#cookie[data-eyes="teary"] [data-eyes="teary"],#cookie[data-eyes="confused"] [data-eyes="confused"],#cookie[data-mouth="smile"] [data-mouth="smile"],#cookie[data-mouth="open"] [data-mouth="open"],#cookie[data-mouth="chew"] [data-mouth="chew"],#cookie[data-mouth="wavy"] [data-mouth="wavy"],#cookie[data-mouth="o"] [data-mouth="o"],#cookie.x-zzz [data-extra="zzz"],#cookie.x-steam [data-extra="steam"],#cookie.x-hearts [data-extra="hearts"],#cookie.x-sparkles [data-extra="sparkles"],#cookie.x-question [data-extra="question"],#cookie.x-sweat [data-extra="sweat"],#cookie.x-shock [data-extra="shock"]{display: inline;}
+#cookie.x-redface .redface{opacity: .28;}
+#cookie.x-cheeks .hatch{opacity: 1;}
+#cookie.x-cheeks .cheek{opacity: .9;}
+#cookie .squash{width: 100%; height: 100%; transform-origin: 50% 93%; will-change: transform;}
+#cookie[data-state="curious"] .pupils{transform: translate(var(--look-x, 0px), calc(var(--look-y, 0px) + 2.5px));}
+#cookie.looking .pupils{transition: transform .12s ease-out;}
+#cookie[data-eyes="open"] .eyes-open{transform-box: fill-box; transform-origin: 50% 50%; animation: blink 4.5s infinite;}
+#cookie[data-state="sleepy"] .squash{animation: breathe 3.8s ease-in-out infinite;}
+#cookie[data-state="curious"] .squash{animation: jelly 2.6s ease-in-out infinite;}
+#cookie[data-state="happy"] .pet-svg{animation: bounce 1.8s ease-in-out infinite;}
+#cookie[data-state="happy"] .squash{animation: jelly 1s ease-in-out infinite;}
+#cookie[data-state="stuffed"] .squash{animation: breathe 3.2s ease-in-out infinite;}
+#cookie.hop .pet-svg{animation: hop .5s linear;}
+#cookie.wiggle .pet-svg{animation: wiggle .9s ease-in-out;}
+#cookie.twirl .pet-svg{animation: twirl .8s ease-in-out;}
+#cookie.peek .pet-svg{animation: peek 1.4s ease-in-out;}
+#cookie.bob .pet-svg{animation: bob .7s ease-in-out 2;}
+#cookie.shuffle .pet-svg{animation: shuffle 1.5s ease-in-out;}
+#cookie.boogie .pet-svg{animation: boogie 1.5s cubic-bezier(.3, 1.3, .5, 1);}
+#cookie:is(.eyewide, .eyesquint) .eye-set :is(.eye-l, .eye-r){transform-box: fill-box; transform-origin: 50% 50%;}
+#cookie.eyewide .eye-set :is(.eye-l, .eye-r){animation: eye-wide 1s ease-out;}
+#cookie.eyesquint .eye-set :is(.eye-l, .eye-r){animation: eye-squint 1.2s ease-in-out;}
+@media (prefers-reduced-motion: reduce){#cookie:is(.eyewide, .eyesquint) .eye-set :is(.eye-l, .eye-r){animation: none;}
+}
+#cookie.tired .tired-lid{display: inline;}
+#cookie.tired .eyes-open .pupils :is(.eye-l, .eye-r):not(.tired-lid){transform-box: fill-box; transform-origin: 50% 75%; scale: 1.05 .55;}
+#cookie.tired .eyes-open .glint{opacity: .5;}
+#cookie.tired[data-eyes="open"] .eyes-open{animation: none;}
+#cookie.tired .eyes-open .pupils :is(.eye-l, .eye-r):not(.tired-lid){animation: tired-blink 4.5s infinite;}
+#cookie.tired.eyewide .eyes-open .pupils :is(.eye-l, .eye-r):not(.tired-lid){animation: tired-wide 1s ease-out;}
+#cookie.tired.eyesquint .eyes-open .pupils :is(.eye-l, .eye-r):not(.tired-lid){animation: tired-squint 1.2s ease-in-out;}
+#cookie.tired .tired-lid.eye-l{animation: lid-blink-l 4.5s infinite;}
+#cookie.tired .tired-lid.eye-r{animation: lid-blink-r 4.5s infinite;}
+#cookie.tired.eyewide .tired-lid:is(.eye-l, .eye-r){animation: lid-lift 1s ease-out;}
+#cookie.tired.eyesquint .tired-lid:is(.eye-l, .eye-r){animation: none;}
+@media (prefers-reduced-motion: reduce){#cookie.tired .eyes-open .pupils :is(.eye-l, .eye-r):not(.tired-lid),#cookie.tired .tired-lid{animation: none;}
+}
+#cookie[data-arms="idle"] .arm-l{animation: sway-l 2.6s ease-in-out infinite;}
+#cookie[data-arms="idle"] .arm-r{animation: sway-r 2.6s ease-in-out infinite .3s;}
+#cookie[data-arms="reach"] .arm-l{transform: translate(6px, -30px) rotate(160deg);}
+#cookie[data-arms="reach"] .arm-r{transform: translate(-6px, -30px) rotate(-160deg);}
+#cookie[data-arms="nom"] .arm-l{animation: nom-l .32s ease-in-out infinite alternate;}
+#cookie[data-arms="nom"] .arm-r{animation: nom-r .32s ease-in-out infinite alternate .16s;}
+#cookie[data-arms="hold"] .arm-l{transform: translate(20px, -10px) rotate(-120deg);}
+#cookie[data-arms="hold"] .arm-r{transform: translate(-20px, -10px) rotate(120deg);}
+#cookie[data-arms="cover"] .arm-l{transform: translate(24px, -12px) rotate(-130deg);}
+#cookie[data-arms="cover"] .arm-r{transform: translate(-24px, -12px) rotate(130deg);}
+#cookie[data-arms="cheer"] .arm-l{animation: cheer-l .3s ease-in-out infinite alternate;}
+#cookie[data-arms="cheer"] .arm-r{animation: cheer-r .3s ease-in-out infinite alternate .15s;}
+#cookie[data-arms="fan"] .arm-l{animation: fan-l .12s linear infinite alternate;}
+#cookie[data-arms="fan"] .arm-r{animation: fan-r .12s linear infinite alternate .06s;}
+#cookie[data-arms="scratch"] .arm-r{animation: scratch .2s ease-in-out infinite alternate;}
+#cookie[data-arms="clench"] .arm-l{animation: clench-l .1s linear infinite alternate;}
+#cookie[data-arms="clench"] .arm-r{animation: clench-r .1s linear infinite alternate;}
+#cookie[data-arms="pat"] .arm-l{animation: cheer-l .3s ease-in-out infinite alternate;}
+#cookie[data-arms="pat"] .arm-r{animation: pat .28s ease-in-out infinite alternate;}
+#cookie[data-arms="eyerub"] .arm-l{animation: eyerub-l .4s ease-in-out infinite alternate;}
+#cookie[data-arms="eyerub"] .arm-r{animation: eyerub-r .4s ease-in-out infinite alternate .2s;}
+#cookie[data-arms="rub"] .arm-l{animation: rub-l .55s linear infinite;}
+#cookie[data-arms="rub"] .arm-r{animation: rub-r .55s linear infinite;}
+#cookie .arm-cuff,#cookie .arm-hand{display: none;}
+#cookie .bird-part{display: none;}
+#cookie[data-species="birdie"] .bird-part{display: inline;}
+#cookie .bird-part .bird-toe{fill: #ffb259; stroke: var(--pet-ink); stroke-width: 1.8;}
+#cookie.beaked :is(.mouth-hay, .mouth-leaf){translate: 8px 0;}
+#cookie .skin-outline{fill: none; stroke: var(--pet-ink); stroke-width: 2.6; stroke-linejoin: round;}
+#cookie .dirty path:not(.skin-outline){fill: #a67c52; opacity: .9;}
+#cookie{translate: var(--walk-x, 0px) 0; transition: translate var(--walk-ms, 0s) ease-in-out;}
+#cookie.stroll .pet-svg{animation: stroll 3.6s ease-in-out;}
+#cookie.waddle .pet-svg{animation: waddle 1.8s ease-in-out;}
+#cookie.hophop .pet-svg{animation: hophop 1.5s ease-in-out;}
+#cookie.scoot .pet-svg{animation: scoot 1.4s ease-in-out;}
+#cookie.sit .pet-svg{animation: sit 2.6s ease-in-out;}
+#cookie.hopsmall .pet-svg{animation: hopsmall .45s ease-in-out;}
+#cookie.rock .pet-svg{animation: rock 1.9s ease-in-out; transform-origin: 50% 94%;}
+#cookie.roly .pet-svg{animation: roly 2.8s ease-in-out; transform-origin: 50% 94%;}
+#cookie.rocksmall .pet-svg,#cookie.pat .pet-svg{animation: rocksmall 1.3s ease-in-out; transform-origin: 50% 94%;}
+#cookie.sniff .pet-svg{animation: sniff 1.7s ease-in-out;}
+#cookie .eye-l{translate: -3px 1.6px;}
+#cookie .eye-r{translate: 3px 1.6px;}
+#cookie .foot-side{transform-box: view-box;}
+#cookie.hop :is(.foot-side, .shoe-l, .shoe-r){animation: tuck .5s ease-in-out;}
+#cookie.hopsmall :is(.foot-side, .shoe-l, .shoe-r){animation: tuck .45s ease-in-out;}
+#cookie.hophop :is(.foot-side, .shoe-l, .shoe-r){animation: tuck .5s ease-in-out 3;}
+#cookie[data-arms="cheer"]:not(.hop):not(.hophop):not(.hopsmall) :is(.foot-l, .shoe-l){animation: tap .32s ease-in-out infinite;}
+#cookie[data-arms="cheer"]:not(.hop):not(.hophop):not(.hopsmall) :is(.foot-r, .shoe-r){animation: tap .32s ease-in-out -.16s infinite;}
+#cookie[data-arms="fan"] :is(.foot-l, .shoe-l){animation: stomp .24s ease-in-out infinite;}
+#cookie[data-arms="fan"] :is(.foot-r, .shoe-r){animation: stomp .24s ease-in-out -.12s infinite;}
+#cookie[data-arms="clench"] :is(.foot-side, .shoe-l, .shoe-r){animation: shiver .12s linear infinite;}
+#cookie.sit :is(.foot-l, .shoe-l){animation: sit-l 2.6s ease-in-out;}
+#cookie.sit :is(.foot-r, .shoe-r){animation: sit-r 2.6s ease-in-out;}
+@media (prefers-reduced-motion: reduce){#cookie .foot-side,#cookie .shoe-l,#cookie .shoe-r{animation: none !important;}
+}
+#cookie.rock :is(.foot-l, .shoe-l){animation: rock-l 1.9s ease-in-out;}
+#cookie.rock :is(.foot-r, .shoe-r){animation: rock-r 1.9s ease-in-out;}
+#cookie.roly :is(.foot-l, .shoe-l){animation: rock-l 2.8s ease-in-out;}
+#cookie.roly :is(.foot-r, .shoe-r){animation: rock-r 2.8s ease-in-out;}
+#cookie:is(.sniff, .stretch) :is(.foot-side, .shoe-l, .shoe-r){animation: tiptoe 1.4s ease-in-out;}
+#cookie.wiggle :is(.foot-side, .shoe-l, .shoe-r){animation: foot-wiggle .9s ease-in-out;}
+#cookie[data-arms="scratch"] :is(.foot-r, .shoe-r){animation: tap .35s ease-in-out infinite;}
+#cookie[data-state="sleepy"]:not(.hop) :is(.foot-r, .shoe-r){animation: twitch 6.5s ease-in-out infinite;}
+#cookie[data-state="sleepy"]:not(.hop) :is(.foot-l, .shoe-l){animation: twitch 8s ease-in-out 2.4s infinite;}
+#cookie[data-skin="thrush"]{--pet-skin: #a98256; --pet-skin-shade: #e5bda6;}
+#cookie[data-skin="thrush"] [data-sk~="thrush"]{display: inline;}
+#cookie[data-skin="thrush"] .beak{fill: #6d5646;}
+#cookie[data-skin="thrush"] .arm ellipse{fill: #9a6b41;}
+#cookie[data-skin="thrush"] .tuft{display: none;}
+#cookie[data-skin="thrush"] .bird-part .bird-toe{fill: #e8b9a4;}
+
+@keyframes beak-chew{ from { transform: scale(1, 1); } to { transform: scale(1.08, 1.4); } }
+@keyframes blink{ 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+@keyframes bob{ 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes boogie{
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  10% { transform: translateY(2px) scale(1.06, .92); } 20% { transform: translateY(-12px) scale(.96, 1.05); }
+  30% { transform: translateY(2px) scale(1.06, .92); } 40% { transform: translateY(-12px) scale(.96, 1.05); }
+  50% { transform: translateY(2px) scale(1.06, .92); }
+  70% { transform: translateY(-16px) scaleX(-1); } 85% { transform: translateY(0) scaleX(1); }
+}
+@keyframes bounce{ 0%, 100% { transform: translateY(0); } 14% { transform: translateY(-9px); } 28% { transform: translateY(0); } 32% { transform: translateY(2px); } 38% { transform: translateY(0); } }
+@keyframes breathe{ 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(0, 1px); } }
+@keyframes cheer-l{ from { transform: translate(6px, -24px) rotate(140deg); } to { transform: translate(4px, -32px) rotate(175deg); } }
+@keyframes cheer-r{ from { transform: translate(-6px, -24px) rotate(-140deg); } to { transform: translate(-4px, -32px) rotate(-175deg); } }
+@keyframes clench-l{ from { transform: translate(6px, -2px) rotate(-10deg); } to { transform: translate(7px, -2px) rotate(-16deg); } }
+@keyframes clench-r{ from { transform: translate(-6px, -2px) rotate(10deg); } to { transform: translate(-7px, -2px) rotate(16deg); } }
+@keyframes ear-flick-l{ 0%, 70%, 100% { transform: rotate(0); } 78% { transform: rotate(-9deg); } 86% { transform: rotate(4deg); } }
+@keyframes ear-flick-r{ 0%, 70%, 100% { transform: rotate(0); } 78% { transform: rotate(9deg); } 86% { transform: rotate(-4deg); } }
+@keyframes ear-jiggle-l{ 0%, 100% { transform: rotate(0); } 18% { transform: rotate(-16deg); } 38% { transform: rotate(11deg); } 58% { transform: rotate(-6deg); } 78% { transform: rotate(3deg); } }
+@keyframes ear-jiggle-r{ 0%, 100% { transform: rotate(0); } 18% { transform: rotate(16deg); } 38% { transform: rotate(-11deg); } 58% { transform: rotate(6deg); } 78% { transform: rotate(-3deg); } }
+@keyframes eye-squint{ 0% { scale: 1 1; } 18% { scale: 1.15 .32; } 26% { scale: 1.12 .42; } 80% { scale: 1.12 .42; } 100% { scale: 1 1; } }
+@keyframes eye-wide{ 0% { scale: 1 1; } 16% { scale: 1.38 1.6; } 28% { scale: 1.28 1.45; } 78% { scale: 1.28 1.45; } 100% { scale: 1 1; } }
+@keyframes eyerub-l{ from { transform: translate(28px, -22px) rotate(-140deg); } to { transform: translate(32px, -18px) rotate(-150deg); } }
+@keyframes eyerub-r{ from { transform: translate(-28px, -22px) rotate(140deg); } to { transform: translate(-32px, -18px) rotate(150deg); } }
+@keyframes fan-l{ from { transform: translate(10px, -14px) rotate(-150deg); } to { transform: translate(10px, -14px) rotate(-100deg); } }
+@keyframes fan-r{ from { transform: translate(-10px, -14px) rotate(150deg); } to { transform: translate(-10px, -14px) rotate(100deg); } }
+@keyframes foot-wiggle{ 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-1.2px, 0); } 50% { transform: translate(1.2px, 0); } 75% { transform: translate(-.6px, 0); } }
+@keyframes hop{
+  0% { transform: translateY(0); } 16% { transform: translateY(.5px); animation-timing-function: cubic-bezier(.2, .8, .4, 1); }
+  46% { transform: translateY(-18px); animation-timing-function: cubic-bezier(.6, 0, .8, .4); }
+  84% { transform: translateY(0); } 92% { transform: translateY(2px); } 100% { transform: translateY(0); }
+}
+@keyframes hophop{ 0% { transform: translate(0px, 0px); } 17% { transform: translate(0px, -14px); } 33% { transform: translate(0px, 0px); } 37% { transform: translate(0px, 2px); } 41% { transform: translate(0px, 0px); } 50% { transform: translate(0px, -12px); } 62% { transform: translate(0px, 0px); } 66% { transform: translate(0px, 2px); } 70% { transform: translate(0px, 0px); } 78% { transform: translate(0px, -9px); } 88% { transform: translate(0px, 0px); } 92% { transform: translate(0px, 1.5px); } 100% { transform: translate(0px, 0px); } }
+@keyframes hopsmall{ 0% { transform: translate(0px, 0px); } 40% { transform: translate(0px, -7px); } 75% { transform: translate(0px, 0px); } 85% { transform: translate(0px, 1.5px); } 100% { transform: translate(0px, 0px); } }
+@keyframes jelly{ 0%, 100% { transform: translate(0, 0); } 30% { transform: translate(0, 1.2px); } 55% { transform: translate(0, -.6px); } 75% { transform: translate(0, .5px); } }
+@keyframes lid-blink-l{ 0%, 94%, 100% { translate: -3px 1.6px; } 97% { translate: -3px 6.4px; } }
+@keyframes lid-blink-r{ 0%, 94%, 100% { translate: 3px 1.6px; } 97% { translate: 3px 6.4px; } }
+@keyframes lid-lift{ 0%, 100% { opacity: 1; } 12%, 80% { opacity: 0; } }
+@keyframes nom-l{ from { transform: translate(16px, -6px) rotate(-100deg); } to { transform: translate(20px, -12px) rotate(-130deg); } }
+@keyframes nom-r{ from { transform: translate(-16px, -6px) rotate(100deg); } to { transform: translate(-20px, -12px) rotate(130deg); } }
+@keyframes pat{ from { transform: translate(-14px, 0) rotate(40deg); } to { transform: translate(-18px, 4px) rotate(70deg); } }
+@keyframes peek{ 0%, 100% { transform: translateX(0) rotate(0); } 30%, 70% { transform: translateX(-14px) rotate(-8deg); } }
+@keyframes rock{ 0% { transform: translate(0px, 0px) rotate(0deg); } 16% { transform: translate(-3px, 0px) rotate(-10deg); } 36% { transform: translate(3px, 0px) rotate(9deg); } 56% { transform: translate(-2px, 0px) rotate(-6deg); } 76% { transform: translate(1px, 0px) rotate(3deg); } 100% { transform: translate(0px, 0px) rotate(0deg); } }
+@keyframes rock-l{ 0%, 16%, 56%, 100% { transform: translate(0, 0); } 36% { transform: translate(0, -2.2px); } 76% { transform: translate(0, -.8px); } }
+@keyframes rock-r{ 0%, 36%, 76%, 100% { transform: translate(0, 0); } 16% { transform: translate(0, -2.4px); } 56% { transform: translate(0, -1.4px); } }
+@keyframes rocksmall{ 0% { transform: translate(0px, 0px) rotate(0deg); } 25% { transform: translate(-1.5px, 0px) rotate(-4deg); } 55% { transform: translate(1.5px, 0px) rotate(3.5deg); } 80% { transform: translate(-0.5px, 0px) rotate(-1.5deg); } 100% { transform: translate(0px, 0px) rotate(0deg); } }
+@keyframes roly{ 0% { transform: translate(0px, 0px) rotate(0deg); } 12% { transform: translate(-6px, 0px) rotate(-15deg); } 30% { transform: translate(6px, 0px) rotate(14deg); } 46% { transform: translate(-5px, 0px) rotate(-11deg); } 62% { transform: translate(4px, 0px) rotate(8deg); } 78% { transform: translate(-2px, 0px) rotate(-4deg); } 90% { transform: translate(1px, 0px) rotate(2deg); } 100% { transform: translate(0px, 0px) rotate(0deg); } }
+@keyframes rub-l{ 0%, 100% { transform: translate(14px, 11px) rotate(-82deg); } 25% { transform: translate(18px, 7px) rotate(-90deg); } 50% { transform: translate(22px, 11px) rotate(-86deg); } 75% { transform: translate(18px, 15px) rotate(-76deg); } }
+@keyframes rub-r{ 0%, 100% { transform: translate(-14px, 11px) rotate(82deg); } 25% { transform: translate(-18px, 15px) rotate(76deg); } 50% { transform: translate(-22px, 11px) rotate(86deg); } 75% { transform: translate(-18px, 7px) rotate(90deg); } }
+@keyframes scoot{ 0% { transform: translate(0px, 0px); } 10% { transform: translate(-4px, -2px); } 20% { transform: translate(-16px, 0px); } 70% { transform: translate(-16px, 0px); } 85% { transform: translate(-6px, -2px); } 100% { transform: translate(0px, 0px); } }
+@keyframes scratch{ from { transform: translate(-4px, -30px) rotate(-170deg); } to { transform: translate(-4px, -34px) rotate(-150deg); } }
+@keyframes shiver{ 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-.7px, 0); } 75% { transform: translate(.7px, 0); } }
+@keyframes shuffle{
+  0%, 100% { transform: translateX(0) rotate(0); }
+  12% { transform: translateX(-8px) rotate(-8deg); } 25% { transform: translateX(-8px) translateY(-6px) rotate(-8deg); }
+  37% { transform: translateX(0) rotate(0); }
+  50% { transform: translateX(8px) rotate(8deg); } 62% { transform: translateX(8px) translateY(-6px) rotate(8deg); }
+  75% { transform: translateX(0) rotate(0); } 87% { transform: translateY(-4px) rotate(-4deg); }
+}
+@keyframes sit{ 0% { transform: translate(0px, 0px); } 25% { transform: translate(0px, 4px); } 75% { transform: translate(0px, 4px); } 100% { transform: translate(0px, 0px); } }
+@keyframes sit-l{ 0%, 100% { transform: translate(0, 0); } 25%, 75% { transform: translate(-2.4px, -.6px); } }
+@keyframes sit-r{ 0%, 100% { transform: translate(0, 0); } 25%, 75% { transform: translate(2.4px, -.6px); } }
+@keyframes sniff{ 0% { transform: translate(0px, 0px); } 12% { transform: translate(0px, 6px); } 22% { transform: translate(0px, 2.5px); } 32% { transform: translate(0px, 6.5px); } 42% { transform: translate(0px, 2.5px); } 52% { transform: translate(0px, 6.5px); } 62% { transform: translate(0px, 3px); } 76% { transform: translate(0px, 6px); } 100% { transform: translate(0px, 0px); } }
+@keyframes steam{ from { transform: translateY(0); opacity: .9; } to { transform: translateY(-4px); opacity: .4; } }
+@keyframes stomp{ 0%, 100% { transform: translate(0, 0); } 40% { transform: translate(0, -3px); } 70% { transform: translate(0, .6px); } }
+@keyframes stroll{ 0% { transform: translate(0px, 0px); } 4.5% { transform: translate(-3px, -3px); } 9% { transform: translate(-6px, 0px); } 13.5% { transform: translate(-9px, -3px); } 18% { transform: translate(-12px, 0px); } 22.5% { transform: translate(-15px, -3px); } 27% { transform: translate(-18px, 0px); } 31.5% { transform: translate(-21px, -3px); } 36% { transform: translate(-24px, 0px); } 46% { transform: translate(-24px, 0px); } 48.25% { transform: translate(-21px, -3px); } 50.5% { transform: translate(-18px, 0px); } 52.75% { transform: translate(-15px, -3px); } 55% { transform: translate(-12px, 0px); } 57.25% { transform: translate(-9px, -3px); } 59.5% { transform: translate(-6px, 0px); } 61.75% { transform: translate(-3px, -3px); } 64% { transform: translate(0px, 0px); } 66.25% { transform: translate(3px, -3px); } 68.5% { transform: translate(6px, 0px); } 70.75% { transform: translate(9px, -3px); } 73% { transform: translate(12px, 0px); } 75.25% { transform: translate(15px, -3px); } 77.5% { transform: translate(18px, 0px); } 79.75% { transform: translate(21px, -3px); } 82% { transform: translate(24px, 0px); } 86% { transform: translate(24px, 0px); } 87.75% { transform: translate(21px, -3px); } 89.5% { transform: translate(18px, 0px); } 91.25% { transform: translate(15px, -3px); } 93% { transform: translate(12px, 0px); } 94.75% { transform: translate(9px, -3px); } 96.5% { transform: translate(6px, 0px); } 98.25% { transform: translate(3px, -3px); } 100% { transform: translate(0px, 0px); } }
+@keyframes sway-l{ 0%, 100% { transform: rotate(14deg); } 50% { transform: rotate(26deg); } }
+@keyframes sway-r{ 0%, 100% { transform: rotate(-14deg); } 50% { transform: rotate(-26deg); } }
+@keyframes tap{ 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(0, -1.8px); } }
+@keyframes tiptoe{ 0%, 100% { transform: translate(0, 0); } 15%, 85% { transform: translate(0, -1.4px); } 30%, 60% { transform: translate(0, -.6px); } 45%, 75% { transform: translate(0, -1.6px); } }
+@keyframes tired-blink{ 0%, 94%, 100% { scale: 1.05 .55; } 97% { scale: 1.05 .06; } }
+@keyframes tired-squint{ 0% { scale: 1.05 .55; } 18% { scale: 1.15 .22; } 26% { scale: 1.12 .28; } 80% { scale: 1.12 .28; } 100% { scale: 1.05 .55; } }
+@keyframes tired-wide{ 0% { scale: 1.05 .55; } 16% { scale: 1.3 1.45; } 28% { scale: 1.22 1.3; } 78% { scale: 1.22 1.3; } 100% { scale: 1.05 .55; } }
+@keyframes tuck{ 0%, 100% { transform: translate(0, 0); } 35%, 60% { transform: translate(0, -3px); } }
+@keyframes twirl{ 0% { transform: scaleX(1); } 25% { transform: scaleX(-1) translateY(-8px); } 50% { transform: scaleX(1) translateY(-10px); } 75% { transform: scaleX(-1) translateY(-4px); } 100% { transform: scaleX(1); } }
+@keyframes twitch{ 0%, 88%, 100% { transform: translate(0, 0); } 91% { transform: translate(0, -1.5px); } 94% { transform: translate(0, 0); } 96% { transform: translate(0, -1px); } }
+@keyframes waddle{ 0% { transform: translate(0px, 0px); } 8% { transform: translate(-1.5px, -2px); } 16% { transform: translate(-3px, 0px); } 33% { transform: translate(0px, -2px); } 50% { transform: translate(3px, 0px); } 66% { transform: translate(0px, -2px); } 83% { transform: translate(-3px, 0px); } 100% { transform: translate(0px, 0px); } }
+@keyframes wiggle{ 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-7deg); } 40% { transform: rotate(6deg); } 60% { transform: rotate(-5deg); } 80% { transform: rotate(3deg); } }
+
+/* ---- how Cookie sits in this app (everything above is the Pet Shopper bird) ---- */
+#cookie-slot { position: relative; display: flex; justify-content: center; align-items: flex-end; min-height: 108px; margin: 6px 0 2px; }
+#cookie-slot[hidden] { display: none; }
+#cookie { --pet-size: .8; margin: 0; cursor: pointer; user-select: none; -webkit-user-select: none; }
+#cookie .cig-body { fill: #f4efe4; stroke: var(--pet-ink); stroke-width: 1.1; }
+#cookie .cig-filter { fill: #d49b52; stroke: var(--pet-ink); stroke-width: 1.1; }
+#cookie .cig-ember { fill: #ff6a1f; animation: cig-ember 1.4s ease-in-out infinite alternate; }
+#cookie .cig-smoke path { fill: none; stroke: rgba(220, 214, 208, .8); stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 34; stroke-dashoffset: 34; animation: cig-smoke 3.6s ease-out infinite; }
+#cookie .cig-smoke path + path { animation-delay: 1.7s; }
+@keyframes cig-ember { from { opacity: .55; } to { opacity: 1; } }
+@keyframes cig-smoke { 0% { stroke-dashoffset: 34; opacity: 0; } 15% { opacity: .9; } 70% { stroke-dashoffset: 0; opacity: .5; } 100% { stroke-dashoffset: 0; opacity: 0; transform: translate(3px, -8px); } }
+html[data-motion="off"] #cookie *, html[data-motion="off"] #cookie { animation: none !important; transition: none !important; }
+
+.cookie-bubble { position: fixed; left: 184px; bottom: 34px; z-index: 40; max-width: min(340px, 42vw); padding: 10px 14px; border-radius: 14px 14px 14px 4px;
+  background: var(--panel); color: var(--ink); border: 2px solid var(--line, #3a3d46); box-shadow: 0 6px 22px rgba(0, 0, 0, .45); font-size: 14px; line-height: 1.35;
+  animation: cookie-pop .22s cubic-bezier(.2, 1.4, .4, 1); pointer-events: none; }
+.cookie-bubble[hidden] { display: none; }
+.cookie-bubble.action { font-style: italic; opacity: .92; }
+.cookie-bubble::before { content: ""; position: absolute; left: -9px; bottom: 10px; border: 7px solid transparent; border-right-color: var(--line, #3a3d46); border-left: 0; }
+@keyframes cookie-pop { from { transform: translateX(-10px) scale(.85); opacity: 0; } to { transform: none; opacity: 1; } }
+html[data-theme="tome"] .cookie-bubble { background: #bba97f; color: #261a0b; border-color: #8a6a25; font-family: var(--serif, Georgia, serif); }
+html[data-theme="tome"] .cookie-bubble::before { border-right-color: #8a6a25; }
+@media (max-height: 640px) { #cookie-slot { display: none; } .cookie-bubble { display: none; } }
+#cookie .brows path { fill: none; stroke: var(--pet-ink); stroke-width: 3.4; stroke-linecap: round; transition: transform .2s; }
+#cookie[data-eyes="sparkle"] .brows, #cookie[data-eyes="happy"] .brows, #cookie[data-eyes="closed"] .brows { opacity: 0; }
+#cookie[data-eyes="sparkle"] .brows { opacity: 0; }
+#cookie.eyewide .brows { transform: translateY(-4px); }
