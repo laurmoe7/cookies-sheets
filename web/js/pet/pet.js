@@ -67,7 +67,7 @@ const REACT = {
   trait: { prio: 1, face: 'shrug', move: '' },
   'gold-up': { prio: 2, face: 'cute', move: 'bob' },
   rich: { prio: 3, face: 'cute', move: 'hop' },
-  'gold-down': { prio: 2, face: 'cute', move: '' },
+  'gold-down': { prio: 3, face: 'cute', move: '' },
   splurge: { prio: 3, face: 'panic', move: 'wiggle' },
   'buff-on': { prio: 1, face: 'sneer', move: '' },
   'buff-off': { prio: 1, face: 'smug', move: '' },
@@ -75,6 +75,15 @@ const REACT = {
   xp: { prio: 1, face: 'smug', move: '' },
   portrait: { prio: 2, face: 'laugh', move: 'wiggle' },
   refuse: { prio: 5, face: 'laugh', move: 'hophop' },
+  notes: { prio: 2, face: 'sneer', move: 'peek' },
+  'notes-erased': { prio: 2, face: 'laugh', move: 'wiggle' },
+  'portrait-changed': { prio: 3, face: 'laugh', move: 'twirl' },
+  'portrait-removed': { prio: 2, face: 'sneer', move: '' },
+  'icon-changed': { prio: 2, face: 'wink', move: 'peek' },
+  lookup: { prio: 2, face: 'sneer', move: 'bob' },
+  'lookup-rule': { prio: 2, face: 'sneer', move: 'bob' },
+  search: { prio: 2, face: 'shifty', move: '' },
+  'search-rules': { prio: 2, face: 'sneer', move: '' },
   poke: { prio: 5, face: 'mad', move: 'wiggle' },
   'poke-many': { prio: 5, face: 'mad', move: 'hophop' },
   idle: { prio: 1, face: 'smug', move: 'sniff' },
@@ -95,6 +104,10 @@ const REACT = {
   'quiet-on': { prio: 5, face: 'mad', move: 'wiggle' },
   'chatty-on': { prio: 5, face: 'evil', move: 'hop' },
 };
+// Some things he mentions at most this often (ms), so typing in the notes or searching does not make him nag.
+const TYPE_GAP = { notes: 45000, 'notes-erased': 45000, lookup: 20000, 'lookup-rule': 20000, search: 25000, 'search-rules': 25000, 'portrait-changed': 15000, 'icon-changed': 15000 };
+const lastType = {};
+const typeReady = key => !TYPE_GAP[key] || Date.now() - (lastType[key] || 0) >= TYPE_GAP[key];
 // How likely a line is at each chattiness, and the quiet gap he leaves between lines (ms).
 const TALK = { quiet: { odds: 0.3, gap: 45000 }, normal: { odds: 0.75, gap: 10000 }, chatty: { odds: 1, gap: 3500 } };
 
@@ -213,7 +226,7 @@ function speak(line, prio, key) {
   squawk();
   clearTimeout(bubbleTimer);
   bubbleTimer = setTimeout(() => { bubble.hidden = true; }, ms);
-  lastSpoke = Date.now(); lastPrio = prio;
+  lastSpoke = Date.now(); lastPrio = prio; lastType[key] = Date.now();
 }
 
 /** Whether Cookie can be bothered to speak about something of this importance right now. */
@@ -249,6 +262,7 @@ function react(events) {
   const r = REACT[ev.type];
   if (!r || !willSpeak(r.prio)) return;
   const key = lineKey(ev);
+  if (!typeReady(key)) return;
   const line = pickLine(key, baseVars({ n: ev.amount, item: ev.name, spell: ev.spell, summon: ev.name, hp: ev.hp, con: ev.con, level: ev.level, max: ev.max }));
   if (line) speak(line, r.prio, REACT[key] ? key : ev.type);
 }
@@ -420,10 +434,21 @@ export function event(type, vars = {}) {
 }
 
 /** Now and then comments on something (a page you opened): `chance` stays low so he does not nag. */
-function sayKey(key, prio = 1, chance = 1) {
-  if (!options().cookie || Math.random() > chance || !willSpeak(prio)) return;
-  const line = pickLine(key, baseVars());
+function sayKey(key, prio = 1, chance = 1, vars = {}) {
+  if (!options().cookie || !typeReady(key) || Math.random() > chance || !willSpeak(prio)) return;
+  const line = pickLine(key, baseVars(vars));
   if (line) speak(line, prio, REACT[key] ? key : 'idle');
+}
+
+/** An entry was opened in the side panel (a rule, spell, feat...): he has opinions about people who read. */
+export function lookup(name, cat) {
+  sayKey(/^(Rules?|Condition)$/i.test(cat || '') ? 'lookup-rule' : 'lookup', 2, 0.45, { item: name });
+}
+
+/** Something was typed into the Compendium or the Quick Rules filter. */
+export function search(q, rules = false) {
+  if (String(q || '').trim().length < 3) return;
+  sayKey(rules ? 'search-rules' : 'search', 2, 0.4, { item: String(q).trim() });
 }
 
 /** A page or sheet tab was opened (names like 'view-compendium' or 'tab-gear'). */

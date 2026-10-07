@@ -3,6 +3,7 @@ import { carryingCapacity, SIZES } from '../data.js';
 import { sign } from '../calc.js';
 import { esc, $, $$ } from '../ui.js';
 import { RULE_CARDS, RULE_CATS, CONDITIONS } from '../rulesdata.js';
+import { search as petSearch } from '../pet/pet.js';
 
 const st = { q: '', cat: '' };
 
@@ -37,7 +38,8 @@ export function renderRules(main) {
     </section>`).join('') || '<p class="muted pad">No quick-reference card matches. Try the Compendium for the full rules text.</p>';
   };
   draw();
-  $('#rules-q', main).oninput = e => { st.q = e.target.value; draw(); };
+  let askTimer;
+  $('#rules-q', main).oninput = e => { st.q = e.target.value; draw(); clearTimeout(askTimer); askTimer = setTimeout(() => petSearch(st.q, true), 900); };
   $$('[data-rcat]', main).forEach(b => (b.onclick = () => { st.cat = b.dataset.rcat; renderRules(main); }));
 
   const cc = () => {

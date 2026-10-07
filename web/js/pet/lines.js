@@ -247,6 +247,60 @@ export const LINES = {
     "Healing a {summon}. It's not even real. Take that {n} and eat it.",
   ],
 
+  // ---- notes, pictures, lookups
+  notes: [
+    "Writing in your little diary? 'Dear diary: today I did nothing, as usual.'",
+    "*reads over your shoulder* Is that spelled right? No. No it isn't.",
+    "Taking notes. Adorable. I'll steal 'em later.",
+    "You write like a drunk goblin, {name}.",
+    "Let me guess. 'Remember to buy cigarettes for Cookie.' Right?",
+  ],
+  'notes-erased': [
+    "Deleting your notes? Smart. They were awful.",
+    "Poof. Gone. Nobody will miss that.",
+    "Burning the evidence, huh? I like your style.",
+  ],
+  'portrait-changed': [
+    "New picture? Same ugly mug, though.",
+    "You changed your face. Didn't help.",
+    "Oh, a fresh portrait. Did the last one finally run away?",
+    "No picture is going to fix that face, {name}.",
+  ],
+  'portrait-removed': [
+    "Taking your picture down? Even you can't look at it.",
+    "No face at all. That's an improvement.",
+    "Deleted! Good call, hide the shame.",
+  ],
+  'icon-changed': [
+    "Swapping your little icon? Bold. Fashion icon you are not.",
+    "Nice new icon. It still has your face's energy.",
+    "Ooh, a tiny new picture. Cute. Not as cute as me.",
+  ],
+  lookup: [
+    "Looking up '{item}'? Don't you know anything?",
+    "Reading about {item}. Take notes. Slowly.",
+    "{item}, huh. Never heard of it. (I have. I'd never admit I read.)",
+    "Researching {item}? Just stab it, malaka.",
+    "You need a whole entry for {item}? Pathetic.",
+  ],
+  'lookup-rule': [
+    "Checking the rules for '{item}'? Make something up, nobody will check.",
+    "Rules lawyer detected: {item}.",
+    "'{item}'. Sure. The rules say whatever the loudest person at the table says.",
+    "Reading the rules? In this economy?",
+  ],
+  search: [
+    "Searching for '{item}'? You couldn't find your own ass with a map.",
+    "'{item}'. Really? That's what you came up with?",
+    "Typing '{item}' so slow I could've robbed a bank.",
+    "Looking for {item}? Try asking me. I'll lie, but it'll be quick.",
+  ],
+  'search-rules': [
+    "Filtering for '{item}'. Rules, rules, rules. Fun.",
+    "'{item}'? Just ask me, I'll make it up.",
+    "You and your rules, {name}. Get a life.",
+  ],
+
   // ---- things you own
   item: [
     "A {item}? Where'd you steal that from? Teach me.",

@@ -81,3 +81,16 @@ test('Cookie options are sanitized', () => {
   const o = sanitize({ cookieTalk: 'screaming', cookieSwear: 'x', cookie: 0 });
   assert.deepEqual([o.cookieTalk, o.cookieSwear, o.cookie, o.cookieSound], ['normal', 'full', true, false], 'he cannot be switched off');
 });
+
+test('writing notes, changing pictures and spending other currencies are noticed', () => {
+  const at = (extra) => [char(extra), der(20)];
+  assert.deepEqual(ev(at({}), at({ quickNotes: 'The innkeeper owes me a favor.' })), ['notes'], 'adding 30 characters is writing');
+  assert.deepEqual(ev(at({}), at({ quickNotes: 'ok' })), [], 'a couple of letters is not');
+  assert.deepEqual(ev(at({ notes: 'x'.repeat(100) }), at({ notes: '' })), ['notes-erased']);
+  assert.deepEqual(ev(at({}), at({ portrait: 'data:image/png;base64,AAAA' })), ['portrait']);
+  assert.deepEqual(ev(at({ portrait: 'data:image/png;base64,AAAA' }), at({ portrait: 'data:image/png;base64,BBBBBB' })), ['portrait-changed']);
+  assert.deepEqual(ev(at({ portrait: 'data:image/png;base64,AAAA' }), at({})), ['portrait-removed']);
+  assert.deepEqual(ev(at({}), at({ avatar: 'data:image/png;base64,CCCC' })), ['icon-changed']);
+  const gems = n => ({ money: { pp: 0, gp: 0, sp: 0, cp: 0, custom: [{ name: 'Gems', amount: n }] } });
+  assert.deepEqual(ev(at(gems(10)), at(gems(4))), ['gold-down'], 'spending a custom currency counts as spending money');
+});

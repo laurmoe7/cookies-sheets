@@ -1,5 +1,6 @@
 // Small DOM helpers shared by all views.
 import { api } from './api.js';
+import { lookup as petLookup } from './pet/pet.js';
 
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export const $ = (sel, root = document) => root.querySelector(sel);
@@ -76,6 +77,7 @@ export async function showEntry(idOrName, cat) {
   if (!entry) { toast(`No entry found for "${idOrName}"`); return; }
   drawerHistory.push(entry.id);
   renderDrawer(entry);
+  petLookup(entry.name, entry.cat);
 }
 
 /** Show something that isn't a compendium entry (an archetype feature, a custom trait's notes) in the drawer. */

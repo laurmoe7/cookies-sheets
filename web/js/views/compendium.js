@@ -2,6 +2,7 @@ import { api } from '../api.js';
 import { state, changed } from '../app.js';
 import { esc, $, $$, debounce, entryHtml, wireEntryLinks, toast } from '../ui.js';
 import { SCHOOLS } from '../data.js';
+import { search as petSearch } from '../pet/pet.js';
 
 const CATS = ['Spell', 'Feat', 'Trait', 'Rules', 'Condition', 'Class', 'Archetype', 'Class Feature', 'Race', 'Racial Trait',
   'Skill', 'Magic Item', 'Affliction', 'Mythic Spell', 'Monster Ability'];
@@ -80,6 +81,7 @@ async function search(main, append = false) {
   }
   rows = await api.search(st.q, st.cat, 100, st.offset);
   if (my !== searchSeq) return;
+  if (!append) petSearch(st.q);
   st.results = append ? [...st.results, ...rows] : rows;
   const html = rows.map(rowHtml).join('') + (rows.length === 100 ? '<button class="btn small full" data-more>Load more</button>' : '');
   if (append) { $('[data-more]', box)?.remove(); box.insertAdjacentHTML('beforeend', html); } else box.innerHTML = html || '<p class="pad muted">No matches.</p>';

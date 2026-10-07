@@ -8,6 +8,9 @@ const sum = list => (list || []).reduce((s, x) => s + n(x), 0);
 /** @returns {number} All the character's coin in gold pieces. */
 export const goldValue = m => n(m?.pp) * 10 + n(m?.gp) + n(m?.sp) / 10 + n(m?.cp) / 100;
 
+/** A cheap fingerprint of a picture (its length and the end of its data), so changes can be told apart. */
+const sig = img => (img ? img.length + ':' + String(img).slice(-24) : '');
+
 /** @param {object} c The character. @param {object} d Its derived numbers (state.derived). */
 export function facts(c, d) {
   const casts = {};
@@ -38,7 +41,8 @@ export function facts(c, d) {
     harm: sum(abil.map(a => n(a.damage) + n(a.drain))),
     pools: sum(Object.values(c.resources || {})) + sum((c.trackers || []).map(t => t.cur)),
     xp: n(c.xp),
-    portrait: !!c.portrait,
+    notes: String(c.notes || '').length + String(c.quickNotes || '').length,
+    portrait: sig(c.portrait), avatar: sig(c.avatar),
   };
 }
 
@@ -96,6 +100,7 @@ export function diffFacts(a, b) {
   if (gain >= 1) ev(gain >= 500 ? 'rich' : 'gold-up', { amount: Math.round(gain) });
   else if (gain <= -1) ev(-gain >= 500 ? 'splurge' : 'gold-down', { amount: Math.round(-gain) });
   else if (b.custom.length > a.custom.length || sum(b.custom) > sum(a.custom)) ev('gold-up', { amount: 0 });
+  else if (sum(b.custom) < sum(a.custom)) ev('gold-down', { amount: Math.round(sum(a.custom) - sum(b.custom)) });
 
   for (const m of added(a.mods, b.mods)) ev('buff-on', { name: m });
   for (const m of added(b.mods, a.mods)) ev('buff-off', { name: m });
@@ -103,5 +108,10 @@ export function diffFacts(a, b) {
   if (b.pools > a.pools) ev('pool-regain'); else if (b.pools < a.pools) ev('pool-spend');
   if (b.xp > a.xp) ev('xp', { amount: b.xp - a.xp });
   if (b.portrait && !a.portrait) ev('portrait');
+  else if (!b.portrait && a.portrait) ev('portrait-removed');
+  else if (b.portrait !== a.portrait) ev('portrait-changed');
+  if (b.avatar && b.avatar !== a.avatar) ev('icon-changed');
+  if (b.notes - a.notes >= 12) ev('notes');
+  else if (a.notes - b.notes >= 40) ev('notes-erased');
   return out;
 }
