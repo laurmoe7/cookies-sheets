@@ -453,3 +453,17 @@ html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="
 .card-details[open] > summary { margin-bottom: 12px; }
 
 .page { position: relative; }
+
+/* ---------- class resources and trackers ---------- */
+.res-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 8px 0; border-top: 1px solid var(--line); }
+.res-name { flex: 1 1 200px; font-weight: 600; min-width: 160px; }
+.res-bar { flex: 1 1 120px; height: 8px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 99px; overflow: hidden; }
+.res-bar > div { height: 100%; background: var(--accent); transition: width .2s; }
+.res-val { min-width: 70px; text-align: right; }
+.res-note { flex-basis: 100%; }
+.res-inline { margin: 4px 0 8px; border: 1px solid var(--line); border-radius: var(--radius); padding: 0 12px; }
+.res-inline .res-row { border-top: 0; }
+.cur-row { margin: 4px 0; }
+
+.warn-list { margin: 0 0 14px; padding-left: 20px; }
+.warn-list li { margin: 4px 0; }
