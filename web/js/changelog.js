@@ -5,7 +5,8 @@ export const CHANGELOG = [
   {
     version: 'Latest', date: '2026-10-07',
     items: [
-      'Options window: theme (dark or light), accent color, text size, compact layout, tooltips, animations, and what opens at start.',
+      'New Dusty tome theme (Options → Theme): dim parchment pages on dark leather, ribbon-bookmark tabs, a page turn when you switch tabs. Light mode is gone; Classic dark is the default.',
+      'Options window: theme, accent color, text size, compact layout, tooltips, animations, and what opens at start.',
       'Tab icons, and tabs that look like tabs. The picture beside the character name is now the button to change it.',
       'Companion pages are laid out like the Overview: portrait, hit point tracking, ability scores, separate Defense and Offense cards, and an "At a glance" summary. The full stat block folds away.',
       'Ability names in stat blocks (such as "attach", "scent", "improved evasion") are underlined links to what they do.',

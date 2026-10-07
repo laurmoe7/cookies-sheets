@@ -1,27 +1,4 @@
 :root {
-  --bg: #f4f1ea;
-  --panel: #ffffff;
-  --panel-2: #f8f6f1;
-  --ink: #23201c;
-  --muted: #7a7166;
-  --line: #e2dccf;
-  --accent: #9b1c1c;
-  --accent-soft: #f6e4e1;
-  --accent-ink: #ffffff;
-  --gold: #b8892b;
-  --good: #2f7d4b;
-  --warn: #b26b00;
-  --bad: #b3261e;
-  --nav: #1f1b18;
-  --nav-ink: #e9e2d6;
-  --input: #fffdf9;
-  --shadow: 0 1px 2px rgba(40, 30, 20, .06), 0 2px 8px rgba(40, 30, 20, .05);
-  --radius: 10px;
-  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
-  --serif: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
-  color-scheme: light;
-}
-:root[data-theme="dark"] {
   --bg: #16181c;
   --panel: #1f2228;
   --panel-2: #262a31;
@@ -38,14 +15,10 @@
   --nav: #0f1013;
   --input: #181a1f;
   --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+  --radius: 10px;
+  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --serif: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
   color-scheme: dark;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #16181c; --panel: #1f2228; --panel-2: #262a31; --ink: #e8e4dc; --muted: #9b968c; --line: #343841;
-    --accent: #e0605a; --accent-soft: #3a2224; --accent-ink: #1a0d0c; --gold: #d6aa52; --good: #5cc185; --warn: #e6a640;
-    --bad: #ff7369; --nav: #0f1013; --input: #181a1f; --shadow: 0 1px 2px rgba(0, 0, 0, .3); color-scheme: dark;
-  }
 }
 
 * { box-sizing: border-box; }
@@ -137,7 +110,7 @@ textarea { width: 100%; resize: vertical; }
 .btn { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); padding: 6px 12px; border-radius: 7px; display: inline-flex; align-items: center; gap: 6px; }
 .btn:hover { border-color: var(--accent); }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-:root[data-theme="dark"] .btn.primary { color: var(--accent-ink); }
+.btn.primary { color: var(--accent-ink); }
 .btn.primary:hover { filter: brightness(1.08); }
 .btn.danger { color: var(--bad); } .btn.good { color: var(--good); }
 .btn.ghost { background: transparent; }
@@ -478,3 +451,5 @@ html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="
 .card-details { margin-bottom: 14px; padding: 0 16px 6px; background: var(--panel); box-shadow: var(--shadow); }
 .card-details > summary { padding: 12px 0; }
 .card-details[open] > summary { margin-bottom: 12px; }
+
+.page { position: relative; }

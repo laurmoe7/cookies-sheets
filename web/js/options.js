@@ -15,12 +15,14 @@ export const TEXT_SIZES = [[90, 'Small'], [100, 'Normal'], [112, 'Large'], [125,
 export const START_TABS = [['overview', 'Overview'], ['skills', 'Skills'], ['feats', 'Feats & Abilities'], ['spells', 'Spells'], ['gear', 'Gear'],
   ['companions', 'Companions'], ['buffs', 'Buffs & Conditions'], ['bio', 'Bio & Notes']];
 
+export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
+
 export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, tooltips: true, motion: true, reopenLast: true, startTab: 'overview' };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
   const o = { ...DEFAULTS, ...(raw && typeof raw === 'object' ? raw : {}) };
-  if (!['dark', 'light'].includes(o.theme)) o.theme = DEFAULTS.theme; // an old "match Windows" choice becomes dark
+  if (!THEMES.some(([k]) => k === o.theme)) o.theme = DEFAULTS.theme; // light mode and "match Windows" are gone; they become dark
   if (!ACCENTS[o.accent]) o.accent = DEFAULTS.accent;
   o.textSize = Number(o.textSize);
   if (!TEXT_SIZES.some(([v]) => v === o.textSize)) o.textSize = DEFAULTS.textSize;
@@ -35,7 +37,7 @@ export const options = () => current;
 export function loadOptions() {
   let raw = null;
   try { raw = JSON.parse(localStorage.getItem('options') || 'null'); } catch { /* ignore */ }
-  if (!raw) { try { const t = localStorage.getItem('theme'); if (t === 'dark' || t === 'light') raw = { theme: t }; } catch { /* ignore */ } }
+  if (!raw) { try { const t = localStorage.getItem('theme'); if (t === 'dark') raw = { theme: t }; } catch { /* ignore */ } }
   current = sanitize(raw);
   applyOptions();
   return current;
@@ -46,9 +48,8 @@ function save() { try { localStorage.setItem('options', JSON.stringify(current))
 export function applyOptions() {
   const root = document.documentElement;
   root.dataset.theme = current.theme;
-  const dark = current.theme === 'dark';
   const a = ACCENTS[current.accent];
-  const col = a && (dark ? a.dark : a.light);
+  const col = a && a.dark;
   if (col) {
     root.style.setProperty('--accent', col);
     root.style.setProperty('--accent-soft', `color-mix(in srgb, ${col} 18%, var(--panel))`);
@@ -68,7 +69,7 @@ export function showOptions() {
     const draw = () => {
       const o = current;
       body.innerHTML = `<div class="opt-grid">
-        <div class="opt-row"><b>Theme</b><div class="seg">${[['dark', 'Dark'], ['light', 'Light']].map(([k, l]) => `<button class="seg-btn ${o.theme === k ? 'on' : ''}" data-opt="theme" data-v="${k}">${l}</button>`).join('')}</div></div>
+        <div class="opt-row"><b>Theme</b><div class="seg">${THEMES.map(([k, l]) => `<button class="seg-btn ${o.theme === k ? 'on' : ''}" data-opt="theme" data-v="${k}">${l}</button>`).join('')}</div></div>
         <div class="opt-row"><b>Accent color</b><div class="swatches">${Object.entries(ACCENTS).map(([k, a]) => `<button class="swatch ${o.accent === k ? 'on' : ''}" data-opt="accent" data-v="${k}" title="${a.name}" style="background:${a.dark || '#e0605a'}"></button>`).join('')}</div></div>
         <div class="opt-row"><b>Text size</b><div class="seg">${TEXT_SIZES.map(([v, l]) => `<button class="seg-btn ${o.textSize === v ? 'on' : ''}" data-opt="textSize" data-v="${v}">${l}</button>`).join('')}</div></div>
         <label class="opt-row"><span><b>Compact layout</b><br><span class="muted small">Tighter cards and spacing, to fit more on screen.</span></span><input type="checkbox" data-opt="compact" ${o.compact ? 'checked' : ''}></label>
@@ -101,4 +102,17 @@ export function showChangelog() {
     body.innerHTML = CHANGELOG.map(e => `<h3>${esc(e.version)}${e.date ? ` <span class="muted small">${esc(e.date)}</span>` : ''}</h3>
       <ul class="changelog">${e.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`).join('');
   }, { wide: true });
+}
+
+/** Tome theme: a page turns over the tab body after you switch tabs. */
+export function playPageTurn(body) {
+  if (current.theme !== 'tome' || !current.motion || !body?.parentElement) return;
+  const page = document.createElement('div');
+  page.className = 'page-turn';
+  page.style.top = body.offsetTop + 'px';
+  page.style.height = Math.min(body.offsetHeight, 900) + 'px';
+  body.parentElement.appendChild(page);
+  void page.offsetWidth;
+  page.classList.add('go');
+  setTimeout(() => page.remove(), 700);
 }
