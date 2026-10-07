@@ -158,7 +158,8 @@ export function playPageTurn(body, snapshot, back = false) {
   const h = Math.max(260, Math.min(Math.max(+snapshot.dataset.h || 0, body.offsetHeight), avail));
   const leaf = document.createElement('div');
   leaf.className = 'page-turn' + (back ? ' rev' : '');
-  leaf.style.cssText = `left:${body.offsetLeft}px;top:${body.offsetTop}px;width:${W}px;height:${h}px`;
+  // The leather behind the sheet is drawn at the same offsets as the real background, so the pattern lines up and does not restart per strip.
+  leaf.style.cssText = `left:${body.offsetLeft}px;top:${body.offsetTop}px;width:${W}px;height:${h}px;--bx:${body.offsetLeft}px;--by:${body.offsetTop}px;--mw:${main?.clientWidth || 1200}px;--mh:${main?.clientHeight || 800}px`;
   // The sheet that moves shows the old page going forward, and the new page coming back.
   const moving = back ? snapshotPage(body) : snapshot;
   if (back) {
@@ -177,7 +178,7 @@ export function playPageTurn(body, snapshot, back = false) {
   for (let i = 0; i < STRIPS; i++) {
     const strip = document.createElement('div');
     strip.className = 'pt-strip' + (i === 0 ? ' first' : '');
-    strip.style.cssText = `width:${sw + 3}px;--i:${(i / (STRIPS - 1)).toFixed(3)}`;
+    strip.style.cssText = `width:${sw + 3}px;--i:${STRIPS > 1 ? (i / (STRIPS - 1)).toFixed(3) : 0};--sx:${(i * sw).toFixed(2)}px`;
     const front = document.createElement('div');
     front.className = 'pt-face pt-front';
     const clone = i === STRIPS - 1 ? moving : moving.cloneNode(true);

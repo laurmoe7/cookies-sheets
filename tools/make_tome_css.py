@@ -63,6 +63,11 @@ def burn(corner, seed, size=170):
         "<rect width='100%' height='100%' fill='url(#g)' filter='url(#b)'/></svg>")
 
 
+CLOTH = uri(
+    "<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='t' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>"
+    "<feTurbulence type='fractalNoise' baseFrequency='.9 .02' numOctaves='2' seed='14' stitchTiles='stitch'/>"
+    "<feColorMatrix values='0 0 0 0 .10  0 0 0 0 .06  0 0 0 0 .02  .8 0 0 0 -.3'/></filter><rect width='100%' height='100%' filter='url(#t)'/></svg>")
+
 # Pages of one book: the same paper colour, but each sheet has its own crumples, light direction and burnt side.
 EDGE = 'rgba(255,238,196,.16) 0%, rgba(0,0,0,0) 40%, rgba(24,12,3,.5) 100%'
 PAPERS = [
@@ -130,6 +135,7 @@ html[data-theme="tome"] {
   --radius: 4px;
   --grain: @GRAIN@;
   --leather: @LEATHER@;
+  --cloth: @CLOTH@;
 }
 html[data-theme="tome"] body { background: var(--bg); }
 /* dark leather: a little lighter in the middle, darker toward the edges */
@@ -170,16 +176,14 @@ html[data-theme="tome"] .tab { position: relative; border-radius: 0; padding: 19
   background-color: #7b6741;
   background-image: linear-gradient(90deg, #5a4826 0, #5a4826 3px, transparent 3px, transparent calc(100% - 3px), #5a4826 calc(100% - 3px)),
     linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,244,210,.13) 50%, rgba(0,0,0,.22)),
-    repeating-linear-gradient(0deg, rgba(0,0,0,.10) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg, rgba(255,240,200,.08) 0 1px, transparent 1px 3px); }
+    var(--cloth); }
 html[data-theme="tome"] .tab::after { content: ""; position: absolute; top: 16px; bottom: 5px; left: 6px; right: 6px; pointer-events: none;
   border-left: 1px dashed rgba(244,226,180,.55); border-right: 1px dashed rgba(244,226,180,.55); }
 html[data-theme="tome"] .tab:hover { background-color: #94804f; color: #fff6dc; }
 html[data-theme="tome"] .tab.active, html[data-theme="tome"] .tab.active:hover { background-color: #8e3427; color: #fbefd2;
   background-image: linear-gradient(90deg, #5c1d14 0, #5c1d14 3px, transparent 3px, transparent calc(100% - 3px), #5c1d14 calc(100% - 3px)),
     linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,200,170,.2) 50%, rgba(0,0,0,.28)),
-    repeating-linear-gradient(0deg, rgba(0,0,0,.12) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg, rgba(255,210,190,.08) 0 1px, transparent 1px 3px); }
+    var(--cloth); }
 html[data-theme="tome"] .tab.active::after { border-left-color: rgba(232,190,100,.8); border-right-color: rgba(232,190,100,.8); }
 
 /* tome scroll bars: leather track, brass thumb */
@@ -194,15 +198,18 @@ html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
 @property --c { syntax: '<number>'; inherits: true; initial-value: 0; }
 .page-turn { position: absolute; z-index: 6; pointer-events: none; perspective: 1800px; perspective-origin: 15% 40%; }
 .pt-under, .pt-shadow { position: absolute; inset: 0; overflow: hidden; }
-.pt-under { background: var(--leather), #26190f; }
+
 .pt-shadow { background: linear-gradient(90deg, rgba(0,0,0,.55), rgba(0,0,0,0) 75%); opacity: 0; }
 .pt-sheet { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d; will-change: transform; }
 .pt-strip { position: absolute; top: 0; height: 100%; transform-style: preserve-3d; transform-origin: left center; transform: rotateY(calc(var(--c) * var(--k, -1.2deg))); }
 .pt-strip.first { left: 0; transform: none; }
 .pt-strip .pt-strip { left: calc(100% - 3px); }
 .pt-face { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; }
-.pt-front { background: var(--leather), radial-gradient(ellipse at 50% 35%, #3a2b1b 0%, #20160d 100%); }
-.pt-back { transform: rotateY(180deg); background-color: #4a3c26; background-image: var(--grain), radial-gradient(ellipse at 40% 40%, #5c4d34, #3d3120); }
+.pt-front, .pt-under { background-color: #26190f; background-repeat: no-repeat, repeat;
+  background-image: radial-gradient(ellipse at 50% 35%, rgba(70,48,28,.35), rgba(0,0,0,.45) 100%), var(--leather);
+  background-size: var(--mw, 100%) var(--mh, 100%), auto;
+  background-position: calc(0px - var(--bx, 0px) - var(--sx, 0px)) calc(0px - var(--by, 0px)), calc(0px - var(--bx, 0px) - var(--sx, 0px)) calc(0px - var(--by, 0px)); }
+.pt-back { transform: rotateY(180deg); background-color: #4f4129; background-image: var(--grain); background-position: calc(0px - var(--sx, 0px)) 0; }
 .pt-front::after, .pt-back::after { content: ""; position: absolute; inset: 0; background: #000; pointer-events: none; opacity: calc(var(--c) * (.03 + var(--i, 0) * .34)); }
 .pt-clone { position: absolute; top: 0; }
 .page-turn.go .pt-sheet { animation: leaf-flip .64s cubic-bezier(.45, .05, .4, 1) forwards, leaf-bend .64s ease-in-out forwards; }
@@ -231,7 +238,7 @@ html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
 
 
 def main():
-    css = (CSS.replace('@GRAIN@', GRAIN).replace('@LEATHER@', LEATHER)
+    css = (CSS.replace('@GRAIN@', GRAIN).replace('@LEATHER@', LEATHER).replace('@CLOTH@', CLOTH)
            .replace('@PAPERS@', paper_rules()).replace('@SHEET@', sheet(0)))
     with open(OUT, 'w', encoding='utf-8', newline='\n') as f:
         f.write(css)
