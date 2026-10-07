@@ -38,7 +38,8 @@ Windows desktop app for Pathfinder 1st Edition characters: live character sheet,
 - **Class resources:** `resources.js` (pure, tested) lists the pools a character's classes give (arcane reservoir, rage rounds, ki, grit...). Current points live in `c.resources[id]` (absent = start of day); `c.trackers` are the player's own counters. `views/resources.js` draws them on Overview, and the arcanist's reservoir also appears in its spell card. To add a pool, add a line to `classResources`.
 - **Level-up warnings:** `levelcheck.js` (pure, tested) lists what is left undone when a level is applied; `warnBox()` in `ui.js` shows it with "Go back and fix" / "Apply anyway".
 - **Down vs. dead:** the Overview HP card and summon cards use an amber frame when down (0 or below) and a red, greyed frame once HP reaches minus the Con score. Summons store `con`.
-- **Pictures:** `picSlot()` in `ui.js` gives companions and summons a small square picture (`image` field).
+- **Pictures:** `cropper.js` is the picture chooser with a drag-to-recenter and zoom window (`imagecrop.js` holds the tested crop maths). `picFrame()`/`picAction()` give companions (large, 4:3) and summons (small square) an `image`; the uncropped original is kept in `imageSrc` (`portraitSrc`/`avatarSrc` on the character) so it can be repositioned later.
+- **Companion eligibility:** `companionSources()` in `companions.js` works out familiar and animal-companion levels from classes plus chosen abilities, feats and archetypes (arcanist Familiar exploit, shaman, Animal domain, Animal Ally, Boon Companion, paladin mount...). Add new grants there.
 - **Re-drawing:** `changed({ rerender: true })` keeps the scroll position.
 
 ## Commands

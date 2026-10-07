@@ -134,3 +134,34 @@ test('familiar at 11th level has spell resistance equal to master level + 5', ()
   assert.equal(s.abilities.int, 11);
   assert.equal(s.hp, 30);
 });
+
+import { companionSources, ownedNames, withCompanionSources } from '../web/js/companions.js';
+
+test('arcanist with the Familiar exploit gets a familiar at arcanist level, however it was entered', () => {
+  for (const n of ['Familiar', 'Arcane Exploit: Familiar', 'Arcanist Exploit (Familiar)']) {
+    const s = companionSources({ Arcanist: 5 }, [n.toLowerCase()]);
+    assert.equal(s.familiar, 5, `${n}: arcanist level 5 counts`);
+  }
+  assert.equal(companionSources({ Arcanist: 5 }, []).familiar, 0, 'no exploit, no familiar');
+  assert.equal(companionSources({ Arcanist: 5 }, ['improved familiar']).familiar, 0, 'the feat alone is not a source');
+});
+test('exploit levels stack with wizard levels', () => {
+  assert.equal(companionSources({ Wizard: 3, Arcanist: 2 }, ['familiar']).familiar, 5, '3 + 2');
+});
+test('level notes mentioning a familiar count for the exploit', () => {
+  const c = { levelUps: [{ notes: 'took the Familiar exploit' }], feats: [], traits: [], specials: [] };
+  assert.equal(withCompanionSources({ Arcanist: 3 }, c, [], [], 3)._familiar, 3);
+  assert.deepEqual(ownedNames({ feats: [{ name: 'Dodge' }], traits: [], specials: [{ name: 'Familiar ' }], levelUps: [] }), ['dodge', 'familiar']);
+});
+test('shaman, sea singer and blight druid get familiars; paladin, Animal domain and feats get companions', () => {
+  assert.equal(companionSources({ Shaman: 4 }, []).familiar, 4);
+  assert.equal(companionSources({ Bard: 4 }, [], ['sea singer']).familiar, 4);
+  assert.equal(companionSources({ Bard: 4 }, [], []).familiar, 0);
+  assert.equal(companionSources({ Druid: 6 }, [], ['blight druid']).familiar, 6);
+  assert.equal(companionSources({ Paladin: 7 }, []).animal, 4, '7 - 3');
+  assert.equal(companionSources({ Paladin: 4 }, []).animal, 0, 'no mount before 5th');
+  assert.equal(companionSources({ Cleric: 6 }, ['link to the wild']).animal, 3, '6 - 3');
+  assert.equal(companionSources({ Fighter: 8 }, ['animal ally'], [], 8).animal, 5, 'character level 8 - 3');
+  assert.equal(companionSources({ Druid: 3, Fighter: 6 }, ['boon companion'], [], 9).animal, 7, '3 + 4, under character level 9');
+  assert.equal(companionSources({ Druid: 8 }, ['boon companion'], [], 9).animal, 9, 'capped at character level');
+});

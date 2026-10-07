@@ -5,7 +5,8 @@ import {
   ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS,
   BUFF_PRESETS, SCHOOLS, CASTING_STAT_NAMES,
 } from '../data.js';
-import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom, pickImage } from '../ui.js';
+import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom } from '../ui.js';
+import { choosePicture, repositionPicture } from '../cropper.js';
 import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
 import { summonSpell } from '../summons.js';
@@ -70,6 +71,29 @@ function overview(body, c, d) {
     <button class="btn small ghost" data-quick-buff>＋ Buff / condition</button>
   </div>
   <div class="grid overview-grid">
+    <section class="card hp ${c.portrait ? 'has-portrait' : ''}">
+      <div class="hp-main">
+      <h3>Hit Points</h3>
+      <div class="hp-big"><span class="calc" data-calc="hp.current"></span><span class="muted"> / </span>${calc('hp.max')}</div>
+      <div class="hp-bar"><div id="hp-fill"></div></div>
+      <div class="row">
+        <input id="hp-amt" type="number" class="num w4" placeholder="0" min="0">
+        <button class="btn danger" data-hp="dmg">Damage</button>
+        <button class="btn good" data-hp="heal">Heal</button>
+        <button class="btn" data-hp="full" title="Heal to full hit points"><span class="heart">♥</span> Full heal</button>
+      </div>
+      <div class="kv">
+        <label>Current ${inp('hp.current', { type: 'num', cls: 'w4', ph: 'max' })}</label>
+        <label>Temp ${inp('hp.temp', { type: 'num', cls: 'w3' })}</label>
+        <label>Nonlethal ${inp('hp.nonlethal', { type: 'num', cls: 'w3' })}</label>
+        <label title="Toughness, items, etc.">Max adj. ${inp('hp.misc', { type: 'num', cls: 'w3' })}</label>
+      </div>
+      <p class="small muted" id="hp-status"></p>
+      </div>
+      ${c.portrait ? `<div class="portrait-frame"><img src="${c.portrait}" alt="Character portrait">
+        <div class="portrait-tools"><button class="icon-btn" data-img="portrait" title="Change portrait">✎</button><button class="icon-btn" data-img-edit="portrait" title="Recenter or resize">⤢</button><button class="icon-btn" data-img-clear="portrait" title="Remove portrait">✕</button></div></div>` : ''}
+    </section>
+
     <section class="card abilities">
       <h3>Ability Scores</h3>
       <table class="tbl">
@@ -89,29 +113,6 @@ function overview(body, c, d) {
           <td class="big accent">${calc(`abilities.${a}.mod`, 'sign')}</td></tr>`).join('')}</tbody>
       </table>
       <div class="row small muted"><span>Point buy: <b id="pointbuy"></b></span><span class="grow"></span><span>Buffs to ability scores are applied automatically.</span></div>
-    </section>
-
-    <section class="card hp ${c.portrait ? 'has-portrait' : ''}">
-      <div class="hp-main">
-      <h3>Hit Points</h3>
-      <div class="hp-big"><span class="calc" data-calc="hp.current"></span><span class="muted"> / </span>${calc('hp.max')}</div>
-      <div class="hp-bar"><div id="hp-fill"></div></div>
-      <div class="row">
-        <input id="hp-amt" type="number" class="num w4" placeholder="0" min="0">
-        <button class="btn danger" data-hp="dmg">Damage</button>
-        <button class="btn good" data-hp="heal">Heal</button>
-        <button class="btn" data-hp="full" title="Reset to max HP">Full</button>
-      </div>
-      <div class="kv">
-        <label>Current ${inp('hp.current', { type: 'num', cls: 'w4', ph: 'max' })}</label>
-        <label>Temp ${inp('hp.temp', { type: 'num', cls: 'w3' })}</label>
-        <label>Nonlethal ${inp('hp.nonlethal', { type: 'num', cls: 'w3' })}</label>
-        <label title="Toughness, items, etc.">Max adj. ${inp('hp.misc', { type: 'num', cls: 'w3' })}</label>
-      </div>
-      <p class="small muted" id="hp-status"></p>
-      </div>
-      ${c.portrait ? `<div class="portrait-frame"><img src="${c.portrait}" alt="Character portrait">
-        <div class="portrait-tools"><button class="icon-btn" data-img="portrait" title="Change portrait">✎</button><button class="icon-btn" data-img-clear="portrait" title="Remove portrait">✕</button></div></div>` : ''}
     </section>
 
     <section class="card defense">
@@ -243,13 +244,19 @@ function overview(body, c, d) {
   }));
 }
 
+const IMG_OPTS = { avatar: { w: 1, h: 1, out: 256 }, portrait: { w: 3, h: 4, out: 800 } };
 function wireImages(body, c) {
   $$('[data-img]', body).forEach(b => (b.onclick = async () => {
     const kind = b.dataset.img;
-    const url = await pickImage(kind === 'avatar' ? 192 : 900, { square: kind === 'avatar' });
-    if (url) { c[kind] = url; changed({ rerender: true }); }
+    const r = await choosePicture(IMG_OPTS[kind]);
+    if (r) { c[kind] = r.image; c[kind + 'Src'] = r.src; changed({ rerender: true }); }
   }));
-  $$('[data-img-clear]', body).forEach(b => (b.onclick = () => { c[b.dataset.imgClear] = ''; changed({ rerender: true }); }));
+  $$('[data-img-edit]', body).forEach(b => (b.onclick = async () => {
+    const kind = b.dataset.imgEdit;
+    const r = await repositionPicture(c[kind + 'Src'] || c[kind], IMG_OPTS[kind]);
+    if (r) { c[kind] = r.image; changed({ rerender: true }); }
+  }));
+  $$('[data-img-clear]', body).forEach(b => (b.onclick = () => { c[b.dataset.imgClear] = ''; c[b.dataset.imgClear + 'Src'] = ''; changed({ rerender: true }); }));
 }
 
 const POINTS = { 7: -4, 8: -2, 9: -1, 10: 0, 11: 1, 12: 2, 13: 3, 14: 5, 15: 7, 16: 10, 17: 13, 18: 17 };
@@ -728,9 +735,9 @@ function bio(body, c, d) {
     <div class="img-row">
       <span class="img-slot">${c.avatar ? `<img class="avatar-lg" src="${c.avatar}" alt="">` : ''}<span>
         <button class="btn small" data-img="avatar">${c.avatar ? 'Change name icon' : '＋ Name icon'}</button>
-        ${c.avatar ? '<button class="btn small ghost" data-img-clear="avatar">Remove</button>' : ''}</span></span>
+        ${c.avatar ? '<button class="btn small ghost" data-img-edit="avatar">Recenter</button><button class="btn small ghost" data-img-clear="avatar">Remove</button>' : ''}</span></span>
       <span class="img-slot"><button class="btn small" data-img="portrait">${c.portrait ? 'Change portrait' : '＋ Portrait'}</button>
-        ${c.portrait ? '<button class="btn small ghost" data-img-clear="portrait">Remove</button>' : ''}</span>
+        ${c.portrait ? '<button class="btn small ghost" data-img-edit="portrait">Recenter</button><button class="btn small ghost" data-img-clear="portrait">Remove</button>' : ''}</span>
     </div>
     <div class="form">
       <label>Character name ${inp('name', { cls: 'full' })}</label>

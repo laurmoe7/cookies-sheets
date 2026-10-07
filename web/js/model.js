@@ -17,6 +17,7 @@ export function newCharacter() {
     levelUps: [], // {cls, hp, fcb, fcbNote, abilityIncrease, feats:[], ranks:{skillKey:n}, spells:[], features}
     archetypes: {}, // {Class: [archetype data from features.bakeArchetype]}
     portrait: '', // data URL, large picture on the Overview tab
+    portraitSrc: '', avatarSrc: '', // the uncropped pictures, kept so they can be recentered
     avatar: '',   // data URL, small picture beside the name in the top bar
     summons: [], // tracked Summon Monster / Nature's Ally creatures (Buffs & Conditions tab)
     companions: [], // animal companions, eidolons, familiars (see companions.js)

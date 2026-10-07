@@ -257,41 +257,6 @@ export function initTextFields({ get, set }) {
   }
 }
 
-/** Let the user choose an image file; resolves with a downscaled JPEG/PNG data URL (null if cancelled). */
-export function pickImage(maxSize = 800, { square = false } = {}) {
-  return new Promise(resolve => {
-    const input = document.createElement('input');
-    input.type = 'file'; input.accept = 'image/*';
-    input.onchange = () => {
-      const file = input.files[0];
-      if (!file) return resolve(null);
-      const img = new Image();
-      const url = URL.createObjectURL(file);
-      img.onload = () => {
-        let sx = 0, sy = 0, sw = img.width, sh = img.height;
-        if (square) { const m = Math.min(sw, sh); sx = (sw - m) / 2; sy = (sh - m) / 2; sw = sh = m; }
-        const k = Math.min(1, maxSize / Math.max(sw, sh));
-        const cv = document.createElement('canvas');
-        cv.width = Math.round(sw * k); cv.height = Math.round(sh * k);
-        const g = cv.getContext('2d');
-        g.drawImage(img, sx, sy, sw, sh, 0, 0, cv.width, cv.height);
-        URL.revokeObjectURL(url);
-        resolve(file.type === 'image/png' ? cv.toDataURL('image/png') : cv.toDataURL('image/jpeg', 0.85));
-      };
-      img.onerror = () => { URL.revokeObjectURL(url); toast('Could not read that image', 'err'); resolve(null); };
-      img.src = url;
-    };
-    input.click();
-  });
-}
-
-/** A small square picture slot for a card header: shows the image (hover to change or remove) or a "＋" to add one. */
-export function picSlot(image, hint = 'Add a picture') {
-  return image
-    ? `<span class="pic-slot has"><img src="${image}" alt=""><span class="pic-tools"><button class="icon-btn" data-pic title="Change picture">✎</button><button class="icon-btn" data-pic-clear title="Remove picture">✕</button></span></span>`
-    : `<button class="pic-slot add" data-pic title="${esc(hint)}">＋</button>`;
-}
-
 /** Styled tooltips: any element with a title (or data-tip) gets a tooltip in the app's look instead of the browser's. */
 export function initTooltips() {
   const tip = document.createElement('div');

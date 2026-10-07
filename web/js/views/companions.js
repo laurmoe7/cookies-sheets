@@ -3,9 +3,13 @@
 import { api } from '../api.js';
 import { state, changed } from '../app.js';
 import { classLevels, sign, num } from '../calc.js';
-import { computeCompanion, newCompanion, ANIMAL_SKILLS, EIDOLON_SKILLS, skillAbility } from '../companions.js';
+import { computeCompanion, newCompanion, withCompanionSources, ANIMAL_SKILLS, EIDOLON_SKILLS, skillAbility } from '../companions.js';
+import { classFeatures, archetypesOf } from '../features.js';
 import { SKILLS } from '../data.js';
-import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom, pickImage, picSlot } from '../ui.js';
+import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom } from '../ui.js';
+import { picAction, picFrame } from '../cropper.js';
+
+const PIC = { w: 4, h: 3, out: 900 };
 
 // What a familiar borrows from its master: base attack bonus, base saves, hit points and skill ranks.
 function masterOf(c) {
@@ -26,7 +30,9 @@ export async function renderCompanions(body, c) {
   let data;
   try { data = await loadData(); } catch (e) { body.innerHTML = `<p class="bad pad">Couldn't load companion data: ${esc(e.message)}</p>`; return; }
   c.companions ||= [];
-  const levels = classLevels(c);
+  const base = classLevels(c);
+  const archs = Object.keys(base).flatMap(cls => archetypesOf(c, cls).map(a => (a.name || '').toLowerCase()));
+  const levels = withCompanionSources(base, c, classFeatures(c, state.classesByName), archs, state.derived?.level || 0);
   body.innerHTML = `
     <div class="row"><h3 class="grow" style="margin:0">Companions</h3>
       <button class="btn small" data-new="animal">＋ Animal companion</button>
@@ -34,23 +40,21 @@ export async function renderCompanions(body, c) {
       <button class="btn small" data-new="familiar">＋ Familiar</button>
       <button class="btn small ghost" data-new="custom">＋ Other (mount, cohort)</button></div>
     ${c.companions.length ? '' : `<section class="card"><p class="muted">No companions yet.</p>
-      <p class="small muted">Animal companions come from druid, hunter, ranger (from 4th level), cavalier and samurai levels; eidolons from summoner levels; familiars from wizard, sorcerer and witch levels.
+      <p class="small muted">Animal companions come from druid, hunter, ranger (from 4th level), cavalier, samurai and paladin (divine bond) levels, the Animal domain, and the Animal Ally and Boon Companion feats; eidolons from summoner levels; familiars from wizard, sorcerer, witch and shaman levels, the arcanist’s Familiar exploit, and a few archetypes.
       Levels are worked out from your classes automatically, and you can override them.</p></section>`}
     ${c.companions.map((comp, i) => companionCard(comp, i, levels, data, masterOf(c))).join('')}`;
 
   body.onclick = async e => {
-    const t = e.target.closest('[data-pic],[data-pic-clear],[data-new],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
+    const t = e.target.closest('[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
     if (!t) return;
     e.preventDefault();
     if (t.dataset.new) { c.companions.push(newCompanion(t.dataset.new, data)); return changed({ rerender: true }); }
     const i = +t.closest('[data-comp]').dataset.comp;
     const comp = c.companions[i];
-    if (t.dataset.pic !== undefined) {
-      const url = await pickImage(256, { square: true });
-      if (url) { comp.image = url; changed({ rerender: true }); }
+    if (t.dataset.pic !== undefined || t.dataset.picEdit !== undefined || t.dataset.picClear !== undefined) {
+      if (await picAction(t, comp, PIC)) changed({ rerender: true });
       return;
     }
-    if (t.dataset.picClear !== undefined) { comp.image = ''; return changed({ rerender: true }); }
     if (t.dataset.delComp !== undefined) {
       if (await confirmBox(`Remove ${comp.name || 'this companion'}?`, 'Remove')) { c.companions.splice(i, 1); changed({ rerender: true }); }
     } else if (t.dataset.addFeat !== undefined) {
@@ -83,20 +87,20 @@ const select = (path, cur, options) => `<select data-bind="${path}" data-rerende
 
 function companionCard(comp, i, levels, data, master) {
   const p = `companions.${i}`;
-  const head = `<div class="row">${picSlot(comp.image, 'Add a picture of this companion')}<h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>
+  const head = `<div class="row"><h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>
     <span class="pill">${{ animal: 'Animal companion', eidolon: 'Eidolon', familiar: 'Familiar', custom: 'Companion' }[comp.kind]}</span>
     <button class="icon-btn" data-del-comp title="Remove">✕</button></div>`;
   if (comp.kind === 'custom') {
     return `<section class="card companion" data-comp="${i}">${head}
-      <div class="grid two"><div><h4>Stat block</h4>${tf(`${p}.statblock`, { multiline: true, placeholder: 'Double-click to paste or type a stat block', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion stat block' } })}</div>
+      <div class="grid two"><div>${picFrame(comp.image, 'lg')}<h4>Stat block</h4>${tf(`${p}.statblock`, { multiline: true, placeholder: 'Double-click to paste or type a stat block', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion stat block' } })}</div>
       <div><h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Double-click to add notes', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}</div></div></section>`;
   }
   if (comp.kind === 'familiar') return familiarCard(comp, i, levels, data, master, head);
   const s = computeCompanion(comp, levels, data);
   const isAnimal = comp.kind === 'animal';
   const levelNote = s.autoLevel
-    ? `From your classes: <b>${s.autoLevel}</b>${num(comp.levelOverride) ? ` (overridden to ${s.level})` : ''}`
-    : `<span class="warn">None of your classes grant ${isAnimal ? 'an animal companion' : 'an eidolon'}; set the level here.</span>`;
+    ? `From your classes: <b>${s.autoLevel}</b>${isAnimal && levels._why?.animal ? ` (${esc(levels._why.animal)})` : ''}${num(comp.levelOverride) ? ` (overridden to ${s.level})` : ''}`
+    : `<span class="warn">Nothing on the sheet grants ${isAnimal ? 'an animal companion' : 'an eidolon'}; set the level here.</span>`;
   const featsLeft = s.featSlots - s.featsUsed;
   const ranksLeft = s.skillRanks - s.skillRanksUsed;
   const classSkills = [...s.classSkills, ...(comp.extraClassSkills || [])];
@@ -142,7 +146,7 @@ function companionCard(comp, i, levels, data, master) {
         <label title="Amulet of mighty fists, etc.">Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
       <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Gear, personality, conditions…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
     </div>
-    <div>${statBlock(comp, s)}</div>
+    <div>${picFrame(comp.image, 'lg')}${statBlock(comp, s)}</div>
   </div></section>`;
 }
 
@@ -150,8 +154,8 @@ function familiarCard(comp, i, levels, data, master, head) {
   const p = `companions.${i}`;
   const s = computeCompanion(comp, levels, data, master);
   const levelNote = s.autoLevel
-    ? `From your classes: <b>${s.autoLevel}</b>${num(comp.levelOverride) ? ` (overridden to ${s.level})` : ''}`
-    : '<span class="warn">None of your classes grant a familiar; set the level here.</span>';
+    ? `From your sheet: <b>${s.autoLevel}</b>${levels._why?.familiar ? ` (${esc(levels._why.familiar)})` : ''}${num(comp.levelOverride) ? ` (overridden to ${s.level})` : ''}`
+    : '<span class="warn">Nothing on the sheet grants a familiar (wizard, sorcerer, witch or shaman levels, or the arcanist’s Familiar exploit); set the level here.</span>';
   const sp = s.species;
   return `<section class="card companion" data-comp="${i}">${head}
   <div class="grid two">
@@ -174,7 +178,7 @@ function familiarCard(comp, i, levels, data, master, head) {
         <label>Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
       <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Variants, gear, personality…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
     </div>
-    <div>${statBlock(comp, s)}</div>
+    <div>${picFrame(comp.image, 'lg')}${statBlock(comp, s)}</div>
   </div></section>`;
 }
 

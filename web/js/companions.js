@@ -35,12 +35,66 @@ export function stepDice(d, steps) {
 
 /** Total levels that count toward an animal companion (Core Rulebook + APG/ACG classes). */
 export function animalCompanionLevel(levels) {
+  if (levels._animal != null) return levels._animal;
   return (levels.Druid || 0) + (levels.Hunter || 0) + Math.max(0, (levels.Ranger || 0) - 3) + (levels.Cavalier || 0) + (levels.Samurai || 0);
 }
 
 /** Levels that count toward a familiar (wizard, sorcerer and witch levels stack). */
 export function familiarLevel(levels) {
+  if (levels._familiar != null) return levels._familiar;
   return (levels.Wizard || 0) + (levels.Sorcerer || 0) + (levels.Witch || 0);
+}
+
+// Names that mean "this character has a familiar": the arcanist's Familiar exploit, however it was entered.
+const NOT_A_SOURCE = /^(improved|evolved|unfettered|enhanced|greater|tumor|mythic) /;
+const isFamiliarGrant = n => /(^|[\s:(\-–—])familiar\)?$/.test(n) && !NOT_A_SOURCE.test(n);
+
+/** Lower-cased names of everything the character has picked: feats, traits, abilities, class features, plus level notes that mention a familiar. */
+export function ownedNames(c, features = []) {
+  const names = [];
+  for (const k of ['feats', 'traits', 'specials']) for (const f of c[k] || []) if (f.name) names.push(f.name);
+  for (const f of features) if (f.name) names.push(f.name);
+  for (const l of c.levelUps || []) if (/familiar/i.test(l.notes || '')) names.push('familiar');
+  return names.map(n => n.toLowerCase().replace(/\s+/g, ' ').trim());
+}
+
+/**
+ * Levels that count toward a familiar and an animal companion once chosen abilities, feats and archetypes are included,
+ * with a plain-language reason for each part. `names` comes from ownedNames; `archs` is the lower-cased archetype names.
+ */
+export function companionSources(levels, names = [], archs = [], charLevel = 0) {
+  const has = re => names.some(n => re.test(n));
+  const arch = re => archs.some(a => re.test(a));
+  const fam = [], animal = [];
+  const part = (list, n, why) => { if (n > 0) list.push({ n, why }); };
+  part(fam, levels.Wizard || 0, 'Wizard levels');
+  part(fam, levels.Sorcerer || 0, 'Sorcerer levels');
+  part(fam, levels.Witch || 0, 'Witch levels');
+  if (levels.Arcanist && has({ test: isFamiliarGrant })) part(fam, levels.Arcanist, 'Arcanist levels (Familiar exploit)');
+  if (levels.Shaman) part(fam, levels.Shaman, 'Shaman levels (spirit animal)');
+  if (levels.Bard >= 2 && arch(/sea singer/)) part(fam, levels.Bard, 'Bard levels (sea singer)');
+  if (levels.Druid && arch(/blight druid/)) part(fam, levels.Druid, 'Druid levels (blight druid familiar)');
+  part(animal, levels.Druid || 0, 'Druid levels');
+  part(animal, levels.Hunter || 0, 'Hunter levels');
+  part(animal, Math.max(0, (levels.Ranger || 0) - 3), 'Ranger levels −3');
+  part(animal, levels.Cavalier || 0, 'Cavalier levels (mount)');
+  part(animal, levels.Samurai || 0, 'Samurai levels (mount)');
+  if ((levels.Paladin || 0) >= 5) part(animal, levels.Paladin - 3, 'Paladin levels −3 (divine bond mount)');
+  if (levels.Cleric && has(/^link to the wild$/)) part(animal, Math.max(0, levels.Cleric - 3), 'Cleric levels −3 (Animal domain)');
+  const sum = l => l.reduce((t, x) => t + x.n, 0);
+  if (!sum(animal) && has(/^animal ally$/) && charLevel) part(animal, Math.max(1, charLevel - 3), 'character level −3 (Animal Ally feat)');
+  if (sum(animal) && has(/^boon companion$/) && charLevel) {
+    const extra = Math.min(charLevel, sum(animal) + 4) - sum(animal);
+    part(animal, extra, 'Boon Companion feat');
+  }
+  const fmt = l => (l.length === 1 ? l[0].why : l.map(x => `${x.n} from ${x.why}`).join(' + '));
+  return { familiar: sum(fam), familiarWhy: fmt(fam), animal: sum(animal), animalWhy: fmt(animal) };
+}
+
+/** `levels` plus the extra companion levels from chosen abilities, feats and archetypes (read by familiarLevel and animalCompanionLevel). */
+export function withCompanionSources(levels, c, features, archs, charLevel) {
+  const s = companionSources(levels, ownedNames(c, features), archs, charLevel);
+  return { ...levels, _familiar: s.familiar, _animal: s.animal, _why: { familiar: s.familiarWhy, animal: s.animalWhy } };
 }
 export const FAMILIAR_CLASS_SKILLS = ['Acrobatics', 'Climb', 'Fly', 'Perception', 'Stealth', 'Swim'];
 
