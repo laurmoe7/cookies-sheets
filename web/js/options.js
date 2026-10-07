@@ -113,19 +113,38 @@ export function snapshotPage(body) {
   return clone;
 }
 
-/** Tome theme: the old page (a snapshot) swings over from the spine like a turned leaf, uncovering the new page underneath. */
+/**
+ * Tome theme: the old page (a snapshot) is cut into hinged strips that swing over from the spine and bend as they go,
+ * like loose paper, uncovering the new page underneath. The animation itself is CSS (see theme-tome.css).
+ */
 export function playPageTurn(body, snapshot) {
   if (!snapshot || !body?.parentElement) return;
-  const wrap = body.parentElement;
+  const STRIPS = 9;
+  const W = body.offsetWidth;
+  const sw = W / STRIPS;
   const h = Math.min(Math.max(body.offsetHeight, 240), (document.getElementById('main')?.clientHeight || 700) - body.offsetTop + 40);
   const leaf = document.createElement('div');
   leaf.className = 'page-turn';
-  leaf.style.top = body.offsetTop + 'px';
-  leaf.style.height = h + 'px';
-  leaf.innerHTML = '<div class="pt-front"></div><div class="pt-back"></div><div class="pt-shade"></div>';
-  leaf.firstChild.appendChild(snapshot);
-  wrap.appendChild(leaf);
+  leaf.style.cssText = `left:${body.offsetLeft}px;top:${body.offsetTop}px;width:${W}px;height:${h}px;--k:-9deg`;
+  let parent = leaf;
+  for (let i = 0; i < STRIPS; i++) {
+    const strip = document.createElement('div');
+    strip.className = 'pt-strip' + (i === 0 ? ' first' : '');
+    strip.style.width = sw + 'px';
+    const front = document.createElement('div');
+    front.className = 'pt-face pt-front';
+    const clone = snapshot.cloneNode(true);
+    clone.classList.add('pt-clone');
+    clone.style.cssText = `left:${-i * sw}px;width:${W}px`;
+    front.appendChild(clone);
+    const back = document.createElement('div');
+    back.className = 'pt-face pt-back';
+    strip.append(front, back);
+    parent.appendChild(strip);
+    parent = strip;
+  }
+  body.parentElement.appendChild(leaf);
   void leaf.offsetWidth;
   leaf.classList.add('go');
-  setTimeout(() => leaf.remove(), 1000);
+  setTimeout(() => leaf.remove(), 1200);
 }
