@@ -263,8 +263,9 @@ html[data-theme="tome"] @media (max-height: 520px) { #cookie-slot { display: non
 #cookie .tear { fill: #a9dcff; stroke: var(--pet-ink); stroke-width: 1.2; }
 @keyframes star-flash { 0%, 100% { fill: var(--pet-star); transform: scale(1); } 40% { fill: #fffbe8; transform: scale(1.15); } }
 @keyframes glint { 0%, 100% { opacity: 0; } 40%, 60% { opacity: 1; } }
-/* an old scar across his forehead: a faded, curved X */
-#cookie .scar path { fill: none; stroke: var(--pet-ink); stroke-width: 2.1; stroke-linecap: round; opacity: .28; }
+/* an old scar across his forehead: two raised, fleshy welts crossed in an X */
+#cookie .scar path { fill: #d4887d; stroke: #8f4a42; stroke-width: .9; stroke-linejoin: round; opacity: .9; }
+#cookie .scar .scar-hi { fill: none; stroke: #f0b8ad; stroke-width: .9; stroke-linecap: round; opacity: .7; }
 #cookie[data-eyes="squint"] .line path { stroke-width: 3.8; }
 #cookie.puff .cig-ember { opacity: 1; fill: #ff9a3c; }
 #cookie.puff .cig-smoke path { animation-duration: 1.3s; stroke-width: 3.4; }

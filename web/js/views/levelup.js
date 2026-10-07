@@ -3,6 +3,7 @@ import { compute, sign, num, classLevels, raceInfo, mod } from '../calc.js';
 import { ABILITIES, ABILITY_NAMES, RACES, POINT_BUY, SKILL_BY_NAME } from '../data.js';
 import { skillKey } from '../model.js';
 import { api } from '../api.js';
+import { playSfx } from '../sfx.js';
 import { featuresFor, archetypesOf } from '../features.js';
 import { learnAllowance, remaining, describeRemaining } from '../spellrules.js';
 import { esc, $, $$, pickEntry, toast, confirmBox, warnBox, showCustom } from '../ui.js';
@@ -388,4 +389,5 @@ async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after
   state.sheetTab = 'overview';
   changed();
   go('sheet');
+  playSfx('levelUp');
 }

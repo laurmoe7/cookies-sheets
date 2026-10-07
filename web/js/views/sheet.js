@@ -14,6 +14,8 @@ import { renderSummons, chooseSummon } from './summons.js';
 import { renderCompanions } from './companions.js';
 import { playPageTurn, snapshotPage } from '../options.js';
 import { hpSegments, segsHtml } from '../bars.js';
+import { playSfx } from '../sfx.js';
+import { healFx } from '../healfx.js';
 import { renderResources, resourceBlock, wire as wireResources } from './resources.js';
 
 const ICONS = {
@@ -246,6 +248,7 @@ function overview(body, c, d) {
       (dd.maxDex != null ? ` · max Dex ${dd.maxDex}` : '') + (dd.acp ? ` · ACP ${dd.acp}` : '');
   };
   updateDyn();
+  if (state.healFx) { healFx($('.card.hp', body), state.healFx); state.healFx = null; }
   document.addEventListener('recalc', updateDyn);
   onLeave(() => document.removeEventListener('recalc', updateDyn));
 
@@ -255,6 +258,9 @@ function overview(body, c, d) {
     let cur = dd.hp.current;
     if (b.dataset.hp === 'full') {
       if (!await confirmBox('Heal to full hit points?', 'Heal fully')) return;
+      const healed = Math.max(0, dd.hp.max - cur);
+      state.healFx = { amount: healed, frac: Math.max(0.6, healed / Math.max(1, dd.hp.max)), from: cur / Math.max(1, dd.hp.max) };
+      playSfx('heal');
       c.hp.current = null; c.hp.nonlethal = 0; changed({ rerender: true }); return; }
     if (!amt) return;
     if (b.dataset.hp === 'dmg') {
@@ -263,7 +269,9 @@ function overview(body, c, d) {
       if (temp) { const used = Math.min(temp, rest); c.hp.temp = temp - used; rest -= used; }
       cur -= rest;
     } else {
+      const before = cur;
       cur = Math.min(dd.hp.max, cur + amt);
+      if (cur > before) state.healFx = { amount: cur - before, frac: (cur - before) / Math.max(1, dd.hp.max), from: before / Math.max(1, dd.hp.max) };
       c.hp.nonlethal = Math.max(0, num(c.hp.nonlethal) - amt);
     }
     c.hp.current = cur >= dd.hp.max ? null : cur;

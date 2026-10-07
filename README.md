@@ -97,3 +97,5 @@ Known gaps: PSRD-Data stops around 2015 (Advanced Class Guide). Later books (Occ
 ## Sound credits
 
 The page-turn sounds in `web/sounds/` are free sound effects from Pixabay / freesound_community (page-turn-1: "page-turn" 305789; page-turn-2 and -3: "book-turn-page" 1 and 2). Check their license terms before redistributing the app.
+
+The level-up and heal sounds (`level-up.ogg`, `heal.ogg`) are short game sound effects supplied by the author; they come from video games, so check their terms before sharing the app publicly.

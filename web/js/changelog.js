@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Latest', date: '2026-10-07',
     items: [
+      'A sound plays when you finish a level up and when you Full heal (Options → Sound effects). The hit point bar reacts to every heal: it grows from the old value with a green glow, a floating number and sparkles, and the bigger the heal, the bigger the reaction. Cookie’s forehead scar is now a crossed pair of raised, fleshy welts.',
       'Meet Cookie: a rude thrush familiar who lives at the bottom of the sidebar and comments on what you do: taking damage, going down or dying, casting spells, summoning, new items, gold, feats, levelling up and more. Options → Cookie: turn him off, make him quieter or chattier, bleep the swearing, add squawks. Click him if you dare. He is bigger now, his speech bubble comes out of his mouth, and no, you cannot uncheck him.',
       'Cookie: his angry eyes are a proper > <, the scar on his forehead is a faded curved X, and his speech bubble sits beside his face (no tail) so you can see him. The last character now always reopens at start (the option is gone).',
       'Cookie has more to do while he waits: blinking, looking around, rolling his eyes, long drags on his cigarette, yawning, scratching, tapping his feet, swaying, sniffing, glaring, sitting down, and nodding off. His eyes also follow your mouse a little.',
