@@ -93,3 +93,7 @@ Game rules text is Open Game Content under the Open Game License v1.0a (the full
 This app is not published, endorsed, or approved by Paizo Inc.
 
 Known gaps: PSRD-Data stops around 2015 (Advanced Class Guide). Later books (Occult Adventures, Ultimate Intrigue, and so on) are covered only for spells, through the spreadsheet. Prestige classes are tracked in notes for now. Unchained summoner eidolons aren't in the data.
+
+## Sound credits
+
+The page-turn sounds in `web/sounds/` are free sound effects from Pixabay / freesound_community (page-turn-1: "page-turn" 305789; page-turn-2 and -3: "book-turn-page" 1 and 2). Check their license terms before redistributing the app.

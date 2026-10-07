@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Latest', date: '2026-10-07',
     items: [
+      'Dusty tome: a faster, smoother bending page turn, and an optional page-turn sound (Options → Page turn sound).',
       'Dusty tome: dark ink on the parchment so text is easier to read, burn marks and torn edges on some pages, a quicker backward page turn, and a Page turn option (Full, Light or Off) in Options.',
       'Resource bars are split into one segment per point. Scroll bars match each theme. In the Dusty tome, the ribbon tabs now rise like bookmarks, the page turn swings the old page over, and the background texture tiles without a seam.',
       'New Dusty tome theme (Options → Theme): dim parchment pages on dark leather, ribbon-bookmark tabs, a page turn when you switch tabs. Light mode is gone; Classic dark is the default.',

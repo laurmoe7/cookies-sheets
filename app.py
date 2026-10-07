@@ -259,6 +259,7 @@ def resolve_names(body):
 # ---------------- HTTP ----------------
 
 class Handler(SimpleHTTPRequestHandler):
+    extensions_map = {**SimpleHTTPRequestHandler.extensions_map, '.mp3': 'audio/mpeg'}
     protocol_version = 'HTTP/1.1'  # keep-alive: far fewer connections when loading the UI
 
     def __init__(self, *a, **kw):

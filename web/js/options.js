@@ -17,7 +17,7 @@ export const START_TABS = [['overview', 'Overview'], ['skills', 'Skills'], ['fea
 
 export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
 
-export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, tooltips: true, motion: true, reopenLast: true, startTab: 'overview', pageTurn: 'full' };
+export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, tooltips: true, motion: true, reopenLast: true, startTab: 'overview', pageTurn: 'full', pageSound: true };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
@@ -28,7 +28,7 @@ export function sanitize(raw) {
   if (!TEXT_SIZES.some(([v]) => v === o.textSize)) o.textSize = DEFAULTS.textSize;
   if (!START_TABS.some(([k]) => k === o.startTab)) o.startTab = DEFAULTS.startTab;
   if (!['full', 'light', 'off'].includes(o.pageTurn)) o.pageTurn = DEFAULTS.pageTurn;
-  for (const k of ['compact', 'tooltips', 'motion', 'reopenLast']) o[k] = !!o[k];
+  for (const k of ['compact', 'tooltips', 'motion', 'reopenLast', 'pageSound']) o[k] = !!o[k];
   return o;
 }
 
@@ -77,6 +77,7 @@ export function showOptions() {
         <label class="opt-row"><span><b>Hover tooltips</b><br><span class="muted small">Short explanations when you hover a label or button.</span></span><input type="checkbox" data-opt="tooltips" ${o.tooltips ? 'checked' : ''}></label>
         <label class="opt-row"><span><b>Animations</b><br><span class="muted small">Turn off to remove fades and sliding bars.</span></span><input type="checkbox" data-opt="motion" ${o.motion ? 'checked' : ''}></label>
         ${o.theme === 'tome' ? `<div class="opt-row"><span><b>Page turn</b><br><span class="muted small">Dusty tome only. Choose Light if page turns feel slow.</span></span><select data-opt="pageTurn">${[['full', 'Full (bending page)'], ['light', 'Light (flat page)'], ['off', 'Off']].map(([k, l]) => `<option value="${k}" ${o.pageTurn === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>` : ''}
+        ${o.theme === 'tome' ? `<label class="opt-row"><span><b>Page turn sound</b><br><span class="muted small">A paper rustle when a page turns. Dusty tome only.</span></span><input type="checkbox" data-opt="pageSound" ${o.pageSound ? 'checked' : ''}></label>` : ''}
         <label class="opt-row"><span><b>Reopen the last character</b><br><span class="muted small">On start, open the character you used last instead of the character list.</span></span><input type="checkbox" data-opt="reopenLast" ${o.reopenLast ? 'checked' : ''}></label>
         <div class="opt-row"><b>Sheet tab to open first</b><select data-opt="startTab">${START_TABS.map(([k, l]) => `<option value="${k}" ${o.startTab === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       </div>
@@ -113,6 +114,22 @@ function pruneBelow(live, clone, limit) {
     if (r.top > limit) clone.children[i].remove();
     else if (r.bottom > limit) pruneBelow(live.children[i], clone.children[i], limit);
   }
+}
+
+const PAGE_SOUNDS = ['sounds/page-turn-1.mp3', 'sounds/page-turn-2.mp3', 'sounds/page-turn-3.mp3'];
+let soundPool = null, lastSound = -1;
+/** A short paper rustle, a different one from last time. Quietly does nothing if sound is off or the browser refuses. */
+function playPageSound() {
+  if (!current.pageSound) return;
+  try {
+    soundPool ||= PAGE_SOUNDS.map(src => { const a = new Audio(src); a.preload = 'auto'; a.volume = 0.7; return a; });
+    let i;
+    do { i = Math.floor(Math.random() * soundPool.length); } while (i === lastSound && soundPool.length > 1);
+    lastSound = i;
+    const a = soundPool[i];
+    a.currentTime = 0;
+    a.play().catch(() => {});
+  } catch { /* no audio available */ }
 }
 
 /** A copy of the page for the page turn, holding only the part that is on screen. null unless the tome theme and animations are on. */
@@ -177,5 +194,6 @@ export function playPageTurn(body, snapshot, back = false) {
   body.parentElement.appendChild(leaf);
   void leaf.offsetWidth;
   leaf.classList.add('go');
-  setTimeout(() => leaf.remove(), 1100);
+  setTimeout(() => leaf.remove(), 800);
+  playPageSound();
 }
