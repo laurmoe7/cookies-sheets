@@ -42,8 +42,8 @@ LEATHER = uri(
     "<filter id='f' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='5' stitchTiles='stitch'/>"
     "<feColorMatrix values='0 0 0 0 .55  0 0 0 0 .38  0 0 0 0 .22  1.1 0 0 0 -.45'/></filter>"
     "<rect width='100%' height='100%' filter='url(#m)'/><rect width='100%' height='100%' filter='url(#w)' opacity='.24'/>"
-    "<rect width='100%' height='100%' filter='url(#k)' opacity='.38'/><rect width='100%' height='100%' filter='url(#p)' opacity='.5'/>"
-    "<rect width='100%' height='100%' filter='url(#f)' opacity='.6'/></svg>")
+    "<rect width='100%' height='100%' filter='url(#k)' opacity='.16'/><rect width='100%' height='100%' filter='url(#p)' opacity='.16'/>"
+    "<rect width='100%' height='100%' filter='url(#f)' opacity='.3'/></svg>")
 
 # Pages of one book: the same paper colour, but each sheet has its own crumples, light direction and burnt side.
 EDGE = 'rgba(255,232,180,.12) 0%, rgba(0,0,0,0) 38%, rgba(18,9,2,.6) 100%'
@@ -134,24 +134,26 @@ html[data-theme="tome"] ::-webkit-scrollbar-track { background: #1a1209; border-
 html[data-theme="tome"] ::-webkit-scrollbar-thumb { background: #6a5535; border: 2px solid #1a1209; border-radius: 6px; }
 html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
 
-/* The page turn: one sheet that swings over from the spine. It tilts, skews and wobbles a little as it goes so it reads as floppy paper,
-   with a sheen sweeping across it and a shadow cast on the page underneath. Going back a tab plays the same turn in reverse. */
+/* The page turn: the old page is cut into a dozen overlapping strips, each hinged to the one before, so the sheet curves as it swings over
+   from the spine, then tilts, skews and wobbles so it reads as floppy paper. The shadow it casts falls on the page underneath.
+   Going back a tab plays the same turn in reverse (the new page swings back over the old one).
+   --c is how much the sheet is bending right now; --i is a strip's position along the page (0 to 1). */
+@property --c { syntax: '<number>'; inherits: true; initial-value: 0; }
 .page-turn { position: absolute; z-index: 6; pointer-events: none; perspective: 1800px; perspective-origin: 15% 40%; }
 .pt-under, .pt-shadow { position: absolute; inset: 0; overflow: hidden; }
 .pt-shadow { background: linear-gradient(90deg, rgba(0,0,0,.55), rgba(0,0,0,0) 75%); opacity: 0; }
-.pt-leaf { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d; will-change: transform; }
+.pt-sheet { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d; will-change: transform; }
+.pt-strip { position: absolute; top: 0; height: 100%; transform-style: preserve-3d; transform-origin: left center; transform: rotateY(calc(var(--c) * var(--k, -1.2deg))); }
+.pt-strip.first { left: 0; transform: none; }
+.pt-strip .pt-strip { left: calc(100% - 3px); }
 .pt-face { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; }
 .pt-front { background: var(--leather), radial-gradient(ellipse at 50% 35%, #3a2b1b 0%, #20160d 100%); }
-.pt-front::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
-  background: linear-gradient(100deg, rgba(0,0,0,0) 20%, rgba(255,238,200,.22) 40%, rgba(0,0,0,.35) 52%, rgba(0,0,0,0) 72%); background-size: 320% 100%; }
 .pt-back { transform: rotateY(180deg); background-color: #4a3c26; background-image: var(--grain), radial-gradient(ellipse at 40% 40%, #5c4d34, #3d3120); }
-.pt-back::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; background: linear-gradient(270deg, rgba(0,0,0,.5), rgba(0,0,0,0) 70%); }
-.pt-clone { position: absolute; left: 0; top: 0; }
-.page-turn.go .pt-leaf { animation: leaf-flip .95s linear forwards; }
+.pt-front::after, .pt-back::after { content: ""; position: absolute; inset: 0; background: #000; pointer-events: none; opacity: calc(var(--c) * (.03 + var(--i, 0) * .34)); }
+.pt-clone { position: absolute; top: 0; }
+.page-turn.go .pt-sheet { animation: leaf-flip .95s linear forwards, leaf-bend .95s ease-in-out forwards; }
 .page-turn.go .pt-shadow { animation: leaf-shadow .95s ease-in-out forwards; }
-.page-turn.go .pt-front::before { animation: leaf-sheen .95s ease-in-out forwards; }
-.page-turn.go .pt-back::before { animation: leaf-back-shade .95s ease-in-out forwards; }
-.page-turn.rev.go .pt-leaf, .page-turn.rev.go .pt-shadow, .page-turn.rev.go .pt-front::before, .page-turn.rev.go .pt-back::before { animation-direction: reverse; }
+.page-turn.rev.go .pt-sheet, .page-turn.rev.go .pt-shadow { animation-direction: reverse; }
 @keyframes leaf-flip {
   0%   { transform: rotateY(0deg) skewY(0deg) rotateZ(0deg); animation-timing-function: cubic-bezier(.4, 0, .6, 1); }
   18%  { transform: rotateY(-22deg) skewY(-2.6deg) rotateZ(.6deg); animation-timing-function: cubic-bezier(.3, 0, .5, 1); }
@@ -159,9 +161,8 @@ html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
   76%  { transform: rotateY(-150deg) skewY(-1.4deg) rotateZ(.5deg); animation-timing-function: cubic-bezier(.2, .6, .4, 1); }
   100% { transform: rotateY(-180deg) skewY(0deg) rotateZ(0deg); }
 }
+@keyframes leaf-bend { 0% { --c: 0; } 28% { --c: 1; } 68% { --c: .8; } 100% { --c: 0; } }
 @keyframes leaf-shadow { 0% { opacity: 0; } 35% { opacity: .75; } 100% { opacity: 0; } }
-@keyframes leaf-sheen { 0% { opacity: 0; background-position: 100% 0; } 25% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; background-position: 0 0; } }
-@keyframes leaf-back-shade { 0% { opacity: 1; } 100% { opacity: 0; } }
 '''
 
 

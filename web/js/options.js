@@ -104,13 +104,23 @@ export function showChangelog() {
   }, { wide: true });
 }
 
-/** A copy of the page being left, taken before it is redrawn, for the page turn. */
+/** Remove from `clone` everything that sits below `limit` (a y position on screen), walking the live page in step with it. */
+function pruneBelow(live, clone, limit) {
+  for (let i = live.children.length - 1; i >= 0; i--) {
+    const r = live.children[i].getBoundingClientRect();
+    if (r.top > limit) clone.children[i].remove();
+    else if (r.bottom > limit) pruneBelow(live.children[i], clone.children[i], limit);
+  }
+}
+
+/** A copy of the page for the page turn, holding only the part that is on screen. null unless the tome theme and animations are on. */
 export function snapshotPage(body) {
   if (current.theme !== 'tome' || !current.motion || !body) return null;
   const clone = body.cloneNode(true);
   clone.dataset.h = body.offsetHeight;
   clone.removeAttribute('id');
   clone.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+  pruneBelow(body, clone, window.innerHeight + 40);
   return clone;
 }
 
@@ -120,7 +130,9 @@ export function snapshotPage(body) {
  */
 export function playPageTurn(body, snapshot, back = false) {
   if (!snapshot || !body?.parentElement) return;
+  const STRIPS = 14;
   const W = body.offsetWidth;
+  const sw = W / STRIPS;
   const main = document.getElementById('main');
   // As tall as the old page, but never taller than what is on screen; the new page may still be loading (companions), so its height is no guide.
   const avail = (main?.clientHeight || 700) - body.offsetTop + 30;
@@ -128,25 +140,37 @@ export function playPageTurn(body, snapshot, back = false) {
   const leaf = document.createElement('div');
   leaf.className = 'page-turn' + (back ? ' rev' : '');
   leaf.style.cssText = `left:${body.offsetLeft}px;top:${body.offsetTop}px;width:${W}px;height:${h}px`;
-  const fit = el => { el.classList.add('pt-clone'); el.style.width = W + 'px'; return el; };
   // The sheet that moves shows the old page going forward, and the new page coming back.
   const moving = back ? snapshotPage(body) : snapshot;
   if (back) {
     const under = document.createElement('div');
     under.className = 'pt-under';
-    under.appendChild(fit(snapshot.cloneNode(true)));
+    snapshot.classList.add('pt-clone');
+    snapshot.style.width = W + 'px';
+    under.appendChild(snapshot);
     leaf.appendChild(under);
   }
   const shadow = document.createElement('div');
   shadow.className = 'pt-shadow';
   const sheet = document.createElement('div');
-  sheet.className = 'pt-leaf';
-  const front = document.createElement('div');
-  front.className = 'pt-face pt-front';
-  front.appendChild(fit(moving));
-  const rear = document.createElement('div');
-  rear.className = 'pt-face pt-back';
-  sheet.append(front, rear);
+  sheet.className = 'pt-sheet';
+  let parent = sheet;
+  for (let i = 0; i < STRIPS; i++) {
+    const strip = document.createElement('div');
+    strip.className = 'pt-strip' + (i === 0 ? ' first' : '');
+    strip.style.cssText = `width:${sw + 3}px;--i:${(i / (STRIPS - 1)).toFixed(3)}`;
+    const front = document.createElement('div');
+    front.className = 'pt-face pt-front';
+    const clone = i === STRIPS - 1 ? moving : moving.cloneNode(true);
+    clone.classList.add('pt-clone');
+    clone.style.cssText = `left:${-i * (sw - 0)}px;width:${W}px`;
+    front.appendChild(clone);
+    const rear = document.createElement('div');
+    rear.className = 'pt-face pt-back';
+    strip.append(front, rear);
+    parent.appendChild(strip);
+    parent = strip;
+  }
   leaf.append(shadow, sheet);
   body.parentElement.appendChild(leaf);
   void leaf.offsetWidth;
