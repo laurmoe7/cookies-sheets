@@ -4,7 +4,7 @@ import { api } from '../api.js';
 import { state, changed } from '../app.js';
 import { esc, $, $$, modal, toast, showCustom, confirmBox, textField, getPath } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
-import { hpSegments } from '../bars.js';
+import { hpSegments, segsHtml } from '../bars.js';
 import { summonSpell, summonChoices, statBlockHtml, newSummon, templateNotes } from '../summons.js';
 
 let dataPromise = null;
@@ -148,7 +148,7 @@ function summonCard(s, i) {
     </div>
     ${dead ? '<div class="small bad down-note"><b>Dead</b> (or destroyed)</div>'
       : downed ? `<div class="small warn down-note"><b>Down</b>: dead at ${s.con ? '−' + s.con : '0'} hp, ${s.hp - deadAt} more damage</div>` : ''}
-    <div class="hp-bar" style="--seg:${hpSegments(s.hpMax)}"><div class="${pct <= 25 ? 'low' : pct <= 50 ? 'mid' : ''}" style="width:${pct}%"></div></div>
+    <div class="hp-bar"><div class="${pct <= 25 ? 'low' : pct <= 50 ? 'mid' : ''}" style="width:${pct}%"></div>${segsHtml(hpSegments(s.hpMax))}</div>
     <div class="row sm-controls">
       <b>${s.hp} / ${s.hpMax} hp</b>
       <input type="number" class="num w3" data-sm-amt placeholder="0" min="0">

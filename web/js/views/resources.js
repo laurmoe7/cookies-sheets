@@ -1,6 +1,7 @@
 // Class resource pools (arcane reservoir, rage rounds, ki...) plus the character's own trackers.
 import { state, changed } from '../app.js';
 import { classResources, currentOf } from '../resources.js';
+import { segsHtml } from '../bars.js';
 import { esc, textField, getPath } from '../ui.js';
 
 const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
@@ -20,7 +21,7 @@ function counter(res, cur) {
   return `<div class="res-row" data-res="${esc(res.id)}">
     <div class="res-name"><a href="#" class="ref" data-entry="${esc(res.entry)}" data-cat="Class Feature">${esc(res.name)}</a>
       <span class="muted small">${esc(res.cls)}</span></div>
-    <div class="res-bar" style="--seg:${segs(res.max)}"><div style="width:${pct}%"></div></div>
+    <div class="res-bar"><div style="width:${pct}%"></div>${segsHtml(segs(res.max))}</div>
     <span class="stepper"><button data-res-d="-1" title="Spend one" aria-label="Spend one">−</button><button data-res-d="1" title="Regain one" aria-label="Regain one">＋</button></span>
     <b class="res-val">${cur} / ${res.max}</b>
     <button class="btn small ghost" data-res-reset title="Back to the start-of-day amount (${res.start})">Reset</button>
@@ -31,7 +32,7 @@ function custom(t, i) {
   const pct = t.max ? Math.max(0, Math.min(100, t.cur / t.max * 100)) : 0;
   return `<div class="res-row" data-tracker="${i}">
     <div class="res-name">${tf(`trackers.${i}.name`, { placeholder: 'Name (e.g. Bomb, Inspiration)' })}</div>
-    <div class="res-bar" style="--seg:${segs(t.max)}"><div style="width:${pct}%"></div></div>
+    <div class="res-bar"><div style="width:${pct}%"></div>${segsHtml(segs(t.max))}</div>
     <span class="stepper"><button data-tr-d="-1" aria-label="Spend one" title="Spend one">−</button><button data-tr-d="1" aria-label="Regain one" title="Regain one">＋</button></span>
     <b class="res-val">${t.cur} / <input type="number" class="num w3" data-bind="trackers.${i}.max" data-type="num" data-rerender value="${esc(t.max)}" title="Maximum"></b>
     <button class="btn small ghost" data-tr-reset title="Refill to maximum">Refill</button>

@@ -13,7 +13,7 @@ import { summonSpell } from '../summons.js';
 import { renderSummons, chooseSummon } from './summons.js';
 import { renderCompanions } from './companions.js';
 import { playPageTurn, snapshotPage } from '../options.js';
-import { hpSegments } from '../bars.js';
+import { hpSegments, segsHtml } from '../bars.js';
 import { renderResources, resourceBlock, wire as wireResources } from './resources.js';
 
 const ICONS = {
@@ -99,7 +99,7 @@ function overview(body, c, d) {
       <div class="hp-main">
       <h3>Hit Points</h3>
       <div class="hp-big"><span class="calc" data-calc="hp.current"></span><span class="muted"> / </span>${calc('hp.max')}</div>
-      <div class="hp-bar"><div id="hp-fill"></div></div>
+      <div class="hp-bar"><div id="hp-fill"></div>${segsHtml(hpSegments(d.hp.max))}</div>
       <div class="row">
         <input id="hp-amt" type="number" class="num w4" placeholder="0" min="0">
         <button class="btn danger" data-hp="dmg">Damage</button>
@@ -228,7 +228,8 @@ function overview(body, c, d) {
     $('#bab-text').textContent = dd.iteratives.map(sign).join('/');
     const pct = Math.max(0, Math.min(100, dd.hp.current / Math.max(1, dd.hp.max) * 100));
     $('#hp-fill').style.width = pct + '%';
-    $('#hp-fill').parentElement.style.setProperty('--seg', hpSegments(dd.hp.max));
+    const segs = $('.segs', $('#hp-fill').parentElement), want = hpSegments(dd.hp.max);
+    if (segs.children.length !== want) segs.innerHTML = '<i></i>'.repeat(want);
     $('#hp-fill').className = pct <= 25 ? 'low' : pct <= 50 ? 'mid' : '';
     const cur = dd.hp.current, nl = num(c.hp.nonlethal);
     const conScore = dd.abilities.con.score;

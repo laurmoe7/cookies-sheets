@@ -56,9 +56,9 @@ html[data-theme="tome"] .btn { background: #9a8b66; border-color: #5a4a2c; color
 html[data-theme="tome"] .btn.primary { background: #8a3326; border-color: #8a3326; color: #f6ead0; font-style: normal; }
 html[data-theme="tome"] .hp-bar, html[data-theme="tome"] .res-bar { border-color: #5a4a30; background: #2a1d10; border-radius: 2px; }
 html[data-theme="tome"] #hp-fill, html[data-theme="tome"] .comp-top .hp-bar > div { background: #8a3326; }
-html[data-theme="tome"] .res-bar::after, html[data-theme="tome"] .hp-bar::after { background: var(--brass) 0 0 / 48px 48px;
-  -webkit-mask-image: repeating-linear-gradient(90deg, transparent 0, transparent calc(100% / var(--seg, 1) - 3px), #000 calc(100% / var(--seg, 1) - 3px), #000 calc(100% / var(--seg, 1)));
-  mask-image: repeating-linear-gradient(90deg, transparent 0, transparent calc(100% / var(--seg, 1) - 3px), #000 calc(100% / var(--seg, 1) - 3px), #000 calc(100% / var(--seg, 1))); }
+/* brass dividers: the same metal as the frame, darkening where they meet the top and bottom of it so they blend in */
+html[data-theme="tome"] .segs i::after { width: 4px; background: linear-gradient(180deg, rgba(92,66,16,.95) 0, rgba(92,66,16,0) 4px, rgba(92,66,16,0) calc(100% - 4px), rgba(92,66,16,.95) 100%),
+  linear-gradient(90deg, #8a6a25, #dcbb66 50%, #8a6a25); }
 html[data-theme="tome"] .tbl th, html[data-theme="tome"] .tbl td { border-color: #6f5e3c; }
 html[data-theme="tome"] .portrait-frame, html[data-theme="tome"] .pic-frame, html[data-theme="tome"] .char-icon.has { border-color: #b08a3e; outline: 1px solid #3a2a18; outline-offset: 2px; }
 

@@ -478,13 +478,15 @@ html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="
 
 /* ---------- segmented resource bars ---------- */
 .res-bar { position: relative; height: 10px; border-radius: 4px; }
-.res-bar::after { content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: repeating-linear-gradient(90deg, transparent 0, transparent calc(100% / var(--seg, 1) - 2px), var(--panel) calc(100% / var(--seg, 1) - 2px), var(--panel) calc(100% / var(--seg, 1))); }
 
 /* a page that is still loading fills the tab, so a theme's paper covers all of it */
 .loading-page { min-height: calc(100vh - 200px); }
 
 /* segmented hit point bars (same gaps as the resource bars) */
 .hp-bar { position: relative; }
-.hp-bar::after { content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: repeating-linear-gradient(90deg, transparent 0, transparent calc(100% / var(--seg, 1) - 2px), var(--panel) calc(100% / var(--seg, 1) - 2px), var(--panel) calc(100% / var(--seg, 1))); }
+
+/* segment dividers: real elements, so each one is the same thickness */
+.segs { position: absolute; inset: 0; display: flex; pointer-events: none; }
+.segs i { flex: 1 1 0; position: relative; }
+.segs i::after { content: ""; position: absolute; top: 0; bottom: 0; right: 0; width: 2px; background: var(--panel); }
+.segs i:last-child::after { display: none; }
