@@ -3,7 +3,7 @@ import { compute, sign } from './calc.js';
 import { newCharacter, migrate } from './model.js';
 import { $, $$, getPath, setPath, toast, showEntry, closeDrawer, debounce, modal, initTextFields, initTooltips } from './ui.js';
 import { initSheetSearch } from './sheetsearch.js';
-import { initOptions, showOptions, options } from './options.js';
+import { initOptions, showOptions, showChangelog, options } from './options.js';
 import { choosePicture, repositionPicture } from './cropper.js';
 import { initSummons } from './views/summons.js';
 import { renderHome } from './views/home.js';
@@ -166,6 +166,7 @@ async function init() {
     modal('Open Game License', body => { body.innerHTML = `<div class="entry-body">${text}</div>`; }, { wide: true });
   };
   $('#options-btn').onclick = () => showOptions();
+  $('#changelog-btn').onclick = () => showChangelog();
   $('#char-icon').onclick = () => editIcon();
 
   state.classes = await api.classes();

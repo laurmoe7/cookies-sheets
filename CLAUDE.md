@@ -42,6 +42,9 @@ Windows desktop app for Pathfinder 1st Edition characters: live character sheet,
 - **Companion eligibility:** `companionSources()` in `companions.js` works out familiar and animal-companion levels from classes plus chosen abilities, feats and archetypes (arcanist Familiar exploit, shaman, Animal domain, Animal Ally, Boon Companion, paladin mount...). Add new grants there.
 - **Options:** `options.js` keeps app options (theme, accent, text size, compact layout, tooltips, animations, startup behaviour) in `localStorage.options`; `sanitize()` is pure and tested, `applyOptions()` sets CSS variables and `data-*` flags on `<html>`. The sidebar's Options button opens the window. Add a new option to `DEFAULTS`, `sanitize` and `showOptions`.
 - **Name icon:** the square beside the character name in the top bar is the button for adding, changing, recentering and removing it.
+- **Changelog:** add an entry at the top of `web/js/changelog.js` when a batch of changes ships; it feeds the sidebar's "What's new" window.
+- **Stat-block links:** `termlinks.js` (pure, tested) turns ability names in stat-block text into compendium links. Add new names to its lists.
+- **Archetype targets:** `findTargets()` in `features.js` falls back to class-specific `ALIASES`, and `EXTRA_FEATURES` adds features the class table omits (weapon and armor proficiency, spellbook, patron spells). About 3% of targets still show as plain text (swashbuckler and gunslinger deed names, paladin auras).
 - **Re-drawing:** `changed({ rerender: true })` keeps the scroll position.
 
 ## Commands

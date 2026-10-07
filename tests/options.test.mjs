@@ -6,7 +6,7 @@ test('missing or broken stored options fall back to defaults', () => {
   assert.deepEqual(sanitize(null), DEFAULTS);
   assert.deepEqual(sanitize('junk'), DEFAULTS);
   const o = sanitize({ theme: 'neon', accent: 'pink', textSize: 77, startTab: 'nope', compact: 1 });
-  assert.equal(o.theme, 'auto');
+  assert.equal(o.theme, 'dark');
   assert.equal(o.accent, 'crimson');
   assert.equal(o.textSize, 100);
   assert.equal(o.startTab, 'overview');

@@ -2,6 +2,7 @@
 // Data comes from data/summons.json (built by tools/summons.py). Pure functions, no DOM.
 
 const ROMAN = { I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7, VIII: 8, IX: 9 };
+import { linkTerms } from './termlinks.js';
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 /** 'Summon Monster IV' -> {family: 'Summon Monster', level: 4}; anything else -> null. */
@@ -38,10 +39,11 @@ export function templateNotes(hd) {
   };
 }
 
-const row = (label, v) => (v ? `<p><b>${label}</b> ${esc(v)}</p>` : '');
+const row = (label, v, links) => (v ? `<p><b>${label}</b> ${links ? linkTerms(v) : esc(v)}</p>` : '');
 
 /** A Pathfinder-style stat block as HTML. `template` is true when the entry takes the celestial/fiendish template. */
-export function statBlockHtml(b, { template = false } = {}) {
+export function statBlockHtml(b, { template = false, links = false } = {}) {
+  const L = v => (links ? linkTerms(v) : esc(v));
   const type = [b.size, (b.creature_type || '').toLowerCase()].filter(Boolean).join(' ') + (b.creature_subtype ? ` (${b.creature_subtype})` : '');
   const abil = [['Str', 'strength'], ['Dex', 'dexterity'], ['Con', 'constitution'], ['Int', 'intelligence'], ['Wis', 'wisdom'], ['Cha', 'charisma']]
     .map(([a, k]) => `${a} ${b[k] || '—'}`).join(', ');
@@ -49,19 +51,19 @@ export function statBlockHtml(b, { template = false } = {}) {
   const tpl = template ? templateNotes(hitDice(b)) : null;
   return `<div class="statblock summon-block">
     <p class="muted small">${esc(b.alignment || '')} ${esc(type)} · CR ${esc(b.cr || '—')}${b.source ? ' · ' + esc(b.source) : ''}</p>
-    <p><b>Init</b> ${esc(b.init || '—')}; <b>Senses</b> ${esc(b.senses || '—')}</p>
+    <p><b>Init</b> ${esc(b.init || '—')}; <b>Senses</b> ${L(b.senses || '—')}</p>
     <h4>Defense</h4>
     <p><b>AC</b> ${esc(b.ac || '—')}</p>
     <p><b>hp</b> ${esc(b.hp || '—')}</p>
     <p><b>Fort</b> ${esc(b.fortitude || '—')}, <b>Ref</b> ${esc(b.reflex || '—')}, <b>Will</b> ${esc(b.will || '—')}</p>
-    ${row('Defensive', defense)}${row('Weaknesses', b.weaknesses)}
+    ${row('Defensive', defense, links)}${row('Weaknesses', b.weaknesses)}
     <h4>Offense</h4>
     <p><b>Speed</b> ${esc(b.speed || '—')}</p>
-    ${row('Melee', b.melee)}${row('Ranged', b.ranged)}${row('Space / Reach', [b.space, b.reach].filter(Boolean).join(' / '))}${row('Special attacks', b.special_attacks)}
+    ${row('Melee', b.melee, links)}${row('Ranged', b.ranged, links)}${row('Space / Reach', [b.space, b.reach].filter(Boolean).join(' / '))}${row('Special attacks', b.special_attacks, links)}
     <h4>Statistics</h4>
     <p>${esc(abil)}</p>
     <p><b>Base Atk</b> ${esc(b.base_attack || '—')}; <b>CMB</b> ${esc(b.cmb || '—')}; <b>CMD</b> ${esc(b.cmd || '—')}</p>
-    ${row('Feats', b.feats)}${row('Skills', b.skills)}${row('Racial modifiers', b.racial_modifiers)}${row('Languages', b.languages)}${row('SQ', b.special_qualities)}
+    ${row('Feats', b.feats)}${row('Skills', b.skills)}${row('Racial modifiers', b.racial_modifiers)}${row('Languages', b.languages)}${row('SQ', b.special_qualities, links)}
     ${(b.abilities || []).length ? `<h4>Special abilities</h4>${b.abilities.map(a => `<div><b>${esc(a.name)}.</b> ${a.html}</div>`).join('')}` : ''}
     ${tpl ? `<h4>Template</h4><p class="small">Summoned with the celestial template if you are good, the fiendish template if you are evil (either if neutral).</p>
       <p class="small">${esc(tpl.celestial)}</p><p class="small">${esc(tpl.fiendish)}</p>` : ''}

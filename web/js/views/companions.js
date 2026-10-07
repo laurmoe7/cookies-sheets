@@ -5,6 +5,7 @@ import { state, changed } from '../app.js';
 import { classLevels, sign, num } from '../calc.js';
 import { computeCompanion, newCompanion, withCompanionSources, ANIMAL_SKILLS, EIDOLON_SKILLS, skillAbility } from '../companions.js';
 import { classFeatures, archetypesOf } from '../features.js';
+import { linkTerms } from '../termlinks.js';
 import { SKILLS } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
@@ -44,6 +45,12 @@ export async function renderCompanions(body, c) {
       Levels are worked out from your classes automatically, and you can override them.</p></section>`}
     ${c.companions.map((comp, i) => companionCard(comp, i, levels, data, masterOf(c))).join('')}`;
 
+  body.addEventListener('toggle', e => {
+    const d = e.target.closest?.('details[data-block]');
+    if (!d) return;
+    const comp = getPath(c, d.dataset.block);
+    if (comp && !!comp.blockOpen !== d.open) { comp.blockOpen = d.open; changed(); }
+  }, true);
   body.onclick = async e => {
     const t = e.target.closest('[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
     if (!t) return;
@@ -243,7 +250,7 @@ function companionCard(comp, i, levels, data, master) {
         <label title="Amulet of mighty fists, etc.">Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
       <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Gear, personality, conditions…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
     </div>
-    <div>${statBlock(comp, s)}</div>
+    <div>${statBlockToggle(comp, p, statBlock(comp, s))}</div>
   </div></section></div>`;
 }
 
@@ -276,7 +283,7 @@ function familiarCard(comp, i, levels, data, master, head) {
         <label>Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
       <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Variants, gear, personality…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
     </div>
-    <div>${statBlock(comp, s)}</div>
+    <div>${statBlockToggle(comp, p, statBlock(comp, s))}</div>
   </div></section></div>`;
 }
 
@@ -298,6 +305,11 @@ function evolutionsBlock(comp, s, data, p) {
     }).join('')}</div>`;
 }
 
+/** The full stat block is mostly shown in the panels above, so it folds away (and remembers whether it was left open). */
+function statBlockToggle(comp, p, html) {
+  return `<details class="block-toggle" data-block="${esc(p)}" ${comp.blockOpen ? 'open' : ''}><summary>Full stat block</summary>${html}</details>`;
+}
+
 function statBlock(comp, s) {
   const M = a => (s.mods[a] == null ? '—' : sign(s.mods[a]));
   const ab = a => `${a[0].toUpperCase() + a.slice(1)} ${s.abilities[a] ?? '—'}`;
@@ -307,23 +319,23 @@ function statBlock(comp, s) {
     <p><b style="font-size:15px">${esc(comp.name || (s.kind === 'animal' ? s.species.name : 'Eidolon'))}</b>
       <span class="muted"> · ${s.kind === 'eidolon' ? esc(s.form.name) + ' eidolon' : esc(s.species.name)} · ${fam ? 'master level' : 'level'} ${s.level}</span></p>
     <p>${esc(s.size)} ${typ}${fam ? `<span class="muted small"> · space ${esc(s.species.space || '—')}, reach ${esc(s.species.reach || '—')}</span>` : ''}</p>
-    <p><b>Init</b> ${sign(s.init)}; <b>Senses</b> ${fam ? esc(s.species.senses || '—') : s.kind === 'animal' ? esc(s.qualities.match(/low-light vision|darkvision[^,]*|scent|tremorsense[^,]*/gi)?.join(', ') || '—') : 'darkvision 60 ft.'}; Perception ${sign((s.skills.find(x => x.name === 'Perception')?.total) ?? s.mods.wis)}</p>
+    <p><b>Init</b> ${sign(s.init)}; <b>Senses</b> ${fam ? linkTerms(s.species.senses || '—') : s.kind === 'animal' ? linkTerms(s.qualities.match(/low-light vision|darkvision[^,]*|scent|tremorsense[^,]*/gi)?.join(', ') || '—') : linkTerms('darkvision 60 ft.')}; Perception ${sign((s.skills.find(x => x.name === 'Perception')?.total) ?? s.mods.wis)}</p>
     <h4>Defense</h4>
     <p><b>AC</b> ${s.ac.total}, touch ${s.ac.touch}, flat-footed ${s.ac.flat} <span class="muted small">(${[`${M('dex')} Dex`, `+${s.natural} natural`, s.sizeMods.ac ? `${sign(s.sizeMods.ac)} size` : ''].filter(Boolean).join(', ')})</span></p>
     <p><b>hp</b> ${s.hp} ${fam ? '(half the master’s)' : `(${s.hd}d${s.hdDie}${s.mods.con ? sign(s.mods.con * s.hd) : ''})`}</p>
     <p><b>Fort</b> ${sign(s.saves.fort)}, <b>Ref</b> ${sign(s.saves.ref)}, <b>Will</b> ${sign(s.saves.will)}${s.specials.some(x => /devotion/i.test(x)) ? ' (+4 vs. enchantment)' : ''}</p>
-    ${s.specials.some(x => /evasion/i.test(x)) ? `<p><b>Defensive Abilities</b> ${esc(s.specials.filter(x => /evasion/i.test(x)).join(', ').toLowerCase())}</p>` : ''}
+    ${s.specials.some(x => /evasion/i.test(x)) ? `<p><b>Defensive Abilities</b> ${linkTerms(s.specials.filter(x => /evasion/i.test(x)).join(', ').toLowerCase())}</p>` : ''}
     <h4>Offense</h4>
     <p><b>Speed</b> ${esc(s.speed)}</p>
-    <p><b>Melee</b> ${s.attacks.length ? esc(s.attacks.map(a => a.text).join(', ')) : '—'}</p>
-    ${s.specialAttacks ? `<p><b>Special Attacks</b> ${esc(s.specialAttacks)}</p>` : ''}
+    <p><b>Melee</b> ${s.attacks.length ? linkTerms(s.attacks.map(a => a.text).join(', ')) : '—'}</p>
+    ${s.specialAttacks ? `<p><b>Special Attacks</b> ${linkTerms(s.specialAttacks)}</p>` : ''}
     <h4>Statistics</h4>
     <p>${ABIL.map(ab).join(', ')}</p>
     <p><b>Base Atk</b> ${sign(s.bab)}; <b>CMB</b> ${sign(s.cmb)}; <b>CMD</b> ${s.cmd}</p>
     <p><b>Feats</b> ${esc([...(comp.feats || []).map(f => f.name), s.bonusFeats].filter(Boolean).join(', ') || '—')}</p>
     <p><b>Skills</b> ${esc(s.skills.map(x => `${x.name} ${sign(x.total)}`).join(', ') || '—')}</p>
-    ${fam ? `<p><b>SQ</b> ${esc([...s.specials, s.qualities].filter(Boolean).join(', ').toLowerCase())}</p>` : s.kind === 'animal' ? `<p><b>SQ</b> ${esc([...s.specials.filter(x => !/evasion|devotion/i.test(x)), s.qualities].filter(Boolean).join(', ').toLowerCase())}</p>`
-      : `<p><b>SQ</b> ${esc(s.specials.join(', ').toLowerCase())}</p>
+    ${fam ? `<p><b>SQ</b> ${linkTerms([...s.specials, s.qualities].filter(Boolean).join(', ').toLowerCase())}</p>` : s.kind === 'animal' ? `<p><b>SQ</b> ${linkTerms([...s.specials.filter(x => !/evasion|devotion/i.test(x)), s.qualities].filter(Boolean).join(', ').toLowerCase())}</p>`
+      : `<p><b>SQ</b> ${linkTerms(s.specials.join(', ').toLowerCase())}</p>
          <p><b>Evolutions</b> ${esc([...s.free, ...(comp.evolutions || []).map(e => e.name.toLowerCase() + (e.choice ? ` (${e.choice})` : ''))].join(', '))}</p>`}
     ${s.kind === 'animal' && comp.tricks ? `<p><b>Tricks</b> ${esc(comp.tricks)}</p>` : ''}
   </div>`;

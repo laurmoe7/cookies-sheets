@@ -114,7 +114,7 @@ export function renderSummons(el, c) {
       let data;
       try { data = await loadData(); } catch (err) { toast('Could not load stat blocks: ' + err.message, 'err'); return; }
       const b = data.creatures[s.key];
-      if (b) showCustom({ name: s.name, cat: 'Summoned creature', sub: s.spell, html: statBlockHtml(b, { template: s.tpl }) });
+      if (b) showCustom({ name: s.name, cat: 'Summoned creature', sub: s.spell, html: statBlockHtml(b, { template: s.tpl, links: true }) });
     } else if (t.dataset.smDmg !== undefined || t.dataset.smHeal !== undefined) {
       const amt = Math.abs(+$('[data-sm-amt]', t.closest('[data-sm]')).value || 0);
       if (!amt) return;

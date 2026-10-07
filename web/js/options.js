@@ -1,6 +1,7 @@
 // App options (theme, accent colour, text size...) kept in localStorage and applied to the page.
 // `sanitize` and `ACCENTS` are pure; `applyOptions` and `showOptions` touch the DOM.
-import { modal } from './ui.js';
+import { modal, esc } from './ui.js';
+import { CHANGELOG } from './changelog.js';
 
 export const ACCENTS = {
   crimson: { name: 'Crimson', light: null, dark: null },
@@ -14,12 +15,12 @@ export const TEXT_SIZES = [[90, 'Small'], [100, 'Normal'], [112, 'Large'], [125,
 export const START_TABS = [['overview', 'Overview'], ['skills', 'Skills'], ['feats', 'Feats & Abilities'], ['spells', 'Spells'], ['gear', 'Gear'],
   ['companions', 'Companions'], ['buffs', 'Buffs & Conditions'], ['bio', 'Bio & Notes']];
 
-export const DEFAULTS = { theme: 'auto', accent: 'crimson', textSize: 100, compact: false, tooltips: true, motion: true, reopenLast: true, startTab: 'overview' };
+export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, tooltips: true, motion: true, reopenLast: true, startTab: 'overview' };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
   const o = { ...DEFAULTS, ...(raw && typeof raw === 'object' ? raw : {}) };
-  if (!['auto', 'dark', 'light'].includes(o.theme)) o.theme = DEFAULTS.theme;
+  if (!['dark', 'light'].includes(o.theme)) o.theme = DEFAULTS.theme; // an old "match Windows" choice becomes dark
   if (!ACCENTS[o.accent]) o.accent = DEFAULTS.accent;
   o.textSize = Number(o.textSize);
   if (!TEXT_SIZES.some(([v]) => v === o.textSize)) o.textSize = DEFAULTS.textSize;
@@ -44,8 +45,8 @@ function save() { try { localStorage.setItem('options', JSON.stringify(current))
 
 export function applyOptions() {
   const root = document.documentElement;
-  if (current.theme === 'auto') delete root.dataset.theme; else root.dataset.theme = current.theme;
-  const dark = current.theme === 'dark' || (current.theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+  root.dataset.theme = current.theme;
+  const dark = current.theme === 'dark';
   const a = ACCENTS[current.accent];
   const col = a && (dark ? a.dark : a.light);
   if (col) {
@@ -60,7 +61,6 @@ export function applyOptions() {
 
 export function initOptions() {
   loadOptions();
-  matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => applyOptions());
 }
 
 export function showOptions() {
@@ -68,7 +68,7 @@ export function showOptions() {
     const draw = () => {
       const o = current;
       body.innerHTML = `<div class="opt-grid">
-        <div class="opt-row"><b>Theme</b><div class="seg">${[['auto', 'Match Windows'], ['dark', 'Dark'], ['light', 'Light']].map(([k, l]) => `<button class="seg-btn ${o.theme === k ? 'on' : ''}" data-opt="theme" data-v="${k}">${l}</button>`).join('')}</div></div>
+        <div class="opt-row"><b>Theme</b><div class="seg">${[['dark', 'Dark'], ['light', 'Light']].map(([k, l]) => `<button class="seg-btn ${o.theme === k ? 'on' : ''}" data-opt="theme" data-v="${k}">${l}</button>`).join('')}</div></div>
         <div class="opt-row"><b>Accent color</b><div class="swatches">${Object.entries(ACCENTS).map(([k, a]) => `<button class="swatch ${o.accent === k ? 'on' : ''}" data-opt="accent" data-v="${k}" title="${a.name}" style="background:${a.dark || '#e0605a'}"></button>`).join('')}</div></div>
         <div class="opt-row"><b>Text size</b><div class="seg">${TEXT_SIZES.map(([v, l]) => `<button class="seg-btn ${o.textSize === v ? 'on' : ''}" data-opt="textSize" data-v="${v}">${l}</button>`).join('')}</div></div>
         <label class="opt-row"><span><b>Compact layout</b><br><span class="muted small">Tighter cards and spacing, to fit more on screen.</span></span><input type="checkbox" data-opt="compact" ${o.compact ? 'checked' : ''}></label>
@@ -77,12 +77,13 @@ export function showOptions() {
         <label class="opt-row"><span><b>Reopen the last character</b><br><span class="muted small">On start, open the character you used last instead of the character list.</span></span><input type="checkbox" data-opt="reopenLast" ${o.reopenLast ? 'checked' : ''}></label>
         <div class="opt-row"><b>Sheet tab to open first</b><select data-opt="startTab">${START_TABS.map(([k, l]) => `<option value="${k}" ${o.startTab === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       </div>
-      <div class="row end"><button class="btn ghost" data-reset>Reset to defaults</button></div>`;
+      <div class="row end"><button class="btn ghost" data-changelog>What’s new</button><button class="btn ghost" data-reset>Reset to defaults</button></div>`;
     };
     const set = (k, v) => { current = sanitize({ ...current, [k]: v }); save(); applyOptions(); draw(); };
     body.onclick = e => {
       const b = e.target.closest('button[data-opt]');
       if (b) return set(b.dataset.opt, b.dataset.opt === 'textSize' ? +b.dataset.v : b.dataset.v);
+      if (e.target.closest('[data-changelog]')) return showChangelog();
       if (e.target.closest('[data-reset]')) { current = sanitize(null); save(); applyOptions(); draw(); }
     };
     body.onchange = e => {
@@ -92,4 +93,12 @@ export function showOptions() {
     };
     draw();
   });
+}
+
+/** The "What’s new" window. */
+export function showChangelog() {
+  return modal('What’s new', body => {
+    body.innerHTML = CHANGELOG.map(e => `<h3>${esc(e.version)}${e.date ? ` <span class="muted small">${esc(e.date)}</span>` : ''}</h3>
+      <ul class="changelog">${e.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`).join('');
+  }, { wide: true });
 }
