@@ -2,7 +2,7 @@
 // Buffs & Conditions tab, where each summoned creature is tracked with its key stats, hit points and rounds left.
 import { api } from '../api.js';
 import { state, changed } from '../app.js';
-import { esc, $, $$, modal, toast, showCustom, confirmBox, textField, getPath } from '../ui.js';
+import { esc, $, $$, modal, toast, showCustom, confirmBox, textField, getPath, pickImage, picSlot } from '../ui.js';
 import { summonSpell, summonChoices, statBlockHtml, newSummon, templateNotes } from '../summons.js';
 
 let dataPromise = null;
@@ -89,7 +89,7 @@ export function renderSummons(el, c) {
     ${list.length ? `<div class="summon-cards">${list.map((s, i) => summonCard(s, i)).join('')}</div>`
       : '<p class="muted">No summons right now. Use “Summon…” here, or the button beside a Summon Monster / Summon Nature’s Ally spell on the Spells tab.</p>'}`;
   el.onclick = async e => {
-    const t = e.target.closest('[data-sm-new],[data-sm-round],[data-sm-clear],[data-sm-dismiss],[data-sm-stats],[data-sm-dmg],[data-sm-heal],[data-sm-r]');
+    const t = e.target.closest('[data-pic],[data-pic-clear],[data-sm-new],[data-sm-round],[data-sm-clear],[data-sm-dismiss],[data-sm-stats],[data-sm-dmg],[data-sm-heal],[data-sm-r]');
     if (!t) return;
     e.preventDefault();
     if (t.dataset.smNew !== undefined) return chooseSummon();
@@ -105,7 +105,11 @@ export function renderSummons(el, c) {
     }
     const i = +t.closest('[data-sm]').dataset.sm;
     const s = list[i];
-    if (t.dataset.smDismiss !== undefined) { list.splice(i, 1); changed({ rerender: true }); }
+    if (t.dataset.pic !== undefined) {
+      const url = await pickImage(256, { square: true });
+      if (url) { s.image = url; changed({ rerender: true }); }
+    } else if (t.dataset.picClear !== undefined) { s.image = ''; changed({ rerender: true }); }
+    else if (t.dataset.smDismiss !== undefined) { list.splice(i, 1); changed({ rerender: true }); }
     else if (t.dataset.smStats !== undefined) {
       let data;
       try { data = await loadData(); } catch (err) { toast('Could not load stat blocks: ' + err.message, 'err'); return; }
@@ -126,10 +130,13 @@ export function renderSummons(el, c) {
 function summonCard(s, i) {
   const pct = Math.max(0, Math.min(100, (s.hp / Math.max(1, s.hpMax)) * 100));
   const expired = s.rounds <= 0;
-  const dead = s.hp <= 0;
+  // Down at 0 hp or less; dead once hp reaches the negative of its Con score (no Con score: destroyed at 0).
+  const deadAt = -(s.con || 0);
+  const dead = s.hp <= deadAt;
+  const downed = s.hp <= 0 && !dead;
   const note = s.template ? templateNotes(s.hd || 1)[s.template] : '';
-  return `<div class="summon-card ${expired ? 'expired' : ''} ${dead ? 'dead' : ''}" data-sm="${i}">
-    <div class="row" style="margin:0"><b class="grow">${tf(`summons.${i}.name`, { placeholder: 'Name' })}</b>
+  return `<div class="summon-card ${expired ? 'expired' : ''} ${dead ? 'dead' : downed ? 'downed' : ''}" data-sm="${i}">
+    <div class="row" style="margin:0">${picSlot(s.image, 'Add a picture of this creature')}<b class="grow">${tf(`summons.${i}.name`, { placeholder: 'Name' })}</b>
       <span class="pill">${esc(s.spell)}</span><button class="icon-btn" data-sm-dismiss title="Dismiss">✕</button></div>
     <div class="sm-stats small">
       <div><b>AC</b> ${esc(s.ac || '—')}</div>
@@ -138,6 +145,8 @@ function summonCard(s, i) {
       <div><b>Melee</b> ${esc(s.melee || '—')}</div>
       ${s.special ? `<div><b>SQ</b> ${esc(s.special)}</div>` : ''}
     </div>
+    ${dead ? '<div class="small bad down-note"><b>Dead</b> (or destroyed)</div>'
+      : downed ? `<div class="small warn down-note"><b>Down</b>: dead at ${s.con ? '−' + s.con : '0'} hp, ${s.hp - deadAt} more damage</div>` : ''}
     <div class="hp-bar"><div class="${pct <= 25 ? 'low' : pct <= 50 ? 'mid' : ''}" style="width:${pct}%"></div></div>
     <div class="row sm-controls">
       <b>${s.hp} / ${s.hpMax} hp</b>

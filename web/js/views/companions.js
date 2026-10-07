@@ -5,7 +5,7 @@ import { state, changed } from '../app.js';
 import { classLevels, sign, num } from '../calc.js';
 import { computeCompanion, newCompanion, ANIMAL_SKILLS, EIDOLON_SKILLS, skillAbility } from '../companions.js';
 import { SKILLS } from '../data.js';
-import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom } from '../ui.js';
+import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom, pickImage, picSlot } from '../ui.js';
 
 // What a familiar borrows from its master: base attack bonus, base saves, hit points and skill ranks.
 function masterOf(c) {
@@ -39,12 +39,18 @@ export async function renderCompanions(body, c) {
     ${c.companions.map((comp, i) => companionCard(comp, i, levels, data, masterOf(c))).join('')}`;
 
   body.onclick = async e => {
-    const t = e.target.closest('[data-new],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
+    const t = e.target.closest('[data-pic],[data-pic-clear],[data-new],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
     if (!t) return;
     e.preventDefault();
     if (t.dataset.new) { c.companions.push(newCompanion(t.dataset.new, data)); return changed({ rerender: true }); }
     const i = +t.closest('[data-comp]').dataset.comp;
     const comp = c.companions[i];
+    if (t.dataset.pic !== undefined) {
+      const url = await pickImage(256, { square: true });
+      if (url) { comp.image = url; changed({ rerender: true }); }
+      return;
+    }
+    if (t.dataset.picClear !== undefined) { comp.image = ''; return changed({ rerender: true }); }
     if (t.dataset.delComp !== undefined) {
       if (await confirmBox(`Remove ${comp.name || 'this companion'}?`, 'Remove')) { c.companions.splice(i, 1); changed({ rerender: true }); }
     } else if (t.dataset.addFeat !== undefined) {
@@ -77,7 +83,7 @@ const select = (path, cur, options) => `<select data-bind="${path}" data-rerende
 
 function companionCard(comp, i, levels, data, master) {
   const p = `companions.${i}`;
-  const head = `<div class="row"><h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>
+  const head = `<div class="row">${picSlot(comp.image, 'Add a picture of this companion')}<h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>
     <span class="pill">${{ animal: 'Animal companion', eidolon: 'Eidolon', familiar: 'Familiar', custom: 'Companion' }[comp.kind]}</span>
     <button class="icon-btn" data-del-comp title="Remove">✕</button></div>`;
   if (comp.kind === 'custom') {

@@ -30,8 +30,10 @@ export function newCharacter() {
     skills: SKILLS.map(s => ({ name: s.name, sub: '', ranks: 0, misc: 0, classSkill: false })),
     feats: [], traits: [], specials: [],
     modifiers: [],
-    gear: [], money: { pp: 0, gp: 0, sp: 0, cp: 0 },
+    gear: [], money: { pp: 0, gp: 0, sp: 0, cp: 0, custom: [] }, // custom: [{name, amount}] other currencies
     spellbooks: {},
+    resources: {}, // current points in class pools by id (arcane reservoir...); absent = full for the day
+    trackers: [], // the player's own counters {name, max, cur}
     notes: '',
     quickNotes: '', // the Notes box at the bottom of the Overview tab
   };
@@ -49,6 +51,8 @@ export function migrate(c) {
   for (const [cls, v] of Object.entries(c.archetypes || {})) {
     if (typeof v === 'string') c.archetypes[cls] = v.split(',').map(n => ({ name: n.trim() })).filter(x => x.name);
   }
+  c.money = { ...base.money, ...(c.money || {}) };
+  if (!Array.isArray(c.money.custom)) c.money.custom = [];
   c.version = MODEL_VERSION;
   return c;
 }

@@ -74,7 +74,7 @@ export function newSummon({ key, label, spell, tpl = false, block, rounds = 1 })
   const hp = parseInt(block.hp, 10) || 1;
   return {
     id: Math.random().toString(36).slice(2, 10), key, name: label, spell, tpl, template: '',
-    hp, hpMax: hp, hd: hitDice(block), rounds, roundsTotal: rounds,
+    hp, hpMax: hp, con: parseInt(block.constitution, 10) || 0, hd: hitDice(block), rounds, roundsTotal: rounds,
     ac: String(block.ac || '').replace(/\s*\([^)]*\)/g, ''),
     saves: `Fort ${block.fortitude || '—'}, Ref ${block.reflex || '—'}, Will ${block.will || '—'}`,
     speed: block.speed || '', melee: block.melee || '', special: block.special_qualities || '', notes: '',

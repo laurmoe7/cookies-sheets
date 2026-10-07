@@ -52,6 +52,16 @@ export function confirmBox(message, okLabel = 'OK') {
   });
 }
 
+/** A warning window listing things left undone. Resolves true to carry on, false to go back and fix them. */
+export function warnBox(title, items, { okLabel = 'Continue anyway', backLabel = 'Go back' } = {}) {
+  return modal(title, (body, close) => {
+    body.innerHTML = `<ul class="warn-list">${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>
+      <div class="row end"><button class="btn primary" data-no>${esc(backLabel)}</button><button class="btn" data-yes>${esc(okLabel)}</button></div>`;
+    $('[data-no]', body).onclick = () => close(false);
+    $('[data-yes]', body).onclick = () => close(true);
+  });
+}
+
 // ---------- Reference drawer (right side) ----------
 let drawerHistory = [];
 export async function showEntry(idOrName, cat) {
@@ -273,6 +283,13 @@ export function pickImage(maxSize = 800, { square = false } = {}) {
     };
     input.click();
   });
+}
+
+/** A small square picture slot for a card header: shows the image (hover to change or remove) or a "＋" to add one. */
+export function picSlot(image, hint = 'Add a picture') {
+  return image
+    ? `<span class="pic-slot has"><img src="${image}" alt=""><span class="pic-tools"><button class="icon-btn" data-pic title="Change picture">✎</button><button class="icon-btn" data-pic-clear title="Remove picture">✕</button></span></span>`
+    : `<button class="pic-slot add" data-pic title="${esc(hint)}">＋</button>`;
 }
 
 /** Styled tooltips: any element with a title (or data-tip) gets a tooltip in the app's look instead of the browser's. */

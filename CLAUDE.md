@@ -35,6 +35,10 @@ Windows desktop app for Pathfinder 1st Edition characters: live character sheet,
 - **Tooltips:** `title="..."` attributes are shown by our own styled tooltip (`initTooltips` in `ui.js`), which moves the text into `data-tip`. Use `title` as usual; no extra work.
 - **Sheet search:** `searchindex.js` (pure, tested) indexes the open character; `sheetsearch.js` is the top-bar UI. A new character field worth finding goes into `buildIndex`.
 - **Text selection:** the desktop window (pywebview) disables text selection app-wide. Anything the user may want to copy (stat blocks, entry text) must opt in with `user-select: text` in `app.css`.
+- **Class resources:** `resources.js` (pure, tested) lists the pools a character's classes give (arcane reservoir, rage rounds, ki, grit...). Current points live in `c.resources[id]` (absent = start of day); `c.trackers` are the player's own counters. `views/resources.js` draws them on Overview, and the arcanist's reservoir also appears in its spell card. To add a pool, add a line to `classResources`.
+- **Level-up warnings:** `levelcheck.js` (pure, tested) lists what is left undone when a level is applied; `warnBox()` in `ui.js` shows it with "Go back and fix" / "Apply anyway".
+- **Down vs. dead:** the Overview HP card and summon cards use an amber frame when down (0 or below) and a red, greyed frame once HP reaches minus the Con score. Summons store `con`.
+- **Pictures:** `picSlot()` in `ui.js` gives companions and summons a small square picture (`image` field).
 - **Re-drawing:** `changed({ rerender: true })` keeps the scroll position.
 
 ## Commands

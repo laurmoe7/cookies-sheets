@@ -349,7 +349,7 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 
 /* ---------- summon lists in the side panel ---------- */
 .summon-list { list-style: none; margin: 6px 0 14px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 8px; }
-.summon-list li { display: inline-flex; align-items: center; gap: 2px; padding: 0; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); }
+.summon-list li { display: inline-flex; align-items: stretch; gap: 0; padding: 0; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); }
 .summon-list li .muted { padding: 0 8px 0 2px; }
 .summon-pick { border: 0; background: transparent; font-weight: 600; border-radius: 8px 0 0 8px; }
 .summon-pick:hover { background: var(--accent-soft); color: var(--accent); }
@@ -370,7 +370,9 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .summon-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 12px; margin-top: 10px; }
 .summon-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; background: var(--panel-2, var(--panel)); }
 .summon-card.expired { border-color: var(--warn, #c9902b); }
-.summon-card.dead { opacity: .65; }
+.summon-card.downed { border-color: var(--warn, #c9902b); box-shadow: inset 0 0 0 1px var(--warn, #c9902b); }
+.summon-card.dead { opacity: .6; border-color: var(--bad); filter: grayscale(.7); }
+.down-note { margin: 2px 0 4px; }
 .sm-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 14px; margin: 6px 0; }
 .sm-controls { gap: 6px; flex-wrap: wrap; margin: 4px 0; }
 @media (max-width: 900px) { .summon-pane { grid-template-columns: 1fr; } .summon-preview { border-left: 0; padding-left: 0; } }
@@ -395,3 +397,32 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .fcb-opt.on { border-color: var(--accent); background: var(--accent-soft); }
 
 .rounds-group { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+
+/* ---------- downed vs. dead frames ---------- */
+.card.hp.downed { border-color: var(--warn, #c9902b); box-shadow: inset 0 0 0 1px var(--warn, #c9902b); }
+.card.hp.dead { border-color: var(--bad); box-shadow: inset 0 0 0 1px var(--bad); }
+
+/* ---------- small picture slots on companion and summon cards ---------- */
+.pic-slot { position: relative; flex: none; width: 56px; height: 56px; border-radius: 10px; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; }
+.pic-slot.has { border: 2px solid var(--gold); }
+.pic-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pic-slot.add { border: 1px dashed var(--line); background: transparent; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0; }
+.pic-slot.add:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.pic-tools { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 2px; background: rgba(0,0,0,.55); opacity: 0; transition: opacity .15s; }
+.pic-slot:hover .pic-tools { opacity: 1; }
+.pic-tools .icon-btn { color: #fff; padding: 2px 5px; }
+.summon-card .pic-slot { width: 44px; height: 44px; }
+
+/* ---------- class resources and trackers ---------- */
+.res-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 8px 0; border-top: 1px solid var(--line); }
+.res-name { flex: 1 1 200px; font-weight: 600; min-width: 160px; }
+.res-bar { flex: 1 1 120px; height: 8px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 99px; overflow: hidden; }
+.res-bar > div { height: 100%; background: var(--accent); transition: width .2s; }
+.res-val { min-width: 70px; text-align: right; }
+.res-note { flex-basis: 100%; }
+.res-inline { margin: 4px 0 8px; border: 1px solid var(--line); border-radius: var(--radius); padding: 0 12px; }
+.res-inline .res-row { border-top: 0; }
+.cur-row { margin: 4px 0; }
+
+.warn-list { margin: 0 0 14px; padding-left: 20px; }
+.warn-list li { margin: 4px 0; }

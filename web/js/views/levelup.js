@@ -5,7 +5,8 @@ import { skillKey } from '../model.js';
 import { api } from '../api.js';
 import { featuresFor, archetypesOf } from '../features.js';
 import { learnAllowance, remaining, describeRemaining } from '../spellrules.js';
-import { esc, $, $$, pickEntry, toast, confirmBox, showCustom } from '../ui.js';
+import { esc, $, $$, pickEntry, toast, confirmBox, warnBox, showCustom } from '../ui.js';
+import { levelWarnings } from '../levelcheck.js';
 import { pickSpell, featureLookupName } from './sheet.js';
 import { renderArchetypeChooser } from './archetypes.js';
 import { chooseSpells } from './spellpicker.js';
@@ -345,14 +346,20 @@ function spellPicks(c, def, row, prevRow, after, newLevel) {
 }
 
 async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after, clsLevel) {
-  if (getsAbility && !draft.abilityIncrease) { toast('Choose an ability score to increase.', 'err'); return; }
   if (ranksUsed > rankBudget) { toast(`You assigned ${ranksUsed} ranks but only have ${rankBudget}.`, 'err'); return; }
   if (draft.hpMode === 'roll' && draft.hpRoll == null && newLevel > 1) { toast('Roll your hit die first (or pick another HP option).', 'err'); return; }
   const allowance = def.casting && after.spellcasting[def.name] ? spellAllowance(c, def, clsLevel, after) : null;
-  if (allowance) {
-    const rem = remaining(allowance, draft.spells);
-    if (rem.total && !await confirmBox(`You still have ${describeRemaining(rem)} ${def.casting.extracts ? 'formulae' : 'spells'} to choose. Apply the level anyway? (You can add them later on the Spells tab.)`, 'Apply anyway')) return;
-  }
+  const rem = allowance ? remaining(allowance, draft.spells) : { total: 0 };
+  const ri = raceInfo(c);
+  const spent = ABILITIES.reduce((s, a) => s + (POINT_BUY[num(c.abilities[a].base)] ?? NaN), 0);
+  const warnings = levelWarnings({
+    newLevel, rankBudget, ranksUsed, getsFeat: newLevel % 2 === 1, bonusFeat: newLevel === 1 && !!ri.bonusFeat, featsChosen: draft.feats.length,
+    getsAbility, abilityIncrease: draft.abilityIncrease, isFav: (c.favoredClass || (newLevel === 1 ? def.name : '')) === def.name, fcb: draft.fcb, fcbNote: draft.fcbNote,
+    spellsLeft: rem.total ? `${describeRemaining(rem)} ${def.casting.extracts ? 'formulae' : 'spells'}` : '',
+    pointsLeft: isNaN(spent) ? 0 : draft.budget - spent, name: c.name,
+  });
+  if (warnings.length && !await warnBox(newLevel === 1 ? 'Before you finish your character' : `Before you apply ${ORD(newLevel)} level`, warnings,
+    { okLabel: 'Apply anyway', backLabel: 'Go back and fix' })) return;
   // Spellbook casters start with every cantrip on their list.
   let cantrips = [];
   if (allowance?.allCantrips) {

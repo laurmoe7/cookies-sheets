@@ -11,6 +11,7 @@ import { chooseArchetypes } from './archetypes.js';
 import { summonSpell } from '../summons.js';
 import { renderSummons, chooseSummon } from './summons.js';
 import { renderCompanions } from './companions.js';
+import { renderResources, resourceBlock, wire as wireResources } from './resources.js';
 
 const TABS = [
   ['overview', 'Overview'], ['skills', 'Skills'], ['feats', 'Feats & Abilities'], ['spells', 'Spells'],
@@ -184,6 +185,8 @@ function overview(body, c, d) {
       <p class="small muted">Full attack uses BAB iteratives (${d.iteratives.map(sign).join('/')}). Buffs such as Power Attack, Haste, and Bless apply automatically. ${ref('Two-Weapon Fighting', 'Rules')} · ${ref('Critical Hits', 'Rules')}</p>
     </section>
 
+    <section class="card span2" id="res-card"></section>
+
     <section class="card span2 quick-notes">
       <h3>Notes</h3>
       <textarea class="full" data-bind="quickNotes" rows="5" placeholder="Session notes, reminders, anything you want to see at a glance…">${esc(c.quickNotes || '')}</textarea>
@@ -191,6 +194,7 @@ function overview(body, c, d) {
   </div>`;
   wireCommon(body);
   wireImages(body, c);
+  renderResources($('#res-card', body), c);
 
   const updateDyn = () => {
     const dd = state.derived;
@@ -202,10 +206,14 @@ function overview(body, c, d) {
     $('#hp-fill').className = pct <= 25 ? 'low' : pct <= 50 ? 'mid' : '';
     const cur = dd.hp.current, nl = num(c.hp.nonlethal);
     const conScore = dd.abilities.con.score;
-    $('#hp-status').innerHTML = cur <= -conScore ? '<b class="bad">Dead</b> (HP at or below negative Con score)'
-      : cur < 0 ? `<b class="bad">Dying</b>: DC 10 Con check each round to stabilize (penalty ${cur}). ${ref('Dying', 'Rules', 'Dying rules')}`
-        : cur === 0 ? `<b class="warn">Disabled</b>: staggered; strenuous action deals 1 damage. ${ref('Disabled', 'Condition', 'Disabled')}`
+    const left = cur + conScore; // damage still needed to reach -Con
+    $('#hp-status').innerHTML = cur <= -conScore ? `<b class="bad">Dead</b> (HP at or below −${conScore}, your Con score)`
+      : cur < 0 ? `<b class="bad">Dying</b>: DC 10 Con check each round to stabilize (penalty ${cur}). <b>Dead at −${conScore} HP</b>, ${left} more damage. ${ref('Dying', 'Rules', 'Dying rules')}`
+        : cur === 0 ? `<b class="warn">Disabled</b>: staggered; strenuous action deals 1 damage. Dying below 0, dead at −${conScore} HP. ${ref('Disabled', 'Condition', 'Disabled')}`
           : nl >= cur ? `<b class="warn">${nl > cur ? 'Unconscious' : 'Staggered'}</b> from nonlethal damage.` : '';
+    const card = $('.card.hp', body);
+    card.classList.toggle('dead', cur <= -conScore);
+    card.classList.toggle('downed', cur <= 0 && cur > -conScore);
     const t = dd.ac.byType;
     $('#ac-breakdown').textContent = 'AC = 10 ' + [['Dex', dd.ac.dex], ['size', dd.ac.size], ...Object.entries(t)].filter(([, v]) => v).map(([k, v]) => `${v >= 0 ? '+' : '−'} ${Math.abs(v)} ${k}`).join(' ') +
       (dd.maxDex != null ? ` · max Dex ${dd.maxDex}` : '') + (dd.acp ? ` · ACP ${dd.acp}` : '');
@@ -264,6 +272,7 @@ function wireCommon(body) {
         armor: { name: '', type: 'armor', category: 'light', bonus: 0, enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true },
         gear: { name: '', qty: 1, weight: 0, value: '', notes: '' },
         specials: { name: '', notes: '' },
+        'money.custom': { name: '', amount: 0 },
       }[t.dataset.add];
       getPath(c, t.dataset.add).push(structuredClone(blank));
       changed({ rerender: true });
@@ -454,6 +463,7 @@ function spells(body, c, d) {
         ${sc.hasExtraSlot ? `<label class="small" title="Cleric/druid domain, wizard specialist school, or shaman spirit slot">${chk(`spellbooks.${cls}.extraSlot`, { rerender: true })} Domain / school slot</label>` : ''}
         <button class="btn small" data-rest="${esc(cls)}" title="Reset all used slots">Rest (reset)</button>
       </div>
+      ${cls === 'Arcanist' ? resourceBlock(c, 'arcane-reservoir') : ''}
       <table class="tbl slot-tbl"><thead><tr><th>Level</th>${levels.map(l => `<th>${ORD[l]}</th>`).join('')}</tr></thead><tbody>
         <tr><th>${spont ? 'Per day' : 'Slots'}</th>${levels.map(l => `<td><b>${fmtSlots(sc.slots[l])}</b></td>`).join('')}</tr>
         ${sc.known.some(k => k != null) ? `<tr><th>Known</th>${levels.map(l => `<td>${knownCount(book, l)} / ${sc.known[l] ?? '—'}</td>`).join('')}</tr>` : ''}
@@ -486,6 +496,7 @@ function spells(body, c, d) {
     </section>`;
   }).join('');
   wireCommon(body);
+  wireResources(body, c);
   body.addEventListener('click', async e => {
     const sbEl = e.target.closest('[data-cls]');
     if (!sbEl) return;
@@ -517,6 +528,7 @@ function spells(body, c, d) {
     } else if (t.dataset.rest !== undefined) {
       book.used = Array(10).fill(0);
       for (const s of book.spells) s.cast = 0;
+      if (cls === 'Arcanist' && c.resources) delete c.resources['arcane-reservoir'];
       toast('Spell slots reset');
       changed({ rerender: true });
     }
@@ -595,6 +607,11 @@ function gear(body, c, d) {
     <h3>Money</h3>
     <div class="kv">${['pp', 'gp', 'sp', 'cp'].map(k => `<label>${k.toUpperCase()} ${inp(`money.${k}`, { type: 'num', cls: 'w5' })}</label>`).join('')}</div>
     <p class="small muted">Total value: <b id="money-total"></b> gp (50 coins = 1 lb, included in weight)</p>
+    <h4>Other currencies</h4>
+    ${(c.money.custom || []).map((m, i) => `<div class="row cur-row">${inp(`money.custom.${i}.name`, { cls: 'w8', ph: 'Name (e.g. Gems, Fame, Credits)' })}
+      ${inp(`money.custom.${i}.amount`, { type: 'num', cls: 'w5' })}
+      <button class="icon-btn" data-del="money.custom.${i}" title="Remove">✕</button></div>`).join('') || '<p class="muted small">None. Use this for gems, favors, campaign points or any other currency.</p>'}
+    <button class="btn small" data-add="money.custom">＋ Currency</button>
   </section>
   <section class="card">
     <h3>${ref('Carrying Capacity', 'Rules', 'Encumbrance')}</h3>
