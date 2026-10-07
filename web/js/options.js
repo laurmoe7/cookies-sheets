@@ -12,12 +12,10 @@ export const ACCENTS = {
   gold: { name: 'Gold', light: '#9a6a10', dark: '#d6aa52' },
 };
 export const TEXT_SIZES = [[90, 'Small'], [100, 'Normal'], [112, 'Large'], [125, 'Extra large']];
-export const START_TABS = [['overview', 'Overview'], ['skills', 'Skills'], ['feats', 'Feats & Abilities'], ['spells', 'Spells'], ['gear', 'Gear'],
-  ['companions', 'Companions'], ['buffs', 'Buffs & Conditions'], ['bio', 'Bio & Notes']];
 
 export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
 
-export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, motion: true, reopenLast: true, startTab: 'overview', pageTurn: 'full', pageSound: true };
+export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, motion: true, reopenLast: true, pageTurn: 'full', pageSound: true };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
@@ -26,7 +24,6 @@ export function sanitize(raw) {
   if (!ACCENTS[o.accent]) o.accent = DEFAULTS.accent;
   o.textSize = Number(o.textSize);
   if (!TEXT_SIZES.some(([v]) => v === o.textSize)) o.textSize = DEFAULTS.textSize;
-  if (!START_TABS.some(([k]) => k === o.startTab)) o.startTab = DEFAULTS.startTab;
   if (!['full', 'light', 'off'].includes(o.pageTurn)) o.pageTurn = DEFAULTS.pageTurn;
   for (const k of ['compact', 'motion', 'reopenLast', 'pageSound']) o[k] = !!o[k];
   return o;
@@ -78,7 +75,6 @@ export function showOptions() {
         <label class="opt-row"><b>Compact layout</b><input type="checkbox" data-opt="compact" ${o.compact ? 'checked' : ''}></label>
         <label class="opt-row"><b>Animations</b><input type="checkbox" data-opt="motion" ${o.motion ? 'checked' : ''}></label>
         <label class="opt-row"><b>Reopen the last character</b><input type="checkbox" data-opt="reopenLast" ${o.reopenLast ? 'checked' : ''}></label>
-        <div class="opt-row"><b>Sheet tab to open first</b><select data-opt="startTab">${START_TABS.map(([k, l]) => `<option value="${k}" ${o.startTab === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       </div>
       <div class="row end"><button class="btn ghost" data-changelog>What’s new</button><button class="btn ghost" data-reset>Reset to defaults</button></div>`;
     };

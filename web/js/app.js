@@ -97,7 +97,7 @@ export async function openCharacter(id) {
   state.char = migrate(await api.character(id));
   state.dirty = false;
   try { localStorage.setItem('lastChar', id); } catch { /* storage may be unavailable */ }
-  go('sheet', { sheetTab: options().startTab });
+  go('sheet', { sheetTab: 'overview' });
 }
 
 export function createCharacter() {

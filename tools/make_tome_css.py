@@ -63,6 +63,19 @@ def burn(corner, seed, size=170):
         "<rect width='100%' height='100%' fill='url(#g)' filter='url(#b)'/></svg>")
 
 
+def brass(size=48):
+    """A strip of brushed, slightly tarnished brass for frames (used as a border image)."""
+    return uri(
+        f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}'><defs>"
+        "<linearGradient id='b' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#e6c978'/><stop offset='.28' stop-color='#b98d37'/>"
+        "<stop offset='.55' stop-color='#7d5c1c'/><stop offset='.8' stop-color='#c79f4a'/><stop offset='1' stop-color='#8a6a25'/></linearGradient>"
+        "<filter id='n' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'><feTurbulence type='fractalNoise' baseFrequency='.012 .9' numOctaves='2' seed='4' stitchTiles='stitch'/>"
+        "<feColorMatrix values='0 0 0 0 .13  0 0 0 0 .08  0 0 0 0 .02  1.1 0 0 0 -.4'/></filter></defs>"
+        f"<rect width='{size}' height='{size}' fill='url(#b)'/><rect width='{size}' height='{size}' filter='url(#n)' opacity='.8'/>"
+        f"<rect x='.5' y='.5' width='{size - 1}' height='{size - 1}' fill='none' stroke='#3b2808' stroke-opacity='.7'/>"
+        f"<rect x='2.5' y='2.5' width='{size - 5}' height='{size - 5}' fill='none' stroke='#f3dc98' stroke-opacity='.35'/></svg>")
+
+
 # Pages of one book: the same paper colour, but each sheet has its own crumples, light direction and burnt side.
 EDGE = 'rgba(255,238,196,.16) 0%, rgba(0,0,0,0) 40%, rgba(24,12,3,.5) 100%'
 PAPERS = [
@@ -130,6 +143,7 @@ html[data-theme="tome"] {
   --radius: 4px;
   --grain: @GRAIN@;
   --leather: @LEATHER@;
+  --brass: @BRASS@;
 }
 html[data-theme="tome"] body { background: var(--bg); }
 /* dark leather: a little lighter in the middle, darker toward the edges */
@@ -165,15 +179,15 @@ html[data-theme="tome"] .portrait-frame, html[data-theme="tome"] .pic-frame, htm
 
 /* satin bookmark ribbons as tabs: smooth, with soft lengthwise highlights and gold piping along both edges, and a V-cut tail */
 html[data-theme="tome"] .tabs { border-bottom: 2px solid #6a5535; padding-left: 8px; gap: 6px; }
-html[data-theme="tome"] .tab { position: relative; border-radius: 0; margin-top: 8px; padding: 19px 16px 9px; color: #f6ecce; text-shadow: 0 1px 1px rgba(30,16,4,.7);
+html[data-theme="tome"] .tab { position: relative; border-radius: 0; margin-top: 16px; padding: 19px 16px 9px; color: #f6ecce; text-shadow: 0 1px 1px rgba(30,16,4,.7);
   clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%);
   background-color: #7b6741;
   background-image: linear-gradient(90deg, transparent 0, transparent 5px, rgba(226,190,108,.85) 5px, rgba(226,190,108,.85) 6px, transparent 6px,
       transparent calc(100% - 6px), rgba(226,190,108,.85) calc(100% - 6px), rgba(226,190,108,.85) calc(100% - 5px), transparent calc(100% - 5px)),
     linear-gradient(90deg, rgba(0,0,0,.30) 0%, rgba(255,246,220,.18) 20%, rgba(0,0,0,.02) 42%, rgba(255,246,220,.14) 66%, rgba(0,0,0,.30) 100%); }
 html[data-theme="tome"] .tab:hover { background-color: #94804f; color: #fff6dc; }
-html[data-theme="tome"] .tab.active { margin-top: 0; padding-top: 27px; animation: tab-rise .22s ease-out; }
-@keyframes tab-rise { from { clip-path: polygon(0 8px, 50% 22px, 100% 8px, 100% 100%, 0 100%); } to { clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%); } }
+html[data-theme="tome"] .tab.active { margin-top: 0; padding-top: 35px; animation: tab-rise .42s cubic-bezier(.22, .9, .3, 1); }
+@keyframes tab-rise { from { clip-path: polygon(0 16px, 50% 30px, 100% 16px, 100% 100%, 0 100%); } to { clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%); } }
 html[data-theme="tome"] .tab.active, html[data-theme="tome"] .tab.active:hover { background-color: #8e3427; color: #fbefd2;
   background-image: linear-gradient(90deg, transparent 0, transparent 5px, rgba(240,200,110,.95) 5px, rgba(240,200,110,.95) 6px, transparent 6px,
       transparent calc(100% - 6px), rgba(240,200,110,.95) calc(100% - 6px), rgba(240,200,110,.95) calc(100% - 5px), transparent calc(100% - 5px)),
@@ -193,6 +207,11 @@ html[data-theme="tome"] :focus-visible { outline: 2px solid #cfa84f; outline-off
 html[data-theme="tome"] ::selection { background: #8a3326; color: #f6ead0; }
 html[data-theme="tome"] .opt-row { border-bottom: 1px dotted #5a4a2c; }
 html[data-theme="tome"] .swatch.on { border-color: #261a0b; }
+
+/* brass frames: bars and pictures sit in brushed brass, like fittings on an old book */
+html[data-theme="tome"] .hp-bar, html[data-theme="tome"] .res-bar { border: 3px solid #a9812f; border-image: var(--brass) 12 / 3px stretch; border-radius: 0; box-shadow: 0 1px 2px rgba(0,0,0,.55); }
+html[data-theme="tome"] .portrait-frame:not(.empty), html[data-theme="tome"] .pic-frame { border: 6px solid #a9812f; border-image: var(--brass) 14 / 6px stretch; border-radius: 0; outline: 1px solid #2c1f10; outline-offset: 0; box-shadow: 0 2px 6px rgba(0,0,0,.6); }
+html[data-theme="tome"] .char-icon.has { border: 4px solid #a9812f; border-image: var(--brass) 12 / 4px stretch; border-radius: 0; }
 
 /* tome scroll bars: leather track, brass thumb */
 html[data-theme="tome"] ::-webkit-scrollbar-track { background: #1a1209; border-left: 1px solid #0e0905; }
@@ -246,7 +265,7 @@ html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
 
 
 def main():
-    css = (CSS.replace('@GRAIN@', GRAIN).replace('@LEATHER@', LEATHER)
+    css = (CSS.replace('@GRAIN@', GRAIN).replace('@LEATHER@', LEATHER).replace('@BRASS@', brass())
            .replace('@PAPERS@', paper_rules()).replace('@SHEET@', sheet(0)))
     with open(OUT, 'w', encoding='utf-8', newline='\n') as f:
         f.write(css)
