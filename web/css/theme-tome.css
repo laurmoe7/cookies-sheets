@@ -21,7 +21,6 @@ html[data-theme="tome"] {
   --radius: 4px;
   --grain: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .12  0 0 0 0 .07  0 0 0 0 .02  .5 0 0 0 -.12'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   --leather: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cfilter id='m' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0045 .006' numOctaves='3' seed='8' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .09  0 0 0 0 .05  0 0 0 0 .02  1.5 0 0 0 -.42'/%3E%3C/filter%3E%3Cfilter id='w' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.02 .03' numOctaves='5' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .66  0 0 0 0 .40  0 0 0 0 .15  8 0 0 0 -5.6'/%3E%3C/filter%3E%3Cfilter id='k' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.008 .09' numOctaves='3' seed='12' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .06  0 0 0 0 .03  0 0 0 0 .01  3.2 0 0 0 -1.5'/%3E%3C/filter%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.42' numOctaves='2' seed='21' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .04  0 0 0 0 .02  0 0 0 0 .01  7 0 0 0 -3.6'/%3E%3C/filter%3E%3Cfilter id='f' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55  0 0 0 0 .38  0 0 0 0 .22  1.1 0 0 0 -.45'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23w)' opacity='.24'/%3E%3Crect width='100%25' height='100%25' filter='url(%23k)' opacity='.16'/%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='.16'/%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='.3'/%3E%3C/svg%3E");
-  --cloth: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='t' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9 .02' numOctaves='2' seed='14' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .10  0 0 0 0 .06  0 0 0 0 .02  .8 0 0 0 -.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23t)'/%3E%3C/svg%3E");
 }
 html[data-theme="tome"] body { background: var(--bg); }
 /* dark leather: a little lighter in the middle, darker toward the edges */
@@ -60,22 +59,19 @@ html[data-theme="tome"] .res-bar::after { background: repeating-linear-gradient(
 html[data-theme="tome"] .tbl th, html[data-theme="tome"] .tbl td { border-color: #6f5e3c; }
 html[data-theme="tome"] .portrait-frame, html[data-theme="tome"] .pic-frame, html[data-theme="tome"] .char-icon.has { border-color: #b08a3e; outline: 1px solid #3a2a18; outline-offset: 2px; }
 
-/* cloth bookmark ribbons as tabs: woven threads, darker selvedge bands, running stitches and a soft sheen, with a V-cut tail */
+/* satin bookmark ribbons as tabs: smooth, with soft lengthwise highlights and gold piping along both edges, and a V-cut tail */
 html[data-theme="tome"] .tabs { border-bottom: 2px solid #6a5535; padding-left: 8px; gap: 6px; }
 html[data-theme="tome"] .tab { position: relative; border-radius: 0; padding: 19px 16px 9px; color: #f6ecce; text-shadow: 0 1px 1px rgba(30,16,4,.7);
   clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%);
   background-color: #7b6741;
-  background-image: linear-gradient(90deg, #5a4826 0, #5a4826 3px, transparent 3px, transparent calc(100% - 3px), #5a4826 calc(100% - 3px)),
-    linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,244,210,.13) 50%, rgba(0,0,0,.22)),
-    var(--cloth); }
-html[data-theme="tome"] .tab::after { content: ""; position: absolute; top: 16px; bottom: 5px; left: 6px; right: 6px; pointer-events: none;
-  border-left: 1px dashed rgba(244,226,180,.55); border-right: 1px dashed rgba(244,226,180,.55); }
+  background-image: linear-gradient(90deg, transparent 0, transparent 5px, rgba(226,190,108,.85) 5px, rgba(226,190,108,.85) 6px, transparent 6px,
+      transparent calc(100% - 6px), rgba(226,190,108,.85) calc(100% - 6px), rgba(226,190,108,.85) calc(100% - 5px), transparent calc(100% - 5px)),
+    linear-gradient(90deg, rgba(0,0,0,.30) 0%, rgba(255,246,220,.18) 20%, rgba(0,0,0,.02) 42%, rgba(255,246,220,.14) 66%, rgba(0,0,0,.30) 100%); }
 html[data-theme="tome"] .tab:hover { background-color: #94804f; color: #fff6dc; }
 html[data-theme="tome"] .tab.active, html[data-theme="tome"] .tab.active:hover { background-color: #8e3427; color: #fbefd2;
-  background-image: linear-gradient(90deg, #5c1d14 0, #5c1d14 3px, transparent 3px, transparent calc(100% - 3px), #5c1d14 calc(100% - 3px)),
-    linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,200,170,.2) 50%, rgba(0,0,0,.28)),
-    var(--cloth); }
-html[data-theme="tome"] .tab.active::after { border-left-color: rgba(232,190,100,.8); border-right-color: rgba(232,190,100,.8); }
+  background-image: linear-gradient(90deg, transparent 0, transparent 5px, rgba(240,200,110,.95) 5px, rgba(240,200,110,.95) 6px, transparent 6px,
+      transparent calc(100% - 6px), rgba(240,200,110,.95) calc(100% - 6px), rgba(240,200,110,.95) calc(100% - 5px), transparent calc(100% - 5px)),
+    linear-gradient(90deg, rgba(0,0,0,.34) 0%, rgba(255,190,160,.26) 20%, rgba(0,0,0,.02) 42%, rgba(255,190,160,.2) 66%, rgba(0,0,0,.34) 100%); }
 
 /* tome scroll bars: leather track, brass thumb */
 html[data-theme="tome"] ::-webkit-scrollbar-track { background: #1a1209; border-left: 1px solid #0e0905; }

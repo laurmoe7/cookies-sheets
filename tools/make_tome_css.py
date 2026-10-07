@@ -63,11 +63,6 @@ def burn(corner, seed, size=170):
         "<rect width='100%' height='100%' fill='url(#g)' filter='url(#b)'/></svg>")
 
 
-CLOTH = uri(
-    "<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='t' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>"
-    "<feTurbulence type='fractalNoise' baseFrequency='.9 .02' numOctaves='2' seed='14' stitchTiles='stitch'/>"
-    "<feColorMatrix values='0 0 0 0 .10  0 0 0 0 .06  0 0 0 0 .02  .8 0 0 0 -.3'/></filter><rect width='100%' height='100%' filter='url(#t)'/></svg>")
-
 # Pages of one book: the same paper colour, but each sheet has its own crumples, light direction and burnt side.
 EDGE = 'rgba(255,238,196,.16) 0%, rgba(0,0,0,0) 40%, rgba(24,12,3,.5) 100%'
 PAPERS = [
@@ -135,7 +130,6 @@ html[data-theme="tome"] {
   --radius: 4px;
   --grain: @GRAIN@;
   --leather: @LEATHER@;
-  --cloth: @CLOTH@;
 }
 html[data-theme="tome"] body { background: var(--bg); }
 /* dark leather: a little lighter in the middle, darker toward the edges */
@@ -169,22 +163,19 @@ html[data-theme="tome"] .res-bar::after { background: repeating-linear-gradient(
 html[data-theme="tome"] .tbl th, html[data-theme="tome"] .tbl td { border-color: #6f5e3c; }
 html[data-theme="tome"] .portrait-frame, html[data-theme="tome"] .pic-frame, html[data-theme="tome"] .char-icon.has { border-color: #b08a3e; outline: 1px solid #3a2a18; outline-offset: 2px; }
 
-/* cloth bookmark ribbons as tabs: woven threads, darker selvedge bands, running stitches and a soft sheen, with a V-cut tail */
+/* satin bookmark ribbons as tabs: smooth, with soft lengthwise highlights and gold piping along both edges, and a V-cut tail */
 html[data-theme="tome"] .tabs { border-bottom: 2px solid #6a5535; padding-left: 8px; gap: 6px; }
 html[data-theme="tome"] .tab { position: relative; border-radius: 0; padding: 19px 16px 9px; color: #f6ecce; text-shadow: 0 1px 1px rgba(30,16,4,.7);
   clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%);
   background-color: #7b6741;
-  background-image: linear-gradient(90deg, #5a4826 0, #5a4826 3px, transparent 3px, transparent calc(100% - 3px), #5a4826 calc(100% - 3px)),
-    linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,244,210,.13) 50%, rgba(0,0,0,.22)),
-    var(--cloth); }
-html[data-theme="tome"] .tab::after { content: ""; position: absolute; top: 16px; bottom: 5px; left: 6px; right: 6px; pointer-events: none;
-  border-left: 1px dashed rgba(244,226,180,.55); border-right: 1px dashed rgba(244,226,180,.55); }
+  background-image: linear-gradient(90deg, transparent 0, transparent 5px, rgba(226,190,108,.85) 5px, rgba(226,190,108,.85) 6px, transparent 6px,
+      transparent calc(100% - 6px), rgba(226,190,108,.85) calc(100% - 6px), rgba(226,190,108,.85) calc(100% - 5px), transparent calc(100% - 5px)),
+    linear-gradient(90deg, rgba(0,0,0,.30) 0%, rgba(255,246,220,.18) 20%, rgba(0,0,0,.02) 42%, rgba(255,246,220,.14) 66%, rgba(0,0,0,.30) 100%); }
 html[data-theme="tome"] .tab:hover { background-color: #94804f; color: #fff6dc; }
 html[data-theme="tome"] .tab.active, html[data-theme="tome"] .tab.active:hover { background-color: #8e3427; color: #fbefd2;
-  background-image: linear-gradient(90deg, #5c1d14 0, #5c1d14 3px, transparent 3px, transparent calc(100% - 3px), #5c1d14 calc(100% - 3px)),
-    linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,200,170,.2) 50%, rgba(0,0,0,.28)),
-    var(--cloth); }
-html[data-theme="tome"] .tab.active::after { border-left-color: rgba(232,190,100,.8); border-right-color: rgba(232,190,100,.8); }
+  background-image: linear-gradient(90deg, transparent 0, transparent 5px, rgba(240,200,110,.95) 5px, rgba(240,200,110,.95) 6px, transparent 6px,
+      transparent calc(100% - 6px), rgba(240,200,110,.95) calc(100% - 6px), rgba(240,200,110,.95) calc(100% - 5px), transparent calc(100% - 5px)),
+    linear-gradient(90deg, rgba(0,0,0,.34) 0%, rgba(255,190,160,.26) 20%, rgba(0,0,0,.02) 42%, rgba(255,190,160,.2) 66%, rgba(0,0,0,.34) 100%); }
 
 /* tome scroll bars: leather track, brass thumb */
 html[data-theme="tome"] ::-webkit-scrollbar-track { background: #1a1209; border-left: 1px solid #0e0905; }
@@ -238,7 +229,7 @@ html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
 
 
 def main():
-    css = (CSS.replace('@GRAIN@', GRAIN).replace('@LEATHER@', LEATHER).replace('@CLOTH@', CLOTH)
+    css = (CSS.replace('@GRAIN@', GRAIN).replace('@LEATHER@', LEATHER)
            .replace('@PAPERS@', paper_rules()).replace('@SHEET@', sheet(0)))
     with open(OUT, 'w', encoding='utf-8', newline='\n') as f:
         f.write(css)

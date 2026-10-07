@@ -117,18 +117,37 @@ function pruneBelow(live, clone, limit) {
 }
 
 const PAGE_SOUNDS = ['sounds/page-turn-1.mp3', 'sounds/page-turn-2.mp3', 'sounds/page-turn-3.mp3'];
-let soundPool = null, lastSound = -1;
-/** A short paper rustle, a different one from last time. Quietly does nothing if sound is off or the browser refuses. */
-function playPageSound() {
+let audioCtx = null, soundBuffers = null, lastSound = -1, lastRate = 1;
+/** Decode the sounds once (Web Audio lets each play be pitched a little differently). Resolves null if audio is unavailable. */
+function loadSounds() {
+  if (soundBuffers) return soundBuffers;
+  try {
+    audioCtx ||= new (window.AudioContext || window.webkitAudioContext)();
+    soundBuffers = Promise.all(PAGE_SOUNDS.map(src => fetch(src).then(r => r.arrayBuffer()).then(b => audioCtx.decodeAudioData(b))))
+      .catch(() => null);
+  } catch { soundBuffers = Promise.resolve(null); }
+  return soundBuffers;
+}
+/** A short paper rustle: a different recording from last time, pitched up or down a little (and a touch louder or softer) each play. */
+async function playPageSound() {
   if (!current.pageSound) return;
   try {
-    soundPool ||= PAGE_SOUNDS.map(src => { const a = new Audio(src); a.preload = 'auto'; a.volume = 0.7; return a; });
+    const bufs = await loadSounds();
+    if (!bufs || !audioCtx) return;
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
     let i;
-    do { i = Math.floor(Math.random() * soundPool.length); } while (i === lastSound && soundPool.length > 1);
+    do { i = Math.floor(Math.random() * bufs.length); } while (i === lastSound && bufs.length > 1);
     lastSound = i;
-    const a = soundPool[i];
-    a.currentTime = 0;
-    a.play().catch(() => {});
+    let rate;
+    do { rate = 0.88 + Math.random() * 0.26; } while (Math.abs(rate - lastRate) < 0.05);
+    lastRate = rate;
+    const src = audioCtx.createBufferSource();
+    src.buffer = bufs[i];
+    src.playbackRate.value = rate;
+    const gain = audioCtx.createGain();
+    gain.gain.value = 0.55 + Math.random() * 0.2;
+    src.connect(gain).connect(audioCtx.destination);
+    src.start();
   } catch { /* no audio available */ }
 }
 
