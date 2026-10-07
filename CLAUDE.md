@@ -45,6 +45,7 @@ Windows desktop app for Pathfinder 1st Edition characters: live character sheet,
 - **Changelog:** add an entry at the top of `web/js/changelog.js` when a batch of changes ships; it feeds the sidebar's "What's new" window.
 - **Stat-block links:** `termlinks.js` (pure, tested) turns ability names in stat-block text into compendium links. Add new names to its lists.
 - **Archetype targets:** `findTargets()` in `features.js` falls back to class-specific `ALIASES`, and `EXTRA_FEATURES` adds features the class table omits (weapon and armor proficiency, spellbook, patron spells). About 3% of targets still show as plain text (swashbuckler and gunslinger deed names, paladin auras).
+- **Sheet tab bar:** `render()` keeps the sheet's tab bar in the page and only replaces `#tab-body` (tracked by `main.dataset.view`), so tabs never flicker. Don't add transitions or size changes to `.tab`.
 - **Re-drawing:** `changed({ rerender: true })` keeps the scroll position.
 
 ## Commands

@@ -161,9 +161,9 @@ function topPanels(comp, s, p) {
     <section class="card offense"><h3>Offense</h3>
       <div class="stat-row">${stat('Init', sign(s.init))}${stat('BAB', sign(s.bab))}${stat('CMB', sign(s.cmb))}${stat('Speed', `${esc(String(s.speed))}`)}</div>
       ${s.attacks.length ? `<table class="tbl"><thead><tr><th>Attack</th><th>Bonus</th><th>Damage</th></tr></thead><tbody>${s.attacks.map(a => `<tr>
-        <td>${a.count > 1 ? a.count + ' ' : ''}${esc(a.name)}${a.secondary ? ' <span class="dim small">(secondary)</span>' : ''}</td><td class="big accent">${sign(a.bonus)}</td>
-        <td>${esc(a.dice ? a.dice + (a.damage.slice(a.dice.length) || '') + (a.extra ? ' ' + a.extra : '') : '—')}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">No natural attacks.</p>'}
-      ${s.specialAttacks ? `<p><b>Special attacks</b> ${esc(s.specialAttacks)}</p>` : ''}
+        <td>${a.count > 1 ? a.count + ' ' : ''}${linkTerms(a.name)}${a.secondary ? ' <span class="dim small">(secondary)</span>' : ''}</td><td class="big accent">${sign(a.bonus)}</td>
+        <td>${linkTerms(a.dice ? a.dice + (a.damage.slice(a.dice.length) || '') + (a.extra ? ' ' + a.extra : '') : '—')}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">No natural attacks.</p>'}
+      ${s.specialAttacks ? `<p><b>Special attacks</b> ${linkTerms(s.specialAttacks)}</p>` : ''}
     </section>
     <section class="card span2"><h3>At a glance</h3>
       <div class="chips">${glance(s).map(x => `<span class="chip on">${esc(x)}</span>`).join('')}</div>

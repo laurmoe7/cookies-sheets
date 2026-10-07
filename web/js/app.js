@@ -31,10 +31,11 @@ export function render({ keepScroll = false } = {}) {
   const main = $('#main');
   const top = main.scrollTop;
   document.dispatchEvent(new Event('view-leave'));
-  main.innerHTML = '';
+  if (!(state.view === 'sheet' && state.char && main.dataset.view === 'sheet')) main.innerHTML = ''; // the sheet keeps its tab bar
   main.scrollTop = 0;
   if (state.char) recalc();
   VIEWS[state.view](main);
+  main.dataset.view = state.view;
   refreshCalc();
   updateHeader();
   if (keepScroll) main.scrollTop = top; // edits re-draw the page; don't jump back to the top

@@ -58,15 +58,22 @@ const refId = (id, label) => `<a href="#" class="ref" data-entry="${esc(label)}"
 export function renderSheet(main) {
   const c = state.char;
   const d = state.derived;
-  main.innerHTML = `<div class="page">
-    <div class="tabs" role="tablist">${TABS.map(([k, l]) => `<button class="tab ${state.sheetTab === k ? 'active' : ''}" data-tab="${k}">${icon(k)}${l}</button>`).join('')}
-      <div class="grow"></div>
-      ${d.level === 0 ? '<button class="btn primary" data-goto-levelup>Choose 1st level class →</button>' : ''}
-    </div>
-    <div id="tab-body"></div></div>`;
-  $$('.tab', main).forEach(b => (b.onclick = () => { state.sheetTab = b.dataset.tab; render(); }));
+  // The tab bar stays in the page while you edit or switch tabs (only the body is redrawn), so it never flickers.
+  if (!$('.tabs', main) || main.dataset.view !== 'sheet') {
+    main.innerHTML = `<div class="page">
+      <div class="tabs" role="tablist">${TABS.map(([k, l]) => `<button class="tab" data-tab="${k}">${icon(k)}${l}</button>`).join('')}
+        <div class="grow"></div><span id="tabs-extra"></span>
+      </div>
+      <div id="tab-body"></div></div>`;
+    $$('.tab', main).forEach(b => (b.onclick = () => { if (state.sheetTab !== b.dataset.tab) { state.sheetTab = b.dataset.tab; render(); } }));
+  }
+  $$('.tab', main).forEach(b => b.classList.toggle('active', b.dataset.tab === state.sheetTab));
+  $('#tabs-extra', main).innerHTML = d.level === 0 ? '<button class="btn primary" data-goto-levelup>Choose 1st level class →</button>' : '';
   const lu = $('[data-goto-levelup]', main);
   if (lu) lu.onclick = () => go('levelup');
+  const fresh = document.createElement('div');
+  fresh.id = 'tab-body';
+  $('#tab-body', main).replaceWith(fresh);
   const body = $('#tab-body', main);
   ({ overview, skills, feats, spells, gear, companions: renderCompanions, buffs, bio })[state.sheetTab](body, c, d);
 }
