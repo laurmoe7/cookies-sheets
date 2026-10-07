@@ -1,4 +1,4 @@
-# Builds a standalone Windows app into dist\Pathfinder Sheet\ (run "Pathfinder Sheet.exe").
+# Builds a standalone Windows app into dist\Cookie's Sheets\ (run "Cookie's Sheets.exe").
 # Usage:  powershell -ExecutionPolicy Bypass -File build_exe.ps1
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
@@ -17,13 +17,13 @@ robocopy web $stage /E /XD dev /NFL /NDL /NJH /NJS /NP | Out-Null
 if ($LASTEXITCODE -ge 8) { throw 'Could not stage the web folder' }
 
 python -m PyInstaller --noconfirm --clean --windowed --onedir `
-    --name 'Pathfinder Sheet' `
+    --name "Cookie's Sheets" `
     --icon 'web\icon.ico' `
     --add-data "$stage;web" `
     --add-data 'data;data' `
     app.py
 
-Copy-Item 'tools\dist_readme.txt' 'dist\Pathfinder Sheet\READ ME FIRST.txt'
+Copy-Item 'tools\dist_readme.txt' "dist\Cookie's Sheets\READ ME FIRST.txt"
 
 Write-Host ''
-Write-Host 'Done. Run: dist\Pathfinder Sheet\Pathfinder Sheet.exe'
+Write-Host "Done. Run: dist\Cookie's Sheets\Cookie's Sheets.exe"

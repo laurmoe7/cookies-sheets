@@ -1,4 +1,4 @@
-# Creates "Run Pathfinder Sheet.lnk" (with the app icon) in the project folder.
+# Creates "Run Cookie's Sheets.lnk" (with the app icon) in the project folder.
 # It runs the app from source with pythonw, so no console window appears.
 # Usage:  powershell -ExecutionPolicy Bypass -File tools\make_shortcut.ps1 [-Desktop]
 param([switch]$Desktop)
@@ -10,8 +10,8 @@ $pyw = Get-Command pythonw.exe -All -ErrorAction SilentlyContinue |
     Where-Object { $_.Source -notmatch '\\WindowsApps\\' } | Select-Object -First 1
 if (-not $pyw) { $pyw = Get-Command pythonw.exe -ErrorAction Stop }
 
-$targets = @(Join-Path $root 'Run Pathfinder Sheet.lnk')
-if ($Desktop) { $targets += Join-Path ([Environment]::GetFolderPath('Desktop')) 'Pathfinder Sheet.lnk' }
+$targets = @(Join-Path $root "Run Cookie's Sheets.lnk")
+if ($Desktop) { $targets += Join-Path ([Environment]::GetFolderPath('Desktop')) "Cookie's Sheets.lnk" }
 
 $shell = New-Object -ComObject WScript.Shell
 foreach ($path in $targets) {

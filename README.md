@@ -1,11 +1,11 @@
-# Pathfinder Sheet
+# Cookie's Sheets
 
 A standalone Windows desktop app for **Pathfinder 1st Edition** characters. It combines a live character sheet, a level-up wizard that does the math, a searchable OGL compendium, and quick-reference rules.
 
 ## Running it
 
-- **Packaged app:** `dist\Pathfinder Sheet\Pathfinder Sheet.exe`. Copy the whole `Pathfinder Sheet` folder anywhere you like and pin the .exe to your taskbar.
-- **From source:** double-click the **Run Pathfinder Sheet** shortcut (needs Python 3.10+ and `pip install -r requirements.txt`). `Run Pathfinder Sheet.bat` does the same thing.
+- **Packaged app:** `dist\Cookie's Sheets\Cookie's Sheets.exe`. Copy the whole `Cookie's Sheets` folder anywhere you like and pin the .exe to your taskbar.
+- **From source:** double-click the **Run Cookie's Sheets** shortcut (needs Python 3.10+ and `pip install -r requirements.txt`). `Run Cookie's Sheets.bat` does the same thing.
   - If you move the folder, recreate the shortcut with `powershell -ExecutionPolicy Bypass -File tools\make_shortcut.ps1`. Add `-Desktop` to also put one on your desktop.
   - The icon comes from `tools/make_icon.py`.
 

@@ -1,11 +1,11 @@
-Pathfinder Sheet - a Pathfinder 1st Edition character sheet for Windows
+Cookie's Sheets - a Pathfinder 1st Edition character sheet for Windows
 ======================================================================
 
 HOW TO RUN
 1. Unzip this folder anywhere (for example, your Documents folder).
    Keep everything together: the program needs the "_internal" folder next to it.
-2. Double-click "Pathfinder Sheet.exe".
-3. Optional: right-click "Pathfinder Sheet.exe" and choose "Pin to taskbar"
+2. Double-click "Cookie's Sheets.exe".
+3. Optional: right-click "Cookie's Sheets.exe" and choose "Pin to taskbar"
    or "Send to > Desktop (create shortcut)".
 
 "WINDOWS PROTECTED YOUR PC"?

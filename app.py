@@ -19,7 +19,8 @@ import uuid
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-APP_NAME = 'Pathfinder Sheet'
+APP_NAME = "Cookie's Sheets"
+OLD_APP_NAME = 'Pathfinder Sheet'  # the folder name before the rename
 BASE = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
 WEB = os.path.join(BASE, 'web')
 DATA = os.path.join(BASE, 'data')
@@ -379,7 +380,15 @@ def main():
         except Exception:
             pass
     # Keep browser storage (theme, last opened character) between launches.
-    storage = os.path.join(os.environ.get('LOCALAPPDATA') or os.path.expanduser('~'), APP_NAME, 'webview')
+    base = os.environ.get('LOCALAPPDATA') or os.path.expanduser('~')
+    storage = os.path.join(base, APP_NAME, 'webview')
+    old_storage = os.path.join(base, OLD_APP_NAME, 'webview')
+    if os.path.isdir(old_storage) and not os.path.exists(storage):  # keep the saved theme and last character through the rename
+        try:
+            os.makedirs(os.path.dirname(storage), exist_ok=True)
+            os.rename(old_storage, storage)
+        except OSError:
+            pass
     webview.create_window(APP_NAME, url, width=1400, height=900, min_size=(1000, 650))
     webview.start(icon=os.path.join(WEB, 'icon.ico'), private_mode=False, storage_path=storage)
     srv.shutdown()

@@ -1,4 +1,4 @@
-"""Zips dist/Pathfinder Sheet into "Pathfinder Sheet.zip" for sharing, leaving out developer tools.
+"""Zips dist/Cookie's Sheets into "Cookie's Sheets.zip" for sharing, leaving out developer tools.
 
 Usage: python tools/make_zip.py   (run build_exe.ps1 first)
 Refuses to zip if a developer tool (web/dev) or test files ended up in the build.
@@ -8,8 +8,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / 'dist' / 'Pathfinder Sheet'
-OUT = ROOT / 'Pathfinder Sheet.zip'
+SRC = ROOT / 'dist' / "Cookie's Sheets"
+OUT = ROOT / "Cookie's Sheets.zip"
 DEV_MARKERS = ('/web/dev/', '/tests/', '/tools/')
 
 
@@ -24,7 +24,7 @@ def main():
     OUT.unlink(missing_ok=True)
     with zipfile.ZipFile(OUT, 'w', zipfile.ZIP_DEFLATED) as z:
         for p in files:
-            z.write(p, 'Pathfinder Sheet/' + rel(p))
+            z.write(p, "Cookie's Sheets/" + rel(p))
     print(f'Wrote {OUT.name}: {len(files)} files, {OUT.stat().st_size / 1e6:.1f} MB, no developer tools')
 
 

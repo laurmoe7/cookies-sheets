@@ -1,4 +1,4 @@
-# Pathfinder Sheet
+# Cookie's Sheets
 
 Windows desktop app for Pathfinder 1st Edition characters: live character sheet, level-up wizard, OGL compendium, quick rules, and an importer for charactersheet.co.uk. See README.md for the user-facing feature list.
 
@@ -58,13 +58,13 @@ All of these run from the project root:
 
 | Task | Command |
 | --- | --- |
-| Run from source (desktop window) | `python app.py` or the **Run Pathfinder Sheet** shortcut |
+| Run from source (desktop window) | `python app.py` or the **Run Cookie's Sheets** shortcut |
 | Run in a browser for dev/testing | `python app.py --browser` then open http://127.0.0.1:8765 |
 | **All tests** | `npm test` (JS rules/importer tests + Python server tests) |
 | JS tests only / Python only | `npm run test:js` / `npm run test:py` |
 | Syntax-check all JS | `npm run check` |
 | Rebuild compendium data | `python tools/build_data.py` |
-| Build the .exe | `powershell -ExecutionPolicy Bypass -File build_exe.ps1` (output in `dist\Pathfinder Sheet\`) |
+| Build the .exe | `powershell -ExecutionPolicy Bypass -File build_exe.ps1` (output in `dist\Cookie's Sheets\`) |
 | Regenerate icon / shortcut | `python tools/make_icon.py` / `powershell -ExecutionPolicy Bypass -File tools\make_shortcut.ps1` |
 
 Node.js is installed at `C:\Program Files\nodejs`. A shell started before it was installed may need `$env:Path = "C:\Program Files\nodejs;$env:Path"`.
@@ -87,7 +87,7 @@ Node.js is installed at `C:\Program Files\nodejs`. A shell started before it was
 - **Use `127.0.0.1`, not `localhost`.** On this machine `localhost` resolves to IPv6 first, and every request is about 300 ms slower.
 - **The .exe bundles a copy of `web/` and `data/`.** Source edits don't reach `dist/` until you rebuild. Day to day, run from source.
 - **Never rebuild the .exe or refresh the zip (`python tools/make_zip.py`) unless the user asks.** Finish changes in source and commit only.
-- **Desktop window storage:** it keeps localStorage in `%LOCALAPPDATA%\Pathfinder Sheet\webview` (`private_mode=False`). Without that, the theme and last-open character are forgotten on every launch.
+- **Desktop window storage:** it keeps localStorage in `%LOCALAPPDATA%\Cookie's Sheets\webview` (`private_mode=False`). Without that, the theme and last-open character are forgotten on every launch.
 - **Stale async responses:** pickers and search guard against them with a sequence counter (`seq`). Copy that pattern for any new async search UI.
 - **Class progression comes from parsed PSRD tables in `data/classes.json`.**
   - BAB and saves are read by column position, not header name (Swashbuckler's headers differ).
