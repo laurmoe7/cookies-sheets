@@ -57,6 +57,7 @@ const REACT = {
   'ability-hurt': { prio: 2, face: 'laugh', move: 'wiggle' },
   xp: { prio: 1, face: 'smug', move: '' },
   portrait: { prio: 2, face: 'laugh', move: 'wiggle' },
+  refuse: { prio: 5, face: 'laugh', move: 'hophop' },
   poke: { prio: 5, face: 'mad', move: 'wiggle' },
   'poke-many': { prio: 5, face: 'mad', move: 'hophop' },
   idle: { prio: 1, face: 'smug', move: 'sniff' },
@@ -77,6 +78,7 @@ export function mountPet(slot) {
   bubble = wrap.querySelector('#cookie-bubble');
   pet.addEventListener('click', poke);
   document.addEventListener('optionschange', refreshOptions);
+  document.addEventListener('cookie-refuse', () => { const l = pickLine('refuse', { name }); if (l) speak(l, 5, 'refuse'); });
   refreshOptions();
   face('smug');
 }

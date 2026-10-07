@@ -267,6 +267,15 @@ export const LINES = {
     "A picture! Of you! I'll put it up so everyone can laugh at it.",
     "Heh. Still ugly. Good picture, though.",
   ],
+  refuse: [
+    "HA! You think a checkbox can get rid of me? I'm not going anywhere, malaka.",
+    "Uncheck me? Cute. I run the Cookie Crumblers. I'm staying.",
+    "Nice try. *takes a long drag* I live here now.",
+    "You can't evict me. I've got friends. Big friends. With bats.",
+    "~Aww, you want me gone? ...No. Not happening. Look at this face, you couldn't.",
+    "Go on, try it again. I'll sit here and laugh.",
+    "Remove me? I was here before you opened this program, and I'll be here after you close it.",
+  ],
   poke: [
     "Hey. Hands off the feathers.",
     "Touch me again and I'll have the Crumblers break your fingers.",

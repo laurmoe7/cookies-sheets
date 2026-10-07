@@ -79,5 +79,5 @@ test('bleeping keeps the first letter only', () => {
 
 test('Cookie options are sanitized', () => {
   const o = sanitize({ cookieTalk: 'screaming', cookieSwear: 'x', cookie: 0 });
-  assert.deepEqual([o.cookieTalk, o.cookieSwear, o.cookie, o.cookieSound], ['normal', 'full', false, false]);
+  assert.deepEqual([o.cookieTalk, o.cookieSwear, o.cookie, o.cookieSound], ['normal', 'full', true, false], 'he cannot be switched off');
 });

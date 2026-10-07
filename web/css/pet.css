@@ -227,9 +227,9 @@
 @keyframes wiggle{ 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-7deg); } 40% { transform: rotate(6deg); } 60% { transform: rotate(-5deg); } 80% { transform: rotate(3deg); } }
 
 /* ---- how Cookie sits in this app (everything above is the Pet Shopper bird) ---- */
-#cookie-slot { position: relative; display: flex; justify-content: center; align-items: flex-end; min-height: 108px; margin: 6px 0 2px; }
+#cookie-slot { --cs: 1.25; position: relative; height: calc(140px * var(--cs)); margin: 4px 0 8px; }
 #cookie-slot[hidden] { display: none; }
-#cookie { --pet-size: .8; margin: 0; cursor: pointer; user-select: none; -webkit-user-select: none; }
+#cookie { --pet-size: var(--cs); position: absolute; left: 2px; top: 0; margin: 0; z-index: 5; cursor: pointer; user-select: none; -webkit-user-select: none; }
 #cookie .cig-body { fill: #f4efe4; stroke: var(--pet-ink); stroke-width: 1.1; }
 #cookie .cig-filter { fill: #d49b52; stroke: var(--pet-ink); stroke-width: 1.1; }
 #cookie .cig-ember { fill: #ff6a1f; animation: cig-ember 1.4s ease-in-out infinite alternate; }
@@ -239,16 +239,16 @@
 @keyframes cig-smoke { 0% { stroke-dashoffset: 34; opacity: 0; } 15% { opacity: .9; } 70% { stroke-dashoffset: 0; opacity: .5; } 100% { stroke-dashoffset: 0; opacity: 0; transform: translate(3px, -8px); } }
 html[data-motion="off"] #cookie *, html[data-motion="off"] #cookie { animation: none !important; transition: none !important; }
 
-.cookie-bubble { position: fixed; left: 184px; bottom: 34px; z-index: 40; max-width: min(340px, 42vw); padding: 10px 14px; border-radius: 14px 14px 14px 4px;
+.cookie-bubble { position: absolute; left: calc(2px + 98px * var(--cs)); top: calc(92px * var(--cs)); transform: translateY(calc(-100% + 17px)); z-index: 55; width: max-content; max-width: min(320px, 40vw); padding: 10px 14px; border-radius: 14px 14px 14px 4px;
   background: var(--panel); color: var(--ink); border: 2px solid var(--line, #3a3d46); box-shadow: 0 6px 22px rgba(0, 0, 0, .45); font-size: 14px; line-height: 1.35;
-  animation: cookie-pop .22s cubic-bezier(.2, 1.4, .4, 1); pointer-events: none; }
+  animation: cookie-pop .22s cubic-bezier(.2, 1.4, .4, 1); pointer-events: none; transform-origin: left bottom; }
 .cookie-bubble[hidden] { display: none; }
 .cookie-bubble.action { font-style: italic; opacity: .92; }
 .cookie-bubble::before { content: ""; position: absolute; left: -9px; bottom: 10px; border: 7px solid transparent; border-right-color: var(--line, #3a3d46); border-left: 0; }
-@keyframes cookie-pop { from { transform: translateX(-10px) scale(.85); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes cookie-pop { from { transform: translateY(calc(-100% + 17px)) scale(.6); opacity: 0; } to { transform: translateY(calc(-100% + 17px)); opacity: 1; } }
 html[data-theme="tome"] .cookie-bubble { background: #bba97f; color: #261a0b; border-color: #8a6a25; font-family: var(--serif, Georgia, serif); }
 html[data-theme="tome"] .cookie-bubble::before { border-right-color: #8a6a25; }
-@media (max-height: 640px) { #cookie-slot { display: none; } .cookie-bubble { display: none; } }
+@media (max-height: 520px) { #cookie-slot { display: none; } }
 #cookie .brows path { fill: none; stroke: var(--pet-ink); stroke-width: 3.4; stroke-linecap: round; transition: transform .2s; }
 #cookie[data-eyes="sparkle"] .brows, #cookie[data-eyes="happy"] .brows, #cookie[data-eyes="closed"] .brows { opacity: 0; }
 #cookie[data-eyes="sparkle"] .brows { opacity: 0; }

@@ -27,7 +27,8 @@ export function sanitize(raw) {
   if (!['full', 'light', 'off'].includes(o.pageTurn)) o.pageTurn = DEFAULTS.pageTurn;
   if (!['quiet', 'normal', 'chatty'].includes(o.cookieTalk)) o.cookieTalk = DEFAULTS.cookieTalk;
   if (!['full', 'bleep'].includes(o.cookieSwear)) o.cookieSwear = DEFAULTS.cookieSwear;
-  for (const k of ['compact', 'motion', 'reopenLast', 'pageSound', 'cookie', 'cookieSound']) o[k] = !!o[k];
+  for (const k of ['compact', 'motion', 'reopenLast', 'pageSound', 'cookieSound']) o[k] = !!o[k];
+  o.cookie = true; // he is not going anywhere (unchecking the box only makes him laugh)
   return o;
 }
 
@@ -79,22 +80,24 @@ export function showOptions() {
         <label class="opt-row"><b>Animations</b><input type="checkbox" data-opt="motion" ${o.motion ? 'checked' : ''}></label>
         <label class="opt-row"><b>Reopen the last character</b><input type="checkbox" data-opt="reopenLast" ${o.reopenLast ? 'checked' : ''}></label>
         <label class="opt-row"><b>Cookie, the rude bird</b><input type="checkbox" data-opt="cookie" ${o.cookie ? 'checked' : ''}></label>
-        ${o.cookie ? `<div class="opt-row"><b>How much he talks</b><div class="seg">${[['quiet', 'Quiet'], ['normal', 'Normal'], ['chatty', 'Chatty']].map(([k, l]) => `<button class="seg-btn ${o.cookieTalk === k ? 'on' : ''}" data-opt="cookieTalk" data-v="${k}">${l}</button>`).join('')}</div></div>
+        ${`<div class="opt-row"><b>How much he talks</b><div class="seg">${[['quiet', 'Quiet'], ['normal', 'Normal'], ['chatty', 'Chatty']].map(([k, l]) => `<button class="seg-btn ${o.cookieTalk === k ? 'on' : ''}" data-opt="cookieTalk" data-v="${k}">${l}</button>`).join('')}</div></div>
         <div class="opt-row"><b>Swearing</b><div class="seg">${[['full', 'Full'], ['bleep', 'Bleeped']].map(([k, l]) => `<button class="seg-btn ${o.cookieSwear === k ? 'on' : ''}" data-opt="cookieSwear" data-v="${k}">${l}</button>`).join('')}</div></div>
-        <label class="opt-row"><b>Cookie’s squawks</b><input type="checkbox" data-opt="cookieSound" ${o.cookieSound ? 'checked' : ''}></label>` : ''}
+        <label class="opt-row"><b>Cookie’s squawks</b><input type="checkbox" data-opt="cookieSound" ${o.cookieSound ? 'checked' : ''}></label>`}
       </div>
-      <div class="row end"><button class="btn ghost" data-changelog>What’s new</button><button class="btn ghost" data-reset>Reset to defaults</button></div>`;
+      <div class="row end"><button class="btn ghost" data-changelog>What’s new</button><button class="btn ghost" data-ogl>Game content &amp; license</button><button class="btn ghost" data-reset>Reset to defaults</button></div>`;
     };
     const set = (k, v) => { current = sanitize({ ...current, [k]: v }); save(); applyOptions(); draw(); };
     body.onclick = e => {
       const b = e.target.closest('button[data-opt]');
       if (b) return set(b.dataset.opt, b.dataset.opt === 'textSize' ? +b.dataset.v : b.dataset.v);
       if (e.target.closest('[data-changelog]')) return showChangelog();
+      if (e.target.closest('[data-ogl]')) return showLicense();
       if (e.target.closest('[data-reset]')) { current = sanitize(null); save(); applyOptions(); draw(); }
     };
     body.onchange = e => {
       const t = e.target.closest('[data-opt]');
       if (!t || t.tagName === 'BUTTON') return;
+      if (t.dataset.opt === 'cookie') { if (!t.checked) document.dispatchEvent(new Event('cookie-refuse')); draw(); return; }
       set(t.dataset.opt, t.type === 'checkbox' ? t.checked : t.value);
     };
     draw();
@@ -102,6 +105,12 @@ export function showOptions() {
 }
 
 /** The "What’s new" window. */
+/** The Open Game License text that covers the game content. */
+export async function showLicense() {
+  const text = await (await fetch('ogl.html')).text();
+  return modal('Game content: Open Game License v1.0a', body => { body.innerHTML = `<div class="entry-body">${text}</div>`; }, { wide: true });
+}
+
 export function showChangelog() {
   return modal('What’s new', body => {
     body.innerHTML = CHANGELOG.map(e => `<h3>${esc(e.version)}${e.date ? ` <span class="muted small">${esc(e.date)}</span>` : ''}</h3>

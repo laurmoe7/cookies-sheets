@@ -166,11 +166,6 @@ async function init() {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); go('compendium'); setTimeout(() => $('#comp-q')?.focus(), 0); }
     if (e.key === 'Escape' && !$('.modal-back')) closeDrawer();
   });
-  $('#ogl-link').onclick = async e => {
-    e.preventDefault();
-    const text = await (await fetch('ogl.html')).text();
-    modal('Open Game License', body => { body.innerHTML = `<div class="entry-body">${text}</div>`; }, { wide: true });
-  };
   $('#options-btn').onclick = () => showOptions();
   $('#changelog-btn').onclick = () => showChangelog();
   $('#char-icon').onclick = () => editIcon();
