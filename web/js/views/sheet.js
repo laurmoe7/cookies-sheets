@@ -9,6 +9,7 @@ import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, tex
 import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
 import { summonSpell } from '../summons.js';
+import { renderSummons, chooseSummon } from './summons.js';
 import { renderCompanions } from './companions.js';
 
 const TABS = [
@@ -470,12 +471,13 @@ function spells(body, c, d) {
           ${list.length ? `<table class="tbl spell-tbl"><tbody>${list.map(s => `<tr>
             <td class="nowrap">${s.id ? refId(s.id, s.name)
               : tf(`spellbooks.${cls}.spells.${s.i}.name`, { placeholder: 'Spell name', read: { title: s.name, titlePath: `spellbooks.${cls}.spells.${s.i}.name`, cat: 'Custom spell', path: `spellbooks.${cls}.spells.${s.i}.notes` } })}</td>
-            <td class="muted small">${esc(s.school || '')}${summonSpell(s.name) ? ` <button class="btn small" data-summon="${esc(s.name)}" title="See which creatures this spell can summon">Summon…</button>` : ''}</td>
+            <td class="muted small">${esc(s.school || '')}</td>
             <td class="muted small summary">${s.id ? esc(s.summary || '') : tf(`spellbooks.${cls}.spells.${s.i}.notes`, { multiline: true, placeholder: 'Add a description', read: { title: s.name, titlePath: `spellbooks.${cls}.spells.${s.i}.name`, cat: 'Custom spell' } })}</td>
             ${prepared && !(l === 0 && sc.kind !== 'arcanist' && false) ? `<td class="nowrap small">Prep ${inp(`spellbooks.${cls}.spells.${s.i}.prepared`, { type: 'num', cls: 'w2', rerender: true })}</td>` : ''}
             ${sc.kind === 'prepared' && l > 0 ? `<td class="nowrap"><button class="btn small" data-cast="${s.i}" ${num(s.cast) >= num(s.prepared) ? 'disabled' : ''}>Cast</button>
               <span class="small dim">${num(s.cast)}/${num(s.prepared)}</span></td>` : ''}
             ${spont && l > 0 ? `<td><button class="btn small" data-cast-spont="${l}">Cast</button></td>` : ''}
+            <td class="nowrap">${summonSpell(s.name) ? `<button class="btn small" data-summon="${esc(s.name)}" data-summon-cls="${esc(cls)}" title="Choose a creature; it is added to Buffs &amp; Conditions → Summons">Summon…</button>` : ''}</td>
             <td><button class="icon-btn" data-del="spellbooks.${cls}.spells.${s.i}">✕</button></td></tr>`).join('')}</tbody></table>`
             : '<p class="muted small">None.</p>'}
           ${sc.kind === 'prepared' && sc.slots[l] != null && sc.slots[l] !== Infinity ? `<div class="small ${preparedCount(book, l) > sc.slots[l] ? 'bad' : 'muted'}">Prepared ${preparedCount(book, l)} of ${sc.slots[l]} slots</div>` : ''}
@@ -643,7 +645,9 @@ function buffs(body, c, d) {
       return `<button class="chip ${on ? 'on' : ''}" data-preset="${esc(p.name)}" title="${esc(p.note || '')}">${esc(p.name)}</button>`;
     }).join('')}</div>`).join('')}
     <p class="small muted">Power Attack, Deadly Aim, and Combat Expertise scale with your BAB automatically.</p>
-  </section></div>`;
+  </section></div>
+  <section class="card summons" id="summons-card"></section>`;
+  renderSummons($('#summons-card', body), c);
   wireCommon(body);
   body.addEventListener('click', async e => {
     const p = e.target.closest('[data-preset]');

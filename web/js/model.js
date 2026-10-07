@@ -18,6 +18,7 @@ export function newCharacter() {
     archetypes: {}, // {Class: [archetype data from features.bakeArchetype]}
     portrait: '', // data URL, large picture on the Overview tab
     avatar: '',   // data URL, small picture beside the name in the top bar
+    summons: [], // tracked Summon Monster / Nature's Ally creatures (Buffs & Conditions tab)
     companions: [], // animal companions, eidolons, familiars (see companions.js)
     hp: { current: null, temp: 0, nonlethal: 0, misc: 0 },
     ac: { natural: 0, deflection: 0, dodge: 0, misc: 0 },

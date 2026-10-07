@@ -351,3 +351,19 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .summon-list { list-style: none; margin: 4px 0 12px; padding: 0; columns: 2; column-gap: 18px; }
 .summon-list li { padding: 2px 0; break-inside: avoid; }
 .summon-block h4 { margin: 10px 0 4px; }
+
+/* ---------- summons ---------- */
+.summon-top { gap: 14px; align-items: center; flex-wrap: wrap; }
+.summon-pane { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 16px; align-items: start; }
+.summon-lists { max-height: 60vh; overflow: auto; padding-right: 6px; }
+.summon-preview { max-height: 60vh; overflow: auto; border-left: 1px solid var(--line); padding-left: 14px; }
+.summon-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 12px; margin-top: 10px; }
+.summon-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; background: var(--panel-2, var(--panel)); }
+.summon-card.expired { border-color: var(--warn, #c9902b); }
+.summon-card.dead { opacity: .65; }
+.sm-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 14px; margin: 6px 0; }
+.sm-controls { gap: 6px; flex-wrap: wrap; margin: 4px 0; }
+@media (max-width: 900px) { .summon-pane { grid-template-columns: 1fr; } .summon-preview { border-left: 0; padding-left: 0; } }
+.summon-card .hp-bar { margin: 6px 0; }
+.summon-card .hp-bar > div { height: 100%; background: var(--good); transition: width .25s; }
+.summon-card .hp-bar > div.mid { background: var(--warn); } .summon-card .hp-bar > div.low { background: var(--bad); }

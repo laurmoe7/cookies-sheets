@@ -1,40 +1,165 @@
-// Summon Monster / Summon Nature's Ally helper: the "Summon…" button on the Spells tab opens the spell's creature
-// list in the side panel; picking a creature shows its stat block there (← goes back to the list).
+// Summons: the chooser (pick a Summon Monster / Summon Nature's Ally creature) and the Summons section of the
+// Buffs & Conditions tab, where each summoned creature is tracked with its key stats, hit points and rounds left.
 import { api } from '../api.js';
-import { esc, showCustom, toast } from '../ui.js';
-import { summonSpell, summonChoices, statBlockHtml } from '../summons.js';
+import { state, changed } from '../app.js';
+import { esc, $, $$, modal, toast, showCustom, confirmBox, textField, getPath } from '../ui.js';
+import { summonSpell, summonChoices, statBlockHtml, newSummon, templateNotes } from '../summons.js';
 
 let dataPromise = null;
 const loadData = () => (dataPromise ||= api.summons().catch(e => { dataPromise = null; throw e; }));
 const ORD = ['', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
+const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];
+const FAMILIES = ['Summon Monster', "Summon Nature's Ally"];
 
-export async function showSummonList(spellName) {
-  const spell = summonSpell(spellName);
-  if (!spell) return;
-  let data;
-  try { data = await loadData(); } catch (e) { toast('Could not load summon lists: ' + e.message, 'err'); return; }
-  const groups = summonChoices(data, spell.family, spell.level);
-  const html = `<p class="small muted">Pick a creature to see its stat block. ${spell.family === 'Summon Monster'
-    ? 'A * means it takes the celestial or fiendish template.' : 'Lasts 1 round per caster level.'}</p>` +
-    groups.map(g => `<h4>${ORD[g.level]}-level list <span class="muted small">· summons ${g.count}</span></h4>
-      <ul class="summon-list">${g.entries.map(e => `<li><a href="#" data-summon-creature="${esc(e.creature)}" data-summon-template="${e.template ? 1 : 0}" data-summon-label="${esc(e.name)}">${esc(e.name)}${e.template ? '*' : ''}</a>
-        ${e.subtype ? `<span class="muted small">${esc(e.subtype)}</span>` : ''}</li>`).join('')}</ul>`).join('');
-  showCustom({ name: spellName, cat: 'Summon list', sub: spell.family, html });
+/** Caster level to default a summon's duration to: the given class's, else your best casting class. */
+function casterLevel(cls) {
+  const sc = state.derived?.spellcasting || {};
+  if (cls && sc[cls]) return sc[cls].cl;
+  return Math.max(1, ...Object.values(sc).map(x => x.cl || 0));
 }
 
-async function showCreature(key, template, label) {
+/** The chooser. Clicking a creature adds it to Buffs & Conditions → Summons and keeps the window open. */
+export async function chooseSummon({ spell = 'Summon Monster I', cls = '' } = {}) {
   let data;
   try { data = await loadData(); } catch (e) { toast('Could not load summon lists: ' + e.message, 'err'); return; }
-  const b = data.creatures[key];
-  if (!b) return;
-  showCustom({ name: label || b.name, cat: 'Summoned creature', sub: b.name === label ? '' : b.name, html: statBlockHtml(b, { template }) });
+  const c = state.char;
+  const start = summonSpell(spell) || { family: 'Summon Monster', level: 1 };
+  let { family, level } = start;
+  let rounds = casterLevel(cls);
+  let preview = null;
+  const added = {};
+  await modal('Summon a creature', (body, close) => {
+    const draw = () => {
+      const groups = summonChoices(data, family, level);
+      body.innerHTML = `<div class="row summon-top">
+          <label>Spell <select data-f="family">${FAMILIES.map(f => `<option ${f === family ? 'selected' : ''}>${esc(f)}</option>`).join('')}</select>
+            <select data-f="level">${ROMAN.slice(1).map((r, i) => `<option value="${i + 1}" ${i + 1 === level ? 'selected' : ''}>${r}</option>`).join('')}</select></label>
+          <label>Lasts <input type="number" class="num w3" data-f="rounds" value="${rounds}" min="1"> rounds</label>
+          <span class="grow"></span><button class="btn primary" data-done>Done</button></div>
+        <p class="small muted">Click a creature to add it to <b>Buffs &amp; Conditions → Summons</b>. ${family === 'Summon Monster' ? 'A * means it takes the celestial or fiendish template. ' : ''}Click “stats” to read a stat block first.
+          ${Object.keys(added).length ? `<br>Added: <b>${Object.entries(added).map(([n, k]) => `${esc(n)}${k > 1 ? ' ×' + k : ''}`).join(', ')}</b>` : ''}</p>
+        <div class="summon-pane"><div class="summon-lists">${groups.map(g => `<h4>${ORD[g.level]}-level list <span class="muted small">· summons ${g.count}</span></h4>
+          <ul class="summon-list">${g.entries.map(e => `<li><a href="#" data-pick="${esc(e.creature)}" data-label="${esc(e.name)}" data-tpl="${e.template ? 1 : 0}">${esc(e.name)}${e.template ? '*' : ''}</a>
+            <a href="#" class="small muted" data-stats="${esc(e.creature)}" data-label="${esc(e.name)}" data-tpl="${e.template ? 1 : 0}">stats</a>
+            ${e.subtype ? `<span class="muted small">${esc(e.subtype)}</span>` : ''}</li>`).join('')}</ul>`).join('')}</div>
+          <div class="summon-preview">${preview ? `<h3>${esc(preview.label)}</h3>${statBlockHtml(data.creatures[preview.key], { template: preview.tpl })}` : '<p class="muted">Pick “stats” beside a creature to read it here.</p>'}</div></div>`;
+    };
+    body.onchange = e => {
+      const f = e.target.dataset.f;
+      if (f === 'family') family = e.target.value;
+      else if (f === 'level') level = +e.target.value;
+      else if (f === 'rounds') { rounds = Math.max(1, +e.target.value || 1); return; }
+      draw();
+    };
+    body.onclick = e => {
+      if (e.target.closest('[data-done]')) return close();
+      const pick = e.target.closest('[data-pick]');
+      const st = e.target.closest('[data-stats]');
+      if (pick || st) e.preventDefault();
+      if (pick) {
+        const entry = pick.dataset;
+        const label = entry.label.replace(/\s*\(.*\)$/, '');
+        c.summons ||= [];
+        const n = c.summons.filter(s => s.key === entry.pick).length;
+        c.summons.push(newSummon({ key: entry.pick, label: n ? `${label} #${n + 1}` : label, spell: `${family} ${ROMAN[level]}`, tpl: entry.tpl === '1', block: data.creatures[entry.pick], rounds }));
+        added[label] = (added[label] || 0) + 1;
+        changed();
+        toast(`${label} added to Buffs & Conditions → Summons`);
+        draw();
+      } else if (st) {
+        preview = { key: st.dataset.stats, label: st.dataset.label, tpl: st.dataset.tpl === '1' };
+        draw();
+      }
+    };
+    draw();
+  }, { wide: true });
+  if (Object.keys(added).length) changed({ rerender: true });
 }
 
+const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
+
+/** The Summons section on the Buffs & Conditions tab. */
+export function renderSummons(el, c) {
+  c.summons ||= [];
+  const list = c.summons;
+  el.innerHTML = `<div class="row"><h3 class="grow" style="margin:0">Summons</h3>
+      <span class="muted small">${list.length ? `${list.length} active` : ''}</span>
+      <button class="btn small" data-sm-new>＋ Summon…</button>
+      ${list.length ? '<button class="btn small" data-sm-round title="Take one round off every summon">Next round</button><button class="btn small ghost" data-sm-clear>Dismiss all</button>' : ''}</div>
+    ${list.length ? `<div class="summon-cards">${list.map((s, i) => summonCard(s, i)).join('')}</div>`
+      : '<p class="muted">No summons right now. Use “Summon…” here, or the button beside a Summon Monster / Summon Nature’s Ally spell on the Spells tab.</p>'}`;
+  el.onclick = async e => {
+    const t = e.target.closest('[data-sm-new],[data-sm-round],[data-sm-clear],[data-sm-dismiss],[data-sm-stats],[data-sm-dmg],[data-sm-heal],[data-sm-r]');
+    if (!t) return;
+    e.preventDefault();
+    if (t.dataset.smNew !== undefined) return chooseSummon();
+    if (t.dataset.smRound !== undefined) {
+      const done = [];
+      for (const s of list) { if (s.rounds > 0) { s.rounds--; if (s.rounds === 0) done.push(s.name); } }
+      if (done.length) toast(`${done.join(', ')} ${done.length > 1 ? 'have' : 'has'} run out of time`);
+      return changed({ rerender: true });
+    }
+    if (t.dataset.smClear !== undefined) {
+      if (await confirmBox(`Dismiss all ${list.length} summons?`, 'Dismiss all')) { c.summons = []; changed({ rerender: true }); }
+      return;
+    }
+    const i = +t.closest('[data-sm]').dataset.sm;
+    const s = list[i];
+    if (t.dataset.smDismiss !== undefined) { list.splice(i, 1); changed({ rerender: true }); }
+    else if (t.dataset.smStats !== undefined) {
+      let data;
+      try { data = await loadData(); } catch (err) { toast('Could not load stat blocks: ' + err.message, 'err'); return; }
+      const b = data.creatures[s.key];
+      if (b) showCustom({ name: s.name, cat: 'Summoned creature', sub: s.spell, html: statBlockHtml(b, { template: s.tpl }) });
+    } else if (t.dataset.smDmg !== undefined || t.dataset.smHeal !== undefined) {
+      const amt = Math.abs(+$('[data-sm-amt]', t.closest('[data-sm]')).value || 0);
+      if (!amt) return;
+      s.hp = t.dataset.smDmg !== undefined ? s.hp - amt : Math.min(s.hpMax, s.hp + amt);
+      changed({ rerender: true });
+    } else if (t.dataset.smR !== undefined) {
+      s.rounds = Math.max(0, s.rounds + +t.dataset.smR);
+      changed({ rerender: true });
+    }
+  };
+}
+
+function summonCard(s, i) {
+  const pct = Math.max(0, Math.min(100, (s.hp / Math.max(1, s.hpMax)) * 100));
+  const expired = s.rounds <= 0;
+  const dead = s.hp <= 0;
+  const note = s.template ? templateNotes(s.hd || 1)[s.template] : '';
+  return `<div class="summon-card ${expired ? 'expired' : ''} ${dead ? 'dead' : ''}" data-sm="${i}">
+    <div class="row" style="margin:0"><b class="grow">${tf(`summons.${i}.name`, { placeholder: 'Name' })}</b>
+      <span class="pill">${esc(s.spell)}</span><button class="icon-btn" data-sm-dismiss title="Dismiss">✕</button></div>
+    <div class="sm-stats small">
+      <div><b>AC</b> ${esc(s.ac || '—')}</div>
+      <div><b>Saves</b> ${esc(s.saves || '—')}</div>
+      <div><b>Speed</b> ${esc(s.speed || '—')}</div>
+      <div><b>Melee</b> ${esc(s.melee || '—')}</div>
+      ${s.special ? `<div><b>SQ</b> ${esc(s.special)}</div>` : ''}
+    </div>
+    <div class="hp-bar"><div class="${pct <= 25 ? 'low' : pct <= 50 ? 'mid' : ''}" style="width:${pct}%"></div></div>
+    <div class="row sm-controls">
+      <b>${s.hp} / ${s.hpMax} hp</b>
+      <input type="number" class="num w3" data-sm-amt placeholder="0" min="0">
+      <button class="btn small danger" data-sm-dmg>Damage</button><button class="btn small good" data-sm-heal>Heal</button>
+      <span class="grow"></span>
+      <span class="small ${expired ? 'bad' : ''}">${expired ? 'Time is up' : `${s.rounds} round${s.rounds === 1 ? '' : 's'} left`}</span>
+      <button class="icon-btn" data-sm-r="-1" title="One round less">−</button><button class="icon-btn" data-sm-r="1" title="One round more">＋</button>
+      <button class="btn small" data-sm-stats>Stats</button></div>
+    ${s.tpl ? `<div class="small"><label>Template <select data-bind="summons.${i}.template" data-rerender><option value="" ${!s.template ? 'selected' : ''}>none</option>
+        <option value="celestial" ${s.template === 'celestial' ? 'selected' : ''}>celestial</option><option value="fiendish" ${s.template === 'fiendish' ? 'selected' : ''}>fiendish</option></select></label>
+      ${note ? `<span class="muted"> ${esc(note)}</span>` : ''}</div>` : ''}
+    <div class="small">${tf(`summons.${i}.notes`, { multiline: true, placeholder: 'Notes (double-click)' })}</div>
+  </div>`;
+}
+
+/** Spells tab: the "Summon…" buttons. */
 export function initSummons() {
   document.addEventListener('click', e => {
     const open = e.target.closest('[data-summon]');
-    if (open) { e.preventDefault(); showSummonList(open.dataset.summon); return; }
-    const c = e.target.closest('[data-summon-creature]');
-    if (c) { e.preventDefault(); showCreature(c.dataset.summonCreature, c.dataset.summonTemplate === '1', c.dataset.summonLabel); }
+    if (!open) return;
+    e.preventDefault();
+    chooseSummon({ spell: open.dataset.summon, cls: open.dataset.summonCls || '' });
   });
 }

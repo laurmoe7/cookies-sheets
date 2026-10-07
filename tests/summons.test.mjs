@@ -40,3 +40,16 @@ test('stat block renders and template notes scale with Hit Dice', () => {
   assert.match(templateNotes(6).fiendish, /resist cold 10, fire 10, DR 5\/good/);
   assert.match(templateNotes(12).celestial, /DR 10\/evil/);
 });
+
+import { newSummon } from '../web/js/summons.js';
+
+test('a tracked summon copies the numbers worth seeing from its stat block', () => {
+  const ape = data.creatures['ape, gorilla'];
+  const s = newSummon({ key: 'ape, gorilla', label: 'Ape', spell: 'Summon Monster III', tpl: true, block: ape, rounds: 5 });
+  assert.equal(s.hp, 19, 'Ape: hp 19 (3d8+6)');
+  assert.equal(s.hpMax, 19);
+  assert.equal(s.hd, 3);
+  assert.equal(s.rounds, 5);
+  assert.match(s.ac, /^14, touch 11, flat-footed 12$/, 'bonus breakdown in parentheses is dropped');
+  assert.equal(s.saves, 'Fort +7, Ref +5, Will +2');
+});
