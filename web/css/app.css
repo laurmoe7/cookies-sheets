@@ -427,3 +427,5 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .crop-view img { position: absolute; max-width: none; user-select: none; -webkit-user-drag: none; }
 .crop-controls { justify-content: center; margin: 6px 0 12px; }
 .crop-controls input[type=range] { width: 200px; }
+
+.cur-name { width: 280px; max-width: 100%; }

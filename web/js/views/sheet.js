@@ -223,11 +223,13 @@ function overview(body, c, d) {
   document.addEventListener('recalc', updateDyn);
   onLeave(() => document.removeEventListener('recalc', updateDyn));
 
-  $$('[data-hp]', body).forEach(b => (b.onclick = () => {
+  $$('[data-hp]', body).forEach(b => (b.onclick = async () => {
     const amt = Math.abs(num($('#hp-amt').value));
     const dd = state.derived;
     let cur = dd.hp.current;
-    if (b.dataset.hp === 'full') { c.hp.current = null; c.hp.nonlethal = 0; changed({ rerender: true }); return; }
+    if (b.dataset.hp === 'full') {
+      if (!await confirmBox('Heal to full hit points?', 'Heal fully')) return;
+      c.hp.current = null; c.hp.nonlethal = 0; changed({ rerender: true }); return; }
     if (!amt) return;
     if (b.dataset.hp === 'dmg') {
       let rest = amt;
@@ -615,7 +617,7 @@ function gear(body, c, d) {
     <div class="kv">${['pp', 'gp', 'sp', 'cp'].map(k => `<label>${k.toUpperCase()} ${inp(`money.${k}`, { type: 'num', cls: 'w5' })}</label>`).join('')}</div>
     <p class="small muted">Total value: <b id="money-total"></b> gp (50 coins = 1 lb, included in weight)</p>
     <h4>Other currencies</h4>
-    ${(c.money.custom || []).map((m, i) => `<div class="row cur-row">${inp(`money.custom.${i}.name`, { cls: 'w8', ph: 'Name (e.g. Gems, Fame, Credits)' })}
+    ${(c.money.custom || []).map((m, i) => `<div class="row cur-row">${inp(`money.custom.${i}.name`, { cls: 'cur-name', ph: 'Name (e.g. Gems, Fame, Credits)' })}
       ${inp(`money.custom.${i}.amount`, { type: 'num', cls: 'w5' })}
       <button class="icon-btn" data-del="money.custom.${i}" title="Remove">✕</button></div>`).join('') || '<p class="muted small">None. Use this for gems, favors, campaign points or any other currency.</p>'}
     <button class="btn small" data-add="money.custom">＋ Currency</button>

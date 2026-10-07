@@ -45,12 +45,13 @@ export async function renderCompanions(body, c) {
     ${c.companions.map((comp, i) => companionCard(comp, i, levels, data, masterOf(c))).join('')}`;
 
   body.onclick = async e => {
-    const t = e.target.closest('[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
+    const t = e.target.closest('[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
     if (!t) return;
     e.preventDefault();
     if (t.dataset.new) { c.companions.push(newCompanion(t.dataset.new, data)); return changed({ rerender: true }); }
     const i = +t.closest('[data-comp]').dataset.comp;
     const comp = c.companions[i];
+    if (t.dataset.syncLevel !== undefined) { comp.levelOverride = ''; return changed({ rerender: true }); }
     if (t.dataset.pic !== undefined || t.dataset.picEdit !== undefined || t.dataset.picClear !== undefined) {
       if (await picAction(t, comp, PIC)) changed({ rerender: true });
       return;
@@ -85,6 +86,13 @@ const select = (path, cur, options) => `<select data-bind="${path}" data-rerende
   return `<option value="${esc(v)}" ${String(v) === String(cur ?? '') ? 'selected' : ''}>${esc(l)}</option>`;
 }).join('')}</select>`;
 
+/** A stored level override that just matches the sheet is dropped, so the level follows the sheet when you level up. */
+function syncLevel(comp, s) {
+  if (num(comp.levelOverride) && num(comp.levelOverride) === s.autoLevel) comp.levelOverride = '';
+}
+const overrideNote = (comp, s) => (num(comp.levelOverride) && num(comp.levelOverride) !== s.autoLevel
+  ? ` · overridden to <b>${s.level}</b> <a href="#" data-sync-level>use the sheet’s level</a>` : '');
+
 function companionCard(comp, i, levels, data, master) {
   const p = `companions.${i}`;
   const head = `<div class="row"><h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>
@@ -97,9 +105,10 @@ function companionCard(comp, i, levels, data, master) {
   }
   if (comp.kind === 'familiar') return familiarCard(comp, i, levels, data, master, head);
   const s = computeCompanion(comp, levels, data);
+  syncLevel(comp, s);
   const isAnimal = comp.kind === 'animal';
   const levelNote = s.autoLevel
-    ? `From your classes: <b>${s.autoLevel}</b>${isAnimal && levels._why?.animal ? ` (${esc(levels._why.animal)})` : ''}${num(comp.levelOverride) ? ` (overridden to ${s.level})` : ''}`
+    ? `From your classes: <b>${s.autoLevel}</b>${isAnimal && levels._why?.animal ? ` · ${esc(levels._why.animal)}` : ''}${overrideNote(comp, s)}`
     : `<span class="warn">Nothing on the sheet grants ${isAnimal ? 'an animal companion' : 'an eidolon'}; set the level here.</span>`;
   const featsLeft = s.featSlots - s.featsUsed;
   const ranksLeft = s.skillRanks - s.skillRanksUsed;
@@ -153,8 +162,9 @@ function companionCard(comp, i, levels, data, master) {
 function familiarCard(comp, i, levels, data, master, head) {
   const p = `companions.${i}`;
   const s = computeCompanion(comp, levels, data, master);
+  syncLevel(comp, s);
   const levelNote = s.autoLevel
-    ? `From your sheet: <b>${s.autoLevel}</b>${levels._why?.familiar ? ` (${esc(levels._why.familiar)})` : ''}${num(comp.levelOverride) ? ` (overridden to ${s.level})` : ''}`
+    ? `From your sheet: <b>${s.autoLevel}</b>${levels._why?.familiar ? ` · ${esc(levels._why.familiar)}` : ''}${overrideNote(comp, s)}`
     : '<span class="warn">Nothing on the sheet grants a familiar (wizard, sorcerer, witch or shaman levels, or the arcanist’s Familiar exploit); set the level here.</span>';
   const sp = s.species;
   return `<section class="card companion" data-comp="${i}">${head}
