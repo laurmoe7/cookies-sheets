@@ -115,40 +115,41 @@ export function snapshotPage(body) {
 }
 
 /**
- * Tome theme: the old page (a snapshot) is cut into hinged strips that swing over from the spine and bend as they go,
- * like loose paper, uncovering the new page underneath. The animation itself is CSS (see theme-tome.css).
+ * Tome theme: the old page (a snapshot) swings over from the spine like a sheet of loose paper, uncovering the new page underneath.
+ * Going back a tab plays it in reverse: the new page swings back over the old one. The animation itself is CSS (see theme-tome.css).
  */
 export function playPageTurn(body, snapshot, back = false) {
   if (!snapshot || !body?.parentElement) return;
-  const STRIPS = 26;
   const W = body.offsetWidth;
-  const sw = W / STRIPS;
   const main = document.getElementById('main');
   // As tall as the old page, but never taller than what is on screen; the new page may still be loading (companions), so its height is no guide.
   const avail = (main?.clientHeight || 700) - body.offsetTop + 30;
   const h = Math.max(260, Math.min(Math.max(+snapshot.dataset.h || 0, body.offsetHeight), avail));
   const leaf = document.createElement('div');
   leaf.className = 'page-turn' + (back ? ' rev' : '');
-  leaf.style.cssText = `left:${body.offsetLeft}px;top:${body.offsetTop}px;width:${W}px;height:${h}px;--k:-1.5deg`;
-  let parent = leaf;
-  for (let i = 0; i < STRIPS; i++) {
-    const strip = document.createElement('div');
-    strip.className = 'pt-strip' + (i === 0 ? ' first' : '');
-    strip.style.cssText = `width:${sw + 1}px;--i:${(i / (STRIPS - 1)).toFixed(3)}`;
-    const front = document.createElement('div');
-    front.className = 'pt-face pt-front';
-    const clone = snapshot.cloneNode(true);
-    clone.classList.add('pt-clone');
-    clone.style.cssText = `left:${back ? (i + 1) * sw - W : -i * sw}px;width:${W}px`;
-    front.appendChild(clone);
-    const rear = document.createElement('div');
-    rear.className = 'pt-face pt-back';
-    strip.append(front, rear);
-    parent.appendChild(strip);
-    parent = strip;
+  leaf.style.cssText = `left:${body.offsetLeft}px;top:${body.offsetTop}px;width:${W}px;height:${h}px`;
+  const fit = el => { el.classList.add('pt-clone'); el.style.width = W + 'px'; return el; };
+  // The sheet that moves shows the old page going forward, and the new page coming back.
+  const moving = back ? snapshotPage(body) : snapshot;
+  if (back) {
+    const under = document.createElement('div');
+    under.className = 'pt-under';
+    under.appendChild(fit(snapshot.cloneNode(true)));
+    leaf.appendChild(under);
   }
+  const shadow = document.createElement('div');
+  shadow.className = 'pt-shadow';
+  const sheet = document.createElement('div');
+  sheet.className = 'pt-leaf';
+  const front = document.createElement('div');
+  front.className = 'pt-face pt-front';
+  front.appendChild(fit(moving));
+  const rear = document.createElement('div');
+  rear.className = 'pt-face pt-back';
+  sheet.append(front, rear);
+  leaf.append(shadow, sheet);
   body.parentElement.appendChild(leaf);
   void leaf.offsetWidth;
   leaf.classList.add('go');
-  setTimeout(() => leaf.remove(), 1300);
+  setTimeout(() => leaf.remove(), 1100);
 }

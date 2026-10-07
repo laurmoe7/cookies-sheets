@@ -1,6 +1,7 @@
 """Writes web/css/theme-tome.css (the Dusty tome theme).
 
 The paper and leather textures are SVG filters inlined as data URIs; building them here keeps the escaping out of the CSS by hand.
+Everything is drawn with normal blending (no blend modes, no fixed backgrounds) so scrolling stays cheap.
 Run:  python tools/make_tome_css.py
 """
 import os
@@ -13,51 +14,60 @@ def uri(svg):
     return 'url("data:image/svg+xml;utf8,' + quote(svg, safe=" /:=,.'()-") + '")'
 
 
-def crinkle(seed, azimuth, size=480):
-    """Crumpled-paper relief: light and dark creases, rescaled around mid-grey so it works with soft-light blending."""
+def paper(seed, azimuth, freq, scale, size=520):
+    """One sheet of dim parchment (opaque): the same colour every time, with its own crumples and fibres."""
     return uri(
         f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}'><filter id='c' x='0' y='0' width='100%' height='100%'>"
-        f"<feTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='3' seed='{seed}' stitchTiles='stitch' result='n'/>"
-        f"<feDiffuseLighting in='n' surfaceScale='1.3' diffuseConstant='1' lighting-color='#fff'><feDistantLight azimuth='{azimuth}' elevation='58'/></feDiffuseLighting>"
-        "<feColorMatrix values='0.6 0 0 0 -0.009  0 0.6 0 0 -0.009  0 0 0.6 0 -0.009  0 0 0 0 1'/></filter>"
+        f"<feTurbulence type='fractalNoise' baseFrequency='{freq}' numOctaves='3' seed='{seed}' stitchTiles='stitch' result='n'/>"
+        f"<feDiffuseLighting in='n' surfaceScale='{scale}' diffuseConstant='1' lighting-color='#fff'><feDistantLight azimuth='{azimuth}' elevation='58'/></feDiffuseLighting>"
+        "<feColorMatrix values='1.2 0 0 0 -.717  0 1.2 0 0 -.776  0 0 1.2 0 -.874  0 0 0 0 1'/></filter>"
         "<rect width='100%' height='100%' filter='url(#c)'/></svg>")
 
 
 GRAIN = uri(
     "<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='g'>"
     "<feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/>"
-    "<feColorMatrix values='.2 0 0 0 .4  .2 0 0 0 .4  .2 0 0 0 .4  0 0 0 0 1'/></filter><rect width='100%' height='100%' filter='url(#g)'/></svg>")
+    "<feColorMatrix values='0 0 0 0 .12  0 0 0 0 .07  0 0 0 0 .02  .5 0 0 0 -.12'/></filter><rect width='100%' height='100%' filter='url(#g)'/></svg>")
 
 LEATHER = uri(
-    "<svg xmlns='http://www.w3.org/2000/svg' width='1100' height='1100'>"
+    "<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'>"
     "<filter id='m' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.0045 .006' numOctaves='3' seed='8' stitchTiles='stitch'/>"
     "<feColorMatrix values='0 0 0 0 .09  0 0 0 0 .05  0 0 0 0 .02  1.5 0 0 0 -.42'/></filter>"
     "<filter id='w' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.02 .03' numOctaves='5' seed='3' stitchTiles='stitch'/>"
     "<feColorMatrix values='0 0 0 0 .66  0 0 0 0 .40  0 0 0 0 .15  8 0 0 0 -5.6'/></filter>"
-    "<filter id='f' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' seed='5' stitchTiles='stitch'/>"
-    "<feColorMatrix values='0 0 0 0 .5  0 0 0 0 .35  0 0 0 0 .2  .5 0 0 0 -.18'/></filter>"
+    "<filter id='k' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.008 .09' numOctaves='3' seed='12' stitchTiles='stitch'/>"
+    "<feColorMatrix values='0 0 0 0 .06  0 0 0 0 .03  0 0 0 0 .01  3.2 0 0 0 -1.5'/></filter>"
+    "<filter id='p' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.42' numOctaves='2' seed='21' stitchTiles='stitch'/>"
+    "<feColorMatrix values='0 0 0 0 .04  0 0 0 0 .02  0 0 0 0 .01  7 0 0 0 -3.6'/></filter>"
+    "<filter id='f' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='5' stitchTiles='stitch'/>"
+    "<feColorMatrix values='0 0 0 0 .55  0 0 0 0 .38  0 0 0 0 .22  1.1 0 0 0 -.45'/></filter>"
     "<rect width='100%' height='100%' filter='url(#m)'/><rect width='100%' height='100%' filter='url(#w)' opacity='.24'/>"
-    "<rect width='100%' height='100%' filter='url(#f)' opacity='.5'/></svg>")
+    "<rect width='100%' height='100%' filter='url(#k)' opacity='.38'/><rect width='100%' height='100%' filter='url(#p)' opacity='.5'/>"
+    "<rect width='100%' height='100%' filter='url(#f)' opacity='.6'/></svg>")
 
-# Each page of the book gets its own paper: where the light spot sits, which way the creases catch light, how it is burnt.
+# Pages of one book: the same paper colour, but each sheet has its own crumples, light direction and burnt side.
+EDGE = 'rgba(255,232,180,.12) 0%, rgba(0,0,0,0) 38%, rgba(18,9,2,.6) 100%'
 PAPERS = [
-    dict(at='50% 38%', c='#3e3325', m='#32291c', e='#1f180f', seed=11, az=225, burn='inset 0 0 40px 2px rgba(25,12,4,.55)'),
-    dict(at='30% 56%', c='#43341f', m='#352b1b', e='#20170f', seed=23, az=300, burn='inset 16px -10px 46px -6px rgba(32,14,5,.6)'),
-    dict(at='68% 40%', c='#3b372a', m='#2f2c22', e='#1d1a12', seed=37, az=140, burn='inset -18px 12px 46px -8px rgba(28,14,6,.55)'),
-    dict(at='46% 66%', c='#40321f', m='#33291b', e='#20160f', seed=52, az=20, burn='inset 0 14px 42px -4px rgba(30,12,5,.55), inset 0 -8px 30px -8px rgba(30,12,5,.4)'),
+    dict(at='50% 38%', seed=11, az=225, freq='.011', scale=1.2, burn='inset 0 0 40px 2px rgba(25,12,4,.5)'),
+    dict(at='34% 54%', seed=23, az=300, freq='.014', scale=1.5, burn='inset 14px -8px 44px -6px rgba(25,12,4,.55)'),
+    dict(at='64% 42%', seed=37, az=140, freq='.009', scale=1.0, burn='inset -14px 10px 44px -8px rgba(25,12,4,.5)'),
+    dict(at='47% 62%', seed=52, az=20, freq='.016', scale=1.3, burn='inset 0 12px 40px -4px rgba(25,12,4,.5), inset 0 -8px 28px -8px rgba(25,12,4,.35)'),
 ]
 
 
 def paper_rules():
     out = []
-    names = []
     for i, p in enumerate(PAPERS, 1):
         sel = f'html[data-theme="tome"] .card:nth-of-type(4n+{i})' if i < 4 else 'html[data-theme="tome"] .card:nth-of-type(4n)'
-        names.append(sel)
         out.append(
-            f"{sel}, html[data-theme=\"tome\"] .page-variant-{i} {{ background-image: var(--grain), {crinkle(p['seed'], p['az'])}, "
-            f"radial-gradient(ellipse at {p['at']}, {p['c']} 0%, {p['m']} 55%, {p['e']} 100%); box-shadow: {p['burn']}, var(--shadow); }}")
+            f"{sel} {{ background-image: radial-gradient(ellipse at {p['at']}, {EDGE}), var(--grain), {paper(p['seed'], p['az'], p['freq'], p['scale'])}; "
+            f"box-shadow: {p['burn']}, var(--shadow); }}")
     return '\n'.join(out)
+
+
+def sheet(i=0):
+    p = PAPERS[i]
+    return f"radial-gradient(ellipse at {p['at']}, {EDGE}), var(--grain), {paper(p['seed'], p['az'], p['freq'], p['scale'])}"
 
 
 CSS = '''/* Dusty tome: dim parchment pages on dark leather. Generated by tools/make_tome_css.py; edit the script, not this file. */
@@ -85,8 +95,8 @@ html[data-theme="tome"] {
   --leather: @LEATHER@;
 }
 html[data-theme="tome"] body { background: var(--bg); }
-/* dark leather: lighter in the middle, darker toward the edges, pebbled */
-html[data-theme="tome"] #main { background: var(--leather), radial-gradient(ellipse at 50% 35%, #3a2b1b 0%, #20160d 62%, #120b06 100%); background-attachment: fixed, fixed; }
+/* dark leather: a little lighter in the middle, darker toward the edges */
+html[data-theme="tome"] #main { background: radial-gradient(ellipse at 50% 35%, rgba(70,48,28,.35), rgba(0,0,0,.45) 100%), var(--leather), #26190f; }
 html[data-theme="tome"] h3 { font-variant: small-caps; letter-spacing: .04em; font-weight: 500; }
 html[data-theme="tome"] h1, html[data-theme="tome"] h2 { font-weight: 500; }
 
@@ -97,12 +107,11 @@ html[data-theme="tome"] #nav button { border-radius: 3px; }
 html[data-theme="tome"] #nav button.active { background: #8a3326; color: #f6ead0; }
 html[data-theme="tome"] #topbar { background: var(--leather), #2c1f14; border-bottom: 2px solid #0e0905; }
 
-/* parchment pages: light in the middle, burnt toward the edges, each with its own crinkles */
-html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-color: var(--panel); background-blend-mode: overlay, soft-light, normal; border: 1px solid #1f160c; box-shadow: var(--shadow); }
+/* parchment pages: light in the middle, burnt toward the edges, each with its own crumples */
+html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-color: var(--panel); border: 1px solid #1f160c; box-shadow: var(--shadow); }
 html[data-theme="tome"] .card { outline: 1px solid #2c1f10; outline-offset: -5px; padding: 17px 19px; }
 @PAPERS@
-html[data-theme="tome"] .card:nth-of-type(n) { background-blend-mode: overlay, soft-light, normal; }
-html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-image: var(--grain), radial-gradient(ellipse at 50% 30%, #3e3325 0%, #32291c 60%, #1f180f 100%); }
+html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-image: @SHEET@; }
 html[data-theme="tome"] .card .card { outline: none; background-image: none; box-shadow: none; background-color: #0000001f; }
 html[data-theme="tome"] .stat, html[data-theme="tome"] .summon-card, html[data-theme="tome"] .mod { background-color: #00000026; border-color: #5a4a30; }
 html[data-theme="tome"] input, html[data-theme="tome"] select, html[data-theme="tome"] textarea { background: var(--input); border-color: #5a4a30; color: var(--ink); font-family: inherit; }
@@ -114,10 +123,10 @@ html[data-theme="tome"] .res-bar::after { background: repeating-linear-gradient(
 html[data-theme="tome"] .tbl th, html[data-theme="tome"] .tbl td { border-color: #6a5535; }
 html[data-theme="tome"] .portrait-frame, html[data-theme="tome"] .pic-frame, html[data-theme="tome"] .char-icon.has { border-color: #b08a3e; outline: 1px solid #3a2a18; outline-offset: 2px; }
 
-/* ribbon bookmarks as tabs */
+/* ribbon bookmarks as tabs: unselected ones are pale linen-gold so they stand out from the leather */
 html[data-theme="tome"] .tabs { border-bottom: 2px solid #6a5535; padding-left: 8px; gap: 5px; }
-html[data-theme="tome"] .tab { background: #4a3721; color: #b8a47a; border-radius: 0; padding: 19px 15px 8px; clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%); }
-html[data-theme="tome"] .tab:hover { background: #5a4528; color: var(--ink); }
+html[data-theme="tome"] .tab { background: #7b6741; color: #f0e3c0; border-radius: 0; padding: 19px 15px 8px; clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%); }
+html[data-theme="tome"] .tab:hover { background: #937c4d; color: #fff5d8; }
 html[data-theme="tome"] .tab.active, html[data-theme="tome"] .tab.active:hover { background: #8a3326; color: #f6ead0; }
 
 /* tome scroll bars: leather track, brass thumb */
@@ -125,31 +134,40 @@ html[data-theme="tome"] ::-webkit-scrollbar-track { background: #1a1209; border-
 html[data-theme="tome"] ::-webkit-scrollbar-thumb { background: #6a5535; border: 2px solid #1a1209; border-radius: 6px; }
 html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
 
-/* The page turn. The old page is cut into many thin strips; each strip is hinged to the one before it, so the page bends like loose paper.
-   --a is how far the whole page has swung; --c is how much it is bending right now; --i is a strip's position along the page (0 to 1).
-   Going back a tab mirrors the whole thing (.rev): the page swings from the right edge toward the right. */
-@property --a { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
-@property --c { syntax: '<number>'; inherits: true; initial-value: 0; }
-.page-turn { position: absolute; z-index: 6; pointer-events: none; perspective: 1900px; perspective-origin: 20% 40%; overflow: visible; }
-.page-turn.rev { transform: scaleX(-1); }
-.page-turn.go { animation: turn-a 1.1s cubic-bezier(.55, .02, .3, 1) forwards, turn-c 1.1s ease-in-out forwards; }
-.pt-strip { position: absolute; top: 0; height: 100%; transform-style: preserve-3d; transform-origin: left center; transform: rotateY(calc(var(--c) * var(--k, 0deg))); }
-.pt-strip.first { left: 0; transform: rotateY(var(--a)); }
-.pt-strip .pt-strip { left: calc(100% - 1px); }
+/* The page turn: one sheet that swings over from the spine. It tilts, skews and wobbles a little as it goes so it reads as floppy paper,
+   with a sheen sweeping across it and a shadow cast on the page underneath. Going back a tab plays the same turn in reverse. */
+.page-turn { position: absolute; z-index: 6; pointer-events: none; perspective: 1800px; perspective-origin: 15% 40%; }
+.pt-under, .pt-shadow { position: absolute; inset: 0; overflow: hidden; }
+.pt-shadow { background: linear-gradient(90deg, rgba(0,0,0,.55), rgba(0,0,0,0) 75%); opacity: 0; }
+.pt-leaf { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d; will-change: transform; }
 .pt-face { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; }
-.pt-front { background: var(--leather), radial-gradient(ellipse at 50% 35%, #3a2b1b 0%, #20160d 100%); box-shadow: 1px 0 0 #2a1d12; }
-.rev .pt-front { transform: rotateY(180deg); }
-.rev .pt-back { transform: none; }
-.pt-front::after, .pt-back::after { content: ""; position: absolute; inset: 0; background: #000; pointer-events: none; opacity: calc(var(--c) * (.04 + var(--i, 0) * .42)); }
-.pt-back { transform: rotateY(180deg); background-color: #5a4a2f; background-image: var(--grain), radial-gradient(ellipse at 40% 40%, #54452b, #3a2e1d); background-blend-mode: overlay, normal; box-shadow: 1px 0 0 #43361f; }
-.pt-clone { position: absolute; top: 0; }
-@keyframes turn-a { from { --a: 0deg; } to { --a: -180deg; } }
-@keyframes turn-c { 0% { --c: 0; } 30% { --c: 1; } 70% { --c: .75; } 100% { --c: 0; } }
+.pt-front { background: var(--leather), radial-gradient(ellipse at 50% 35%, #3a2b1b 0%, #20160d 100%); }
+.pt-front::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  background: linear-gradient(100deg, rgba(0,0,0,0) 20%, rgba(255,238,200,.22) 40%, rgba(0,0,0,.35) 52%, rgba(0,0,0,0) 72%); background-size: 320% 100%; }
+.pt-back { transform: rotateY(180deg); background-color: #4a3c26; background-image: var(--grain), radial-gradient(ellipse at 40% 40%, #5c4d34, #3d3120); }
+.pt-back::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; background: linear-gradient(270deg, rgba(0,0,0,.5), rgba(0,0,0,0) 70%); }
+.pt-clone { position: absolute; left: 0; top: 0; }
+.page-turn.go .pt-leaf { animation: leaf-flip .95s linear forwards; }
+.page-turn.go .pt-shadow { animation: leaf-shadow .95s ease-in-out forwards; }
+.page-turn.go .pt-front::before { animation: leaf-sheen .95s ease-in-out forwards; }
+.page-turn.go .pt-back::before { animation: leaf-back-shade .95s ease-in-out forwards; }
+.page-turn.rev.go .pt-leaf, .page-turn.rev.go .pt-shadow, .page-turn.rev.go .pt-front::before, .page-turn.rev.go .pt-back::before { animation-direction: reverse; }
+@keyframes leaf-flip {
+  0%   { transform: rotateY(0deg) skewY(0deg) rotateZ(0deg); animation-timing-function: cubic-bezier(.4, 0, .6, 1); }
+  18%  { transform: rotateY(-22deg) skewY(-2.6deg) rotateZ(.6deg); animation-timing-function: cubic-bezier(.3, 0, .5, 1); }
+  48%  { transform: rotateY(-88deg) skewY(2.2deg) rotateZ(-.9deg); animation-timing-function: cubic-bezier(.3, 0, .5, 1); }
+  76%  { transform: rotateY(-150deg) skewY(-1.4deg) rotateZ(.5deg); animation-timing-function: cubic-bezier(.2, .6, .4, 1); }
+  100% { transform: rotateY(-180deg) skewY(0deg) rotateZ(0deg); }
+}
+@keyframes leaf-shadow { 0% { opacity: 0; } 35% { opacity: .75; } 100% { opacity: 0; } }
+@keyframes leaf-sheen { 0% { opacity: 0; background-position: 100% 0; } 25% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; background-position: 0 0; } }
+@keyframes leaf-back-shade { 0% { opacity: 1; } 100% { opacity: 0; } }
 '''
 
 
 def main():
-    css = CSS.replace('@GRAIN@', GRAIN).replace('@LEATHER@', LEATHER).replace('@PAPERS@', paper_rules())
+    css = (CSS.replace('@GRAIN@', GRAIN).replace('@LEATHER@', LEATHER)
+           .replace('@PAPERS@', paper_rules()).replace('@SHEET@', sheet(0)))
     with open(OUT, 'w', encoding='utf-8', newline='\n') as f:
         f.write(css)
     print('wrote', OUT, len(css), 'bytes')
