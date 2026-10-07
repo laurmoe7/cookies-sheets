@@ -268,7 +268,15 @@ function wireCommon(body) {
     } else if (t.dataset.del) {
       const parts = t.dataset.del.split('.');
       const idx = +parts.pop();
-      getPath(c, parts.join('.')).splice(idx, 1);
+      const list = getPath(c, parts.join('.'));
+      const item = list[idx] || {};
+      // A row you just added and never filled in goes without asking; anything with content asks first.
+      const touched = item.name || item.notes || item.sub || num(item.ranks) || num(item.misc);
+      if (touched) {
+        const what = item.name ? `“${item.name}”` : 'this entry';
+        if (!await confirmBox(`Remove ${what}?`, 'Remove')) return;
+      }
+      list.splice(idx, 1);
       changed({ rerender: true });
     } else if (t.dataset.toggleMod) {
       const m = c.modifiers[+t.dataset.toggleMod];

@@ -51,11 +51,13 @@ export async function renderCompanions(body, c) {
       const r = await pickEntry('Companion feat', 'Feat');
       if (r) { comp.feats.push({ id: r.id, name: r.name }); changed({ rerender: true }); }
     } else if (t.dataset.rmFeat !== undefined) {
-      comp.feats.splice(+t.dataset.rmFeat, 1); changed({ rerender: true });
+      const f = comp.feats[+t.dataset.rmFeat];
+      if (await confirmBox(`Remove the feat “${f?.name || 'this feat'}” from ${comp.name || 'this companion'}?`, 'Remove')) { comp.feats.splice(+t.dataset.rmFeat, 1); changed({ rerender: true }); }
     } else if (t.dataset.addEvo !== undefined) {
       await chooseEvolutions(comp, levels, data); changed({ rerender: true });
     } else if (t.dataset.rmEvo !== undefined) {
-      comp.evolutions.splice(+t.dataset.rmEvo, 1); changed({ rerender: true });
+      const ev = comp.evolutions[+t.dataset.rmEvo];
+      if (await confirmBox(`Remove the evolution “${ev?.name || 'this evolution'}”?`, 'Remove')) { comp.evolutions.splice(+t.dataset.rmEvo, 1); changed({ rerender: true }); }
     } else if (t.dataset.addSkill !== undefined) {
       const sel = t.previousElementSibling;
       if (sel.value) { comp.skills[sel.value] = num(comp.skills[sel.value]) || 1; changed({ rerender: true }); }
