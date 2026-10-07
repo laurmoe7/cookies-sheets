@@ -17,22 +17,27 @@ def crinkle(seed, azimuth, size=480):
     """Crumpled-paper relief: light and dark creases, rescaled around mid-grey so it works with soft-light blending."""
     return uri(
         f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}'><filter id='c' x='0' y='0' width='100%' height='100%'>"
-        f"<feTurbulence type='fractalNoise' baseFrequency='.016' numOctaves='4' seed='{seed}' stitchTiles='stitch' result='n'/>"
-        f"<feDiffuseLighting in='n' surfaceScale='2.6' diffuseConstant='1' lighting-color='#fff'><feDistantLight azimuth='{azimuth}' elevation='58'/></feDiffuseLighting>"
-        "<feColorMatrix values='0.9 0 0 0 -0.263  0 0.9 0 0 -0.263  0 0 0.9 0 -0.263  0 0 0 0 1'/></filter>"
+        f"<feTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='3' seed='{seed}' stitchTiles='stitch' result='n'/>"
+        f"<feDiffuseLighting in='n' surfaceScale='1.3' diffuseConstant='1' lighting-color='#fff'><feDistantLight azimuth='{azimuth}' elevation='58'/></feDiffuseLighting>"
+        "<feColorMatrix values='0.6 0 0 0 -0.009  0 0.6 0 0 -0.009  0 0 0.6 0 -0.009  0 0 0 0 1'/></filter>"
         "<rect width='100%' height='100%' filter='url(#c)'/></svg>")
 
 
 GRAIN = uri(
     "<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='g'>"
     "<feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/>"
-    "<feColorMatrix values='.4 0 0 0 .3  .4 0 0 0 .3  .4 0 0 0 .3  0 0 0 0 1'/></filter><rect width='100%' height='100%' filter='url(#g)'/></svg>")
+    "<feColorMatrix values='.2 0 0 0 .4  .2 0 0 0 .4  .2 0 0 0 .4  0 0 0 0 1'/></filter><rect width='100%' height='100%' filter='url(#g)'/></svg>")
 
 LEATHER = uri(
-    "<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='l' x='0' y='0' width='100%' height='100%'>"
-    "<feTurbulence type='fractalNoise' baseFrequency='.28' numOctaves='3' seed='8' stitchTiles='stitch' result='n'/>"
-    "<feDiffuseLighting in='n' surfaceScale='1.4' diffuseConstant='1' lighting-color='#fff'><feDistantLight azimuth='235' elevation='60'/></feDiffuseLighting>"
-    "<feColorMatrix values='0.8 0 0 0 -0.193  0 0.8 0 0 -0.193  0 0 0.8 0 -0.193  0 0 0 0 1'/></filter><rect width='100%' height='100%' filter='url(#l)'/></svg>")
+    "<svg xmlns='http://www.w3.org/2000/svg' width='1100' height='1100'>"
+    "<filter id='m' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.0045 .006' numOctaves='3' seed='8' stitchTiles='stitch'/>"
+    "<feColorMatrix values='0 0 0 0 .09  0 0 0 0 .05  0 0 0 0 .02  1.5 0 0 0 -.42'/></filter>"
+    "<filter id='w' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.02 .03' numOctaves='5' seed='3' stitchTiles='stitch'/>"
+    "<feColorMatrix values='0 0 0 0 .66  0 0 0 0 .40  0 0 0 0 .15  8 0 0 0 -5.6'/></filter>"
+    "<filter id='f' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' seed='5' stitchTiles='stitch'/>"
+    "<feColorMatrix values='0 0 0 0 .5  0 0 0 0 .35  0 0 0 0 .2  .5 0 0 0 -.18'/></filter>"
+    "<rect width='100%' height='100%' filter='url(#m)'/><rect width='100%' height='100%' filter='url(#w)' opacity='.24'/>"
+    "<rect width='100%' height='100%' filter='url(#f)' opacity='.5'/></svg>")
 
 # Each page of the book gets its own paper: where the light spot sits, which way the creases catch light, how it is burnt.
 PAPERS = [
@@ -81,16 +86,16 @@ html[data-theme="tome"] {
 }
 html[data-theme="tome"] body { background: var(--bg); }
 /* dark leather: lighter in the middle, darker toward the edges, pebbled */
-html[data-theme="tome"] #main { background: var(--leather), radial-gradient(ellipse at 50% 35%, #3a2b1b 0%, #20160d 62%, #120b06 100%); background-blend-mode: soft-light, normal; background-attachment: fixed, fixed; }
+html[data-theme="tome"] #main { background: var(--leather), radial-gradient(ellipse at 50% 35%, #3a2b1b 0%, #20160d 62%, #120b06 100%); background-attachment: fixed, fixed; }
 html[data-theme="tome"] h3 { font-variant: small-caps; letter-spacing: .04em; font-weight: 500; }
 html[data-theme="tome"] h1, html[data-theme="tome"] h2 { font-weight: 500; }
 
 /* leather spine with stitching */
-html[data-theme="tome"] #nav { background: var(--leather), linear-gradient(180deg, #33241a, #1f150d); background-blend-mode: soft-light, normal; border-right: 3px solid #0e0905; position: relative; }
+html[data-theme="tome"] #nav { background: var(--leather), linear-gradient(180deg, #33241a, #1f150d); border-right: 3px solid #0e0905; position: relative; }
 html[data-theme="tome"] #nav::after { content: ""; position: absolute; top: 8px; bottom: 8px; right: 6px; border-right: 2px dashed #6b5030; pointer-events: none; }
 html[data-theme="tome"] #nav button { border-radius: 3px; }
 html[data-theme="tome"] #nav button.active { background: #8a3326; color: #f6ead0; }
-html[data-theme="tome"] #topbar { background: var(--leather), #2c1f14; background-blend-mode: soft-light, normal; border-bottom: 2px solid #0e0905; }
+html[data-theme="tome"] #topbar { background: var(--leather), #2c1f14; border-bottom: 2px solid #0e0905; }
 
 /* parchment pages: light in the middle, burnt toward the edges, each with its own crinkles */
 html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-color: var(--panel); background-blend-mode: overlay, soft-light, normal; border: 1px solid #1f160c; box-shadow: var(--shadow); }
@@ -120,20 +125,23 @@ html[data-theme="tome"] ::-webkit-scrollbar-track { background: #1a1209; border-
 html[data-theme="tome"] ::-webkit-scrollbar-thumb { background: #6a5535; border: 2px solid #1a1209; border-radius: 6px; }
 html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
 
-/* The page turn. The old page is cut into strips; each strip is hinged to the one before it, so the page can bend like loose paper.
-   --a is how far the whole page has swung; --c is how much it is bending right now. */
+/* The page turn. The old page is cut into many thin strips; each strip is hinged to the one before it, so the page bends like loose paper.
+   --a is how far the whole page has swung; --c is how much it is bending right now; --i is a strip's position along the page (0 to 1).
+   Going back a tab mirrors the whole thing (.rev): the page swings from the right edge toward the right. */
 @property --a { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
 @property --c { syntax: '<number>'; inherits: true; initial-value: 0; }
-.page-turn { position: absolute; left: 0; z-index: 6; pointer-events: none; perspective: 1700px; perspective-origin: 20% 40%; }
-.page-turn.go { animation: turn-a 1.05s cubic-bezier(.55, .02, .3, 1) forwards, turn-c 1.05s ease-in-out forwards; }
+.page-turn { position: absolute; z-index: 6; pointer-events: none; perspective: 1900px; perspective-origin: 20% 40%; overflow: visible; }
+.page-turn.rev { transform: scaleX(-1); }
+.page-turn.go { animation: turn-a 1.1s cubic-bezier(.55, .02, .3, 1) forwards, turn-c 1.1s ease-in-out forwards; }
 .pt-strip { position: absolute; top: 0; height: 100%; transform-style: preserve-3d; transform-origin: left center; transform: rotateY(calc(var(--c) * var(--k, 0deg))); }
 .pt-strip.first { left: 0; transform: rotateY(var(--a)); }
-.pt-strip .pt-strip { left: 100%; }
+.pt-strip .pt-strip { left: calc(100% - 1px); }
 .pt-face { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; }
-.pt-front { background: var(--leather), radial-gradient(ellipse at 50% 35%, #3a2b1b 0%, #20160d 100%); background-blend-mode: soft-light, normal; }
-.pt-front::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.5), rgba(0,0,0,0) 90%); opacity: calc(var(--c) * .55); pointer-events: none; }
-.pt-back { transform: rotateY(180deg); background-color: #5a4a2f; background-image: repeating-linear-gradient(0deg, transparent 0 15px, rgba(30,18,6,.28) 15px 16px), var(--grain), radial-gradient(ellipse at 40% 40%, #6c5b3b, #3f321f); background-blend-mode: normal, overlay, normal; }
-.pt-back::after { content: ""; position: absolute; inset: 0; background: linear-gradient(270deg, rgba(0,0,0,.5), rgba(0,0,0,0) 80%); opacity: calc(var(--c) * .5); }
+.pt-front { background: var(--leather), radial-gradient(ellipse at 50% 35%, #3a2b1b 0%, #20160d 100%); box-shadow: 1px 0 0 #2a1d12; }
+.rev .pt-front { transform: rotateY(180deg); }
+.rev .pt-back { transform: none; }
+.pt-front::after, .pt-back::after { content: ""; position: absolute; inset: 0; background: #000; pointer-events: none; opacity: calc(var(--c) * (.04 + var(--i, 0) * .42)); }
+.pt-back { transform: rotateY(180deg); background-color: #5a4a2f; background-image: var(--grain), radial-gradient(ellipse at 40% 40%, #54452b, #3a2e1d); background-blend-mode: overlay, normal; box-shadow: 1px 0 0 #43361f; }
 .pt-clone { position: absolute; top: 0; }
 @keyframes turn-a { from { --a: 0deg; } to { --a: -180deg; } }
 @keyframes turn-c { 0% { --c: 0; } 30% { --c: 1; } 70% { --c: .75; } 100% { --c: 0; } }
