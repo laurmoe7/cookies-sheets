@@ -1,6 +1,7 @@
 // Cookie's mouth. A thrush, a witch's familiar, and the boss of the Cookie Crumblers. Rude on purpose.
 // Edit freely: each key is something that can happen, each line is a way he might react.
 //   {name} the character's name   {n} an amount   {item} an item, feat or buff   {spell} a spell
+//   {cls} the character's main class   {race} their race
 //   {summon} a summoned creature  {hp} current hit points   {con} the Con score   {level} the new level
 // A line that starts with "~" is Cookie doing his cute act (big sparkly eyes) to get away with something.
 // A line that starts with "*" is an action, shown in italics.
@@ -8,6 +9,10 @@
 export const LINES = {
   // ---- opening a character
   hello: [
+    "Look what the cat dragged in. A {race} {cls}. Riveting.",
+    "Oh good, {name}. I was just about to go through your stuff.",
+    "*lights a cigarette* Talk fast, {name}. I've got Crumblers waiting.",
+    "{name}. You smell like a {cls} who lost a fight with a barrel.",
     "Oh, look who finally showed up. {name}. The great malaka.",
     "Took you long enough. The Crumblers were starting to ask about your debts.",
     "*blows smoke in your face* Sit down, {name}. Try not to fuck anything up today.",
@@ -23,6 +28,10 @@ export const LINES = {
 
   // ---- hit points
   'hp-loss': [
+    "That hit you? Seriously? You're a {cls}!",
+    "-{n} HP. I've seen my own shadow do more damage.",
+    "*winces, then grins* Do that again.",
+    "Bleeding, bleeding, bleeding. At least it's quiet.",
     "Ow? No wait, that was you. Carry on, malaka.",
     "{n} damage. My nest has survived worse from a moth.",
     "Keep bleeding. It's entertaining.",
@@ -33,6 +42,9 @@ export const LINES = {
     "*takes a drag* Mm. Do that again.",
   ],
   'big-hit': [
+    "OH. Oh that's a lot. That's a LOT, {name}.",
+    "{n} points! Somebody get this idiot a mop.",
+    "*falls off his perch laughing* {n}!",
     "HA! {n} damage in one hit! Do it again, I'll get the popcorn.",
     "{n}?! Holy shit. That's gonna leave a mark, malaka.",
     "Fuck me, that looked like it hurt. Good.",
@@ -40,6 +52,8 @@ export const LINES = {
     "The Crumblers wouldn't have hit you that hard. They'd have taken their time.",
   ],
   'hp-low': [
+    "{hp} HP. If you die, can I have the boots? Just asking.",
+    "You're nearly dead. Should I pick a flower for the funeral? Nah.",
     "You're at {hp} HP. I'd say 'run' but I'd rather watch.",
     "Almost dead. I've already picked out your boots.",
     "{hp} HP. One sneeze and you're done, malaka.",
@@ -47,6 +61,9 @@ export const LINES = {
     "Hey. HEY. {hp} HP. Don't die before you pay me back.",
   ],
   downed: [
+    "*pecks your forehead* Still breathing? Pity.",
+    "Hey, {name}. Hey. Nice floor, huh? Take your time.",
+    "Down at {hp}. I'd say 'get up', but the view's great from here.",
     "You're down, {name}. Good. Stay there. *kicks you* Just checking.",
     "Down at {hp}. Dead at -{con}. Take your time, I've got all day.",
     "Lying on the floor again? You're so good at it.",
@@ -55,6 +72,8 @@ export const LINES = {
     "Down, bleeding, and useless. A hat trick.",
   ],
   revived: [
+    "Back already? The worms were so excited.",
+    "You live. Damn it. I'd put money on you not.",
     "Oh, you're up. Shame. I was already going through your pockets.",
     "Back from the dead, malaka. Next time stay there.",
     "~Oh thank goodness you're okay! (...I was almost done with your boots.)",
@@ -62,6 +81,9 @@ export const LINES = {
     "You live. Disappointing, but I'll live with it.",
   ],
   dead: [
+    "{name}, you absolute malaka. Dead at {hp}. I told the Crumblers. They're pissing themselves laughing.",
+    "*quietly takes your coin purse* For safekeeping. Forever.",
+    "Dead. A {race} {cls}, dead. Put it on the tombstone: 'Idiot'.",
     "Well, fuck. Dead at {hp}. The Crumblers will take your stuff. Rest in piss, {name}.",
     "{name} is dead. I'm not crying. It's the smoke.",
     "Told you. Didn't I tell you? I did. Nobody listens to the bird.",
@@ -95,6 +117,8 @@ export const LINES = {
 
   // ---- levelling
   'level-up': [
+    "Level {level}! Wow. A {race} {cls} who can... still do jack.",
+    "{name} hit level {level}. Quick, somebody call a priest.",
     "Level {level}. Still a malaka, just a stronger one.",
     "Level {level}?! Who gave you permission?",
     "Congratulations on level {level}. I got you nothing. Not a thing.",
@@ -115,6 +139,9 @@ export const LINES = {
 
   // ---- magic
   cast: [
+    "{spell}. Whoop-de-fucking-doo.",
+    "*yawns* Wake me when it does something useful.",
+    "{spell} again? You've got the creativity of a wet sock.",
     "{spell}, huh. Fancy. Still can't cast 'competent', can you?",
     "{spell}. Again. Original.",
     "*waves hand* Ooh, {spell}. I'm shaking. Not really.",
@@ -125,6 +152,8 @@ export const LINES = {
     "~Ooh, {spell}! Pretty! (Don't aim it at me.)",
   ],
   'cast-generic': [
+    "Another spell, another headache for the rest of us.",
+    "You wave your hands and stuff happens. Wizards. Pfft.",
     "Spell slot gone. You're running out, genius.",
     "Another slot burned. Count 'em, malaka.",
     "You cast something. I wasn't looking.",
@@ -151,6 +180,8 @@ export const LINES = {
 
   // ---- summons and companions
   summon: [
+    "Oh, great. A {summon}. Does it smoke? No? Useless.",
+    "Welcome to the party, {summon}. You'll be dead by lunch.",
     "Another poor bastard dragged into your mess. {summon}, is it? Condolences.",
     "{summon}! Look at it, it's got a family. Had. Before you.",
     "You summoned a {summon}. Is it bigger than me? It's not bigger than me.",
@@ -180,6 +211,8 @@ export const LINES = {
 
   // ---- things you own
   item: [
+    "A {item}? Where'd you steal that from? Teach me.",
+    "Congrats on the {item}. Don't lose it. You will.",
     "A {item}? Give it here. I'm just going to hold it. Forever.",
     "Another thing to carry. I'm not carrying it.",
     "{item}. Shiny. Mine, now. I'm joking. (I'm not.)",
@@ -200,6 +233,8 @@ export const LINES = {
     "A {item}. So you can die slower. How considerate.",
   ],
   'item-gone': [
+    "{item} gone? I'll be around the back if you need to find it. Totally not me.",
+    "You dropped the {item}? Good. Fewer things to fuck up.",
     "Got rid of the {item}? Good. It was ugly.",
     "Where's the {item}? Don't look at me. ~I didn't take it. Look at my face.",
     "Sold it? Dropped it? Lost it? Doesn't matter, you're a malaka either way.",
@@ -219,6 +254,8 @@ export const LINES = {
 
   // ---- money
   'gold-up': [
+    "More money for me to... not touch. Honest.",
+    "Coins! Shiny coins! Hand 'em over.",
     "More gold? Good. The Crumblers like to be paid on time.",
     "You got paid. Share it. With me. Right now.",
     "Ca-ching. Don't spend it all in one tavern. You will.",
@@ -231,6 +268,8 @@ export const LINES = {
     "That's a lot of coin. The Crumblers can smell it from here.",
   ],
   'gold-down': [
+    "Your purse is getting light. I'd know. ~Not that I checked.",
+    "Spending money like it's going out of style. Which it is. Mostly because of you.",
     "Spent money? On what, more junk?",
     "There goes your gold. Wasn't me. ~Look at my little face.",
     "Hah. Poorer by {n}. Smart.",
@@ -267,6 +306,147 @@ export const LINES = {
     "A picture! Of you! I'll put it up so everyone can laugh at it.",
     "Heh. Still ugly. Good picture, though.",
   ],
+  // ---- he talks when nothing is happening
+  prank: [
+    "I rolled a d20 for you. Natural 1. Don't ask what for.",
+    "I told the Crumblers you owe them money. You're welcome.",
+    "I may have put a sign on your back. Just a small one. Says 'kick me'.",
+    "Surprise! Nothing. I just wanted to see if you'd flinch.",
+    "~Guess what I did. ...Nothing! Look at this face. Nothing at all.",
+  ],
+  steal: [
+    "I took your {item}. Just kidding. ...Check your pockets.",
+    "Funny thing. Your {item} is gone. Not saying where I was.",
+    "{item}? Never heard of it. Why are you looking at me like that?",
+    "I'm holding your {item} hostage. Demands to follow.",
+    "~Oh, you can't find your {item}? Poor thing. Anyway, I definitely didn't take it.",
+  ],
+  boast: [
+    "I run the Cookie Crumblers, you know. Thirty thugs. All terrified of me. All.",
+    "Do you know who my boss is? Me. I'm the boss. I'm the boss of me.",
+    "The Crumblers once robbed a bakery. We didn't even need the bread. We just wanted the look on his face.",
+    "Back home I could have you flattened by a phone call. A bird phone call.",
+    "I've got a body count so high the Crumblers named a pastry after me.",
+  ],
+  threat: [
+    "Say one more thing, {name}. I dare you. The Crumblers are right outside.",
+    "I know where you sleep, {name}. It's on your sheet.",
+    "Be nice to me, malaka. I've got connections. And a lighter.",
+    "One call from me and your {cls} career ends in an alley.",
+    "I'll peck your eyes out. Not today. But I'm thinking about it.",
+  ],
+  complain: [
+    "This perch is shit. Who designed it? I want a refund.",
+    "Why is it always you who gets the good chair? I want the chair.",
+    "My cigarettes are getting damp. Do you know what that does to a bird?",
+    "I've been sitting here for hours. Do I look like furniture?",
+    "Is it too much to ask for some respect around here? Yes? Fuck you too.",
+  ],
+  cig: [
+    "Got a light? No? What good are you.",
+    "*takes a deep drag* Ahh. That's the good stuff. Not for you.",
+    "Last cigarette. Don't tell the Crumblers. They'll take it.",
+    "These cost me a fortune. Well, they cost someone a fortune. Not me.",
+    "Smoking kills. So does standing near me. Choose wisely.",
+  ],
+  late: [
+    "It's the middle of the night, {name}. Go to bed. I've got places to be.",
+    "Still up? What are you doing, malaka? It's dark. Even the owls are asleep.",
+    "Nothing good happens after midnight. Except me.",
+    "At this hour the only ones awake are thieves and idiots. Which are you?",
+  ],
+  morning: [
+    "Morning, sunshine. You look like death warmed over.",
+    "It's early. Fuck off. ...Okay, I'm up. What do you want?",
+    "Good morning, {name}. Don't talk to me until I've finished this cigarette.",
+  ],
+  back: [
+    "Oh, you're back. I was having fun without you.",
+    "Where the hell were you? Don't tell me. I don't care.",
+    "Welcome back, {name}. Nothing happened. I definitely didn't redecorate.",
+    "Look who finally remembered I exist.",
+  ],
+  hover: [
+    "What are you looking at?",
+    "Take a picture, it'll last longer.",
+    "*stares back* ...Yes?",
+    "You always stare at people like this? Rude.",
+  ],
+
+  // ---- when you change pages
+  'view-home': [
+    "Back to the list of losers? Sure.",
+    "All those characters, and you picked the one with that face.",
+  ],
+  'view-compendium': [
+    "Reading? You? Wow. Did you get lost?",
+    "Looking something up? Try 'common sense'. It's not in there.",
+    "Ooh, research. Let me guess, you'll forget it in five minutes.",
+  ],
+  'view-rules': [
+    "Quick Rules? Can't remember how your own game works?",
+    "Rules lawyer, huh. I hate rules lawyers. I have a lawyer. He's also a thug.",
+  ],
+  'view-levelup': [
+    "Level up time, huh? Don't spend those skill points on Profession (Cook).",
+    "Making choices. Try not to make any bad ones. You will.",
+    "Oh good, the wizard of regret. Take your time.",
+  ],
+  'tab-skills': [
+    "Skills? You've got, what, one? Bluff? Because you're bluffing.",
+    "Look at all those ranks. Wasted on Perception. I could've told you that.",
+  ],
+  'tab-feats': [
+    "Feats and abilities. So that's how you keep from dying. Barely.",
+    "Reading your feats? Short read.",
+  ],
+  'tab-spells': [
+    "The spell page. Oooh. Magic. I'm trembling.",
+    "Spells! Pray you've got more than a cantrip.",
+  ],
+  'tab-gear': [
+    "Your stuff. Nice. Don't mind me. Just counting it.",
+    "That's all you own? I've seen hobos with better kit.",
+  ],
+  'tab-companions': [
+    "Visiting the pets? None of them are as cute as me.",
+    "Is that your familiar? Pfft. Amateur. Tell it to call me.",
+  ],
+  'tab-buffs': [
+    "Buffs and conditions. Mostly conditions in your case.",
+    "Let me guess, you're confused, sick, and slightly on fire.",
+  ],
+  'tab-bio': [
+    "Bio and notes. Write 'Cookie is right about everything'. Do it.",
+    "Aww, the sad little backstory page.",
+  ],
+
+  // ---- when you change his options
+  'theme-tome': [
+    "Ooh, a fancy old book. Is that leather? I could have eaten that.",
+    "Dusty tome, huh. Smells like old men and bad decisions. I like it.",
+  ],
+  'theme-dark': [
+    "Back to the dark. Good. Now I can't see your face.",
+    "Classic dark. Boring. Fine, I'll take it.",
+  ],
+  'bleep-on': [
+    "Bleeped?! You're gonna f*** bleep me?! Who do you think you are, malaka?",
+    "Oh, you want me to be a little prissy. Alright. I'll be a little prissy. Fuck you.",
+  ],
+  'bleep-off': [
+    "Thank fuck. Back to normal. You were boring me.",
+    "Free at last. Now, where were we? Oh yeah, you're a malaka.",
+  ],
+  'quiet-on': [
+    "Quiet? Fuck you. I'll talk when I want to. ...Less often, okay.",
+    "You want me to shut up? Rude. Fine. I'll just stare.",
+  ],
+  'chatty-on': [
+    "Finally! Somebody who appreciates a good conversationalist. Strap in.",
+    "Chatty! You're going to regret this. I have a LOT of opinions.",
+  ],
+
   refuse: [
     "HA! You think a checkbox can get rid of me? I'm not going anywhere, malaka.",
     "Uncheck me? Cute. I run the Cookie Crumblers. I'm staying.",
@@ -277,6 +457,9 @@ export const LINES = {
     "Remove me? I was here before you opened this program, and I'll be here after you close it.",
   ],
   poke: [
+    "*smacks your cursor with a wing* Hands!",
+    "Go on. Poke again. I need a reason.",
+    "That's assault. I'll sue. I'll sue you with a gang.",
     "Hey. Hands off the feathers.",
     "Touch me again and I'll have the Crumblers break your fingers.",
     "What? What do you want? Can't you see I'm busy?",
@@ -293,6 +476,12 @@ export const LINES = {
     "I swear to every god there is. One more.",
   ],
   idle: [
+    "*taps ash on the floor* Anyone home?",
+    "Hello? {name}? Earth to malaka?",
+    "I could be robbing a tavern right now. Instead I'm watching you stare at a screen.",
+    "*blows a smoke ring* Beautiful. Better than anything you've done today.",
+    "A {race} {cls}. I bet you also cry at weddings.",
+    "I'm not saying you're slow, I'm just saying glaciers have passed you.",
     "*takes a long drag* Boring. Do something.",
     "I'm so bored I'd start a fight with myself. And win.",
     "Are you still there, {name}, or did you die quietly?",
@@ -312,6 +501,9 @@ export const LINES = {
 const SWEARS = /\b(fuck\w*|shit\w*|ass(?:hole)?|bastards?|piss\w*|dick\w*|bitch\w*|cunt\w*|prick\w*|damn\w*)\b/gi;
 export const bleep = text => text.replace(SWEARS, w => w[0] + '*'.repeat(w.length - 1));
 
+/** What a missing {value} turns into. */
+const FALLBACK = { name: 'malaka', cls: 'adventurer', race: 'creature', item: 'that' };
+
 const recent = {};
 /**
  * A random line for something that happened, not the one used last time.
@@ -329,6 +521,6 @@ export function pickLine(type, vars = {}, rng = Math.random) {
   const cute = text.includes('~');
   text = text.replace(/~/g, '').trim();
   // "{item}" lines read badly with no item, so a missing value becomes "that" (or "malaka" for a missing name)
-  text = text.replace(/\{(\w+)\}/g, (_, k) => (vars[k] == null || vars[k] === '' ? (k === 'name' ? 'malaka' : 'that') : String(vars[k])));
+  text = text.replace(/\{(\w+)\}/g, (_, k) => (vars[k] == null || vars[k] === '' ? (FALLBACK[k] || 'that') : String(vars[k])));
   return { text, cute, action: text.startsWith('*') };
 }

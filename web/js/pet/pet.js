@@ -25,12 +25,12 @@ const EXTRAS = ['steam', 'question', 'sweat', 'shock'];
 const REACT = {
   hello: { prio: 5, face: 'smug', move: 'hop' },
   welcome_new: { prio: 5, face: 'laugh', move: 'wiggle' },
-  dead: { prio: 5, face: 'laugh', move: 'hophop' },
+  dead: { prio: 5, face: 'laugh', move: 'boogie' },
   downed: { prio: 4, face: 'laugh', move: 'wiggle' },
   revived: { prio: 4, face: 'sneer', move: 'bob' },
   'level-up': { prio: 4, face: 'sneer', move: 'peek' },
   'level-down': { prio: 3, face: 'laugh', move: 'wiggle' },
-  'big-hit': { prio: 3, face: 'laugh', move: 'wiggle' },
+  'big-hit': { prio: 3, face: 'laugh', move: 'twirl' },
   'hp-low': { prio: 3, face: 'mad', move: 'bob' },
   'hp-loss': { prio: 2, face: 'smug', move: 'bob' },
   'hp-heal': { prio: 1, face: 'sneer', move: '' },
@@ -62,6 +62,22 @@ const REACT = {
   poke: { prio: 5, face: 'mad', move: 'wiggle' },
   'poke-many': { prio: 5, face: 'mad', move: 'hophop' },
   idle: { prio: 1, face: 'smug', move: 'sniff' },
+  prank: { prio: 1, face: 'laugh', move: 'wiggle' },
+  steal: { prio: 1, face: 'cute', move: 'peek' },
+  boast: { prio: 1, face: 'smug', move: 'bob' },
+  threat: { prio: 1, face: 'mad', move: 'hopsmall' },
+  complain: { prio: 1, face: 'sneer', move: 'shuffle' },
+  cig: { prio: 1, face: 'huff', move: '' },
+  late: { prio: 1, face: 'sneer', move: '' },
+  morning: { prio: 1, face: 'huff', move: '' },
+  back: { prio: 3, face: 'sneer', move: 'hop' },
+  hover: { prio: 3, face: 'sneer', move: '' },
+  'theme-tome': { prio: 5, face: 'cute', move: 'peek' },
+  'theme-dark': { prio: 5, face: 'sneer', move: '' },
+  'bleep-on': { prio: 5, face: 'mad', move: 'hophop' },
+  'bleep-off': { prio: 5, face: 'laugh', move: 'boogie' },
+  'quiet-on': { prio: 5, face: 'mad', move: 'wiggle' },
+  'chatty-on': { prio: 5, face: 'laugh', move: 'hop' },
 };
 // How likely a line is at each chattiness, and the quiet gap he leaves between lines (ms).
 const TALK = { quiet: { odds: 0.3, gap: 45000 }, normal: { odds: 0.75, gap: 10000 }, chatty: { odds: 1, gap: 3500 } };
@@ -79,15 +95,36 @@ export function mountPet(slot) {
   bubble = wrap.querySelector('#cookie-bubble');
   pet.addEventListener('click', poke);
   document.addEventListener('optionschange', refreshOptions);
-  document.addEventListener('cookie-refuse', () => { const l = pickLine('refuse', { name }); if (l) speak(l, 5, 'refuse'); });
+  document.addEventListener('cookie-refuse', () => { const l = pickLine('refuse', baseVars()); if (l) speak(l, 5, 'refuse'); });
   refreshOptions();
   face('smug');
   addEventListener('pointermove', follow, { passive: true });
+  let hoverTimer;
+  pet.addEventListener('pointerenter', () => { hoverTimer = setTimeout(() => sayKey('hover', 3), 3200); });
+  pet.addEventListener('pointerleave', () => clearTimeout(hoverTimer));
+  let away = 0;
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') away = Date.now();
+    else if (away && Date.now() - away > 120000) { away = 0; setTimeout(() => sayKey('back', 3), 700); }
+  });
   scheduleMoves();
+}
+
+let prevOpts = null;
+/** He has opinions about the settings you change. */
+function remarkOnOptions(o) {
+  const was = prevOpts;
+  prevOpts = { theme: o.theme, swear: o.cookieSwear, talk: o.cookieTalk };
+  if (!was) return;
+  const key = o.theme !== was.theme ? (o.theme === 'tome' ? 'theme-tome' : 'theme-dark')
+    : o.cookieSwear !== was.swear ? (o.cookieSwear === 'bleep' ? 'bleep-on' : 'bleep-off')
+      : o.cookieTalk !== was.talk && o.cookieTalk !== 'normal' ? (o.cookieTalk === 'quiet' ? 'quiet-on' : 'chatty-on') : '';
+  if (key) setTimeout(() => sayLine(key), 450);
 }
 
 function refreshOptions() {
   if (!wrap) return;
+  remarkOnOptions(options());
   const on = options().cookie;
   wrap.hidden = !on;
   clearTimeout(idleTimer);
@@ -174,6 +211,13 @@ function willSpeak(prio) {
   return Math.random() < t.odds * (prio >= 3 ? 1 : 0.8);
 }
 
+/** Values for {name}, {cls}, {race} and {level} in any line, from the open character. */
+function baseVars(extra = {}) {
+  const v = { name, cls: settled?.cls, race: settled?.race, level: settled?.level };
+  for (const [k, x] of Object.entries(extra)) if (x != null) v[k] = x;
+  return v;
+}
+
 /** Maps an event from facts.js to the key of its lines. */
 function lineKey(ev) {
   if (ev.type === 'cast') return ev.spell ? 'cast' : 'cast-generic';
@@ -188,7 +232,7 @@ function react(events) {
   const r = REACT[ev.type];
   if (!r || !willSpeak(r.prio)) return;
   const key = lineKey(ev);
-  const line = pickLine(key, { name, n: ev.amount, item: ev.name, spell: ev.spell, summon: ev.name, hp: ev.hp, con: ev.con, level: ev.level, max: ev.max });
+  const line = pickLine(key, baseVars({ n: ev.amount, item: ev.name, spell: ev.spell, summon: ev.name, hp: ev.hp, con: ev.con, level: ev.level, max: ev.max }));
   if (line) speak(line, r.prio, REACT[key] ? key : ev.type);
 }
 
@@ -219,8 +263,18 @@ function poke() {
   const now = Date.now();
   pokes = pokes.filter(t => now - t < 6000).concat(now);
   const many = pokes.length >= 4;
-  const line = pickLine(many ? 'poke-many' : 'poke', { name });
+  const line = pickLine(many ? 'poke-many' : 'poke', baseVars());
   if (line) speak(line, 5, many ? 'poke-many' : 'poke');
+}
+
+/** Now and then, with nothing happening, he mutters something. */
+/** Which kind of mutter fits right now (night and morning remarks, theft jokes only when there is something to steal). */
+function idleKey() {
+  const h = new Date().getHours();
+  const pool = ['idle', 'idle', 'prank', 'boast', 'threat', 'complain', 'cig'];
+  if (settled && (settled.gear.length || settled.weapons.length)) pool.push('steal', 'steal');
+  if (h < 5 || h >= 23) pool.push('late', 'late', 'late'); else if (h < 9) pool.push('morning', 'morning');
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 /** Now and then, with nothing happening, he mutters something. */
@@ -230,8 +284,10 @@ function scheduleIdle() {
   const t = TALK[options().cookieTalk] || TALK.normal;
   idleTimer = setTimeout(() => {
     if (document.visibilityState === 'visible' && Date.now() - lastSpoke > t.gap * 3 && options().cookieTalk !== 'quiet') {
-      const line = pickLine('idle', { name });
-      if (line) speak(line, 1, 'idle');
+      const key = idleKey();
+      const pick = key === 'steal' ? [...settled.gear, ...settled.weapons][Math.floor(Math.random() * (settled.gear.length + settled.weapons.length))] : '';
+      const line = pickLine(key, baseVars({ item: pick }));
+      if (line) speak(line, 1, REACT[key] ? key : 'idle');
     }
     scheduleIdle();
   }, t.gap * (8 + Math.random() * 8));
@@ -261,8 +317,17 @@ function glance(stops) {
   return t;
 }
 
+/** A little prop (smoke ring, ash, spit) floating near his beak; `cls` picks its look in pet.css. */
+function prop(cls, ms, style = {}) {
+  const e = document.createElement('i');
+  e.className = 'cookie-prop ' + cls;
+  Object.assign(e.style, style);
+  wrap.appendChild(e);
+  setTimeout(() => e.remove(), ms);
+}
+
 /** Names of the idle moves below, in the same order (shown in the developer tool). */
-export const IDLE_NAMES = ['blink', 'look around', 'roll eyes', 'long drag', 'yawn', 'scratch', 'tap feet', 'sway', 'sniff', 'flick ash', 'sit down', 'glare', 'peek', 'nod off'];
+export const IDLE_NAMES = ['blink', 'look around', 'roll eyes', 'long drag', 'yawn', 'scratch', 'tap feet', 'sway', 'sniff', 'flick ash', 'sit down', 'glare', 'peek', 'nod off', 'smoke ring', 'flick ash', 'light up', 'spit', 'tantrum', 'strut', 'boogie', 'twirl', 'roll about', 'stare you down'];
 
 const IDLE_MOVES = [
   () => { face('smug'); pet.dataset.eyes = 'closed'; later(180, () => { pet.dataset.eyes = 'open'; }); return 300; },                       // blink
@@ -279,6 +344,16 @@ const IDLE_MOVES = [
   () => { face('sneer', 1500); pet.classList.add('eyesquint'); later(1400, () => pet.classList.remove('eyesquint')); return 1500; },   // glares at you
   () => { move('peek', 1400); return 1400; },                                                                                            // peers about
   () => { face('smug'); pet.dataset.eyes = 'closed'; later(1800, () => { face('shock', 700); move('hop', 500); }); return 2600; },       // nods off, wakes with a start
+  () => { face('huff', 2400); later(500, () => { prop('ring', 1800); prop('ring r2', 2000, { animationDelay: '.35s' }); }); return 2400; },                  // blows a smoke ring
+  () => { face('smug', 1600); move('hopsmall', 450); later(200, () => { prop('ash', 1300); prop('ash a2', 1300, { animationDelay: '.15s' }); }); return 1600; }, // flicks his ash
+  () => { face('huff', 2200); prop('flame', 900); return 2200; },                                                                       // lights up
+  () => { face('sneer', 1200); pet.dataset.mouth = 'o'; later(250, () => prop('spit', 800)); return 1200; },                              // spits
+  () => { face('mad', 2200); move('hophop', 1500); pet.classList.add('eyewide'); later(1400, () => pet.classList.remove('eyewide')); return 2200; }, // throws a tantrum
+  () => { face('smug', 3000); move('waddle', 1800); return 3000; },                                                                     // struts
+  () => { face('laugh', 1600); move('boogie', 1500); return 1600; },                                                                    // dances
+  () => { face('smug', 1000); move('twirl', 800); return 1000; },                                                                       // twirls
+  () => { face('sneer', 2400); move('roly', 2800); return 2800; },                                                                      // rolls about
+  () => { face('mad', 2600); look(0, 1); lookLock = Date.now() + 2800; pet.classList.add('eyesquint'); later(1300, () => pet.classList.remove('eyesquint')); return 2600; }, // stares you down
 ];
 
 /** Plays idle move number `i` (for trying them out); with no number, a random one. */
@@ -300,10 +375,20 @@ function scheduleMoves() {
   }, 5000 + Math.random() * 7000);
 }
 
+/** Now and then comments on something (a page you opened): `chance` stays low so he does not nag. */
+function sayKey(key, prio = 1, chance = 1) {
+  if (!options().cookie || Math.random() > chance || !willSpeak(prio)) return;
+  const line = pickLine(key, baseVars());
+  if (line) speak(line, prio, REACT[key] ? key : 'idle');
+}
+
+/** A page or sheet tab was opened (names like 'view-compendium' or 'tab-gear'). */
+export function view(key) { sayKey(key, 1, 0.3); }
+
 /** Says a line for any event type right now, ignoring his mood, options and cooldown (for the developer tool). */
 export function sayLine(type, vars = {}) {
   const key = type;
-  const line = pickLine(key, { name: name || 'Fumu', n: 7, item: 'Longsword', spell: 'Fireball', summon: 'Eagle', hp: -3, con: 12, level: 5, max: 31, ...vars });
+  const line = pickLine(key, baseVars({ name: name || 'Fumu', n: 7, item: 'Longsword', spell: 'Fireball', summon: 'Eagle', hp: -3, con: 12, max: 31, ...vars }));
   if (line) speak(line, 5, REACT[key] ? key : 'idle');
 }
 

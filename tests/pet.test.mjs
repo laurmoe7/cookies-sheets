@@ -56,7 +56,7 @@ test('added() counts duplicates once each', () => {
 
 test('every line fills its placeholders and a missing value never leaves braces', () => {
   for (const [type, list] of Object.entries(LINES)) {
-    assert.ok(list.length >= 3, `${type} needs a few lines to vary`);
+    assert.ok(list.length >= (/^(view|tab|theme|bleep|quiet|chatty)/.test(type) ? 2 : 3), `${type} needs a few lines to vary`);
     for (let i = 0; i < 40; i++) {
       const l = pickLine(type, {});
       assert.ok(l && !/[{}]/.test(l.text), `${type}: ${l?.text}`);

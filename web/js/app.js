@@ -6,7 +6,7 @@ import { initSheetSearch } from './sheetsearch.js';
 import { initOptions, showOptions, showChangelog } from './options.js';
 import { choosePicture, repositionPicture } from './cropper.js';
 import { initSummons } from './views/summons.js';
-import { mountPet, observe as petObserve, opened as petOpened } from './pet/pet.js';
+import { mountPet, observe as petObserve, opened as petOpened, view as petView } from './pet/pet.js';
 import { renderHome } from './views/home.js';
 import { renderSheet } from './views/sheet.js';
 import { renderLevelUp } from './views/levelup.js';
@@ -21,6 +21,7 @@ export const state = {
 const VIEWS = { home: renderHome, sheet: renderSheet, levelup: renderLevelUp, compendium: renderCompendium, rules: renderRules };
 
 export function go(view, opts = {}) {
+  petView('view-' + view);
   if ((view === 'sheet' || view === 'levelup') && !state.char) view = 'home';
   state.view = view;
   Object.assign(state, opts);

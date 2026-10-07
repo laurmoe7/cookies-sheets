@@ -3,7 +3,7 @@
 // A floating panel for trying out animations and sounds on the real page while you look at them.
 import { IDLE_NAMES, idleMove, sayLine, FACES, face, move } from '../js/pet/pet.js';
 import { LINES } from '../js/pet/lines.js';
-import { healFx } from '../js/healfx.js';
+import { hpFx } from '../js/healfx.js';
 import { playSfx } from '../js/sfx.js';
 import { snapshotPage, playPageTurn, options } from '../js/options.js';
 import { toast } from '../js/ui.js';
@@ -24,8 +24,9 @@ export function showAnimLab() {
       ${group('Cookie: faces', Object.keys(FACES).map(k => btn(k, `data-face="${k}"`)).join(''))}
       ${group('Cookie: body moves', MOVES.map(m => btn(m, `data-move="${m}"`)).join(''))}
       ${group('Cookie: says (any event)', Object.keys(LINES).map(k => btn(k, `data-say="${k}"`)).join(''))}
-      ${group('HP bar heal (open the Overview tab)', HEALS.map(([l, f]) => btn(l, `data-heal="${f}"`)).join(''))}
-      ${group('Sounds', btn('Level up', 'data-sfx="levelUp"') + btn('Heal', 'data-sfx="heal"'))}
+      ${group('HP bar heal (open a tab with an HP bar)', HEALS.map(([l, f]) => btn(l, `data-heal="${f}"`)).join(''))}
+      ${group('HP bar damage', HEALS.map(([l, f]) => btn(l, `data-hurt="${f}"`)).join(''))}
+      ${group('Sounds', btn('Level up', 'data-sfx="levelUp"') + btn('Heal', 'data-sfx="heal"') + btn('Full heal', 'data-sfx="fullHeal"') + btn('Hit (random)', 'data-sfx="hit"'))}
       ${group('Page turn (Dusty tome)', btn('Forward', 'data-turn="fwd"') + btn('Back', 'data-turn="back"'))}
       ${group('Toasts', btn('Good', 'data-toast="good"') + btn('Error', 'data-toast="err"') + btn('Plain', 'data-toast=""'))}
     </div>`;
@@ -51,7 +52,8 @@ export function showAnimLab() {
     else if (d.face) face(d.face, 2500);
     else if (d.move) move(d.move, 1800);
     else if (d.say) sayLine(d.say);
-    else if (d.heal) lab.heal(+d.heal);
+    else if (d.heal) lab.fx(+d.heal, 'heal');
+    else if (d.hurt) lab.fx(+d.hurt, 'hurt');
     else if (d.sfx) playSfx(d.sfx);
     else if (d.turn) lab.turn(d.turn === 'back');
     else if (d.toast !== undefined) toast('This is a test message', d.toast || undefined);
@@ -59,10 +61,10 @@ export function showAnimLab() {
 }
 
 const lab = {
-  heal(f) {
-    const card = document.querySelector('.card.hp');
-    if (!card) return toast('Open a character’s Overview tab first', 'err');
-    healFx(card, { amount: Math.max(1, Math.round(f * 40)), frac: f, from: Math.max(0, 0.9 - f) });
+  fx(f, kind) {
+    const card = document.querySelector('.card.hp, .summon-card');
+    if (!card) return toast('Open a tab with an HP bar first (Overview, Companions, or Buffs & Conditions)', 'err');
+    hpFx(card, { amount: Math.max(1, Math.round(f * 40)), frac: f, from: kind === 'heal' ? Math.max(0, 0.9 - f) : Math.min(1, 0.4 + f), kind });
   },
   turn(back) {
     const body = document.getElementById('tab-body');

@@ -7,6 +7,8 @@ import { computeCompanion, newCompanion, withCompanionSources, ANIMAL_SKILLS, EI
 import { classFeatures, archetypesOf } from '../features.js';
 import { linkTerms } from '../termlinks.js';
 import { hpSegments, segsHtml } from '../bars.js';
+import { hpFx } from '../healfx.js';
+import { playSfx } from '../sfx.js';
 import { SKILLS } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
@@ -45,6 +47,12 @@ export async function renderCompanions(body, c) {
       <p class="small muted">Animal companions come from druid, hunter, ranger (from 4th level), cavalier, samurai and paladin (divine bond) levels, the Animal domain, and the Animal Ally and Boon Companion feats; eidolons from summoner levels; familiars from wizard, sorcerer, witch and shaman levels, the arcanist’s Familiar exploit, and a few archetypes.
       Levels are worked out from your classes automatically, and you can override them.</p></section>`}
     ${c.companions.map((comp, i) => companionCard(comp, i, levels, data, masterOf(c))).join('')}`;
+  if (state.compFx) {
+    const fx = state.compFx;
+    state.compFx = null;
+    const card = body.querySelector(`[data-comp="${c.companions.findIndex(x => x.id === fx.id)}"] .card.hp`);
+    if (card) hpFx(card, fx);
+  }
 
   body.addEventListener('toggle', e => {
     const d = e.target.closest?.('details[data-block]');
@@ -64,8 +72,12 @@ export async function renderCompanions(body, c) {
       const row = t.closest('[data-comp]');
       const amt = Math.abs(num($('[data-chp-amt]', row).value));
       let cur = comp.hpCur == null || comp.hpCur === '' ? s.hp : num(comp.hpCur);
+      const before = cur;
+      const frac = n => n / Math.max(1, s.hp);
       if (t.dataset.chp === 'full') {
         if (!await confirmBox(`Heal ${comp.name || 'this companion'} to full hit points?`, 'Heal fully')) return;
+        state.compFx = { id: comp.id, kind: 'heal', amount: Math.max(0, s.hp - before), frac: Math.max(0.6, frac(s.hp - before)), from: frac(before) };
+        playSfx('fullHeal');
         comp.hpCur = null;
       } else {
         if (!amt) return;
@@ -75,6 +87,10 @@ export async function renderCompanions(body, c) {
           cur -= rest;
         } else cur = Math.min(s.hp, cur + amt);
         comp.hpCur = cur >= s.hp ? null : cur;
+        if (cur !== before) {
+          state.compFx = { id: comp.id, kind: cur < before ? 'hurt' : 'heal', amount: Math.abs(cur - before), frac: frac(Math.abs(cur - before)), from: frac(before) };
+          playSfx(cur < before ? 'hit' : 'heal');
+        }
       }
       return changed({ rerender: true });
     }

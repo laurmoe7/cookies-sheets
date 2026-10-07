@@ -15,7 +15,8 @@ import { renderCompanions } from './companions.js';
 import { playPageTurn, snapshotPage } from '../options.js';
 import { hpSegments, segsHtml } from '../bars.js';
 import { playSfx } from '../sfx.js';
-import { healFx } from '../healfx.js';
+import { hpFx } from '../healfx.js';
+import { view as petView } from '../pet/pet.js';
 import { renderResources, resourceBlock, wire as wireResources } from './resources.js';
 
 const ICONS = {
@@ -69,7 +70,7 @@ export function renderSheet(main) {
         <div class="grow"></div><span id="tabs-extra"></span>
       </div>
       <div id="tab-body"></div></div>`;
-    $$('.tab', main).forEach(b => (b.onclick = () => { if (state.sheetTab !== b.dataset.tab) { const snap = snapshotPage($('#tab-body')); const back = TABS.findIndex(t => t[0] === b.dataset.tab) < TABS.findIndex(t => t[0] === state.sheetTab); state.turn = snap && { snap, back }; state.sheetTab = b.dataset.tab; render(); } }));
+    $$('.tab', main).forEach(b => (b.onclick = () => { if (state.sheetTab !== b.dataset.tab) { const snap = snapshotPage($('#tab-body')); const back = TABS.findIndex(t => t[0] === b.dataset.tab) < TABS.findIndex(t => t[0] === state.sheetTab); state.turn = snap && { snap, back }; state.sheetTab = b.dataset.tab; render(); petView('tab-' + b.dataset.tab); } }));
   }
   $$('.tab', main).forEach(b => b.classList.toggle('active', b.dataset.tab === state.sheetTab));
   $('#tabs-extra', main).innerHTML = d.level === 0 ? '<button class="btn primary" data-goto-levelup>Choose 1st level class →</button>' : '';
@@ -248,7 +249,7 @@ function overview(body, c, d) {
       (dd.maxDex != null ? ` · max Dex ${dd.maxDex}` : '') + (dd.acp ? ` · ACP ${dd.acp}` : '');
   };
   updateDyn();
-  if (state.healFx) { healFx($('.card.hp', body), state.healFx); state.healFx = null; }
+  if (state.healFx) { hpFx($('.card.hp', body), state.healFx); state.healFx = null; }
   document.addEventListener('recalc', updateDyn);
   onLeave(() => document.removeEventListener('recalc', updateDyn));
 
@@ -260,7 +261,7 @@ function overview(body, c, d) {
       if (!await confirmBox('Heal to full hit points?', 'Heal fully')) return;
       const healed = Math.max(0, dd.hp.max - cur);
       state.healFx = { amount: healed, frac: Math.max(0.6, healed / Math.max(1, dd.hp.max)), from: cur / Math.max(1, dd.hp.max) };
-      playSfx('heal');
+      playSfx('fullHeal');
       c.hp.current = null; c.hp.nonlethal = 0; changed({ rerender: true }); return; }
     if (!amt) return;
     if (b.dataset.hp === 'dmg') {
@@ -268,9 +269,14 @@ function overview(body, c, d) {
       const temp = num(c.hp.temp);
       if (temp) { const used = Math.min(temp, rest); c.hp.temp = temp - used; rest -= used; }
       cur -= rest;
+      if (cur < dd.hp.current) {
+        state.healFx = { kind: 'hurt', amount: dd.hp.current - cur, frac: (dd.hp.current - cur) / Math.max(1, dd.hp.max), from: dd.hp.current / Math.max(1, dd.hp.max) };
+        playSfx('hit');
+      }
     } else {
       const before = cur;
       cur = Math.min(dd.hp.max, cur + amt);
+      if (cur > before) playSfx('heal');
       if (cur > before) state.healFx = { amount: cur - before, frac: (cur - before) / Math.max(1, dd.hp.max), from: before / Math.max(1, dd.hp.max) };
       c.hp.nonlethal = Math.max(0, num(c.hp.nonlethal) - amt);
     }

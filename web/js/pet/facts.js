@@ -17,12 +17,16 @@ export function facts(c, d) {
     used += sum(book.used);
   }
   const hp = d?.hp || { current: 0, max: 0 };
+  const byClass = {};
+  for (const l of c.levelUps || []) if (l?.cls) byClass[l.cls] = (byClass[l.cls] || 0) + 1;
+  const cls = Object.keys(byClass).sort((a, b) => byClass[b] - byClass[a])[0] || '';
   const abil = Object.values(c.abilities || {});
   return {
     who: c.id || c.name || '',
     hp: n(hp.current), max: n(hp.max), temp: n(c.hp?.temp), nl: n(c.hp?.nonlethal),
     con: n(d?.abilities?.con?.score) || 10,
     level: (c.levelUps || []).length,
+    cls, race: String(c.race || ''),
     used, casts,
     gear: names(c.gear), weapons: names(c.weapons), armor: names(c.armor),
     feats: names(c.feats), traits: names(c.traits),

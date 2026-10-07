@@ -5,6 +5,8 @@ import { state, changed } from '../app.js';
 import { esc, $, $$, modal, toast, showCustom, confirmBox, textField, getPath } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
 import { hpSegments, segsHtml } from '../bars.js';
+import { hpFx } from '../healfx.js';
+import { playSfx } from '../sfx.js';
 import { summonSpell, summonChoices, statBlockHtml, newSummon, templateNotes } from '../summons.js';
 
 let dataPromise = null;
@@ -81,6 +83,9 @@ export async function chooseSummon({ spell = 'Summon Monster I', cls = '' } = {}
 const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
 
 /** The Summons section on the Buffs & Conditions tab. */
+/** A hit point reaction waiting for the next draw: {id, kind, amount, frac, from}. */
+let sumFx = null;
+
 export function renderSummons(el, c) {
   c.summons ||= [];
   const list = c.summons;
@@ -90,6 +95,12 @@ export function renderSummons(el, c) {
       ${list.length ? '<button class="btn small" data-sm-round title="Take one round off every summon">Next round</button><button class="btn small ghost" data-sm-clear>Dismiss all</button>' : ''}</div>
     ${list.length ? `<div class="summon-cards">${list.map((s, i) => summonCard(s, i)).join('')}</div>`
       : '<p class="muted">No summons right now. Use “Summon…” here, or the button beside a Summon Monster / Summon Nature’s Ally spell on the Spells tab.</p>'}`;
+  if (sumFx) {
+    const fx = sumFx;
+    sumFx = null;
+    const card = el.querySelector(`[data-sm="${list.findIndex(x => x.id === fx.id)}"]`);
+    if (card) hpFx(card, fx);
+  }
   el.onclick = async e => {
     const t = e.target.closest('[data-pic],[data-pic-edit],[data-pic-clear],[data-sm-new],[data-sm-round],[data-sm-clear],[data-sm-dismiss],[data-sm-stats],[data-sm-dmg],[data-sm-heal],[data-sm-r]');
     if (!t) return;
@@ -119,7 +130,12 @@ export function renderSummons(el, c) {
     } else if (t.dataset.smDmg !== undefined || t.dataset.smHeal !== undefined) {
       const amt = Math.abs(+$('[data-sm-amt]', t.closest('[data-sm]')).value || 0);
       if (!amt) return;
+      const before = s.hp;
       s.hp = t.dataset.smDmg !== undefined ? s.hp - amt : Math.min(s.hpMax, s.hp + amt);
+      if (s.hp !== before) {
+        sumFx = { id: s.id, kind: s.hp < before ? 'hurt' : 'heal', amount: Math.abs(s.hp - before), frac: Math.abs(s.hp - before) / Math.max(1, s.hpMax), from: before / Math.max(1, s.hpMax) };
+        playSfx(s.hp < before ? 'hit' : 'heal');
+      }
       changed({ rerender: true });
     } else if (t.dataset.smR !== undefined) {
       s.rounds = Math.max(0, s.rounds + +t.dataset.smR);
