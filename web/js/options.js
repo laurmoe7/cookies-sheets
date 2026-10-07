@@ -121,7 +121,7 @@ export function snapshotPage(body) {
   const clone = body.cloneNode(true);
   clone.dataset.h = body.offsetHeight;
   clone.removeAttribute('id');
-  clone.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+  // Inner ids stay: the stylesheet styles some things by id (the health bar fill). The live page comes first in the document, so lookups still find it.
   pruneBelow(body, clone, window.innerHeight + 40);
   return clone;
 }
