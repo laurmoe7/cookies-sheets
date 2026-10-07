@@ -148,7 +148,7 @@ html[data-theme="tome"] #topbar { background: var(--leather), #2c1f14; border-bo
 html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-color: var(--panel); border: 1px solid #1f160c; box-shadow: var(--shadow); }
 html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer {
   --ink: #261a0b; --muted: #3f2f18; --accent: #7a2415; --accent-soft: #c9b48a; --gold: #6b4f10; --good: #3b5714; --warn: #80520a; --bad: #8a2616;
-  --line: #5a4a2c; --panel-2: #9a8b68; --input: #3a2c19; color: var(--ink); }
+  --line: #5a4a2c; --panel: #9a8b68; --panel-2: #8d7f5d; --input: #3a2c19; color: var(--ink); }
 html[data-theme="tome"] .card { outline: 1px solid #2c1f10; outline-offset: -5px; padding: 17px 19px; }
 @PAPERS@
 html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-image: @SHEET@; }
@@ -165,17 +165,34 @@ html[data-theme="tome"] .portrait-frame, html[data-theme="tome"] .pic-frame, htm
 
 /* satin bookmark ribbons as tabs: smooth, with soft lengthwise highlights and gold piping along both edges, and a V-cut tail */
 html[data-theme="tome"] .tabs { border-bottom: 2px solid #6a5535; padding-left: 8px; gap: 6px; }
-html[data-theme="tome"] .tab { position: relative; border-radius: 0; padding: 19px 16px 9px; color: #f6ecce; text-shadow: 0 1px 1px rgba(30,16,4,.7);
+html[data-theme="tome"] .tab { position: relative; border-radius: 0; margin-top: 8px; padding: 19px 16px 9px; color: #f6ecce; text-shadow: 0 1px 1px rgba(30,16,4,.7);
   clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%);
   background-color: #7b6741;
   background-image: linear-gradient(90deg, transparent 0, transparent 5px, rgba(226,190,108,.85) 5px, rgba(226,190,108,.85) 6px, transparent 6px,
       transparent calc(100% - 6px), rgba(226,190,108,.85) calc(100% - 6px), rgba(226,190,108,.85) calc(100% - 5px), transparent calc(100% - 5px)),
     linear-gradient(90deg, rgba(0,0,0,.30) 0%, rgba(255,246,220,.18) 20%, rgba(0,0,0,.02) 42%, rgba(255,246,220,.14) 66%, rgba(0,0,0,.30) 100%); }
 html[data-theme="tome"] .tab:hover { background-color: #94804f; color: #fff6dc; }
+html[data-theme="tome"] .tab.active { margin-top: 0; padding-top: 27px; animation: tab-rise .22s ease-out; }
+@keyframes tab-rise { from { clip-path: polygon(0 8px, 50% 22px, 100% 8px, 100% 100%, 0 100%); } to { clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%); } }
 html[data-theme="tome"] .tab.active, html[data-theme="tome"] .tab.active:hover { background-color: #8e3427; color: #fbefd2;
   background-image: linear-gradient(90deg, transparent 0, transparent 5px, rgba(240,200,110,.95) 5px, rgba(240,200,110,.95) 6px, transparent 6px,
       transparent calc(100% - 6px), rgba(240,200,110,.95) calc(100% - 6px), rgba(240,200,110,.95) calc(100% - 5px), transparent calc(100% - 5px)),
     linear-gradient(90deg, rgba(0,0,0,.34) 0%, rgba(255,190,160,.26) 20%, rgba(0,0,0,.02) 42%, rgba(255,190,160,.2) 66%, rgba(0,0,0,.34) 100%); }
+
+/* the rest of the furniture: window headers, toasts, tooltips, form controls */
+html[data-theme="tome"] .modal header, html[data-theme="tome"] #drawer header { border-bottom: 3px double #5a4a2c; }
+html[data-theme="tome"] .modal header h2 { font-variant: small-caps; letter-spacing: .05em; color: var(--accent); }
+html[data-theme="tome"] .seg { border-color: #5a4a2c; }
+html[data-theme="tome"] .seg-btn { background: #a39472; color: #261a0b; border-right-color: #5a4a2c; }
+html[data-theme="tome"] .seg-btn.on { background: #8a3326; color: #f6ead0; }
+html[data-theme="tome"] .toast { background: #2a1d10; color: #f0e3c0; border: 1px solid #6a5535; font-style: italic; }
+html[data-theme="tome"] .toast.good { background: #3a4a18; } html[data-theme="tome"] .toast.err { background: #6a2218; }
+html[data-theme="tome"] #tooltip { background: #2a1d10; color: #f0e3c0; border: 1px solid #6a5535; font-style: italic; }
+html[data-theme="tome"] input[type=checkbox], html[data-theme="tome"] input[type=range] { accent-color: #8a3326; }
+html[data-theme="tome"] :focus-visible { outline: 2px solid #cfa84f; outline-offset: 1px; }
+html[data-theme="tome"] ::selection { background: #8a3326; color: #f6ead0; }
+html[data-theme="tome"] .opt-row { border-bottom: 1px dotted #5a4a2c; }
+html[data-theme="tome"] .swatch.on { border-color: #261a0b; }
 
 /* tome scroll bars: leather track, brass thumb */
 html[data-theme="tome"] ::-webkit-scrollbar-track { background: #1a1209; border-left: 1px solid #0e0905; }

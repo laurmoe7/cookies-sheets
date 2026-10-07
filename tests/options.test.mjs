@@ -14,6 +14,6 @@ test('missing or broken stored options fall back to defaults', () => {
 });
 
 test('valid choices are kept', () => {
-  const o = sanitize({ theme: 'tome', accent: 'blue', textSize: '112', tooltips: false, startTab: 'spells' });
-  assert.deepEqual([o.theme, o.accent, o.textSize, o.tooltips, o.startTab], ['tome', 'blue', 112, false, 'spells']);
+  const o = sanitize({ theme: 'tome', accent: 'blue', textSize: '112', startTab: 'spells' });
+  assert.deepEqual([o.theme, o.accent, o.textSize, o.startTab], ['tome', 'blue', 112, 'spells']);
 });

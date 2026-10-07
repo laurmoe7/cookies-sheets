@@ -9,7 +9,7 @@ export const CHANGELOG = [
       'Dusty tome: dark ink on the parchment so text is easier to read, burn marks and torn edges on some pages, a quicker backward page turn, and a Page turn option (Full, Light or Off) in Options.',
       'Resource bars are split into one segment per point. Scroll bars match each theme. In the Dusty tome, the ribbon tabs now rise like bookmarks, the page turn swings the old page over, and the background texture tiles without a seam.',
       'New Dusty tome theme (Options → Theme): dim parchment pages on dark leather, ribbon-bookmark tabs, a page turn when you switch tabs. Light mode is gone; Classic dark is the default.',
-      'Options window: theme, accent color, text size, compact layout, tooltips, animations, and what opens at start.',
+      'Options window: theme, accent color, text size, compact layout, animations, and what opens at start.',
       'Tab icons, and tabs that look like tabs. The picture beside the character name is now the button to change it.',
       'Companion pages are laid out like the Overview: portrait, hit point tracking, ability scores, separate Defense and Offense cards, and an "At a glance" summary. The full stat block folds away.',
       'Ability names in stat blocks (such as "attach", "scent", "improved evasion") are underlined links to what they do.',

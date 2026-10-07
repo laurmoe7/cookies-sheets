@@ -94,7 +94,7 @@ function overview(body, c, d) {
     <button class="btn small ghost" data-quick-buff>＋ Buff / condition</button>
   </div>
   <div class="grid overview-grid">
-    <section class="card hp ${c.portrait ? 'has-portrait' : ''}">
+    <section class="card hp has-portrait">
       <div class="hp-main">
       <h3>Hit Points</h3>
       <div class="hp-big"><span class="calc" data-calc="hp.current"></span><span class="muted"> / </span>${calc('hp.max')}</div>
@@ -114,7 +114,7 @@ function overview(body, c, d) {
       <p class="small muted" id="hp-status"></p>
       </div>
       ${c.portrait ? `<div class="portrait-frame"><img src="${c.portrait}" alt="Character portrait">
-        <div class="portrait-tools"><button class="icon-btn" data-img="portrait" title="Change portrait">✎</button><button class="icon-btn" data-img-edit="portrait" title="Recenter or resize">⤢</button><button class="icon-btn" data-img-clear="portrait" title="Remove portrait">✕</button></div></div>` : ''}
+        <div class="portrait-tools"><button class="icon-btn" data-img="portrait" title="Change portrait">✎</button><button class="icon-btn" data-img-edit="portrait" title="Recenter or resize">⤢</button><button class="icon-btn" data-img-clear="portrait" title="Remove portrait">✕</button></div></div>` : `<button class="portrait-frame empty" data-img="portrait" title="Add a portrait of your character">＋ Add a portrait</button>`}
     </section>
 
     <section class="card abilities">
@@ -757,10 +757,6 @@ function bio(body, c, d) {
   body.innerHTML = `<div class="grid two">
   <section class="card">
     <h3>Identity</h3>
-    <div class="img-row">
-      <span class="img-slot"><button class="btn small" data-img="portrait">${c.portrait ? 'Change portrait' : '＋ Portrait'}</button>
-        ${c.portrait ? '<button class="btn small ghost" data-img-edit="portrait">Recenter</button><button class="btn small ghost" data-img-clear="portrait">Remove</button>' : ''}</span>
-    </div>
     <div class="form">
       <label>Character name ${inp('name', { cls: 'full' })}</label>
       <label>Player ${inp('player', { cls: 'full' })}</label>

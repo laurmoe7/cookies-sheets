@@ -17,7 +17,7 @@ export const START_TABS = [['overview', 'Overview'], ['skills', 'Skills'], ['fea
 
 export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
 
-export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, tooltips: true, motion: true, reopenLast: true, startTab: 'overview', pageTurn: 'full', pageSound: true };
+export const DEFAULTS = { theme: 'dark', accent: 'crimson', textSize: 100, compact: false, motion: true, reopenLast: true, startTab: 'overview', pageTurn: 'full', pageSound: true };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
@@ -28,7 +28,7 @@ export function sanitize(raw) {
   if (!TEXT_SIZES.some(([v]) => v === o.textSize)) o.textSize = DEFAULTS.textSize;
   if (!START_TABS.some(([k]) => k === o.startTab)) o.startTab = DEFAULTS.startTab;
   if (!['full', 'light', 'off'].includes(o.pageTurn)) o.pageTurn = DEFAULTS.pageTurn;
-  for (const k of ['compact', 'tooltips', 'motion', 'reopenLast', 'pageSound']) o[k] = !!o[k];
+  for (const k of ['compact', 'motion', 'reopenLast', 'pageSound']) o[k] = !!o[k];
   return o;
 }
 
@@ -50,14 +50,13 @@ export function applyOptions() {
   const root = document.documentElement;
   root.dataset.theme = current.theme;
   const a = ACCENTS[current.accent];
-  const col = a && a.dark;
+  const col = current.theme === 'dark' && a && a.dark; // accent colors are for Classic dark only
   if (col) {
     root.style.setProperty('--accent', col);
     root.style.setProperty('--accent-soft', `color-mix(in srgb, ${col} 18%, var(--panel))`);
   } else { root.style.removeProperty('--accent'); root.style.removeProperty('--accent-soft'); }
   root.style.zoom = current.textSize === 100 ? '' : String(current.textSize / 100);
   root.dataset.compact = current.compact ? 'on' : 'off';
-  root.dataset.tips = current.tooltips ? 'on' : 'off';
   root.dataset.motion = current.motion ? 'on' : 'off';
 }
 
@@ -69,16 +68,16 @@ export function showOptions() {
   return modal('Options', body => {
     const draw = () => {
       const o = current;
+      const tome = o.theme === 'tome';
       body.innerHTML = `<div class="opt-grid">
         <div class="opt-row"><b>Theme</b><div class="seg">${THEMES.map(([k, l]) => `<button class="seg-btn ${o.theme === k ? 'on' : ''}" data-opt="theme" data-v="${k}">${l}</button>`).join('')}</div></div>
-        <div class="opt-row"><b>Accent color</b><div class="swatches">${Object.entries(ACCENTS).map(([k, a]) => `<button class="swatch ${o.accent === k ? 'on' : ''}" data-opt="accent" data-v="${k}" title="${a.name}" style="background:${a.dark || '#e0605a'}"></button>`).join('')}</div></div>
+        ${tome ? `<div class="opt-row"><b>Page turn</b><select data-opt="pageTurn">${[['full', 'Full (bending page)'], ['light', 'Light (flat page)'], ['off', 'Off']].map(([k, l]) => `<option value="${k}" ${o.pageTurn === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+        <label class="opt-row"><span><b>Page turn sound</b><br><span class="muted small">Dusty tome only: a paper rustle when a page turns.</span></span><input type="checkbox" data-opt="pageSound" ${o.pageSound ? 'checked' : ''}></label>` : ''}
+        <div class="opt-row" ${tome ? 'style="opacity:.45"' : ''}><b>Accent color <span class="muted small">(Classic dark only)</span></b><div class="swatches">${Object.entries(ACCENTS).map(([k, a]) => `<button class="swatch ${o.accent === k ? 'on' : ''}" data-opt="accent" data-v="${k}" title="${a.name}" style="background:${a.dark || '#e0605a'}" ${tome ? 'disabled' : ''}></button>`).join('')}</div></div>
         <div class="opt-row"><b>Text size</b><div class="seg">${TEXT_SIZES.map(([v, l]) => `<button class="seg-btn ${o.textSize === v ? 'on' : ''}" data-opt="textSize" data-v="${v}">${l}</button>`).join('')}</div></div>
-        <label class="opt-row"><span><b>Compact layout</b><br><span class="muted small">Tighter cards and spacing, to fit more on screen.</span></span><input type="checkbox" data-opt="compact" ${o.compact ? 'checked' : ''}></label>
-        <label class="opt-row"><span><b>Hover tooltips</b><br><span class="muted small">Short explanations when you hover a label or button.</span></span><input type="checkbox" data-opt="tooltips" ${o.tooltips ? 'checked' : ''}></label>
-        <label class="opt-row"><span><b>Animations</b><br><span class="muted small">Turn off to remove fades and sliding bars.</span></span><input type="checkbox" data-opt="motion" ${o.motion ? 'checked' : ''}></label>
-        ${o.theme === 'tome' ? `<div class="opt-row"><span><b>Page turn</b><br><span class="muted small">Dusty tome only. Choose Light if page turns feel slow.</span></span><select data-opt="pageTurn">${[['full', 'Full (bending page)'], ['light', 'Light (flat page)'], ['off', 'Off']].map(([k, l]) => `<option value="${k}" ${o.pageTurn === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>` : ''}
-        ${o.theme === 'tome' ? `<label class="opt-row"><span><b>Page turn sound</b><br><span class="muted small">A paper rustle when a page turns. Dusty tome only.</span></span><input type="checkbox" data-opt="pageSound" ${o.pageSound ? 'checked' : ''}></label>` : ''}
-        <label class="opt-row"><span><b>Reopen the last character</b><br><span class="muted small">On start, open the character you used last instead of the character list.</span></span><input type="checkbox" data-opt="reopenLast" ${o.reopenLast ? 'checked' : ''}></label>
+        <label class="opt-row"><b>Compact layout</b><input type="checkbox" data-opt="compact" ${o.compact ? 'checked' : ''}></label>
+        <label class="opt-row"><b>Animations</b><input type="checkbox" data-opt="motion" ${o.motion ? 'checked' : ''}></label>
+        <label class="opt-row"><b>Reopen the last character</b><input type="checkbox" data-opt="reopenLast" ${o.reopenLast ? 'checked' : ''}></label>
         <div class="opt-row"><b>Sheet tab to open first</b><select data-opt="startTab">${START_TABS.map(([k, l]) => `<option value="${k}" ${o.startTab === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       </div>
       <div class="row end"><button class="btn ghost" data-changelog>What’s new</button><button class="btn ghost" data-reset>Reset to defaults</button></div>`;
