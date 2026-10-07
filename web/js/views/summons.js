@@ -36,13 +36,13 @@ export async function chooseSummon({ spell = 'Summon Monster I', cls = '' } = {}
             <select data-f="level">${ROMAN.slice(1).map((r, i) => `<option value="${i + 1}" ${i + 1 === level ? 'selected' : ''}>${r}</option>`).join('')}</select></label>
           <label>Lasts <input type="number" class="num w3" data-f="rounds" value="${rounds}" min="1"> rounds</label>
           <span class="grow"></span><button class="btn primary" data-done>Done</button></div>
-        <p class="small muted">Click a creature to add it to <b>Buffs &amp; Conditions → Summons</b>. ${family === 'Summon Monster' ? 'A * means it takes the celestial or fiendish template. ' : ''}Click “stats” to read a stat block first.
+        <p class="small muted">Click a creature to add it to <b>Buffs &amp; Conditions → Summons</b>. ${family === 'Summon Monster' ? 'A * means it takes the celestial or fiendish template. ' : ''}Press “Stats” to read a stat block first.
           ${Object.keys(added).length ? `<br>Added: <b>${Object.entries(added).map(([n, k]) => `${esc(n)}${k > 1 ? ' ×' + k : ''}`).join(', ')}</b>` : ''}</p>
         <div class="summon-pane"><div class="summon-lists">${groups.map(g => `<h4>${ORD[g.level]}-level list <span class="muted small">· summons ${g.count}</span></h4>
-          <ul class="summon-list">${g.entries.map(e => `<li><a href="#" data-pick="${esc(e.creature)}" data-label="${esc(e.name)}" data-tpl="${e.template ? 1 : 0}">${esc(e.name)}${e.template ? '*' : ''}</a>
-            <a href="#" class="small muted" data-stats="${esc(e.creature)}" data-label="${esc(e.name)}" data-tpl="${e.template ? 1 : 0}">stats</a>
+          <ul class="summon-list">${g.entries.map(e => `<li><button class="btn small summon-pick" data-pick="${esc(e.creature)}" data-label="${esc(e.name)}" data-tpl="${e.template ? 1 : 0}" title="Add to Buffs &amp; Conditions → Summons">${esc(e.name)}${e.template ? '*' : ''}</button>
+            <button class="btn small ghost summon-stats" data-stats="${esc(e.creature)}" data-label="${esc(e.name)}" data-tpl="${e.template ? 1 : 0}" title="Read the stat block">Stats</button>
             ${e.subtype ? `<span class="muted small">${esc(e.subtype)}</span>` : ''}</li>`).join('')}</ul>`).join('')}</div>
-          <div class="summon-preview">${preview ? `<h3>${esc(preview.label)}</h3>${statBlockHtml(data.creatures[preview.key], { template: preview.tpl })}` : '<p class="muted">Pick “stats” beside a creature to read it here.</p>'}</div></div>`;
+          <div class="summon-preview">${preview ? `<h3>${esc(preview.label)}</h3>${statBlockHtml(data.creatures[preview.key], { template: preview.tpl })}` : '<p class="muted">Press “Stats” beside a creature to read it here.</p>'}</div></div>`;
     };
     body.onchange = e => {
       const f = e.target.dataset.f;

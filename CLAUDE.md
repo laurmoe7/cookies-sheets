@@ -34,6 +34,7 @@ Windows desktop app for Pathfinder 1st Edition characters: live character sheet,
 - **Text fields:** names and notes use `textField()` (`tf()` in `sheet.js`), which shows readable text. Double-click edits it; single click opens the full text in the drawer when `read` is set. Numeric fields stay as normal inputs. Use `showCustom({name, cat, html})` to put non-compendium content in the drawer.
 - **Tooltips:** `title="..."` attributes are shown by our own styled tooltip (`initTooltips` in `ui.js`), which moves the text into `data-tip`. Use `title` as usual; no extra work.
 - **Sheet search:** `searchindex.js` (pure, tested) indexes the open character; `sheetsearch.js` is the top-bar UI. A new character field worth finding goes into `buildIndex`.
+- **Text selection:** the desktop window (pywebview) disables text selection app-wide. Anything the user may want to copy (stat blocks, entry text) must opt in with `user-select: text` in `app.css`.
 - **Re-drawing:** `changed({ rerender: true })` keeps the scroll position.
 
 ## Commands
