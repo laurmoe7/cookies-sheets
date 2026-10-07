@@ -346,3 +346,8 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 #sheet-results .none { padding: 10px; color: var(--muted); }
 @keyframes flash-hit { 0%, 60% { box-shadow: 0 0 0 3px var(--accent); background: var(--accent-soft); } 100% { box-shadow: 0 0 0 3px transparent; } }
 .flash-hit { animation: flash-hit 1.8s ease-out; border-radius: 4px; }
+
+/* ---------- summon lists in the side panel ---------- */
+.summon-list { list-style: none; margin: 4px 0 12px; padding: 0; columns: 2; column-gap: 18px; }
+.summon-list li { padding: 2px 0; break-inside: avoid; }
+.summon-block h4 { margin: 10px 0 4px; }

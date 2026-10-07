@@ -22,6 +22,7 @@ export const api = {
   categories: () => req('GET', 'categories'),
   archetypes: cls => req('GET', 'archetypes?' + qs({ cls })),
   companions: () => req('GET', 'companions'),
+  summons: () => req('GET', 'summons'),
   characters: () => req('GET', 'characters'),
   character: id => req('GET', 'character?' + qs({ id })),
   saveCharacter: c => req('POST', 'character', c),

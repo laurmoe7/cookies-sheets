@@ -147,6 +147,12 @@ class HttpApi(unittest.TestCase):
         self.assertEqual(len(data['animal']['species']), 68)
         self.assertTrue(data['eidolon']['evolutions'])
 
+    def test_summon_data(self):
+        status, data = self.call('/api/summons')
+        self.assertEqual(status, 200)
+        self.assertEqual(set(data['families']), {'Summon Monster', "Summon Nature's Ally"})
+        self.assertIn('dog', data['creatures'])
+
     def test_save_and_load(self):
         status, r = self.call('/api/character', {'name': 'Ezren'})
         self.assertEqual(status, 200)

@@ -304,6 +304,9 @@ class Handler(SimpleHTTPRequestHandler):
             elif route == ('GET', 'companions'):
                 with open(os.path.join(DATA, 'companions.json'), encoding='utf-8') as f:
                     self._json(json.load(f))
+            elif route == ('GET', 'summons'):
+                with open(os.path.join(DATA, 'summons.json'), encoding='utf-8') as f:
+                    self._json(json.load(f))
             elif route == ('GET', 'categories'):
                 self._json(categories())
             elif route == ('GET', 'characters'):

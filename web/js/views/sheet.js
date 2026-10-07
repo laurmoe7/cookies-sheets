@@ -8,6 +8,7 @@ import {
 import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom, pickImage } from '../ui.js';
 import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
+import { summonSpell } from '../summons.js';
 import { renderCompanions } from './companions.js';
 
 const TABS = [
@@ -469,7 +470,7 @@ function spells(body, c, d) {
           ${list.length ? `<table class="tbl spell-tbl"><tbody>${list.map(s => `<tr>
             <td class="nowrap">${s.id ? refId(s.id, s.name)
               : tf(`spellbooks.${cls}.spells.${s.i}.name`, { placeholder: 'Spell name', read: { title: s.name, titlePath: `spellbooks.${cls}.spells.${s.i}.name`, cat: 'Custom spell', path: `spellbooks.${cls}.spells.${s.i}.notes` } })}</td>
-            <td class="muted small">${esc(s.school || '')}</td>
+            <td class="muted small">${esc(s.school || '')}${summonSpell(s.name) ? ` <button class="btn small" data-summon="${esc(s.name)}" title="See which creatures this spell can summon">Summon…</button>` : ''}</td>
             <td class="muted small summary">${s.id ? esc(s.summary || '') : tf(`spellbooks.${cls}.spells.${s.i}.notes`, { multiline: true, placeholder: 'Add a description', read: { title: s.name, titlePath: `spellbooks.${cls}.spells.${s.i}.name`, cat: 'Custom spell' } })}</td>
             ${prepared && !(l === 0 && sc.kind !== 'arcanist' && false) ? `<td class="nowrap small">Prep ${inp(`spellbooks.${cls}.spells.${s.i}.prepared`, { type: 'num', cls: 'w2', rerender: true })}</td>` : ''}
             ${sc.kind === 'prepared' && l > 0 ? `<td class="nowrap"><button class="btn small" data-cast="${s.i}" ${num(s.cast) >= num(s.prepared) ? 'disabled' : ''}>Cast</button>

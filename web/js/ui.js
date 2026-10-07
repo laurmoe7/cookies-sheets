@@ -114,6 +114,7 @@ export function wireEntryLinks(root) {
     const a = e.target.closest('a');
     if (!a) return;
     e.preventDefault();
+    if (a.hasAttribute('data-summon-creature')) return; // handled by views/summons.js
     const text = a.textContent.trim();
     if (text) showEntry(text);
   });
