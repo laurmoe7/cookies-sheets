@@ -429,3 +429,11 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .crop-controls input[type=range] { width: 200px; }
 
 .cur-name { width: 280px; max-width: 100%; }
+
+/* ---------- companion pages laid out like the character Overview ---------- */
+.comp-top { margin-bottom: 14px; }
+.comp-top .hp-bar > div { height: 100%; background: var(--good); transition: width .25s; }
+.comp-top .hp-bar > div.mid { background: var(--warn); } .comp-top .hp-bar > div.low { background: var(--bad); }
+.portrait-frame.empty { display: flex; align-items: center; justify-content: center; border: 2px dashed var(--line); background: transparent; color: var(--muted); cursor: pointer; font: inherit; }
+.portrait-frame.empty:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.comp-top .abilities th { text-align: center; }

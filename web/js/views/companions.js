@@ -9,7 +9,7 @@ import { SKILLS } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
 
-const PIC = { w: 4, h: 3, out: 900 };
+const PIC = { w: 3, h: 4, out: 800 };
 
 // What a familiar borrows from its master: base attack bonus, base saves, hit points and skill ranks.
 function masterOf(c) {
@@ -45,12 +45,31 @@ export async function renderCompanions(body, c) {
     ${c.companions.map((comp, i) => companionCard(comp, i, levels, data, masterOf(c))).join('')}`;
 
   body.onclick = async e => {
-    const t = e.target.closest('[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
+    const t = e.target.closest('[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
     if (!t) return;
     e.preventDefault();
     if (t.dataset.new) { c.companions.push(newCompanion(t.dataset.new, data)); return changed({ rerender: true }); }
     const i = +t.closest('[data-comp]').dataset.comp;
     const comp = c.companions[i];
+    if (t.dataset.chp !== undefined) {
+      const s = computeCompanion(comp, levels, data, masterOf(c));
+      const row = t.closest('[data-comp]');
+      const amt = Math.abs(num($('[data-chp-amt]', row).value));
+      let cur = comp.hpCur == null || comp.hpCur === '' ? s.hp : num(comp.hpCur);
+      if (t.dataset.chp === 'full') {
+        if (!await confirmBox(`Heal ${comp.name || 'this companion'} to full hit points?`, 'Heal fully')) return;
+        comp.hpCur = null;
+      } else {
+        if (!amt) return;
+        if (t.dataset.chp === 'dmg') {
+          let rest = amt; const temp = num(comp.hpTemp);
+          if (temp) { const used = Math.min(temp, rest); comp.hpTemp = temp - used; rest -= used; }
+          cur -= rest;
+        } else cur = Math.min(s.hp, cur + amt);
+        comp.hpCur = cur >= s.hp ? null : cur;
+      }
+      return changed({ rerender: true });
+    }
     if (t.dataset.syncLevel !== undefined) { comp.levelOverride = ''; return changed({ rerender: true }); }
     if (t.dataset.pic !== undefined || t.dataset.picEdit !== undefined || t.dataset.picClear !== undefined) {
       if (await picAction(t, comp, PIC)) changed({ rerender: true });
@@ -93,6 +112,46 @@ function syncLevel(comp, s) {
 const overrideNote = (comp, s) => (num(comp.levelOverride) && num(comp.levelOverride) !== s.autoLevel
   ? ` · overridden to <b>${s.level}</b> <a href="#" data-sync-level>use the sheet’s level</a>` : '');
 
+/** Overview-style panels for a companion: hit points with the portrait, ability scores, and defense / offense numbers. */
+function topPanels(comp, s, p) {
+  const max = s.hp;
+  const cur = comp.hpCur == null || comp.hpCur === '' ? max : num(comp.hpCur);
+  const con = s.abilities.con ?? 0;
+  const pct = Math.max(0, Math.min(100, cur / Math.max(1, max) * 100));
+  const state = cur <= -con ? 'dead' : cur <= 0 ? 'downed' : '';
+  const status = cur <= -con ? `<b class="bad">Dead</b> (HP at or below −${con})`
+    : cur < 0 ? `<b class="bad">Dying</b>. <b>Dead at −${con} HP</b>, ${cur + con} more damage.`
+      : cur === 0 ? `<b class="warn">Disabled</b>. Dying below 0, dead at −${con} HP.` : '';
+  const portrait = comp.image
+    ? `<div class="portrait-frame"><img src="${comp.image}" alt="">
+        <div class="portrait-tools"><button class="icon-btn" data-pic title="Change picture">✎</button><button class="icon-btn" data-pic-edit title="Recenter or resize">⤢</button><button class="icon-btn" data-pic-clear title="Remove picture">✕</button></div></div>`
+    : '<button class="portrait-frame empty" data-pic title="Add a picture">＋ Add a picture</button>';
+  const M = a => (s.mods[a] == null ? '—' : sign(s.mods[a]));
+  const stat = (label, v) => `<div class="stat"><div class="label">${label}</div><span class="big">${v}</span></div>`;
+  return `<div class="grid overview-grid comp-top">
+    <section class="card hp has-portrait ${state}">
+      <div class="hp-main"><h3>Hit Points</h3>
+        <div class="hp-big">${cur}<span class="muted"> / </span>${max}</div>
+        <div class="hp-bar"><div class="${pct <= 25 ? 'low' : pct <= 50 ? 'mid' : ''}" style="width:${pct}%"></div></div>
+        <div class="row"><input type="number" class="num w4" data-chp-amt placeholder="0" min="0">
+          <button class="btn danger" data-chp="dmg">Damage</button><button class="btn good" data-chp="heal">Heal</button>
+          <button class="btn" data-chp="full" title="Heal to full hit points"><span class="heart">♥</span> Full heal</button></div>
+        <div class="kv"><label>Current ${bind(`${p}.hpCur`, comp.hpCur, { type: 'num', cls: 'w4', ph: 'max' })}</label>
+          <label>Temp ${bind(`${p}.hpTemp`, comp.hpTemp, { type: 'num', cls: 'w3' })}</label></div>
+        <p class="small muted">${status}</p></div>
+      ${portrait}
+    </section>
+    <section class="card abilities"><h3>Ability Scores</h3>
+      <table class="tbl"><thead><tr><th></th><th>Score</th><th>Mod</th></tr></thead><tbody>${ABIL.map(a => `<tr><th>${a.toUpperCase()}</th>
+        <td class="big">${s.abilities[a] ?? '—'}</td><td class="big accent">${M(a)}</td></tr>`).join('')}</tbody></table></section>
+    <section class="card defense span2"><h3>Defense &amp; Offense</h3>
+      <div class="stat-row">${stat('AC', s.ac.total)}${stat('Touch', s.ac.touch)}${stat('Flat-footed', s.ac.flat)}${stat('CMD', s.cmd)}
+        ${stat('Fort', sign(s.saves.fort))}${stat('Ref', sign(s.saves.ref))}${stat('Will', sign(s.saves.will))}</div>
+      <div class="stat-row">${stat('Init', sign(s.init))}${stat('BAB', sign(s.bab))}${stat('CMB', sign(s.cmb))}${stat('Speed', `${esc(String(s.speed))}`)}</div>
+      ${s.attacks.length ? `<p><b>Attacks</b> ${esc(s.attacks.map(a => a.text).join(', '))}</p>` : ''}
+    </section></div>`;
+}
+
 function companionCard(comp, i, levels, data, master) {
   const p = `companions.${i}`;
   const head = `<div class="row"><h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>
@@ -114,7 +173,7 @@ function companionCard(comp, i, levels, data, master) {
   const ranksLeft = s.skillRanks - s.skillRanksUsed;
   const classSkills = [...s.classSkills, ...(comp.extraClassSkills || [])];
   const skillNames = [...new Set([...classSkills.filter(x => !x.includes('(') || x.startsWith('Knowledge')), ...Object.keys(comp.skills || {})])];
-  return `<section class="card companion" data-comp="${i}">${head}
+  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<section class="card">
   <div class="grid two">
     <div>
       <div class="form">
@@ -155,8 +214,8 @@ function companionCard(comp, i, levels, data, master) {
         <label title="Amulet of mighty fists, etc.">Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
       <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Gear, personality, conditions…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
     </div>
-    <div>${picFrame(comp.image, 'lg')}${statBlock(comp, s)}</div>
-  </div></section>`;
+    <div>${statBlock(comp, s)}</div>
+  </div></section></div>`;
 }
 
 function familiarCard(comp, i, levels, data, master, head) {
@@ -167,7 +226,7 @@ function familiarCard(comp, i, levels, data, master, head) {
     ? `From your sheet: <b>${s.autoLevel}</b>${levels._why?.familiar ? ` · ${esc(levels._why.familiar)}` : ''}${overrideNote(comp, s)}`
     : '<span class="warn">Nothing on the sheet grants a familiar (wizard, sorcerer, witch or shaman levels, or the arcanist’s Familiar exploit); set the level here.</span>';
   const sp = s.species;
-  return `<section class="card companion" data-comp="${i}">${head}
+  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<section class="card">
   <div class="grid two">
     <div>
       <div class="form">
@@ -188,8 +247,8 @@ function familiarCard(comp, i, levels, data, master, head) {
         <label>Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
       <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Variants, gear, personality…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
     </div>
-    <div>${picFrame(comp.image, 'lg')}${statBlock(comp, s)}</div>
-  </div></section>`;
+    <div>${statBlock(comp, s)}</div>
+  </div></section></div>`;
 }
 
 function evolutionsBlock(comp, s, data, p) {
