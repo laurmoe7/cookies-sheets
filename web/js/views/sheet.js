@@ -751,7 +751,8 @@ function bio(body, c, d) {
     <h3>Level history</h3>
     ${c.levelUps.length ? `<table class="tbl"><thead><tr><th>Lvl</th><th>Class</th><th>HP</th><th>Favored class</th><th>Ability +1</th><th>Notes</th></tr></thead><tbody>
       ${c.levelUps.map((l, i) => `<tr><td>${i + 1}</td><td>${esc(l.cls)}</td><td>${inp(`levelUps.${i}.hp`, { type: 'num', cls: 'w3', title: 'Hit die roll for this level (before Con)' })}</td>
-        <td>${sel(`levelUps.${i}.fcb`, [['', '—'], ['hp', '+1 HP'], ['skill', '+1 skill rank'], ['other', 'Other']])}</td>
+        <td>${sel(`levelUps.${i}.fcb`, [['', '—'], ['hp', '+1 HP'], ['skill', '+1 skill rank'], ['racial', 'Racial option'], ['other', 'Other']], { rerender: true })}
+          ${l.fcb === 'racial' || l.fcb === 'other' ? `<div class="small">${tf(`levelUps.${i}.fcbNote`, { multiline: true, placeholder: 'Describe the bonus', read: { title: `Level ${i + 1} favored class bonus`, cat: l.cls } })}</div>` : ''}</td>
         <td>${(i + 1) % 4 === 0 ? sel(`levelUps.${i}.abilityIncrease`, [['', '—'], ...ABILITIES.map(a => [a, a.toUpperCase()])]) : ''}</td>
         <td>${tf(`levelUps.${i}.notes`, { multiline: true, placeholder: 'Add notes', read: { title: `Level ${i + 1} notes`, cat: l.cls } })}</td></tr>`).join('')}</tbody></table>
       <div class="row"><button class="btn small danger" data-undo-level>Undo last level</button></div>` : '<p class="muted">No levels yet.</p>'}

@@ -144,9 +144,9 @@ function summonCard(s, i) {
       <input type="number" class="num w3" data-sm-amt placeholder="0" min="0">
       <button class="btn small danger" data-sm-dmg>Damage</button><button class="btn small good" data-sm-heal>Heal</button>
       <span class="grow"></span>
-      <span class="small ${expired ? 'bad' : ''}">${expired ? 'Time is up' : `${s.rounds} round${s.rounds === 1 ? '' : 's'} left`}</span>
-      <button class="icon-btn" data-sm-r="-1" title="One round less">−</button><button class="icon-btn" data-sm-r="1" title="One round more">＋</button>
-      <button class="btn small" data-sm-stats>Stats</button></div>
+      <span class="rounds-group"><span class="small ${expired ? 'bad' : ''}">${expired ? 'Time is up' : `${s.rounds} round${s.rounds === 1 ? '' : 's'} left`}</span>
+      <span class="stepper"><button data-sm-r="-1" title="One round less" aria-label="One round less">−</button><button data-sm-r="1" title="One round more" aria-label="One round more">＋</button></span></span>
+      <button class="btn sm-stats-btn" data-sm-stats>Stats</button></div>
     ${s.tpl ? `<div class="small"><label>Template <select data-bind="summons.${i}.template" data-rerender><option value="" ${!s.template ? 'selected' : ''}>none</option>
         <option value="celestial" ${s.template === 'celestial' ? 'selected' : ''}>celestial</option><option value="fiendish" ${s.template === 'fiendish' ? 'selected' : ''}>fiendish</option></select></label>
       ${note ? `<span class="muted"> ${esc(note)}</span>` : ''}</div>` : ''}

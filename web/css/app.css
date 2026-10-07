@@ -377,3 +377,21 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .summon-card .hp-bar { margin: 6px 0; }
 .summon-card .hp-bar > div { height: 100%; background: var(--good); transition: width .25s; }
 .summon-card .hp-bar > div.mid { background: var(--warn); } .summon-card .hp-bar > div.low { background: var(--bad); }
+
+/* ---------- polish: pill hover, stats button, round stepper, bigger close buttons ---------- */
+.summon-list li { overflow: hidden; }
+.summon-pick, .summon-stats { border-radius: 0; }
+.sm-stats-btn { border-color: var(--accent); color: var(--accent); font-weight: 600; padding: 6px 16px; }
+.sm-stats-btn:hover { background: var(--accent-soft); }
+.stepper { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.stepper button { font: inherit; border: 0; background: var(--panel); color: var(--ink); width: 32px; height: 28px; cursor: pointer; font-size: 16px; line-height: 1; }
+.stepper button + button { border-left: 1px solid var(--line); }
+.stepper button:hover { background: var(--accent-soft); color: var(--accent); }
+.modal header [data-close], #drawer header [data-close] { font-size: 22px; line-height: 1; width: 36px; height: 36px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
+.modal header [data-close]:hover, #drawer header [data-close]:hover { background: var(--accent-soft); color: var(--accent); }
+.fcb-options { display: grid; gap: 6px; margin: 6px 0 10px; }
+.fcb-opt { font: inherit; text-align: left; cursor: pointer; display: flex; justify-content: space-between; gap: 12px; align-items: baseline; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: 8px 12px; }
+.fcb-opt:hover { border-color: var(--accent); }
+.fcb-opt.on { border-color: var(--accent); background: var(--accent-soft); }
+
+.rounds-group { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }

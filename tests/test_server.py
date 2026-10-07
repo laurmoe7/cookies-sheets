@@ -153,6 +153,11 @@ class HttpApi(unittest.TestCase):
         self.assertEqual(set(data['families']), {'Summon Monster', "Summon Nature's Ally"})
         self.assertIn('dog', data['creatures'])
 
+    def test_racial_favored_class_data(self):
+        status, data = self.call('/api/fcb')
+        self.assertEqual(status, 200)
+        self.assertIn('Fighter', data['Dwarf'])
+
     def test_save_and_load(self):
         status, r = self.call('/api/character', {'name': 'Ezren'})
         self.assertEqual(status, 200)

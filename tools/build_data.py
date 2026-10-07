@@ -17,6 +17,7 @@ import sys
 
 import archetypes
 import companions
+import fcb
 import summons
 from htmltable import parse_table
 
@@ -26,6 +27,7 @@ OUT_DB = os.path.join(ROOT, 'data', 'pf1e.db')
 OUT_CLASSES = os.path.join(ROOT, 'data', 'classes.json')
 OUT_COMPANIONS = os.path.join(ROOT, 'data', 'companions.json')
 OUT_SUMMONS = os.path.join(ROOT, 'data', 'summons.json')
+OUT_FCB = os.path.join(ROOT, 'data', 'fcb.json')
 
 # Book priority (earlier wins when the same entry appears twice)
 BOOKS = ['cr', 'apg', 'acg', 'um', 'uc', 'ucampaign', 'arg', 'ue', 'gmg', 'ma', 'tech', 'mc', 'npc',
@@ -532,6 +534,10 @@ def main():
     comp = companions.build(books)
     with open(OUT_COMPANIONS, 'w', encoding='utf-8') as f:
         json.dump(comp, f, indent=1)
+    fcb_data = fcb.build(books)
+    with open(OUT_FCB, 'w', encoding='utf-8') as f:
+        json.dump(fcb_data, f, indent=1)
+    print('wrote racial favored class options:', len(fcb_data), 'races,', sum(len(o) for r in fcb_data.values() for o in r.values()), 'options')
     summon_data, summon_misses = summons.build(books)
     with open(OUT_SUMMONS, 'w', encoding='utf-8') as f:
         json.dump(summon_data, f, indent=1)

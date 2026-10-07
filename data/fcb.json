@@ -1,0 +1,2580 @@
+{
+ "Aasimar": {
+  "Bard": [
+   {
+    "text": "Choose one bardic performance; treat the bard as +1/2 level higher when determining the effects of that performance.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add +1/4 to the cavalier's bonus on damage against targets of his challenge.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Add +1/2 to damage when using positive energy against undead or using Alignment Channel to damage evil outsiders.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add +1/2 on Intimidate, Knowledge, and Sense Motive checks made against outsiders.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add +1/2 to the oracle's level for the purpose of determining the effects of one revelation.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Paladin": [
+   {
+    "text": "Add +1/6 to the morale bonus on saving throws provided by the paladin's auras.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add +1/4 to the sorcerer's caster level when casting spells with the good descriptor.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add DR 1/evil to the summoner's eidolon. Each additional time the summoner selects this benefit, the DR/evil increases by +1/2 (maximum DR 10/evil).",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Catfolk": {
+  "Bard": [
+   {
+    "text": "Add +1/2 to the bard's bardic knowledge bonus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add +1/4 to the cavalier's banner bonus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add +1 hit points to the druid's animal companion. If the druid ever replaces her animal companion, the new animal companion gains these bonus hit points.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add one spell known from the oracle spell list. This spell must be at least one level below the highest spell level the oracle can cast.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Choose a weapon from the following list: claws, kukri, longbow, longsword, short spear, or shortbow. Add +1/2 on critical hit confirmation rolls made while using that weapon (maximum bonus of +4). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add a +1/2 bonus on Bluff checks to feint and Sleight of Hands checks to pickpocket.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Select one bloodline power at 1st level that is normally usable a number of times equal to 3 + the sorcerer's Charisma modifier. The sorcerer adds + 1/2 to the number of uses per day of that bloodline power.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Changeling": {
+  "Oracle": [
+   {
+    "text": "Add +1/2 to the oracle's level for the purpose of determining the effects of the oracle's curse ability.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "The rogue gains 1/6 of a new rogue talent.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add one spell from the witch spell list to the witch's familiar. This spell must be at least one level below the highest spell level she can cast. If the witch ever replaces her familiar, the new familiar knows these bonus spells.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Dhampir": {
+  "Alchemist": [
+   {
+    "text": "Add +10 minutes to the duration of the alchemist's mutagens.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Add +1 to the caster level of any channeling feat used to affect undead.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add a +2 bonus on rolls to stabilize when dying.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add a +1/2 bonus on Intimidate checks to demoralize humanoids.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add a +1/2 bonus on Stealth checks and Perception checks made in dim light or darkness.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add +1/2 point of negative energy damage to spells that deal negative energy damage.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Add +1/4 to the wizard's caster level when casting spells of the necromancy school.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Drow": {
+  "Alchemist": [
+   {
+    "text": "Add +10 minutes to the duration of the alchemist's mutagens.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Antipaladin": [
+   {
+    "text": "The antipaladin adds +1/4 to the number of cruelties he can inflict.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Select one domain power granted at 1st level that is normally usable a number of times per day equal to 3 + the cleric's Wisdom modifier. The cleric adds +1/2 to the number of uses per day of that domain power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Choose the disarm or reposition combat maneuver. Add +1/3 to the fighter's CMB when attempting this maneuver (maximum bonus of +4).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add a +1/2 bonus on Bluff checks to feint and pass secret messages.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add one spell known from the sorcerer spell list. This spell must have the curse, evil, or pain descriptor, and be at least one level below the highest spell level the sorcerer can cast.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Select one arcane school power at 1st level that is normally usable a number of times per day equal to 3 + the wizard's Intelligence modifier. The wizard adds +1/2 to the number of uses per day of that arcane school power.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Duergar": {
+  "Cleric": [
+   {
+    "text": "Add a +1/2 bonus on checks made to craft magic items.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a bull rush or trip attempt.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add +1/6 to the number of times per day the inquisitor can use the judgment class feature.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Dwarf": {
+  "Alchemist": [
+   {
+    "text": "Add +1/4 to the alchemist's natural armor bonus when using his mutagen.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Arcanist": [
+   {
+    "text": "Add 1/4 to the arcanist's effective class level when determining the effects of the arcane barrier and arcane weapon arcanist exploits.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Barbarian": [
+   {
+    "text": "Add 1 to the dwarf's total number of rage rounds per day.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 to the barbarian's total number of rage rounds per day.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bard": [
+   {
+    "text": "Reduce arcane spell failure chance for casting bard spells when wearing medium armor by +1%. Once the total reaches 10%, the bard also receives Medium Armor Proficiency, if he does not already possess it.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bloodrager": [
+   {
+    "text": "Increase the bloodrager's total number of bloodrage rounds per day by 1.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Brawler": [
+   {
+    "text": "Reduce the hardness of any object made from clay, stone, or metal by 1 whenever the object is struck by the brawler's unarmed strike (minimum 0).",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add +1/2 to the cavalier's bonus to damage against targets of his challenge.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Select one domain power granted at 1st level that is normally usable for a number of times per day equal to 3 + the cleric's Wisdom modifier. The cleric adds 1/2 to the number of uses per day of that domain power.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Select one domain power granted at 1st level that is normally usable a number of times per day equal to 3 + the cleric's Wisdom modifier. The cleric adds +1/2 to the number of uses per day of that domain power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Select one domain power granted at 1st level that is normally usable a number of times per day equal to 3 + the druid's Wisdom modifier. The druid adds +1/2 to the number of uses per day of that domain power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a bull rush or trip.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "Reduce the misfire chance for one type of firearm by 1/4. You cannot reduce the misfire chance of a firearm below 1.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Hunter": [
+   {
+    "text": "Gain a +1/2 bonus on wild empathy checks the hunter makes to influence animals and magical beasts that live underground.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add +1/2 to the inquisitor's level for the purpose of determining the effects of one type of judgment.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Investigator": [
+   {
+    "text": "Gain a +1/4 bonus on Perception checks when underground and +1/2 bonus to the investigator's trap sense ability regarding stone traps.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Magus": [
+   {
+    "text": "Select one known magus arcana usable only once per day. The magus adds +1/6 to the number of times it can be used per day. Once that magus arcana is usable twice per day, the magus must select a different magus arcana.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Reduce the Hardness of any object made of clay, stone, or metal by 1 whenever the object is struck by the monk's unarmed strike (minimum of 0).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Reduce the non-proficient penalty for one weapon by 1. When the non-proficient penalty for a weapon becomes 0 because of this ability, the oracle is treated as having the appropriate Martial or Exotic Weapon Proficiency feat with that weapon.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Reduce the penalty for not being proficient with one weapon by 1. When the nonproficiency penalty for a weapon becomes 0 because of this ability, the oracle is treated as having the appropriate Martial or Exotic Weapon Proficiency feat with that weapon.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Paladin": [
+   {
+    "text": "Add a +1 bonus on concentration checks when casting paladin spells.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add a +1/2 bonus on wild empathy checks to influence animals and magical beasts that live underground.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add a +1/2 bonus on Disable Device checks regarding stone traps and a +1/2 bonus to trap sense regarding stone traps.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Shaman": [
+   {
+    "text": "Add 1/4 to the natural armor bonus of the shaman's spirit animal.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Skald": [
+   {
+    "text": "Reduce the arcane spell failure chance for casting skald spells when wearing heavy armor by 1%. Once the total reduction reaches 10%, the skald also receives Heavy Armor Proficiency (if the skald does not already possess it).",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Slayer": [
+   {
+    "text": "Gain a +1/3 bonus on Knowledge (dungeoneering) checks and on Survival checks when underground. If the slayer has a +1 bonus on Knowledge (dungeoneering) checks from this ability, he is also considered trained in that skill.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add +1/2 to acid and earth spell or spell-like ability damage.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add a +1/4 natural armor bonus to the AC of the summoner's eidolon.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Swashbuckler": [
+   {
+    "text": "Add 1/4 to the swashbuckler's effective class level to determine the extra damage she deals because of the precise strike deed when wielding a light pick or a heavy pick. If the swashbuckler has the Slashing Grace feat or another similar effect, she can treat the battleaxe or handaxe as a one-handed piercing melee weapon, and she gains this benefit when wielding the appropriate weapon for the feat as well.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Warpriest": [
+   {
+    "text": "Add 1/3 to the number of times per day the warpriest can use blessings, but he can only use these additional uses on blessings that affect weapons or armor.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add +1/4 natural armor bonus to the AC of the witch's familiar.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Select one item creation feat known by the wizard. Whenever he crafts an item using that feat, the amount of progress he makes in an 8-hour period increases by 200 gp (50 gp if crafting while adventuring). This does not reduce the cost of the item; it just increases the rate at which the item is crafted.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Elf": {
+  "Alchemist": [
+   {
+    "text": "Add one extract formula from the alchemist's list to his formula book. This formula must be at least one level lower than the highest-level formula the alchemist can create.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Arcanist": [
+   {
+    "text": "Increase total number of points in the arcanist's arcane reservoir by 1.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Barbarian": [
+   {
+    "text": "Add 1 to the elf's base speed. In combat this has no effect unless the elf has selected this reward 5 times (or another increment of 5); a speed of 34 feet is effectively the same as a speed of 30 feet, for example. This bonus stacks with a class's fast movement feature and applies only under the same conditions as that ability.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 to the barbarian's base speed. In combat this option has no effect unless the barbarian has selected it five times (or another increment of five). This bonus stacks with the barbarian's fast movement feature and applies under the same conditions as that feature.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bard": [
+   {
+    "text": "Add +1 to the elf's CMD when resisting a disarm or sunder attempt.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 to the bard's CMD when resisting a disarm or sunder attempt.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bloodrager": [
+   {
+    "text": "Add 1 foot to the bloodrager's base speed. In combat, this only has an effect for every five increases in base speed. This bonus stacks with the bloodrager's fast movement class feature, and applies under the same conditions and that feature.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Brawler": [
+   {
+    "text": "Add 1 foot to the brawler's base speed. In combat, this has an effect only for every five increases in the brawler's base speed.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add +1 hit point to the cavalier's mount. If the elf ever replaces his mount, the new mount gains these bonus hit points. These bonuses only apply to a single mount gained as part of the cavalier's class.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 hit point to the cavalier's mount. If the cavalier ever replaces his mount, the new mount gains these bonus hit points.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Select one domain power granted at 1st level that is normally usable a number of times per day equal to 3 + the cleric's Wisdom modifier. The cleric adds +1/2 to the number of uses per day of that domain power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add +1/3 to the druid's natural armor bonus when using wild shape.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1 to the elf's CMD when resisting a disarm or sunder attempt.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a disarm or sunder attempt.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "Add +1/3 on critical hit confirmation rolls made with firearms (maximum bonus of +5). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Hunter": [
+   {
+    "text": "Choose a weapon from the following list: longbow, longsword, rapier, short sword, shortbow, or any weapon with \"elven\" in its name. Gain a +1/2 bonus on critical hit confirmation rolls made while using that type of weapon (maximum bonus +4). This bonus does not stack with those gained through Critical Focus and similar effects.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add one spell known from the inquisitor's spell list. This spell must be at least one level below the highest-level spell the inquisitor can cast.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Investigator": [
+   {
+    "text": "Increase the total number of points in the investigator's inspiration pool by 1/3.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Magus": [
+   {
+    "text": "The magus gains 1/6 of a new magus arcana.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1 to the monk's base speed. In combat this option has no effect unless the monk has selected it five times (or another increment of five). This bonus stacks with the monk's fast movement class feature and applies under the same conditions as that feature.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add +1/2 to the oracle's level for the purpose of determining the effects of one revelation.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Paladin": [
+   {
+    "text": "Add +1/2 hit point to the paladin's lay on hands ability (whether using it to heal or harm).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Choose a weapon from the following list: longbow, longsword, rapier, shortbow, short sword, or any weapon with \u201celven\u201d in its name. Add a +1/2 circumstance bonus on critical hit confirmation rolls with that weapon (maximum bonus of +4). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Choose a weapon from the following list: longbow, longsword, rapier, shortbow, short sword, or any weapon with \"elven\" in its name. Add +1/2 on critical hit confirmation rolls made while using that weapon (maximum bonus of +4). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add +1 to the number of times per day the rogue can cast a cantrip or 1st-level spell gained from the minor magic or major magic talent. The number of times this bonus is selected for the major magic talent cannot exceed the number of times it is selected for the minor magic talent. The rogue must possess the associated rogue talent to select these options.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Shaman": [
+   {
+    "text": "Add 5 feet to the range of a chosen shaman hex. Multiple bonuses from this ability can apply to the same hex, to a maximum of an additional 30 feet for any single hex.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Skald": [
+   {
+    "text": "Increase the bonus granted by the well-versed class feature by 1/4 (maximum +8).",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Slayer": [
+   {
+    "text": "Increase the studied target bonus on Perception and Survival checks by 1/4. When the slayer gains the stalker class feature, he also gains this increase to the studied target bonus on Stealth checks.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Select one bloodline power at 1st level that is normally usable a number of times per day equal to 3 + the sorcerer's Charisma modifier. The sorcerer adds +1/2 to the number of uses per day of that bloodline power.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "The amount of time the summoner must spend to summon his eidolon is reduced by 1 round, to a minimum of 1 round.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Swashbuckler": [
+   {
+    "text": "Increase the total number of points in the swashbuckler's panache pool by 1/4.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Warpriest": [
+   {
+    "text": "Add 1/2 to the number of times per day the warpriest can use blessings, but he can use these additional blessings on only those from the Air, Animal, Charm, Magic, Plant, or Sun domains.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add one spell from the witch spell list to the witch's familiar. This spell must be at least one level lower than the highest-level spell she can cast. If the witch ever replaces her familiar, the new familiar knows these bonus spells.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Select one arcane school power at 1st level that is normally usable a number of times per day equal to 3 + the wizard's Intelligence modifier. The wizard adds +1/2 to the number of uses per day of that arcane school power.",
+    "source": "Advanced Player's Guide"
+   }
+  ]
+ },
+ "Fetchling": {
+  "Oracle": [
+   {
+    "text": "Treat the oracle's level as +1/3 higher for the purposes of determining which of its racial spell-like abilities it can use.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add a +1/2 bonus on Perception and Survival checks made on the Plane of Shadow.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add a +1/2 bonus on Stealth and Sleight of Hand checks made while in dim light or darkness.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add +1/2 to either cold or electricity resistance (maximum resistance 10 for either type).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "The summoner's eidolon gains resistance 1 against either cold or electricity. Each time the summoner selects this reward, he increases his eidolon's resistance to one of those energy types by 1 (maximum 10 for any one energy type).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Add one spell from the wizard spell list to wizard's spellbook. The spell must be at or below the highest level he can cast and be of the illusion (shadow) subschool or have the darkness descriptor.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Gillman": {
+  "Fighter": [
+   {
+    "text": "Add +1 to the fighter's CMD when resisting two combat maneuvers of the character's choice.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "The rogue gains 1/6 of a new rogue talent.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add one spell known from the sorcerer spell list. This spell must be at least one level below the highest spell level the sorcerer can cast.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Add one spell from the wizard spell list to the wizard's spellbook. This spell must be at least one level below the highest spell level he can cast.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Gnome": {
+  "Alchemist": [
+   {
+    "text": "Add +1/2 to the number of bombs per day the alchemist can create.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Arcanist": [
+   {
+    "text": "Add 1/6 to the number of points the arcanist gains in her arcane reservoir each day.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Barbarian": [
+   {
+    "text": "Add a +1/2 bonus to the barbarian's trap sense.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bard": [
+   {
+    "text": "Add 1 to the gnome's total number of bardic performance rounds per day.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 to the bard's total number of bardic performance rounds per day.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bloodrager": [
+   {
+    "text": "Add 1/4 to the bloodrager's effective class level when determining the power of her bloodrager bloodline powers.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Brawler": [
+   {
+    "text": "Increase the number of times per day the brawler can use martial flexibility by 1/4.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add +1 to the cavalier's mounted base speed. In combat this has no effect unless the cavalier has selected this reward five times (or another increment of five). If the cavalier ever replaces his mount, the new mount gains this bonus to its speed.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Add +1/2 to the cleric's channeled energy total when healing creatures of the animal, fey, and plant types.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Gain energy resistance 1 against acid, cold, electricity, or fire. Each time the druid selects this reward, increase her resistance to one of these energy types by 1 (maximum 10 for any one type).",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "The druid gains energy resistance 1 against acid, cold, electricity, or fire. Each time the druid selects this reward, increase her resistance to one of these energy types by +1 (maximum 10 for any one type).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a dirty trick or steal attempt.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "The gunslinger reduces the amount of time needed to restore a broken firearm using the Gunsmithing feat by 5 minutes (maximum reduction of 50 minutes).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Hunter": [
+   {
+    "text": "Add DR 1/magic to the hunter's animal companion. Each time the hunter gains another level, the DR increases by 1/2 (maximum DR 10/magic). If the hunter replaces her animal companion, the new companion gains this damage reduction.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add a +1 bonus on concentration checks when casting inquisitor spells.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Investigator": [
+   {
+    "text": "Add one extract formula from the investigator's list to his formula book. This formula must be at least 1 formula level below the highest level the investigator can create.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Magus": [
+   {
+    "text": "Add one of the following weapon special abilities to the list of weapon special abilities the magus may add to his weapon using his arcane pool: defending, ghost touch, merciful, mighty cleaving, vicious ; allying, conductive, corrosive, corrosive burst, menacing . Once an ability has been selected with this reward, it cannot be changed.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1 to the monk's Acrobatics check bonus gained by spending a point from his ki pool. A monk must be at least 5th level to select this benefit.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Treat the gnome's level as +1/2 higher for the purpose of determining the effects of the oracle's curse ability.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1/2 to the oracle's level for the purpose of determining the effects of the oracle's curse ability.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Paladin": [
+   {
+    "text": "Add +1/2 hit point to the paladin's lay on hands ability (whether using it to heal or harm).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add DR 1/magic to the ranger's animal companion. Each time the ranger selects this benefit, the DR/magic increases by +1/2 (maximum DR 10/magic). If the gnome ever replaces his animal companion, the new companion gains this DR.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add DR 1/magic to the ranger's animal companion. Each additional time the ranger selects this benefit, the DR/magic increases by +1/2 (maximum DR 10/magic). If the ranger ever replaces his animal companion, the new companion gains this DR.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Gnome rogues gain a +1 bonus on Disable Device and Use Magic Device checks related to glyphs, symbols, scrolls, and other magical writings each time they gain a level of rogue.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "The rogue gains a +1/2 bonus on Disable Device and Use Magic Device checks related to glyphs, symbols, scrolls, and other magical writings.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Shaman": [
+   {
+    "text": "The shaman gains 1/6 of a new shaman hex.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Skald": [
+   {
+    "text": "Add a +1 bonus on concentration checks when casting skald spells.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Slayer": [
+   {
+    "text": "The slayer gains 1/6 of a new slayer talent.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Select one bloodline power at 1st level that is normally usable a number of times per day equal to 3 + the sorcerer's Charisma modifier. The sorcerer adds +1/2 to the number of uses per day of that bloodline power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add +1 hit point to the summoner's eidolon.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Swashbuckler": [
+   {
+    "text": "Increase the number of times per day the swashbuckler can use charmed life by 1/4.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Warpriest": [
+   {
+    "text": "Add 1/2 to the result of the warpriest's channeled energy when healing creatures of the animal, fey, and plant types.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "The witch gains 1/6 of a new witch hex.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Add +1/2 to the number of uses per day of arcane school powers. This increase only applies to arcane school powers available at 1st level and normally usable a number of times per day equal to 3 + the wizard's Intelligence modifier.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Select one arcane school power at 1st level that is normally usable a number of times per day equal to 3 + the wizard's Intelligence modifier. The wizard adds +1/2 to the number of uses per day of that arcane school power.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Goblin": {
+  "Alchemist": [
+   {
+    "text": "The alchemist gains fire resistance 1. Each time this reward is selected, increase fire resistance by +1. This fire resistance does not stack with fire resistance gained from other sources.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Barbarian": [
+   {
+    "text": "Add +1/2 on critical hit confirmation rolls for attacks made with unarmed strikes or natural weapons (maximum bonus of +4). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bard": [
+   {
+    "text": "Add +1 to the bard's total number of bardic performance rounds per day.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add +1 hit points to the cavalier's mount companion. If the cavalier ever replaces his mount, the new mount gains these bonus hit points.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add +1 hit points to the druid's animal companion. If the druid ever replaces her animal companion, the new animal companion gains these bonus hit points.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "Add +1/3 on critical hit confirmation rolls made with firearms (maximum bonus of +5). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add +1 on concentration checks made when casting spells with the fire descriptor.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Gain a +1/2 bonus on damage dealt to dogs (and doglike creatures) and horses (and horselike creatures).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add a +1 bonus on the rogue's sneak attack damage rolls during the surprise round or before the target has acted in combat.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add +1 spell known from the sorcerer spell list. This spell must be at least one level below the highest spell level the sorcerer can cast, and must have the fire descriptor.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add +1/4 evolution point to the eidolon's evolution pool. These bonus evolution points must be spent on evolutions that deal fire damage or protect the eidolon from fire (for example, resistance, energy attacks, immunity, breath weapon, and so on).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add +1 spell from the witch spell list to the witch's familiar. This spell must be at least one level below the highest spell level she can cast. If the witch ever replaces her familiar, the new familiar knows these bonus spells.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Grippli": {
+  "Alchemist": [
+   {
+    "text": "Add +1/4 to the number of toxic skin uses per day.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add a +1/2 bonus on concentration checks. This bonus doubles in a forest or swamp terrain.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "Add a +1/4 bonus on attack rolls when making a utility shot or a dead shot.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add a +1 racial bonus on Swim skill checks. When this bonus reaches +8, the ranger gains a swim speed of 15 feet (this does not grant the ranger another +8 racial bonus on Swim checks).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add a +1/2 bonus on Perception checks while in a forest or swamp.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Half-Elf": {
+  "Alchemist": [
+   {
+    "text": "Add +1 foot to the range increment of the alchemist's thrown splash weapons (including the alchemist's bombs). This option has no effect unless the alchemist has selected it 5 times (or another increment of 5); a range increment of 24 feet is effectively the same as a range increment of 20 feet, for example.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Arcanist": [
+   {
+    "text": "When casting arcanist enchantment spells, add 1/3 to the effective caster level, but only for the purpose of determining duration.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Barbarian": [
+   {
+    "text": "Add +1/4 to the bonus on Reflex saves and dodge bonus to AC against attacks made by traps granted by trap sense.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bard": [
+   {
+    "text": "Add 1 to the half-elf's total number of bardic performance rounds per day.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 to the bard's total number of bardic performance rounds per day.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bloodrager": [
+   {
+    "text": "Increase the bonus gained from blood sanctuary by 1/4.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Brawler": [
+   {
+    "text": "Add 1 to the brawler's CMD when she's resisting a trip or overrun combat maneuver.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add +1 foot to the cavalier's mount's base speed. This option has no effect unless the cavalier has selected it 5 times (or another increment of 5); a speed of 54 feet is effectively a speed of 50 feet, for example. If the cavalier ever replaces his mount, the new companion gains this base speed bonus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Add +1/3 to the amount of damage dealt or damage healed when the cleric uses channel energy.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Select one cleric domain power at 1st level that is normally usable a number of times per day equal to 3 + the druid's Wisdom modifier. The druid adds 1/2 to the number of uses per day of that domain power. For half-elf druids whose nature bond gives them an animal companion, add +1 skill rank to the animal companion. If the half-elf ever replaces her animal companion, the new companion gains these bonus skill ranks.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Select one cleric domain power at 1st level that is normally usable a number of times per day equal to 3 + the druid's Wisdom modifier. The druid adds +1/2 to the number of uses per day of that domain power. For druids whose nature bond gives them an animal companion, add +1 skill rank to the animal companion. If the druid ever replaces her animal companion, the new companion gains these bonus skill ranks.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a disarm or overrun.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a disarm or overrun combat maneuver.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "Add +1/4 to the number of grit points in the gunslinger's grit pool.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Hunter": [
+   {
+    "text": "Add 1 foot to the hunter's companion's base speed. In combat, this has an effect only for every five increases in base speed.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add +1/4 to the number of times per day the inquisitor can change her most recent teamwork feat.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Investigator": [
+   {
+    "text": "Gain a +1/4 bonus on all inspiration rolls.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Magus": [
+   {
+    "text": "Add +1/4 to the magus's arcane pool.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1/2 on Escape Artist checks and on Acrobatics checks to cross narrow surfaces.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add one spell known from the oracle spell list. This spell must be at least one level below the highest spell level the oracle can cast.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Paladin": [
+   {
+    "text": "Add +1 foot to the size of all the paladin's aura class features. This option has no effect unless the paladin has selected it 5 times (or another increment of 5); an aura of 14 feet is effectively the same as a 10-foot aura, for example.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1 skill rank to the ranger's animal companion. If the half-elf ever replaces his companion, the new companion gains these bonus skill ranks.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 skill rank to the ranger's animal companion. If the ranger ever replaces his companion, the new companion gains these bonus skill ranks.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add a +1/2 bonus on Bluff checks to feint and Diplomacy checks to gather information.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Shaman": [
+   {
+    "text": "Add one spell from the cleric spell list that isn't on the shaman spell list to the list of spells the shaman knows. This spell must be at least 1 level below the highest spell level the shaman can cast.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Skald": [
+   {
+    "text": "Increase the skald's total number of raging song rounds per day by 1.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Slayer": [
+   {
+    "text": "Gain a +1/2 bonus on Bluff checks to feint and Diplomacy checks to gain information.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Select one bloodline power at 1st level that is normally usable a number of times per day equal to 3 + the sorcerer's Charisma modifier. The sorcerer adds +1/2 to the number of uses per day of that bloodline power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add +1/4 to the eidolon's evolution pool.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Swashbuckler": [
+   {
+    "text": "Increase the number of times per day the swashbuckler can use charmed life by 1/4.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Warpriest": [
+   {
+    "text": "Gain a +1/3 bonus on the damage dealt or healed with the warpriest's channel energy ability.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add one spell from the witch spell list to the witch's familiar. This spell must be at least one level below the highest spell level she can cast. If the witch ever replaces her familiar, the new familiar knows these bonus spells.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "When casting wizard enchantment spells, add +1/3 to the effective caster level of the spell, but only to determine the spell's duration.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Half-Orc": {
+  "Alchemist": [
+   {
+    "text": "Add +1/2 to bomb damage.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1/2 to the alchemist's bomb damage.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Arcanist": [
+   {
+    "text": "Gain a +1 bonus on concentration checks made due to taking damage while casting arcanist spells.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Barbarian": [
+   {
+    "text": "Add 1 to the half-orc's total number of rage rounds per day.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 to the barbarian's total number of rage rounds per day.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bard": [
+   {
+    "text": "Add +1 to the bard's total number of bardic performance rounds per day.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bloodrager": [
+   {
+    "text": "Increase the bloodrager's total number of bloodrage rounds per day by 1.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Brawler": [
+   {
+    "text": "Add 1/4 to the brawler's effective level to determine her unarmed strike damage.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add +1 hit point to the cavalier's mount companion. If the cavalier ever replaces his mount, the new mount gains these bonus hit points.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Select one domain power granted at 1st level that is normally usable a number of times per day equal to 3 + the cleric's Wisdom modifier. The cleric adds +1/2 to the number of uses per day of that domain power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add +1/3 to the druid's natural armor bonus when using wild shape.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +2 on rolls to stabilize when dying.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add a +2 bonus on rolls to stabilize when dying.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "Add a +1/3 bonus on attack rolls when using the pistol whip deed.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Hunter": [
+   {
+    "text": "Add 1 hit point to the hunter's animal companion. If the hunter replaces his animal companion, the new animal companion gains these bonus hit points.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add +1/2 on Intimidate checks and Knowledge checks to identify creatures.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add a +1/2 bonus on Intimidate checks and Knowledge checks to identify creatures.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Investigator": [
+   {
+    "text": "Gain a +1/3 bonus on critical hit confirmation rolls made while using studied combat (maximum bonus of +5). This bonus does not stack with those gained through Critical Focus and similar effects.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Magus": [
+   {
+    "text": "Add +1/2 point of fire damage to spells that deal fire damage cast by the magus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1 to the monk's CMD when resisting a grapple and +1/2 to the number of stunning attacks he can attempt per day.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add one spell known from the oracle spell list. This spell must be at least one level below the highest spell level the oracle can cast.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Paladin": [
+   {
+    "text": "Add +1/3 on critical hit confirmation rolls made while using smite evil (maximum bonus of +5). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1 hit point to the ranger's animal companion. If the half-orc ever replaces his animal companion, the new animal companion gains these bonus hit points.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 hit point to the ranger's animal companion. If the ranger ever replaces his animal companion, the new animal companion gains these bonus hit points.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add +1/3 on critical hit confirmation rolls made while using sneak attack (maximum bonus of +5). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Shaman": [
+   {
+    "text": "Add one spell from the cleric spell list that isn't on the shaman spell list to the list of spells the shaman knows. This spell must be at least 1 level below the highest spell level the shaman can cast.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Skald": [
+   {
+    "text": "Increase the skald's total number of raging song rounds per day by 1.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Slayer": [
+   {
+    "text": "Gain a +1/3 bonus on critical hit confirmation rolls made while using sneak attack (maximum bonus of +5). This bonus doesn't stack with those gained through Critical Focus and similar effects.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add +1/2 to fire spell damage.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1/2 point of fire damage to spells that deal fire damage cast by the sorcerer.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add +1 hit point to the summoner's eidolon.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Swashbuckler": [
+   {
+    "text": "Gain a +1/3 bonus on all critical hit confirmation rolls made while using the precise strike deed (maximum bonus of +5). This bonus doesn't stack with those gained through Critical Focus and similar effects.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Warpriest": [
+   {
+    "text": "Gain a +2 bonus on rolls to stabilize when dying.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add 1 skill rank to the witch's familiar. If the half-orc ever replaces her familiar, the new familiar gains these bonus skill ranks.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 skill rank to the witch's familiar. If the half-orc ever replaces her familiar, the new familiar gains these bonus skill ranks.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Add a +1 bonus on concentration checks made due to taking damage while casting wizard spells.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Halfling": {
+  "Alchemist": [
+   {
+    "text": "Add one extract formula from the alchemist's list to the alchemist's formula book. This formula must be at least one level below the highest formula level the alchemist can create.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Arcanist": [
+   {
+    "text": "Gain 1/6 of a new arcanist exploit.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Barbarian": [
+   {
+    "text": "Add a +1/2 bonus to trap sense or +1/3 to the bonus from the surprise accuracy rage power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bard": [
+   {
+    "text": "Add +1/2 on Bluff checks to pass secret messages, +1/2 on Diplomacy checks to gather information, and +1/2 on Disguise checks to appear as an elven, half-elven, or human child.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Bloodrager": [
+   {
+    "text": "Gain a +1/4 dodge bonus to AC while bloodraging against creatures at least one size category larger than the bloodrager.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Brawler": [
+   {
+    "text": "Gain a +1 bonus to the brawler's CMD when resisting a grapple or overrun combat maneuver.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add +1/2 to the cavalier's effective class level for the purposes of determining the damage he deals when making an attack of opportunity against a challenged foe.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Select one domain power granted at 1st level that is normally usable for a number of times per day equal to 3 + the cleric's Wisdom modifier. The cleric adds 1/2 to the number of uses per day of that domain power.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Select one domain power granted at 1st level that is normally usable a number of times per day equal to 3 + the cleric's Wisdom modifier. The cleric adds +1/2 to the number of uses per day of that domain power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add a +1/4 luck bonus on the saving throws of the druid's animal companion.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a grapple or trip.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a trip or grapple attempt.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "Add +1/4 to the dodge bonus to AC granted by the nimble class feature (maximum +2) or +1/4 to the AC bonus gained when using the gunslinger's dodge deed.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Hunter": [
+   {
+    "text": "The hunter's animal companion gains a +1/4 luck bonus on saving throws. If the hunter replaces her animal companion, the new animal companion gains this bonus.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add +1/4 to the number of times per day that an inquisitor can change her most recent teamwork feat.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Investigator": [
+   {
+    "text": "Add one extract formula from the investigator's list to his formula book. This formula must be at least 1 formula level below the highest level the investigator can create.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Magus": [
+   {
+    "text": "The magus gains 1/6 of a new magus arcana.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1 to the monk's CMD when resisting a grapple and +1/2 to the number of stunning attacks he can attempt per day.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add +1/2 to the oracle's level for the purpose of determining the effects of the oracle's curse ability.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Paladin": [
+   {
+    "text": "Add +1/2 hp to the paladin's lay on hands ability (whether using it to heal or harm).",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1/2 hit point to the paladin's lay on hands ability (whether using it to heal or harm).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1/3 dodge bonus to Armor Class against the halfling's favored enemies.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add a +1/4 dodge bonus to Armor Class against the ranger's favored enemies.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Choose a weapon from the following list: sling, dagger, or any weapon with \u201chalfling\u201d in its name. Add a +1/2 circumstance bonus on critical hit confirmation rolls with that weapon (maximum bonus of +4). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Choose a weapon from the following list: sling, dagger, or any weapon with \"halfling\" in its name. Add a +1/2 bonus on critical hit confirmation rolls with that weapon (maximum bonus +4). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Shaman": [
+   {
+    "text": "Add 1/2 to the shaman's effective class level for the purpose of determining her spirit animal's natural armor adjustment, Intelligence, and special abilities.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Skald": [
+   {
+    "text": "Choose a weapon from the following list: dagger, sling, or any weapon with the word \"halfling\" in its name. Add a +1/2 bonus on critical hit confirmation rolls with that weapon (maximum bonus +4). This bonus doesn't stack with those gained through Critical Focus and similar effects.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Slayer": [
+   {
+    "text": "Add a +1/4 dodge bonus to Armor Class against the slayer's studied target.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Select one bloodline power at 1st level that is normally usable a number of times per day equal to 3 + the sorcerer's Charisma modifier. The sorcerer adds +1/2 to the number of uses per day of that bloodline power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add +1 skill rank to the summoner's eidolon.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Swashbuckler": [
+   {
+    "text": "Increase the number of times the swashbuckler can use charmed life by 1/4.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Warpriest": [
+   {
+    "text": "Add 1/4 to the warpriest's effective level when determining the damage of his sacred weapon.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add +1/4 to the witch's caster level when determining the effects of the spells granted to her by her patron.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Add +1/2 to the wizard's effective class level for the purposes of determining his familiar's natural armor adjustment, Intelligence, and special abilities.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Hobgoblin": {
+  "Alchemist": [
+   {
+    "text": "Add +1/2 to the number of bombs per day the alchemist can create.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add a +1/2 bonus on Intimidate checks and Ride checks.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Add +1/2 to negative energy spell damage, including inflict spells.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add a +1/2 circumstance bonus on critical hit confirmation rolls with a weapon of the fighter's choice (maximum bonus +4). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "Add +1/4 to the gunslinger's grit points.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add a +1 bonus on concentration checks made to cast inquisitor spells.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add a +1/4 bonus on combat maneuver checks made to grapple or trip.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1/4 to a single existing favored enemy bonus (maximum bonus +1 per favored enemy).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Reduce the penalty for not being proficient with one weapon by 1. When the nonproficiency penalty for a weapon becomes 0 because of this ability, the rogue is treated as having the appropriate Martial or Exotic Weapon Proficiency feat for that weapon.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Human": {
+  "Alchemist": [
+   {
+    "text": "Add one extract formulae from the alchemist's list to the character's formulae book. This formulae must be at least one level below the highest formulae level the alchemist can create.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add one extract formula from the alchemist formula list to the character's formula book. This formula must be at least one level below the highest formula level the alchemist can create.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Arcanist": [
+   {
+    "text": "Add one spell from the arcanist spell list to the arcanist's spellbook. The spell must be at least 1 spell level below the highest level the arcanist can cast.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Barbarian": [
+   {
+    "text": "Add a +1/2 bonus to trap sense or +1/3 to the bonus from the superstitious rage power.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Bard": [
+   {
+    "text": "Add one spell known from the bard spell list. This spell must be at least one level below the highest spell level the bard can cast.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Bloodrager": [
+   {
+    "text": "Increase the bloodrager's total number of bloodrage rounds per day by 1.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Brawler": [
+   {
+    "text": "Gain a +1 bonus to the brawler's CMD when resisting two combat maneuvers of the brawler's choice.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add +1/4 to the cavalier's banner bonus.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Add +1 on caster level checks made to overcome the spell resistance of outsiders.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add a +1 bonus on caster level checks made to overcome the spell resistance of outsiders.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add a +1/2 bonus on Diplomacy and Intimidate checks to change a creature's attitude.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1 to the fighter's CMD when resisting two combat maneuvers of the character's choice.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "Add +1/4 point to the gunslinger's grit points.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Hunter": [
+   {
+    "text": "Add 1 skill rank to the hunter's animal companion. If the hunter replaces his animal companion, the new animal companion gains these bonus skill ranks.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add one spell known from the inquisitor spell list. This spell must be at least one level below the highest spell level the inquisitor can cast.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Investigator": [
+   {
+    "text": "Add one extract formula from the investigator's formula list to his formula book. This formula must be at least 1 formula level below the highest level the investigator can create.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Magus": [
+   {
+    "text": "Add +1/4 point to the magus' arcane pool.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1/4 to the monk's ki pool.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add +1/4 point to the monk's ki pool.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add one spell known from the oracle spell list. This spell must be at least one level below the highest spell level the oracle can cast.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Paladin": [
+   {
+    "text": "Add +1 to the paladin's energy resistance to one kind of energy (maximum +10).",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1 hit point or +1 skill rank to the ranger's animal companion. If the ranger ever replaces his companion, the new companion gains these bonus hit points or skill ranks.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "The human gains +1/6 of a new rogue talent.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "The rogue gains +1/6 of a new rogue talent.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Shaman": [
+   {
+    "text": "Add one spell from the cleric spell list that isn't on the shaman spell list to the list of spells the shaman knows. This spell must be at least 1 level below the highest spell level the shaman can cast.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Skald": [
+   {
+    "text": "Add one spell from the skald's spell list to the skald's known spells. This spell must be at least 1 spell level below the highest level the skald can cast.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Slayer": [
+   {
+    "text": "Gain 1/6 of a new slayer talent.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add one spell known from the sorcerer spell list. This spell must be at least one level below the highest spell level the sorcerer can cast.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add +1 hit point or +1 skill rank to the summoner's eidolon.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Swashbuckler": [
+   {
+    "text": "Increase the total number of points in the swashbuckler's panache pool by 1/4.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Warpriest": [
+   {
+    "text": "Gain 1/6 of a new bonus combat feat.",
+    "source": "Advanced Class Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add one spell from the witch spell list to the witch's familiar. This spell must be at least one level below the highest spell level she can cast. If the witch ever replaces her familiar, the new familiar knows these bonus spells.",
+    "source": "Advanced Player's Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Add one spell from the wizard spell list to the wizard's spellbook. This spell must be at least one level below the highest spell level he can cast.",
+    "source": "Advanced Player's Guide"
+   },
+   {
+    "text": "Add one spell from the wizard spell list to the wizard's spellbook. This spell must be at least one level below the highest spell level the wizard can cast.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Ifrit": {
+  "Alchemist": [
+   {
+    "text": "Add +1/2 to the alchemist's bomb damage.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bard": [
+   {
+    "text": "Add +1/6 to the number of people the bard can affect with the fascinate bardic performance.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Add a +1/2 bonus on Knowledge (planes) checks relating to the Plane of Fire and creatures with the fire subtype.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "Add +1/2 to the bonus on initiative checks the gunslinger makes while using her gunslinger initiative deed.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add a +1/2 bonus on Intimidate checks made against creatures with the fire subtype and a +1/2 bonus on Knowledge (planes) checks relating to the Plane of Fire.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add +1/2 to the oracle's level for the purpose of determining the effects of one revelation.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add a +1/2 bonus on Acrobatics checks to jump and a +1/2 bonus on Intimidate checks to demoralize enemies.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Choose a bloodline power from the elemental (fire) bloodline or the efreeti bloodline that the sorcerer can use. The sorcerer treats her class level as though it were +1/2 higher (to a maximum of +4) when determining the effects of that power.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Kitsune": {
+  "Bard": [
+   {
+    "text": "Add a +1/2 bonus on Bluff checks to lie and a +1/2 bonus on Diplomacy checks to gather information.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add a +1/2 bonus on Diplomacy and Intimidate checks to change a creature's attitude.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Reduce the penalty for not being proficient for one weapon by 1. When the nonproficiency penalty for a weapon becomes 0 because of this ability, the oracle is treated as having the appropriate Martial or Exotic Weapon Proficiency feat for that weapon.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "The rogue gains 1/6 of a new rogue talent.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add +1/4 to the DC of enchantment spells.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Kobold": {
+  "Alchemist": [
+   {
+    "text": "Add +1/2 to the number of bombs per day the alchemist can create.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Bard": [
+   {
+    "text": "Treat the bard's level as +1/2 level higher for the purpose of determining the effect of the fascinate bardic performance.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add 5 feet (up to 15 feet maximum) to the cavalier's mount's speed when it uses the charge or withdraw action.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Add +1 to channel energy damage dealt to creatures denied their Dexterity bonus to AC (whether or not the creature has a Dexterity bonus to AC).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add +1/2 to the druid's wild empathy bonus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1/2 to damage rolls the fighter makes with weapon attacks against an opponent he is flanking or an opponent that is denied its Dexterity bonus to AC.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "Add +1/4 to the dodge bonus to AC granted by the nimble class feature (maximum +4).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Magus": [
+   {
+    "text": "Add a +1/2 bonus on concentration checks made to cast defensively.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1/3 to the monk's AC bonus class ability.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add +1/4 to the armor or natural armor bonus granted by oracle spells she casts on herself.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1/4 to the number of opponents the ranger may select when using hunter's bond to grant a bonus to allies. All selected creatures must be of the same type.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add +1/2 to the rogue's trap sense bonus to AC.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Choose acid, cold, electricity, or fire damage. Add +1/2 point of the chosen energy damage to spells that deal the chosen energy damage cast by the sorcerer.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add +1/4 to the summoner's shield ally bonus (maximum +2).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add +5 feet to the distance at which her familiar grants the Alertness feat (maximum +20 feet).",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Merfolk": {
+  "Druid": [
+   {
+    "text": "Add +1 hit point to the druid's animal companion. If the merfolk ever replaces her animal companion, the new animal companion gains these bonus hit points.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1 hit point to the ranger's animal companion. If the ranger ever replaces his animal companion, the new animal companion gains these bonus hit points.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add +1/2 to the sorcerer's caster level when determining the range of any spells with the water descriptor.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Nagaji": {
+  "Alchemist": [
+   {
+    "text": "Add +1 on Craft (alchemy) checks to craft poison and +1/3 on the DCs of poisons the alchemist creates.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a grapple or trip attempt.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1/4 point to the monk's ki pool.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add +1 hit point to the summoner's eidolon.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Orc": {
+  "Alchemist": [
+   {
+    "text": "Add +10 minutes to the duration of the alchemist's mutagens.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Barbarian": [
+   {
+    "text": "Add +1 to the barbarian's total number of rage rounds per day.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cavalier": [
+   {
+    "text": "Add +1 to the cavalier's CMB when making bull rush or overrun combat maneuvers against a challenged target.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add +1/2 to the damage dealt by the druid's animal companion's natural attacks.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +2 to the fighter's Constitution score for the purpose of determining when he dies from negative hit points.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1 hit point to the ranger's animal companion. If the ranger ever replaces his animal companion, the new animal companion gains these bonus hit points.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add one spell from the witch spell list to the witch's familiar. This spell must be at least one level below the highest spell level she can cast. If the witch ever replaces her familiar, the new familiar knows these bonus spells.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Oread": {
+  "Bard": [
+   {
+    "text": "Add +5 feet to the range of one of the bard's bardic performances (max +30 feet to any one performance).",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Add a +1/2 bonus on Knowledge (planes) checks relating to the Plane of Earth and creatures with the earth subtype.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add a +1/2 bonus on Knowledge (nature) checks relating to plants and burrowing animals.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a bull rush or drag attempt.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1/3 on critical hit confirmation rolls made with unarmed strikes (maximum bonus of +5). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Paladin": [
+   {
+    "text": "Add +1/4 to the bonus the paladin grants her allies with her aura of courage and aura of resolve special abilities.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1/4 to the natural armor bonus of the ranger's animal companion. If the ranger ever replaces his animal companion, the new animal companion gains this bonus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add a +1/4 natural armor bonus to the AC of the summoner's eidolon.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Ratfolk": {
+  "Alchemist": [
+   {
+    "text": "The alchemist gains +1/6 of a new discovery.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Barbarian": [
+   {
+    "text": "When raging, add +1/4 to the barbarian's swarming trait's flanking bonus on attack rolls.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add a +1 bonus on wild empathy checks made to influence animals and magical beasts that live underground.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a bull rush or grapple attempt.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Gunslinger": [
+   {
+    "text": "Add a +1/2 bonus on initiative checks when the gunslinger has at least 1 grit point.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1 feet to the speed the monk can move while making a Stealth check without taking a penalty. This has no effect unless the monk has selected this reward five times (or another increment of five). This does not allow the monk to use Stealth while running or charging.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1 to an animal companion's CMD when adjacent to the ranger. If the ranger ever replaces his animal companion, the new animal companion gains this bonus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add a +1/2 bonus on Escape Artist checks.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add a +1 bonus on saving throws against poison made by the summoner's eidolon.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add +5 feet to the range of one hex with a range other than \"touch.\"",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Samsaran": {
+  "Monk": [
+   {
+    "text": "Add a +1/2 bonus on the monk's saving throws to resist death attacks.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add one spell known from the oracle spell list. This spell must be at least one level below the highest spell level the oracle can cast.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "The rogue gains 1/6 of a new rogue talent.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Add one spell from the wizard spell list to the wizard's spellbook. This spell must be at least one level below the highest spell level the wizard can cast.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Strix": {
+  "Barbarian": [
+   {
+    "text": "Add +1 to the barbarian's total number of rage rounds per day.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1/4 to the attack roll bonus from the strix's hatred racial trait.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1/4 point to the monk's ki pool.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1/2 round to the duration of the bonus granted to the companions of the ranger using his hunter's bond ability.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Suli": {
+  "Magus": [
+   {
+    "text": "Add +1/4 point to the magus's arcane pool.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1/2 point of damage to elemental assault.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1 to acid resistance, cold resistance, electricity resistance, or fire resistance.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Svirfneblin": {
+  "Alchemist": [
+   {
+    "text": "Add one extract formula from the alchemist's list to the alchemist's formula book. This formula must be at least one level below the highest formula level the alchemist can create.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add one spell known from the oracle spell list. This spell must be at least one level below the highest spell level the oracle can cast.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add DR 1/magic to the ranger's animal companion. Each additional time the ranger selects this benefit, the DR/magic increases +1/2 (maximum DR 10/magic). If the ranger ever replaces his animal companion, the new companion gains this DR.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Sylph": {
+  "Cleric": [
+   {
+    "text": "Add a +1/2 bonus on Knowledge (planes) checks relating to the Plane of Air and creatures with the air subtype.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add a +1/2 bonus on Knowledge (nature) checks relating to weather and flying animals.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add a +1/2 bonus on Stealth checks while motionless and on opposed Perception checks.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add +1/2 to the oracle's level for the purpose of determining the effects of one revelation.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add a +1/2 bonus on Acrobatics checks to jump and a +1/2 bonus on Sense Motive checks.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Choose a bloodline power from the djinni or elemental (air) bloodline that the sorcerer can use. The sorcerer treats her class level as though it were +1/2 higher (to a maximum of +4) when determining the effects of that power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add a +1/2 bonus on Stealth checks and Perception checks made by the witch's familiar. If the sylph ever replaces her familiar, the new familiar gains these bonus skill ranks.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Select one arcane school power from the air or wood elemental schools that the wizard can currently use. The wizard treats her class level as though it were +1/2 higher (to a maximum of +4) when determining the effects of that power.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Tengu": {
+  "Barbarian": [
+   {
+    "text": "Add +1/3 to the bonus from the superstitious rage power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a grapple or trip attempt.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1/4 point to the monk's ki pool.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add +1/2 to the oracle's level for the purpose of determining the effects of the oracle's curse ability.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Choose a weapon from those listed under the tengu's swordtrained ability. Add a +1/2 bonus on critical hit confirmation rolls with that weapon (maximum bonus +4). This bonus does not stack with Critical Focus.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Select one bloodline power at 1st level that is normally usable a number of times per day equal to 3 + the sorcerer's Charisma modifier. The sorcerer adds +1/2 to the number of uses per day of that bloodline power.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "Add one spell from the witch spell list to the witch's familiar. This spell must be at least one level below the highest spell level she can cast. If the witch ever replaces her familiar, the new familiar knows these bonus spells.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Tiefling": {
+  "Alchemist": [
+   {
+    "text": "Add +1/2 to the alchemist's bomb damage.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Add a +1 bonus on caster level checks made to overcome the spell resistance of outsiders.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add a +1 bonus on wild empathy checks made to improve the attitude of fiendish animals.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Inquisitor": [
+   {
+    "text": "Add a +1/2 bonus on Intimidate checks and Knowledge checks to identify creatures.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Magus": [
+   {
+    "text": "Add +1/4 point to the magus's arcane pool.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Paladin": [
+   {
+    "text": "Add +1 to the amount of damage the paladin heals with lay on hands, but only when the paladin uses that ability on herself.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add +1/2 to sneak attack damage dealt to creatures with the outsider type.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add +1/2 to the number of times per day a sorcerer can use the corrupting touch infernal bloodline power, or +1 to the total number of rounds per day the sorcerer can use the claws abyssal bloodline power. The sorcerer must possess the applicable power to select these bonuses.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add +1 hit point or +1 skill rank to the summoner's eidolon.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Witch": [
+   {
+    "text": "The witch's familiar gains resistance 1 against cold, electricity, or fire. Each time the witch selects this reward, increase the familiar's resistance to one of these energy types by 1 (maximum 5 for any one type). If the witch ever replaces her familiar, the new familiar has these resistances.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Select one arcane school power at 1st level that is normally usable a number of times per day equal to 3 + the wizard's Intelligence modifier. The wizard adds +1/2 to the number of uses per day of that arcane school power.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Undine": {
+  "Bard": [
+   {
+    "text": "Add a +1 bonus on Perform checks to use the countersong bardic performance against creatures with the aquatic or water subtypes.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Cleric": [
+   {
+    "text": "Add a +1 bonus on caster level checks to overcome the spell resistance of creatures with the aquatic or water subtype.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add a +1 bonus on wild empathy checks to influence animals and magical beasts with the aquatic subtype.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add +1 to the monk's CMD when resisting a grapple and +1/3 to the number of stunning attacks he can attempt per day.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add a +1 bonus on caster level checks to cast spells underwater.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "If the summoner's eidolon has an aquatic base form , add +5 feet to the range of the summoner's life link ability.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Wizard": [
+   {
+    "text": "Add one spell from the cleric, druid, or wizard spell list with the water descriptor to the wizard's spellbook. This spell must be at least one level below the highest spell level he can cast. This spell is treated as one level higher unless it also appears on the wizard spell list.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Vanara": {
+  "Alchemist": [
+   {
+    "text": "Add +1/2 to the alchemist's bomb damage.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Druid": [
+   {
+    "text": "Add a +1/2 bonus on wild empathy checks and a +1/2 bonus on Handle Animal skill checks.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Fighter": [
+   {
+    "text": "Add +1 to the fighter's CMD when resisting a reposition or trip attempt.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Monk": [
+   {
+    "text": "Add a +1 bonus on Acrobatics checks made to jump.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Ranger": [
+   {
+    "text": "Add +1/4 dodge bonus to Armor Class against the ranger's favored enemies.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "The rogue gains 1/6 of a new rogue talent.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Vishkanya": {
+  "Bard": [
+   {
+    "text": "Add +1 to the bard's total number of bardic performance rounds per day.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Rogue": [
+   {
+    "text": "Add +1 to the rogue's CMD when resisting a grapple or reposition attempt.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Select one bloodline power at 1st level that is normally usable a number of times per day equal to 3 + the sorcerer's Charisma modifier. The sorcerer adds +1/2 to the number of uses per day of that bloodline power.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ },
+ "Wayang": {
+  "Bard": [
+   {
+    "text": "Add one spell known from the wizard's illusion school spell list. This spell must be at least one level below the highest spell level the bard can cast. The spell is treated as being one level higher, unless it is also on the bard spell list.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Oracle": [
+   {
+    "text": "Add one spell known from the wizard's illusion school spell list. This spell must be at least one level below the highest spell level the oracle can cast. That spell is treated as one level higher unless it is also on the oracle spell list.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Sorcerer": [
+   {
+    "text": "Add +1/2 point of damage to any illusion spells of the shadow subschool cast by the sorcerer.",
+    "source": "Advanced Race Guide"
+   }
+  ],
+  "Summoner": [
+   {
+    "text": "Add +1 skill rank to the summoner's eidolon.",
+    "source": "Advanced Race Guide"
+   }
+  ]
+ }
+}

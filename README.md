@@ -44,6 +44,7 @@ Feats, traits, abilities, spells, and magic items are matched to the compendium 
 - HP: average, roll, max, or manual
 - Favored class bonus
 - Feats every odd level, ability increases every 4th level
+- Favored class bonus: +1 HP, +1 skill rank, or your race's own option for that class (about 430 options from the Advanced Player's Guide, Advanced Race Guide and Advanced Class Guide)
 - Skill rank allocation with a live budget
 - New class features (click any feature to read it)
 - Spells to learn: only levels you can actually learn, with a "left to choose" counter (e.g. bard 1: 4 cantrips and 2 1st-level spells). Spellbook casters get every cantrip automatically.

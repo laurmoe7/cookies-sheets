@@ -11,6 +11,7 @@ import { renderArchetypeChooser } from './archetypes.js';
 import { chooseSpells } from './spellpicker.js';
 
 let draft = null;
+let fcbData = null; // racial favored class options, loaded once
 const ORD = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 - 20) % 10] || ['th', 'st', 'nd', 'rd'][n % 100] || 'th');
 
 function freshDraft(c) {
@@ -27,6 +28,7 @@ export function renderLevelUp(main) {
     main.innerHTML = '<div class="page narrow"><section class="card"><h2>Level 20</h2><p>Your character is at the maximum level. Mythic tiers are tracked in notes.</p></section></div>';
     return;
   }
+  if (!fcbData) api.fcb().then(x => { fcbData = x; if (state.view === 'levelup') render({ keepScroll: true }); }).catch(() => { fcbData = {}; });
   main.innerHTML = `<div class="page levelup">
     <div class="row"><h1 class="grow">${d.level === 0 ? 'Create character · 1st level' : `Level up · ${ORD(d.level)} → ${ORD(newLevel)} level`}</h1>
       ${d.level > 0 ? '<button class="btn ghost" data-cancel>Back to sheet</button>' : ''}</div>
@@ -187,9 +189,16 @@ function detail(el, c, d, newLevel) {
       <p>HP gained this level: <b class="big">${hpGain}</b> <span class="small muted">(die ${hpValue(draft, def.hit_die, newLevel)} ${sign(after.abilities.con.mod)} Con${isFav && draft.fcb === 'hp' ? ' +1 favored class' : ''})</span></p>
 
       <h3>4 · Favored class bonus</h3>
-      ${isFav ? `<div class="seg">${[['hp', '+1 hit point'], ['skill', '+1 skill rank'], ['other', 'Alternate bonus']].map(([k, l]) =>
-        `<button class="seg-btn ${draft.fcb === k ? 'on' : ''}" data-fcb="${k}">${l}</button>`).join('')}</div>
-        ${draft.fcb === 'other' ? `<input id="fcb-note" class="full" placeholder="e.g. +1/6 new arcane discovery, +½ round of rage…" value="${esc(draft.fcbNote)}">` : ''}`
+      ${isFav ? (() => {
+        const racial = fcbData?.[c.race]?.[draft.cls] || [];
+        const modes = [['hp', '+1 hit point'], ['skill', '+1 skill rank'], ...(racial.length ? [['racial', `${c.race} option`]] : []), ['other', 'Your own bonus']];
+        return `<div class="seg">${modes.map(([k, l]) => `<button class="seg-btn ${draft.fcb === k ? 'on' : ''}" data-fcb="${k}">${esc(l)}</button>`).join('')}</div>
+        ${draft.fcb === 'racial' ? `<div class="fcb-options">${racial.map((o, i) => `<button class="fcb-opt ${draft.fcbNote === o.text ? 'on' : ''}" data-fcb-opt="${i}">
+            <span>${esc(o.text)}</span><span class="muted small">${esc(o.source)}</span></button>`).join('')}</div>
+          ${draft.fcbNote ? '' : '<p class="small warn">Choose one of the options above.</p>'}` : ''}
+        ${draft.fcb === 'other' ? `<input id="fcb-note" class="full" placeholder="e.g. +1/6 new arcane discovery, +½ round of rage…" value="${esc(draft.fcbNote)}">` : ''}
+        ${!racial.length ? `<p class="small muted">The books list no ${esc(c.race)} favored class option for the ${esc(draft.cls)}.</p>` : ''}`;
+      })()
         : `<p class="muted">${esc(draft.cls)} isn't your favored class (${esc(c.favoredClass || 'not set')}). No bonus this level.</p>`}
 
       ${getsAbility ? `<h3>5 · Ability score increase</h3><p>Every 4th level, +1 to one ability score.</p>
@@ -234,7 +243,8 @@ function detail(el, c, d, newLevel) {
   if (roll) roll.onclick = () => { draft.hpRoll = 1 + Math.floor(Math.random() * def.hit_die); rerender(); };
   const man = $('#hp-manual', el);
   if (man) man.onchange = () => { draft.hpManual = man.value; rerender(); };
-  $$('[data-fcb]', el).forEach(b => (b.onclick = () => { draft.fcb = b.dataset.fcb; rerender(); }));
+  $$('[data-fcb]', el).forEach(b => (b.onclick = () => { if (draft.fcb !== b.dataset.fcb) { draft.fcb = b.dataset.fcb; draft.fcbNote = ''; } rerender(); }));
+  $$('[data-fcb-opt]', el).forEach(b => (b.onclick = () => { draft.fcbNote = (fcbData?.[c.race]?.[draft.cls] || [])[+b.dataset.fcbOpt]?.text || ''; rerender(); }));
   const fn = $('#fcb-note', el);
   if (fn) fn.oninput = () => (draft.fcbNote = fn.value);
   $('#lu-notes', el).oninput = e => (draft.notes = e.target.value);
