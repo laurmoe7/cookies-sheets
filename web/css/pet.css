@@ -266,3 +266,5 @@ html[data-theme="tome"] @media (max-height: 520px) { #cookie-slot { display: non
 /* an old scar across his forehead: a faded, curved X */
 #cookie .scar path { fill: none; stroke: var(--pet-ink); stroke-width: 2.1; stroke-linecap: round; opacity: .28; }
 #cookie[data-eyes="squint"] .line path { stroke-width: 3.8; }
+#cookie.puff .cig-ember { opacity: 1; fill: #ff9a3c; }
+#cookie.puff .cig-smoke path { animation-duration: 1.3s; stroke-width: 3.4; }

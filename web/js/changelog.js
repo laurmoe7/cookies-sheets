@@ -7,6 +7,7 @@ export const CHANGELOG = [
     items: [
       'Meet Cookie: a rude thrush familiar who lives at the bottom of the sidebar and comments on what you do: taking damage, going down or dying, casting spells, summoning, new items, gold, feats, levelling up and more. Options → Cookie: turn him off, make him quieter or chattier, bleep the swearing, add squawks. Click him if you dare. He is bigger now, his speech bubble comes out of his mouth, and no, you cannot uncheck him.',
       'Cookie: his angry eyes are a proper > <, the scar on his forehead is a faded curved X, and his speech bubble sits beside his face (no tail) so you can see him. The last character now always reopens at start (the option is gone).',
+      'Cookie has more to do while he waits: blinking, looking around, rolling his eyes, long drags on his cigarette, yawning, scratching, tapping his feet, swaying, sniffing, glaring, sitting down, and nodding off. His eyes also follow your mouse a little.',
       'The Open Game License notice moved from the sidebar into Options (Game content & license), so What’s new and Options sit at the very bottom.',
       'Dusty tome: a faster, smoother bending page turn, and an optional page-turn sound (Options → Page turn sound) that is pitched a little differently each time; the tabs are smooth satin ribbons with gold piping.',
       'Dusty tome: dark ink on the parchment so text is easier to read, burn marks and torn edges on some pages, a quicker backward page turn, and a Page turn option (Full, Light or Off) in Options.',

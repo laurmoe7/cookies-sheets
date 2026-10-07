@@ -16,6 +16,7 @@ const FACES = {
   huff: { eyes: 'closed', mouth: 'o', arms: 'idle', x: ['steam'] },
   shrug: { eyes: 'open', mouth: 'wavy', arms: 'scratch', x: ['question'] },
   nervous: { eyes: 'open', mouth: 'wavy', arms: 'cover', x: ['sweat'] },
+  scratch: { eyes: 'open', mouth: 'wavy', arms: 'scratch', x: [] },
   mad: { eyes: 'squint', mouth: 'open', arms: 'clench', x: [] },
 };
 const EXTRAS = ['steam', 'question', 'sweat', 'shock'];
@@ -65,7 +66,7 @@ const REACT = {
 // How likely a line is at each chattiness, and the quiet gap he leaves between lines (ms).
 const TALK = { quiet: { odds: 0.3, gap: 45000 }, normal: { odds: 0.75, gap: 10000 }, chatty: { odds: 1, gap: 3500 } };
 
-let wrap, pet, bubble, bubbleTimer, faceTimer, moveTimer;
+let wrap, pet, bubble, bubbleTimer, faceTimer, moveTimer, moving = '';
 let settled = null, debounce = null, lastSpoke = 0, lastPrio = 0, pokes = [], idleTimer = null, name = '';
 
 const reduce = () => options().motion === false || matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -81,6 +82,8 @@ export function mountPet(slot) {
   document.addEventListener('cookie-refuse', () => { const l = pickLine('refuse', { name }); if (l) speak(l, 5, 'refuse'); });
   refreshOptions();
   face('smug');
+  addEventListener('pointermove', follow, { passive: true });
+  scheduleMoves();
 }
 
 function refreshOptions() {
@@ -107,11 +110,13 @@ function face(key, ms = 0) {
 /** Plays one of the bird's CSS moves (hop, wiggle, bob, peek, sniff...) for a moment. */
 function move(cls, ms = 900) {
   if (!cls || reduce()) return;
+  if (moving) pet.classList.remove(moving);
+  moving = cls;
   pet.classList.remove(cls);
   void pet.offsetWidth;
   pet.classList.add(cls);
   clearTimeout(moveTimer);
-  moveTimer = setTimeout(() => pet.classList.remove(cls), ms);
+  moveTimer = setTimeout(() => { pet.classList.remove(cls); if (moving === cls) moving = ''; }, ms);
 }
 
 /** A short bird chirp made with the Web Audio API (only when "Cookie's squawks" is on). */
@@ -230,4 +235,64 @@ function scheduleIdle() {
     }
     scheduleIdle();
   }, t.gap * (8 + Math.random() * 8));
+}
+
+// ---------- idle animations: things he does when nothing is happening (no words) ----------
+let lookLock = 0, lastPointer = 0, movesTimer = null, tidy = [];
+/** Points his pupils (in drawing units). */
+function look(x, y) { pet.style.setProperty('--look-x', x + 'px'); pet.style.setProperty('--look-y', y + 'px'); pet.classList.add('looking'); }
+const later = (ms, fn) => { const t = setTimeout(fn, ms); tidy.push(t); return t; };
+
+/** His eyes follow the mouse a little, unless an idle move is steering them. */
+function follow(e) {
+  if (!pet || Date.now() < lookLock || Date.now() - lastPointer < 90 || !options().cookie) return;
+  lastPointer = Date.now();
+  const r = pet.getBoundingClientRect();
+  const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height * 0.6);
+  const d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 220);
+  look(+(dx / d * 3.4 * k).toFixed(2), +(dy / d * 2.4 * k).toFixed(2));
+}
+
+/** Steers the eyes through a list of [x, y, ms] stops, then hands them back to the mouse. */
+function glance(stops) {
+  let t = 0;
+  for (const [x, y, ms] of stops) { later(t, () => look(x, y)); t += ms; }
+  lookLock = Date.now() + t + 200;
+  return t;
+}
+
+const IDLE_MOVES = [
+  () => { face('smug'); pet.dataset.eyes = 'closed'; later(180, () => { pet.dataset.eyes = 'open'; }); return 300; },                       // blink
+  () => glance([[-3.4, 0, 700], [3.4, 0, 900], [0, 1.5, 300]]),                                                                          // look around
+  () => glance([[0, -3, 500], [3.4, -2, 400], [0, 2, 500], [0, 0, 100]]),                                                               // roll his eyes
+  () => { face('huff', 2200); pet.classList.add('puff'); later(2400, () => pet.classList.remove('puff')); return 2400; },                // a long drag
+  () => { face('huff', 1500); pet.dataset.mouth = 'o'; move('bob', 1400); return 1500; },                                             // a yawn
+  () => { face('scratch', 1800); return 1800; },                                                                                         // scratches himself
+  () => { move('shuffle', 1500); return 1500; },                                                                                         // taps his feet
+  () => { move('rocksmall', 1300); return 1300; },                                                                                       // sways
+  () => { face('sneer', 1700); move('sniff', 1700); return 1700; },                                                                      // sniffs at you
+  () => { move('hopsmall', 450); return 450; },                                                                                          // flicks his ash
+  () => { move('sit', 2600); return 2600; },                                                                                             // sits down
+  () => { face('sneer', 1500); pet.classList.add('eyesquint'); later(1400, () => pet.classList.remove('eyesquint')); return 1500; },   // glares at you
+  () => { move('peek', 1400); return 1400; },                                                                                            // peers about
+  () => { face('smug'); pet.dataset.eyes = 'closed'; later(1800, () => { face('shock', 700); move('hop', 500); }); return 2600; },       // nods off, wakes with a start
+];
+
+/** Plays idle move number `i` (for trying them out); with no number, a random one. */
+export function idleMove(i = Math.floor(Math.random() * IDLE_MOVES.length)) {
+  tidy.forEach(clearTimeout); tidy = [];
+  pet.classList.remove('puff', 'eyesquint');
+  return IDLE_MOVES[i]();
+}
+
+function scheduleMoves() {
+  clearTimeout(movesTimer);
+  if (!options().cookie) return;
+  movesTimer = setTimeout(() => {
+    const idle = document.visibilityState === 'visible' && bubble.hidden && Date.now() - lastSpoke > 3000;
+    if (idle) {
+      idleMove();
+    }
+    scheduleMoves();
+  }, 5000 + Math.random() * 7000);
 }
