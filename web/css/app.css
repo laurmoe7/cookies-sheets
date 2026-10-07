@@ -466,8 +466,9 @@ html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="
 .tabs { gap: 4px; padding: 0 2px; }
 .tab { border: 1px solid transparent; border-bottom: 0; border-radius: 10px 10px 0 0; padding: 9px 15px; margin-bottom: -1px; background: transparent; position: relative; transition: background .15s, color .15s; }
 .tab:hover { background: var(--panel-2); color: var(--ink); border-color: var(--line); }
-.tab.active { background: var(--panel); border-color: var(--line); border-bottom: 1px solid var(--panel); color: var(--accent); font-weight: 600; }
-.tab.active::before { content: ""; position: absolute; left: 10px; right: 10px; top: -1px; height: 3px; border-radius: 0 0 3px 3px; background: var(--accent); }
+.tab.active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink, #fff); font-weight: 600; }
+.tabs { border-bottom: 2px solid var(--accent); }
+.tab { margin-bottom: -2px; }
 .block-toggle { border: 1px solid var(--line); border-radius: var(--radius); padding: 0 12px; background: var(--panel-2); }
 .block-toggle > summary { cursor: pointer; padding: 9px 0; font-family: var(--serif); font-weight: 600; font-size: 15px; }
 .block-toggle[open] > summary { border-bottom: 1px solid var(--line); margin-bottom: 8px; }
@@ -475,3 +476,7 @@ html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="
 
 .changelog { margin: 0 0 14px; padding-left: 20px; }
 .changelog li { margin: 5px 0; }
+
+.card-details { margin-bottom: 14px; padding: 0 16px 6px; background: var(--panel); box-shadow: var(--shadow); }
+.card-details > summary { padding: 12px 0; }
+.card-details[open] > summary { margin-bottom: 12px; }

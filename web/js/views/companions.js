@@ -49,7 +49,7 @@ export async function renderCompanions(body, c) {
     const d = e.target.closest?.('details[data-block]');
     if (!d) return;
     const comp = getPath(c, d.dataset.block);
-    if (comp && !!comp.blockOpen !== d.open) { comp.blockOpen = d.open; changed(); }
+    if (comp && (comp.blockOpen !== false) !== d.open) { comp.blockOpen = d.open; changed(); }
   }, true);
   body.onclick = async e => {
     const t = e.target.closest('[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
@@ -167,9 +167,27 @@ function topPanels(comp, s, p) {
     </section>
     <section class="card span2"><h3>At a glance</h3>
       <div class="chips">${glance(s).map(x => `<span class="chip on">${esc(x)}</span>`).join('')}</div>
+      ${extras(comp, s)}
       ${s.specials.length ? `<h4>Special abilities</h4><div class="chips">${s.specials.map(x => `<a href="#" class="chip ref" data-entry="${esc(x.replace(/ \d+$/, ''))}" data-cat="Class Feature">${esc(x)}</a>`).join('')}</div>` : ''}
-      ${s.skills.length ? `<h4>Trained skills</h4><div class="stat-row">${s.skills.map(k => stat(esc(k.name), sign(k.total))).join('')}</div>` : ''}
+      <h4>Skills</h4><div class="stat-row">${skillTiles(s).map(k => stat(esc(k.name), sign(k.total))).join('')}</div>
     </section></div>`;
+}
+
+/** Perception is always shown (it is in every stat block), then the trained skills. */
+function skillTiles(s) {
+  const out = s.skills.filter(k => k.name !== 'Perception');
+  return [{ name: 'Perception', total: s.skills.find(k => k.name === 'Perception')?.total ?? s.mods.wis ?? 0 }, ...out];
+}
+
+/** Feats, evolutions, tricks and defensive abilities: the rest of what the full stat block lists. */
+function extras(comp, s) {
+  const feats = [...(comp.feats || []).map(f => f.name), ...(s.bonusFeats ? s.bonusFeats.split(/,\s*/) : [])].filter(Boolean);
+  const evo = s.kind === 'eidolon' ? [...s.free, ...(comp.evolutions || []).map(e => e.name.toLowerCase() + (e.choice ? ` (${e.choice})` : ''))] : [];
+  const evasion = s.specials.filter(x => /evasion/i.test(x));
+  const block = (title, items) => (items.length ? `<h4>${title}</h4><div class="chips">${items.map(x => `<span class="chip">${linkTerms(x)}</span>`).join('')}</div>` : '');
+  return block('Feats', feats) + block('Defensive abilities', evasion) + block('Evolutions', evo)
+    + (s.kind === 'animal' && comp.tricks ? `<h4>Tricks</h4><p>${esc(comp.tricks)}</p>` : '')
+    + (s.qualities && s.kind !== 'familiar' ? `<h4>Special qualities</h4><p>${linkTerms(s.qualities)}</p>` : '');
 }
 
 /** Short facts shown as chips: size and type, level, hit dice, senses, space and reach. */
@@ -209,7 +227,7 @@ function companionCard(comp, i, levels, data, master) {
   const ranksLeft = s.skillRanks - s.skillRanksUsed;
   const classSkills = [...s.classSkills, ...(comp.extraClassSkills || [])];
   const skillNames = [...new Set([...classSkills.filter(x => !x.includes('(') || x.startsWith('Knowledge')), ...Object.keys(comp.skills || {})])];
-  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<section class="card">
+  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<details class="block-toggle card-details" data-block="${p}" ${comp.blockOpen === false ? '' : 'open'}><summary>Settings, abilities &amp; full stat block</summary>
   <div class="grid two">
     <div>
       <div class="form">
@@ -250,8 +268,8 @@ function companionCard(comp, i, levels, data, master) {
         <label title="Amulet of mighty fists, etc.">Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
       <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Gear, personality, conditions…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
     </div>
-    <div>${statBlockToggle(comp, p, statBlock(comp, s))}</div>
-  </div></section></div>`;
+    <div>${statBlock(comp, s)}</div>
+  </div></details></div>`;
 }
 
 function familiarCard(comp, i, levels, data, master, head) {
@@ -262,7 +280,7 @@ function familiarCard(comp, i, levels, data, master, head) {
     ? `From your sheet: <b>${s.autoLevel}</b>${levels._why?.familiar ? ` · ${esc(levels._why.familiar)}` : ''}${overrideNote(comp, s)}`
     : '<span class="warn">Nothing on the sheet grants a familiar (wizard, sorcerer, witch or shaman levels, or the arcanist’s Familiar exploit); set the level here.</span>';
   const sp = s.species;
-  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<section class="card">
+  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<details class="block-toggle card-details" data-block="${p}" ${comp.blockOpen === false ? '' : 'open'}><summary>Settings, abilities &amp; full stat block</summary>
   <div class="grid two">
     <div>
       <div class="form">
@@ -283,8 +301,8 @@ function familiarCard(comp, i, levels, data, master, head) {
         <label>Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
       <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Variants, gear, personality…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
     </div>
-    <div>${statBlockToggle(comp, p, statBlock(comp, s))}</div>
-  </div></section></div>`;
+    <div>${statBlock(comp, s)}</div>
+  </div></details></div>`;
 }
 
 function evolutionsBlock(comp, s, data, p) {
@@ -303,11 +321,6 @@ function evolutionsBlock(comp, s, data, p) {
       return `<span class="chip on"><a href="#" class="ref" data-evo-info="${esc(e.name)}">${esc(e.name)}</a> <span class="dim small">${def?.cost ?? '?'}</span> ${choice}
         <button class="icon-btn" data-rm-evo="${k}">✕</button></span>`;
     }).join('')}</div>`;
-}
-
-/** The full stat block is mostly shown in the panels above, so it folds away (and remembers whether it was left open). */
-function statBlockToggle(comp, p, html) {
-  return `<details class="block-toggle" data-block="${esc(p)}" ${comp.blockOpen ? 'open' : ''}><summary>Full stat block</summary>${html}</details>`;
 }
 
 function statBlock(comp, s) {
