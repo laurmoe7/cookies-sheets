@@ -177,12 +177,13 @@ function rollWindow(p, attack) {
       body.innerHTML = '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' +
         (d20 ? '<div class="roll-bar" style="margin:8px 0"><button class="rchip ' + (mode === 'adv' ? 'on' : '') + '" data-win-mode="adv">Advantage</button><button class="rchip ' + (mode === 'dis' ? 'on' : '') + '" data-win-mode="dis">Disadvantage</button></div>' : '') +
         (presets.length ? '<div class="small muted">' + (attack ? 'Attack modifiers' : 'Modifiers') + '</div><div class="roll-bar" style="margin:4px 0 8px">' + chips(presets) + '</div>' : '') +
+        (d20 ? '<p class="small muted" style="margin:0">Flanking, charging, prone, shaken, power attack and other conditions are on the Buffs &amp; Conditions tab and apply by themselves.</p>' : '') +
         '<div class="row" style="margin:8px 0"><input id="mod-n" class="w3" type="number" placeholder="±" aria-label="Modifier"><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>' +
         (d20 && mods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b></div>' : '') +
         (d20 ? '<label class="small"><input type="checkbox" id="mod-keep" ' + (keepMods ? 'checked' : '') + '> Keep these modifiers for my next rolls</label>' : '') +
         '<div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn small" id="win-cancel">Cancel</button>' +
-        '<button class="rchip dchip ' + (sending ? 'on' : '') + '" id="win-discord" title="Post this roll to your Discord channel, or keep it on the sheet">' + esc(discordLabel()) + '</button>' +
-        '<button class="rchip go" data-win-go="roll">🎲 Roll</button></div>';
+        '<button class="rchip go" data-win-go="roll">🎲 Roll</button>' +
+        '<button class="rchip dchip ' + (sending ? 'on' : '') + '" id="win-discord" title="Post this roll to your Discord channel, or keep it on the sheet">' + esc(discordLabel()) + '</button></div>';
       body.querySelector('[data-win-go]')?.focus();
     };
     draw();

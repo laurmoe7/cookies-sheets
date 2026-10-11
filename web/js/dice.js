@@ -101,26 +101,30 @@ export const sendName = (who, label) => {
 export const modsLabel = mods => '(' + mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ') + ')';
 
 /**
- * Situational modifiers offered in the roll window. Range increments are one group: only one applies. "for: 'attack'" ones are only offered on attack rolls.
+ * Situational modifiers offered in the roll window. Conditions the Buffs & Conditions tab already handles (flanking, charging, prone, shaken,
+ * sickened, dazzled, fighting defensively, power attack...) are not repeated here: they apply by themselves.
+ * Range increments are one group: only one applies. "for: 'attack'" ones are only offered on attack rolls.
  */
 export const MOD_PRESETS = [
-  { label: 'not proficient', n: -4, for: 'attack', tip: 'Using a weapon you are not proficient with' },
+  { label: 'not proficient', n: -4, for: 'attack', tip: 'Using a weapon you are not proficient with: -4 to hit' },
   { label: '2nd range increment', n: -2, group: 'range', for: 'attack', tip: 'Each range increment past the first is -2 to hit' },
   { label: '3rd range increment', n: -4, group: 'range', for: 'attack' },
   { label: '4th range increment', n: -6, group: 'range', for: 'attack' },
   { label: '5th range increment', n: -8, group: 'range', for: 'attack' },
-  { label: 'flanking', n: 2, for: 'attack' },
-  { label: 'charging', n: 2, for: 'attack' },
-  { label: 'higher ground', n: 1, for: 'attack' },
-  { label: 'prone', n: -4, for: 'attack', tip: 'Attacking while prone (melee)' },
-  { label: 'fighting defensively', n: -4, for: 'attack', tip: 'Gives +2 AC (more with 3 ranks in Acrobatics)' },
-  { label: 'two-weapon: main hand', n: -6, for: 'attack', tip: 'No Two-Weapon Fighting feat; -4 with a light off-hand weapon' },
-  { label: 'two-weapon: off hand', n: -10, for: 'attack', tip: 'No Two-Weapon Fighting feat; -8 with a light off-hand weapon' },
+  { label: 'higher ground', n: 1, for: 'attack', tip: 'Melee against a lower foe: +1' },
+  { label: 'target prone (melee)', n: 4, for: 'attack', tip: '+4 to melee attacks against a prone target' },
+  { label: 'target prone (ranged)', n: -4, for: 'attack', tip: '-4 to ranged attacks against a prone target' },
+  { label: 'firing into melee', n: -4, for: 'attack', tip: 'Ranged attack into a melee without Precise Shot: -4' },
+  { label: 'attacker unseen', n: 2, for: 'attack', tip: 'Invisible, or the target cannot see you: +2' },
+  { label: 'improvised weapon', n: -4, for: 'attack', tip: 'Using something that is not a weapon: -4' },
+  { label: 'two-weapon: main hand', n: -6, for: 'attack', tip: 'No Two-Weapon Fighting feat; -4 with a light off-hand weapon, less with the feat' },
+  { label: 'two-weapon: off hand', n: -10, for: 'attack', tip: 'No Two-Weapon Fighting feat; -8 with a light off-hand weapon, less with the feat' },
   { label: 'squeezing', n: -4, for: 'attack', tip: 'Fighting in a space too narrow for you' },
-  { label: 'dazzled', n: -1, for: 'attack' },
-  { label: 'shaken', n: -2, tip: 'Shaken or frightened: -2 on attacks, saves, skills and ability checks' },
-  { label: 'sickened', n: -2, tip: '-2 on attacks, damage, saves, skills and ability checks' },
+  { label: 'strong wind (ranged)', n: -2, for: 'attack', tip: 'Strong wind: -2 to ranged attacks (-4 in a severe wind)' },
   { label: 'aid another', n: 2, tip: 'An ally helped you' },
+  { label: 'favorable conditions', n: 2, tip: 'The GM says circumstances help (skills and checks)' },
+  { label: 'unfavorable conditions', n: -2, tip: 'The GM says circumstances hurt (skills and checks)' },
+  { label: 'no tools', n: -2, tip: 'A skill that needs tools, done without them' },
 ];
 
 /** The presets that make sense for this roll: attack rolls get all of them, other d20 rolls only the general ones. */

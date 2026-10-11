@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Discord rolls', date: '2026-10-10',
     items: [
+      'In the roll window, Roll comes first and Sending to Discord second. New modifiers: target prone, firing into melee, improvised weapon, unseen attacker, strong wind, favorable or unfavorable conditions and more. Conditions on the Buffs tab are no longer repeated.',
       'The Biography tab has a box for your character\u2019s bio. In Notes, Story and General notes are now separate tabs.',
       'Clicking a number to roll now opens a roll window: add modifiers (not proficient, range increments, flanking and more), then roll here or send to Discord. Hold Shift to roll straight away, or turn it off in Options.',
       'The Sending to Discord button is Discord blue.',

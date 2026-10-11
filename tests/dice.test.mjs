@@ -121,6 +121,7 @@ test('the roll window offers attack modifiers only on attacks', async () => {
   const names = list => list.map(m => m.label);
   assert.ok(names(presetsFor(true)).includes('not proficient') && names(presetsFor(true)).includes('2nd range increment'));
   assert.ok(!names(presetsFor(false)).includes('not proficient'), 'a saving throw is not affected by weapon proficiency');
-  assert.ok(names(presetsFor(false)).includes('shaken'), 'shaken applies to saves and skills too');
+  assert.ok(names(presetsFor(false)).includes('aid another'), 'aid another applies to saves and skills too');
+  assert.ok(!names(MOD_PRESETS).some(n => /flanking|charging|shaken|sickened|dazzled|^prone/.test(n)), 'conditions the Buffs & Conditions tab covers are not repeated');
   assert.ok(MOD_PRESETS.every(m => m.n !== 0));
 });
