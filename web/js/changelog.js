@@ -5,6 +5,8 @@ export const CHANGELOG = [
   {
     version: 'Discord rolls', date: '2026-10-10',
     items: [
+      'Clicking a number to roll now opens a roll window: add modifiers (not proficient, range increments, flanking and more), then roll here or send to Discord. Hold Shift to roll straight away, or turn it off in Options.',
+      'The Sending to Discord button is Discord blue.',
       'The dice box has a Roll button next to it.',
       'New Notes tab for the story, with its own tabs for quests, NPCs, places and lore, and a session log. Bio is now the Biography tab.',
       'The Overview Notes box now fills the empty space under Offense.',

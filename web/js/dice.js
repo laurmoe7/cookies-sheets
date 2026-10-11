@@ -100,20 +100,31 @@ export const sendName = (who, label) => {
 /** "(-4 not proficient, -2 2nd range increment)" for the roll's label. */
 export const modsLabel = mods => '(' + mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ') + ')';
 
-/** Situational modifiers offered in the roll window. Range increments are one group: only one applies. */
+/**
+ * Situational modifiers offered in the roll window. Range increments are one group: only one applies. "for: 'attack'" ones are only offered on attack rolls.
+ */
 export const MOD_PRESETS = [
-  { label: 'not proficient', n: -4, tip: 'Using a weapon you are not proficient with' },
-  { label: '2nd range increment', n: -2, group: 'range', tip: 'Each range increment past the first is -2 to hit' },
-  { label: '3rd range increment', n: -4, group: 'range' },
-  { label: '4th range increment', n: -6, group: 'range' },
-  { label: '5th range increment', n: -8, group: 'range' },
-  { label: 'flanking', n: 2 },
-  { label: 'charging', n: 2 },
-  { label: 'higher ground', n: 1 },
-  { label: 'prone', n: -4, tip: 'Attacking while prone (melee)' },
-  { label: 'dazzled', n: -1 },
-  { label: 'shaken', n: -2 },
+  { label: 'not proficient', n: -4, for: 'attack', tip: 'Using a weapon you are not proficient with' },
+  { label: '2nd range increment', n: -2, group: 'range', for: 'attack', tip: 'Each range increment past the first is -2 to hit' },
+  { label: '3rd range increment', n: -4, group: 'range', for: 'attack' },
+  { label: '4th range increment', n: -6, group: 'range', for: 'attack' },
+  { label: '5th range increment', n: -8, group: 'range', for: 'attack' },
+  { label: 'flanking', n: 2, for: 'attack' },
+  { label: 'charging', n: 2, for: 'attack' },
+  { label: 'higher ground', n: 1, for: 'attack' },
+  { label: 'prone', n: -4, for: 'attack', tip: 'Attacking while prone (melee)' },
+  { label: 'fighting defensively', n: -4, for: 'attack', tip: 'Gives +2 AC (more with 3 ranks in Acrobatics)' },
+  { label: 'two-weapon: main hand', n: -6, for: 'attack', tip: 'No Two-Weapon Fighting feat; -4 with a light off-hand weapon' },
+  { label: 'two-weapon: off hand', n: -10, for: 'attack', tip: 'No Two-Weapon Fighting feat; -8 with a light off-hand weapon' },
+  { label: 'squeezing', n: -4, for: 'attack', tip: 'Fighting in a space too narrow for you' },
+  { label: 'dazzled', n: -1, for: 'attack' },
+  { label: 'shaken', n: -2, tip: 'Shaken or frightened: -2 on attacks, saves, skills and ability checks' },
+  { label: 'sickened', n: -2, tip: '-2 on attacks, damage, saves, skills and ability checks' },
+  { label: 'aid another', n: 2, tip: 'An ally helped you' },
 ];
+
+/** The presets that make sense for this roll: attack rolls get all of them, other d20 rolls only the general ones. */
+export const presetsFor = attack => MOD_PRESETS.filter(m => attack || m.for !== 'attack');
 
 const DIVISOR = { two: 2, three: 3, four: 4, five: 5 };
 const divisor = w => (w ? DIVISOR[w.toLowerCase()] ?? (+w || 1) : 1);

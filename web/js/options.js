@@ -18,7 +18,7 @@ export const TEXT_SIZES = [[90, 'Small'], [100, 'Normal'], [112, 'Large'], [125,
 
 export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
 
-export const DEFAULTS = { theme: 'tome', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: true, pageSound: true, volume: 100, soundOff: {}, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false, webhook: '', rollSend: true };
+export const DEFAULTS = { theme: 'tome', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: true, pageSound: true, volume: 100, soundOff: {}, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false, webhook: '', rollSend: true, rollAsk: true };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
@@ -44,6 +44,7 @@ export function sanitize(raw) {
   o.soundOff = off;
   o.webhook = typeof o.webhook === 'string' ? o.webhook.trim() : '';
   o.rollSend = !!o.rollSend;
+  o.rollAsk = !!o.rollAsk;
   o.cookie = true; // he is not going anywhere (unchecking the box only makes him laugh)
   return o;
 }
@@ -143,7 +144,8 @@ function optionRows(tab, o, customSounds) {
       <div class="opt-row"><b>Swearing</b>${seg('cookieSwear', o.cookieSwear, [['full', 'Full'], ['bleep', 'Bleeped']])}</div>`;
   }
   return `<div class="opt-row"><span><b>Webhook</b><br><span class="muted small">The channel's webhook URL (Channel settings, Integrations, Webhooks).</span></span><input type="password" class="w20" data-opt="webhook" value="${esc(o.webhook)}" placeholder="https://discord.com/api/webhooks/..." autocomplete="off"></div>
-    ${check('rollSend', 'Send rolls to Discord', o.rollSend)}`;
+    ${check('rollSend', 'Send rolls to Discord', o.rollSend)}
+    ${check('rollAsk', 'Ask before rolling (hold Shift to roll straight away)', o.rollAsk)}`;
 }
 
 export function showOptions() {

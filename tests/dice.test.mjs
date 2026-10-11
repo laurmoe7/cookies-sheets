@@ -115,3 +115,12 @@ test('rolls are posted under the character and what they are for', async () => {
   assert.equal(sendName('Fumu', 'Longbow attack (-4 not proficient, -2 2nd range increment)'), 'Fumu · Longbow attack (-4 not proficient, -2 2nd range increment)');
   assert.equal(sendName('Fumu', 'x'.repeat(200)).length, 80, 'Discord allows 80 characters');
 });
+
+test('the roll window offers attack modifiers only on attacks', async () => {
+  const { presetsFor, MOD_PRESETS } = await import('../web/js/dice.js');
+  const names = list => list.map(m => m.label);
+  assert.ok(names(presetsFor(true)).includes('not proficient') && names(presetsFor(true)).includes('2nd range increment'));
+  assert.ok(!names(presetsFor(false)).includes('not proficient'), 'a saving throw is not affected by weapon proficiency');
+  assert.ok(names(presetsFor(false)).includes('shaken'), 'shaken applies to saves and skills too');
+  assert.ok(MOD_PRESETS.every(m => m.n !== 0));
+});

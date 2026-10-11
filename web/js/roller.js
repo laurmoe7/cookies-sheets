@@ -6,7 +6,7 @@
 //   data-roll-weapon="2" data-roll-kind="attack|damage|full"   a weapon row
 // The roll bar (in the buff strip) holds Advantage / Disadvantage for the next d20 roll, the Modifier chip (situational + and -, such as
 // not being proficient or shooting past a range increment), the dice box, and the Discord switch.
-import { rollMessage, rollMany, bonusText, addMods, modsLabel, MOD_PRESETS } from './dice.js';
+import { rollMessage, rollMany, bonusText, addMods, modsLabel, MOD_PRESETS, presetsFor } from './dice.js';
 import { spellInfo } from './spellinfo.js';
 import { state } from './app.js';
 import { getPath, toast, esc, modal } from './ui.js';
@@ -143,8 +143,70 @@ export async function doRoll(p) {
   afterRoll();
   toast(r.short);
   const o = options();
-  if (!(o.rollSend && o.webhook)) return;
+  if (!((p.send ?? o.rollSend) && o.webhook)) return;
   try { await api.discord(o.webhook, r.text, who); } catch (e) { toast('Discord: ' + e.message, 'err'); }
+}
+
+/** Is this roll an attack? Attack rolls get the attack modifiers (proficiency, range increments, flanking...) in the roll window. */
+const isAttack = (p, el) => {
+  const ds = el?.dataset || {};
+  if (ds.rollWeapon !== undefined) return ds.rollKind !== 'damage';
+  if (['melee', 'ranged', 'cmb'].includes(ds.roll)) return true;
+  return /attack|touch/i.test(p.label || p.items?.[0]?.label || '');
+};
+
+/** Clicking a number opens the roll window (unless Options says not to, or Shift is held): edit the roll, then roll it here or send it to Discord. */
+function askRoll(p, el, shift) {
+  if (!options().rollAsk || shift || !(p.items || [p]).length) return doRoll(p);
+  rollWindow(p, isAttack(p, el));
+}
+
+function rollWindow(p, attack) {
+  const items = p.items || [p];
+  const d20 = /^d20/.test(items[0].expr);
+  const title = p.items ? items[0].label.replace(/ attack \d+\/\d+$/, '') + ' full attack' : (p.label || 'Roll');
+  const hook = !!options().webhook;
+  const snap = { mods: mods.map(m => ({ ...m })), mode };
+  let went = false;
+  modal(title, (body, close) => {
+    const chips = list => list.map(m => '<button class="rchip ' + (mods.some(x => x.label === m.label) ? 'on' : '') + '" data-mod-preset="' + MOD_PRESETS.indexOf(m) + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(bonusText(m.n)) + '</button>').join(' ');
+    const draw = () => {
+      const exprs = items.map(it => withMode(it.expr));
+      const shown = exprs[0] + (exprs.length > 1 ? ' … and ' + (exprs.length - 1) + ' more' : '');
+      const presets = d20 ? presetsFor(attack) : [];
+      const sendFirst = !!(hook && options().rollSend);
+      body.innerHTML = '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' +
+        (d20 ? '<div class="roll-bar" style="margin:8px 0"><button class="rchip ' + (mode === 'adv' ? 'on' : '') + '" data-win-mode="adv">Advantage</button><button class="rchip ' + (mode === 'dis' ? 'on' : '') + '" data-win-mode="dis">Disadvantage</button></div>' : '') +
+        (presets.length ? '<div class="small muted">' + (attack ? 'Attack modifiers' : 'Modifiers') + '</div><div class="roll-bar" style="margin:4px 0 8px">' + chips(presets) + '</div>' : '') +
+        '<div class="row" style="margin:8px 0"><input id="mod-n" class="w3" type="number" placeholder="±" aria-label="Modifier"><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>' +
+        (d20 && mods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b></div>' : '') +
+        (d20 ? '<label class="small"><input type="checkbox" id="mod-keep" ' + (keepMods ? 'checked' : '') + '> Keep these modifiers for my next rolls</label>' : '') +
+        '<div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn small" id="win-cancel">Cancel</button>' +
+        (hook ? '<button class="btn" data-win-go="local">🎲 Roll here</button><button class="btn primary discord-btn" data-win-go="discord">Send to Discord</button>'
+          : '<button class="btn primary" data-win-go="local">🎲 Roll</button>') + '</div>';
+      body.querySelector(sendFirst ? '[data-win-go="discord"]' : '[data-win-go="local"]')?.focus();
+    };
+    draw();
+    const add = () => {
+      const n = Math.trunc(Number(body.querySelector('#mod-n').value));
+      if (n) mods.push({ n, label: body.querySelector('#mod-label').value.trim() || 'modifier' });
+    };
+    body.onclick = e => {
+      const pr = e.target.closest('[data-mod-preset]'), md = e.target.closest('[data-win-mode]'), go = e.target.closest('[data-win-go]');
+      if (go) { went = true; close(); syncBar(); return doRoll({ ...p, send: go.dataset.winGo === 'discord' }); }
+      if (e.target.closest('#win-cancel')) return close();
+      if (pr) {
+        const m = MOD_PRESETS[+pr.dataset.modPreset], had = mods.some(x => x.label === m.label);
+        mods = mods.filter(x => x.label !== m.label && !(m.group && x.group === m.group));
+        if (!had) mods.push({ ...m });
+      } else if (md) mode = mode === md.dataset.winMode ? '' : md.dataset.winMode;
+      else if (e.target.closest('#mod-add')) add();
+      else return;
+      syncBar(); draw();
+    };
+    body.onchange = e => { if (e.target.id === 'mod-keep') keepMods = e.target.checked; };
+    body.onkeydown = e => { if (e.key === 'Enter' && e.target.closest('#mod-n,#mod-label')) { e.preventDefault(); add(); syncBar(); draw(); } };
+  }).then(() => { if (!went) { mods = snap.mods; mode = snap.mode; syncBar(); } });
 }
 
 export function initRoller() {
@@ -169,7 +231,7 @@ export function initRoller() {
     if (!el) return;
     e.preventDefault();
     const p = plan(el);
-    if (p) doRoll(p);
+    if (p) askRoll(p, el, e.shiftKey);
   });
   // The dice box: Enter rolls it, like typing "roll ..." to Tad.
   document.addEventListener('keydown', e => {
@@ -243,7 +305,7 @@ async function spellWindow(btn) {
     const go = () => { const v = body.querySelector('#spell-dice').value.trim(); if (v) doRoll({ expr: v, label: what ? `${name} ${what}` : name }); };
     body.onclick = e => {
       const a = e.target.closest('[data-w-add]');
-      if (a) doRoll({ expr: 'd20' + bonusText(a.dataset.wAdd), label: a.dataset.wLabel });
+      if (a) askRoll({ expr: 'd20' + bonusText(a.dataset.wAdd), label: a.dataset.wLabel }, null, e.shiftKey);
       else if (e.target.closest('#spell-go')) go();
     };
     body.onkeydown = e => { if (e.key === 'Enter' && e.target.id === 'spell-dice') go(); };

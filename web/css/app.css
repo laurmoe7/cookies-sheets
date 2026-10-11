@@ -174,6 +174,11 @@ input.sub { margin-left: 6px; font-size: 12px; padding: 2px 5px; }
 .rchip { font: inherit; font-size: 12px; cursor: pointer; padding: 1px 9px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--muted); }
 .rchip:hover { border-color: var(--accent); color: var(--accent); }
 .rchip.go { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+#roll-discord.on { background: #5865f2; border-color: #5865f2; color: #fff; }
+#roll-discord.on:hover { background: #4752c4; border-color: #4752c4; color: #fff; }
+html[data-theme] .btn.primary.discord-btn, .btn.discord-btn { background: #5865f2; border-color: #5865f2; color: #fff; }
+html[data-theme] .btn.primary.discord-btn:hover, .btn.discord-btn:hover { background: #4752c4; border-color: #4752c4; }
+.rw-expr { margin: 0; font-size: 1.05em; }
 .rchip.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
 .buff-strip { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 12px; }
 .saves td, .saves th { text-align: center; }
