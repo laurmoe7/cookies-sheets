@@ -12,7 +12,7 @@ test('saving throws are read from the stored text', () => {
 
 test('Fireball: damage dice, Reflex half, spell resistance, no attack roll', () => {
   const i = spellInfo({ summary: '1d6 fire damage per level, 20-ft. radius.', html: '<p>A fireball spell is an explosion of flame that detonates with a low roar.</p>', meta: { save: 'Reflex half', sr: 'yes' } }, 7);
-  assert.deepEqual(i, { dice: '7d6', kind: 'damage', attack: null, save: parseSave('Reflex half'), sr: true });
+  assert.deepEqual(i, { dice: '7d6', kind: 'damage', attack: null, touch: false, save: parseSave('Reflex half'), sr: true });
 });
 
 test('Cure Light Wounds heals; a touch attack spell is a melee touch', () => {
@@ -24,7 +24,7 @@ test('Cure Light Wounds heals; a touch attack spell is a melee touch', () => {
 
 test('ray spells use a ranged touch attack; custom spells give nothing', () => {
   assert.equal(spellInfo({ summary: 'Ranged touch attack deals 4d6 fire damage, +1 ray/four levels (max 3).', html: '', meta: { save: 'none', sr: 'yes' } }, 9).attack, 'ranged');
-  assert.deepEqual(spellInfo(null, 9), { dice: '', kind: '', attack: null, save: null, sr: false });
+  assert.deepEqual(spellInfo(null, 9), { dice: '', kind: '', attack: null, touch: false, save: null, sr: false });
   assert.equal(spellInfo({ summary: 'Wall of force.', html: '', meta: { save: 'none', sr: 'no' } }, 9).sr, false);
 });
 
@@ -51,4 +51,14 @@ test('dice that are not damage or healing do not count as a roll (durations, hit
 test('damage dice only in the description are found next to the damage words', () => {
   const i = spellInfo({ summary: '', html: '<dl class="stat"><dt>Duration</dt><dd>1d4 rounds</dd></dl><p>The bolt deals 1d6 points of fire damage per caster level (maximum 10d6).</p>', meta: { save: 'Reflex half', sr: 'yes' } }, 8);
   assert.equal(i.dice, '8d6'); assert.equal(i.kind, 'damage');
+});
+
+test('spells that call for an ordinary attack roll get a roll to hit, asides and denials do not', () => {
+  const info = html => spellInfo({ summary: '', html, meta: { save: 'none', sr: 'no' } }, 5);
+  assert.deepEqual([info('<p>Each discus requires a ranged attack to hit and deals 4d6 points of damage.</p>').attack, info('<p>Each discus requires a ranged attack to hit.</p>').touch], ['ranged', false]);
+  assert.equal(info('<p>You imbue an arrow with your power. Make a ranged attack roll. If it hits, the target takes damage.</p>').attack, 'ranged');
+  assert.equal(info('<p>The user of the stones makes a normal ranged attack with them.</p>').attack, 'ranged');
+  assert.equal(info('<p>This ray requires a ranged touch attack to hit and deals 6d6 points of fire damage.</p>').touch, true);
+  assert.equal(info('<p>The creature is free to make melee attacks against you if you come within reach.</p>').attack, null, 'a creature making attacks is not your attack roll');
+  assert.equal(info('<p>This liquid works as a tanglefoot bag, except you do not have to make a successful ranged attack roll to hit.</p>').attack, null, 'a denial');
 });

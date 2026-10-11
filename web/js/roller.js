@@ -298,8 +298,8 @@ async function spellWindow(btn) {
   const dc = sc.dcs[sp.level];
   const chip = (label, n, kind) => `<button class="rchip" data-w-add="${n}" data-w-label="${esc(name + ' ' + kind)}" title="Roll d20 ${esc(kind)}">${esc(label)} ${esc(bonusText(n) || '+0')}</button>`;
   const chips = [
-    ...(!known || info.attack === 'ranged' ? [chip('Ranged touch', d.ranged, 'ranged touch attack')] : []),
-    ...(!known || info.attack === 'melee' ? [chip('Melee touch', d.melee, 'melee touch attack')] : []),
+    ...(!known || info.attack === 'ranged' ? [chip('Roll to hit: ranged ' + (info.touch === false ? 'attack' : 'touch'), d.ranged, 'ranged ' + (info.touch === false ? 'attack' : 'touch attack'))] : []),
+    ...(!known || info.attack === 'melee' ? [chip('Roll to hit: melee ' + (info.touch === false ? 'attack' : 'touch'), d.melee, 'melee ' + (info.touch === false ? 'attack' : 'touch attack'))] : []),
     chip('Concentration', sc.concentration, 'concentration check'),
     ...(!known || info.sr ? [chip('Caster level check', sc.cl, 'caster level check' + (info.sr ? ' to beat spell resistance' : ''))] : []),
   ];
@@ -308,7 +308,7 @@ async function spellWindow(btn) {
     known ? (info.sr ? 'spell resistance applies' : 'ignores spell resistance') : ''].filter(Boolean);
   const what = info.kind === 'healing' ? 'healing' : info.kind === 'damage' ? 'damage' : '';
   modal(name + ': roll', (body, close) => {
-    body.innerHTML = `<p class="small muted">${esc(facts.join(' · '))}.${info.dice ? ' The dice are a guess from the spell text; change them if the spell works differently (metamagic, a different cap).' : ''}</p>
+    body.innerHTML = `<p class="small muted">${esc(facts.join(' · '))}.</p>
       <div class="roll-bar" style="margin:8px 0">${chips.join(' ')}</div>
       <div class="row"><input id="spell-dice" class="w12" value="${esc(info.dice)}" placeholder="e.g. 5d6" autocomplete="off" aria-label="Spell dice">
         <button class="btn" id="spell-go">Roll ${esc(what || name)}</button></div>`;
