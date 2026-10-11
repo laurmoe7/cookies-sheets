@@ -165,7 +165,6 @@ function rollWindow(p, attack) {
   const items = p.items || [p];
   const d20 = /^d20/.test(items[0].expr);
   const title = p.items ? items[0].label.replace(/ attack \d+\/\d+$/, '') + ' full attack' : (p.label || 'Roll');
-  const hook = !!options().webhook;
   const snap = { mods: mods.map(m => ({ ...m })), mode };
   let went = false;
   modal(title, (body, close) => {
@@ -174,7 +173,7 @@ function rollWindow(p, attack) {
       const exprs = items.map(it => withMode(it.expr));
       const shown = exprs[0] + (exprs.length > 1 ? ' … and ' + (exprs.length - 1) + ' more' : '');
       const presets = d20 ? presetsFor(attack) : [];
-      const sendFirst = !!(hook && options().rollSend);
+      const sending = !!(options().webhook && options().rollSend);
       body.innerHTML = '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' +
         (d20 ? '<div class="roll-bar" style="margin:8px 0"><button class="rchip ' + (mode === 'adv' ? 'on' : '') + '" data-win-mode="adv">Advantage</button><button class="rchip ' + (mode === 'dis' ? 'on' : '') + '" data-win-mode="dis">Disadvantage</button></div>' : '') +
         (presets.length ? '<div class="small muted">' + (attack ? 'Attack modifiers' : 'Modifiers') + '</div><div class="roll-bar" style="margin:4px 0 8px">' + chips(presets) + '</div>' : '') +
@@ -182,9 +181,9 @@ function rollWindow(p, attack) {
         (d20 && mods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b></div>' : '') +
         (d20 ? '<label class="small"><input type="checkbox" id="mod-keep" ' + (keepMods ? 'checked' : '') + '> Keep these modifiers for my next rolls</label>' : '') +
         '<div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn small" id="win-cancel">Cancel</button>' +
-        (hook ? '<button class="btn" data-win-go="local">🎲 Roll here</button><button class="btn primary discord-btn" data-win-go="discord">Send to Discord</button>'
-          : '<button class="btn primary" data-win-go="local">🎲 Roll</button>') + '</div>';
-      body.querySelector(sendFirst ? '[data-win-go="discord"]' : '[data-win-go="local"]')?.focus();
+        '<button class="rchip dchip ' + (sending ? 'on' : '') + '" id="win-discord" title="Post this roll to your Discord channel, or keep it on the sheet">' + esc(discordLabel()) + '</button>' +
+        '<button class="rchip go" data-win-go="roll">🎲 Roll</button></div>';
+      body.querySelector('[data-win-go]')?.focus();
     };
     draw();
     const add = () => {
@@ -193,7 +192,12 @@ function rollWindow(p, attack) {
     };
     body.onclick = e => {
       const pr = e.target.closest('[data-mod-preset]'), md = e.target.closest('[data-win-mode]'), go = e.target.closest('[data-win-go]');
-      if (go) { went = true; close(); syncBar(); return doRoll({ ...p, send: go.dataset.winGo === 'discord' }); }
+      if (go) { went = true; close(); syncBar(); return doRoll(p); }
+      if (e.target.closest('#win-discord')) {
+        if (!options().webhook) return showOptions();
+        setOption('rollSend', !options().rollSend);
+        syncBar(); return draw();
+      }
       if (e.target.closest('#win-cancel')) return close();
       if (pr) {
         const m = MOD_PRESETS[+pr.dataset.modPreset], had = mods.some(x => x.label === m.label);
