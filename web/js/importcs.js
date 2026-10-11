@@ -346,7 +346,7 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
     if (!s || !str(s.name) || /^\*/.test(str(s.name))) return; // "*Slots" and similar are placeholders on their sheet
     const hit = resolved[`spell.${l}.${i}`]?.hit;
     spellRows.push({ ...(hit ? { id: hit.id } : {}), name: hit ? hit.name : str(s.name), level: toNum(s.level) ?? l,
-      school: str(s.school).toLowerCase() || hit?.sub || '', summary: '', prepared: n0(s.prepared), cast: Math.min(n0(s.cast), n0(s.prepared)) });
+      school: str(s.school).toLowerCase() || hit?.sub || '', summary: '', prepared: Math.max(0, n0(s.prepared) - n0(s.cast)), cast: Math.min(n0(s.cast), n0(s.prepared)) }); // their sheet counts prepared and cast; ours counts what is left to cast
   }));
   if (spellRows.length) {
     if (casters.length) {

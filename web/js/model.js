@@ -1,6 +1,6 @@
 import { ABILITIES, SKILLS } from './data.js';
 
-export const MODEL_VERSION = 1;
+export const MODEL_VERSION = 2; // 2: a prepared spell's "prepared" count is what is left to cast (casting uses one, resting gives them back)
 
 export function newCharacter() {
   const abilities = {};
@@ -54,6 +54,12 @@ export function migrate(c) {
   }
   c.money = { ...base.money, ...(c.money || {}) };
   if (!Array.isArray(c.money.custom)) c.money.custom = [];
+  // Version 1 kept the day's total in "prepared" and counted casts separately; now "prepared" is what is left, so take the casts off once.
+  if ((c.version || 1) < 2) {
+    for (const book of Object.values(c.spellbooks || {})) {
+      for (const s of book.spells || []) s.prepared = Math.max(0, (parseFloat(s.prepared) || 0) - (parseFloat(s.cast) || 0));
+    }
+  }
   c.version = MODEL_VERSION;
   return c;
 }

@@ -166,6 +166,8 @@ input.sub { margin-left: 6px; font-size: 12px; padding: 2px 5px; }
 .nb { font: inherit; font-weight: inherit; color: var(--accent); cursor: pointer; border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent); background: color-mix(in srgb, var(--accent) 11%, transparent); border-radius: 7px; padding: 0 7px; }
 .nb:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 .stat .nb { margin-top: 6px; } /* room between a tile's label (and its underline) and the roll button */
+.icon-btn[data-prep] { border: 1px solid var(--line); border-radius: 6px; width: 21px; height: 21px; padding: 0; line-height: 1; font-size: 15px; color: var(--ink); }
+.icon-btn[data-prep]:hover { border-color: var(--accent); color: var(--accent); }
 .roll-hint { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); margin-right: 4px; }
 .roll-hint .d20 { fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linejoin: round; stroke-linecap: round; flex: none; }
 .nb:active { transform: scale(.96); }
@@ -184,12 +186,36 @@ input.sub { margin-left: 6px; font-size: 12px; padding: 2px 5px; }
 .features .lvl { display: inline-block; min-width: 86px; font-size: 11px; color: var(--muted); }
 .mod { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; margin-bottom: 6px; }
 .mod.on { border-color: var(--accent); background: var(--accent-soft); }
-.slot-tbl { width: auto; }
-.slot-tbl td, .slot-tbl th { text-align: center; min-width: 64px; }
-.slot-tbl th:first-child { text-align: left; min-width: 110px; }
-.spell-level { border-top: 1px solid var(--line); padding-top: 4px; margin-top: 8px; }
-.spell-level h4 { margin: 4px 0; }
-.spell-tbl .summary { max-width: 420px; }
+/* spells tab: a header row, one slot table, and per level a table whose columns line up from row to row and level to level */
+.sb-head { display: flex; align-items: center; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; margin-bottom: 12px; }
+.sb-title { display: flex; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; min-width: 0; }
+.sb-title h3 { margin: 0; }
+.sb-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.slot-tbl { width: 100%; table-layout: fixed; margin-bottom: 4px; }
+.slot-tbl td, .slot-tbl th { text-align: center; }
+.slot-tbl th:first-child { text-align: left; width: 150px; }
+.spell-level { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 16px; }
+.sl-head { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin-bottom: 4px; }
+.sl-head h4 { margin: 0; }
+.sl-count { font-size: 12px; color: var(--muted); }
+.sl-count.bad { color: var(--bad); font-weight: 600; }
+.sl-none { margin: 4px 0 0; }
+/* spells as chips: one small button per spell (name, school, prepared pips); the open spell shows its details and actions in a panel below */
+.sp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.sp-chip { font: inherit; cursor: pointer; display: inline-flex; align-items: baseline; gap: 6px; padding: 2px 10px 3px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel-2); color: var(--ink); text-align: left; }
+.sp-chip:hover { border-color: var(--accent); }
+.sp-chip.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 2px 3px rgba(0, 0, 0, .28); }
+/* prepared spells stand out (accent edge, raised, bold); spells that are not prepared are faded, flat and dashed until you hover or open them */
+.sp-chip.ready { border-color: color-mix(in srgb, var(--accent) 65%, var(--line)); background: var(--panel); box-shadow: 0 1px 3px rgba(0, 0, 0, .4); }
+.sp-chip.ready .sp-n { font-weight: 700; }
+.sp-chip.idle { opacity: .66; filter: grayscale(.3); background: transparent; border-style: dashed; }
+.sp-chip.idle .sp-n { font-weight: 500; }
+.sp-chip.idle:hover, .sp-chip.idle.on { opacity: 1; filter: none; }
+.sp-chip .sp-n { font-weight: 600; font-size: 14px; }
+.sp-chip .sp-s { font-size: 11px; color: var(--muted); text-transform: capitalize; }
+.pips { display: inline-flex; gap: 3px; align-self: center; }
+.pip { display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--ink); }
+.pip.used { background: transparent; border: 1.5px solid var(--muted); box-sizing: border-box; }
 
 /* ---------- level up ---------- */
 .levelup .compare th { width: 40%; font-weight: 500; color: var(--muted); }
@@ -362,7 +388,6 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .summon-pick:hover { background: var(--accent-soft); color: var(--accent); }
 .summon-stats { border: 0; border-left: 1px solid var(--line); border-radius: 0; color: var(--muted); }
 .summon-stats:hover { color: var(--accent); background: var(--accent-soft); }
-.summon-cell { padding-left: 14px; }
 /* The desktop window turns text selection off app-wide; stat blocks and long text should be copyable. */
 .entry-body, .statblock, .summon-preview, .summon-card .sm-stats, .modal .statblock { -webkit-user-select: text; user-select: text; cursor: auto; }
 .entry-body *, .statblock * { -webkit-user-select: text; user-select: text; }
@@ -457,6 +482,7 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .opt-row .vol b { min-width: 40px; text-align: right; }
 .opt-tabs { display: flex; margin: 0 0 8px; }
 .opt-tabs .seg-btn { flex: 1; }
+/* .modal-body is a flex column: without flex: none the list shrinks to its min-height and the footer is drawn over the overflow */
 .opt-grid { min-height: 290px; align-content: start; flex: none; }
 .opt-tabs, .opt-foot { flex: none; }
 .opt-head { margin: 14px 0 0; font-family: var(--serif); font-size: 15px; color: var(--accent); }
@@ -566,3 +592,36 @@ html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="
 @keyframes fx-spark { 0% { opacity: 0; transform: translate(0, 0) scale(.5); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(160deg) scale(1.1); } }
 html[data-motion="off"] .hp-bar.healing, html[data-motion="off"] .hp-bar.hurting, html[data-motion="off"] .fx-pop { animation: none; }
 html[data-motion="off"] .fx-spark { display: none; }
+
+/* the open spell's actions, shown under its name in the side panel */
+.sp-foot { display: flex; justify-content: flex-end; margin-top: 18px; padding-top: 10px; border-top: 1px solid var(--line); }
+/* a red outline, not a red fill; !important so the themes' own button colours do not paint over it */
+.btn.danger-solid { background: transparent !important; border: 1.5px solid #b3352c !important; color: #a82a22 !important; text-shadow: none; }
+.btn.danger-solid:hover:not(:disabled) { background: rgba(179, 53, 44, .15) !important; border-color: #c43b31 !important; color: #8f1f18 !important; }
+/* the open spell's bar in the side panel: groups with a small label, a stepper for numbers, and a solid Cast */
+.sp-actions { display: flex; align-items: center; gap: 10px 22px; flex-wrap: wrap; padding: 10px 12px; margin: 6px 0 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); }
+.sp-group { display: inline-flex; align-items: center; gap: 8px; }
+.sp-group-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.sp-actions .btn { padding: 6px 14px; }
+.sp-cast { font-weight: 700; min-width: 70px; }
+.sp-cast-n { font-size: 11px; color: var(--muted); }
+.stepper { display: inline-flex; align-items: stretch; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); }
+.stepper button { all: unset; box-sizing: border-box; width: 30px; line-height: 30px; text-align: center; cursor: pointer; font-size: 18px; color: var(--ink); user-select: none; }
+.stepper button:hover { background: var(--accent-soft); color: var(--accent); }
+.stepper button:active { transform: scale(.92); }
+.stepper input, .stepper .val { box-sizing: border-box; width: 44px; height: 30px; text-align: center; font: inherit; font-weight: 700; font-size: 16px; line-height: 30px; border: 0; border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-radius: 0; background: var(--panel); color: var(--ink); padding: 0; -moz-appearance: textfield; appearance: textfield; }
+.stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.stepper .val.bad { color: var(--bad); }
+.sp-custom { display: grid; gap: 4px; padding-bottom: 8px; }
+.sp-custom input, .sp-custom textarea { width: 100%; box-sizing: border-box; }
+/* spell slots as circles: filled = available, ringed = used, dashed = not filled */
+.slot-pips { display: inline-flex; flex-wrap: wrap; gap: 3px; align-items: center; vertical-align: middle; }
+.spip { display: block; width: 11px; height: 11px; border-radius: 50%; box-sizing: border-box; border: 1.5px solid var(--accent); }
+.spip.full { background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 55%, #fff), var(--accent) 70%); box-shadow: 0 0 4px color-mix(in srgb, var(--accent) 55%, transparent); }
+.spip.used { border-color: var(--muted); opacity: .6; }
+.spip.empty { border: 1.5px dashed var(--muted); opacity: .5; }
+.step-row { display: inline-flex; align-items: center; gap: 4px; }
+.step-row b { min-width: 18px; text-align: center; }
+.icon-btn.step { border: 1px solid var(--line); border-radius: 6px; width: 20px; height: 20px; padding: 0; line-height: 1; font-size: 14px; color: var(--ink); }
+.icon-btn.step:hover { border-color: var(--accent); color: var(--accent); }
+.slot-tbl td .slot-pips { display: flex; justify-content: center; margin-top: 3px; }

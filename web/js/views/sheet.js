@@ -5,7 +5,7 @@ import {
   ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS,
   BUFF_PRESETS, SCHOOLS, CASTING_STAT_NAMES,
 } from '../data.js';
-import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom } from '../ui.js';
+import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom, showEntry, closeDrawer } from '../ui.js';
 import { choosePicture, repositionPicture } from '../cropper.js';
 import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
@@ -508,59 +508,73 @@ function spells(body, c, d) {
     }
     if (!levels.length) levels.push(sc.kind === 'spontaneous' ? 1 : 0);
     return `<section class="card spellbook" data-cls="${esc(cls)}">
-      <div class="row">
-        <h3 class="grow">${esc(cls)} ${sc.extracts ? 'Extracts' : 'Spells'} <span class="muted small">${esc(sc.kind)} · ${CASTING_STAT_NAMES[sc.stat]}</span></h3>
-        <span class="pill">Caster level <b>${sc.cl}</b></span>
-        <span class="pill" title="d20 + caster level + ${sc.stat.toUpperCase()} modifier">${ref('Concentration', 'Rules')} <b>${sign(sc.concentration)}</b></span>
-        ${d.asf && ['Wizard', 'Sorcerer', 'Witch', 'Magus', 'Arcanist', 'Bard', 'Summoner', 'Skald', 'Bloodrager'].includes(cls) ? `<span class="pill warn" title="Arcane spell failure from armor">ASF ${d.asf}%</span>` : ''}
-        ${sc.hasExtraSlot ? `<label class="small" title="Cleric/druid domain, wizard specialist school, or shaman spirit slot">${chk(`spellbooks.${cls}.extraSlot`, { rerender: true })} Domain / school slot</label>` : ''}
-        <button class="btn small" data-rest="${esc(cls)}" title="Reset all used slots">Rest (reset)</button>
+      <div class="sb-head">
+        <div class="sb-title"><h3>${esc(cls)} ${sc.extracts ? 'extracts' : 'spells'}</h3><span class="muted small">${esc(sc.kind)} · ${CASTING_STAT_NAMES[sc.stat]}</span></div>
+        <div class="sb-tools">
+          <span class="pill" title="Roll a caster level check (d20 + caster level)">Caster level ${roll(`spellcasting.${cls}.cl`, cls + ' caster level check', `<b>${sc.cl}</b>`)}</span>
+          <span class="pill" title="d20 + caster level + ${sc.stat.toUpperCase()} modifier">${ref('Concentration', 'Rules')} ${roll(`spellcasting.${cls}.concentration`, cls + ' concentration', `<b>${sign(sc.concentration)}</b>`)}</span>
+          ${d.asf && ['Wizard', 'Sorcerer', 'Witch', 'Magus', 'Arcanist', 'Bard', 'Summoner', 'Skald', 'Bloodrager'].includes(cls) ? `<span class="pill warn" title="Arcane spell failure from armor">ASF ${d.asf}%</span>` : ''}
+          ${sc.hasExtraSlot ? `<label class="small" title="Cleric/druid domain, wizard specialist school, or shaman spirit slot">${chk(`spellbooks.${cls}.extraSlot`, { rerender: true })} Domain / school slot</label>` : ''}
+          <button class="btn small" data-rest="${esc(cls)}" title="New day: reset used slots, and the spells you cast are prepared again">Rest (reset)</button>
+        </div>
       </div>
       ${cls === 'Arcanist' ? resourceBlock(c, 'arcane-reservoir') : ''}
       <table class="tbl slot-tbl"><thead><tr><th>Level</th>${levels.map(l => `<th>${ORD[l]}</th>`).join('')}</tr></thead><tbody>
         <tr><th>${spont ? 'Per day' : 'Slots'}</th>${levels.map(l => `<td><b>${fmtSlots(sc.slots[l])}</b></td>`).join('')}</tr>
         ${sc.known.some(k => k != null) ? `<tr><th>Known</th>${levels.map(l => `<td>${knownCount(book, l)} / ${sc.known[l] ?? '—'}</td>`).join('')}</tr>` : ''}
         ${sc.kind === 'arcanist' ? `<tr><th>Prepared</th>${levels.map(l => `<td>${preparedCount(book, l)} / ${sc.prepared[l] ?? '—'}</td>`).join('')}</tr>` : ''}
-        ${spont ? `<tr><th>Used</th>${levels.map(l => l === 0 && sc.slots[0] === Infinity ? '<td class="dim">at will</td>' : `<td>${inp(`spellbooks.${cls}.used.${l}`, { type: 'num', cls: 'w2', rerender: true })}</td>`).join('')}</tr>` : ''}
+        ${spont ? `<tr><th>Used</th>${levels.map(l => l === 0 && sc.slots[0] === Infinity ? '<td class="dim">at will</td>' : `<td>${inp(`spellbooks.${cls}.used.${l}`, { type: 'num', cls: 'w2', rerender: true })}</td>`).join('')}</tr>
+        <tr><th title="Slots you can still cast with today">Left</th>${levels.map(l => (l === 0 && sc.slots[0] === Infinity) || sc.slots[l] == null ? '<td class="dim">—</td>' : `<td><div class="step-row"><button class="icon-btn step" data-slot-adj="${l}" data-d="-1" title="Spend a slot (one fewer left)">−</button><b class="${slotsLeft(book, sc, l) <= 0 ? 'bad' : ''}">${slotsLeft(book, sc, l)}</b><button class="icon-btn step" data-slot-adj="${l}" data-d="1" title="Get a slot back (one more left)">＋</button></div>${spontPips(book, sc, l)}</td>`).join('')}</tr>` : ''}
         <tr><th>Save DC</th>${levels.map(l => `<td>${sc.dcs[l]}</td>`).join('')}</tr>
         <tr><th title="Concentration DC to cast defensively: 15 + 2 × spell level">${ref('Casting Defensively', 'Rules', 'Defensive DC')}</th>${levels.map(l => `<td title="Need ${15 + 2 * l - sc.concentration} or higher on d20">${15 + 2 * l}<span class="dim small"> (${Math.max(1, Math.min(20, 15 + 2 * l - sc.concentration))}+)</span></td>`).join('')}</tr>
       </tbody></table>
       ${levels.map(l => {
         const list = book.spells.map((s, i) => ({ ...s, i })).filter(s => s.level === l);
+        const hasCast = sc.kind === 'prepared' || spont;
+        const over = sc.kind === 'prepared' && sc.slots[l] != null && sc.slots[l] !== Infinity && preparedCount(book, l) > sc.slots[l];
+        const count = sc.kind === 'prepared' && sc.slots[l] != null && sc.slots[l] !== Infinity ? `<span class="sl-count ${over ? 'bad' : ''}" title="Spells prepared today against your slots for this level">Prepared ${preparedCount(book, l)} of ${sc.slots[l]}</span>`
+          : spont && l > 0 && sc.slots[l] != null && sc.slots[l] !== Infinity ? `<span class="sl-count ${slotsLeft(book, sc, l) <= 0 ? 'bad' : ''}" title="Slots left today: casting any spell of this level uses one">${slotsLeft(book, sc, l)} of ${sc.slots[l]} slots left</span>` : '';
+        const heading = sc.kind === 'prepared' ? preparedPips(book, sc, l) : spont && l > 0 ? spontPips(book, sc, l) : '';
+        const chip = s => {
+          const left = num(s.prepared), spent = num(s.cast);
+          const pips = prepared && l > 0 ? `<span class="pips" title="${left} prepared${spent ? `, ${spent} cast` : ''}">${'<i class="pip"></i>'.repeat(Math.min(left, 9))}${'<i class="pip used"></i>'.repeat(Math.min(spent, 9))}</span>` : '';
+          return `<button class="sp-chip ${isActive(cls, s.i) ? 'on' : ''} ${prepared && l > 0 ? (left || spent ? 'ready' : 'idle') : ''}" data-sp-select="${s.i}" data-level="${l}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(cls, s.i)}"><span class="sp-n">${esc(s.name || 'New spell')}</span>${s.school ? `<span class="sp-s">${esc(s.school)}</span>` : ''}${pips}</button>`;
+        };
         return `<div class="spell-level">
-          <div class="row"><h4 class="grow">${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>
+          <div class="sl-head"><h4>${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>${count}${heading}<span class="grow"></span>
             <button class="btn small ghost" data-add-spell="${l}">＋ Add</button>
             <button class="btn small ghost" data-custom-spell="${l}" title="A spell that isn't in the compendium">＋ Custom</button></div>
-          ${list.length ? `<table class="tbl spell-tbl"><tbody>${list.map(s => `<tr>
-            <td class="nowrap">${s.id ? refId(s.id, s.name)
-              : tf(`spellbooks.${cls}.spells.${s.i}.name`, { placeholder: 'Spell name', read: { title: s.name, titlePath: `spellbooks.${cls}.spells.${s.i}.name`, cat: 'Custom spell', path: `spellbooks.${cls}.spells.${s.i}.notes` } })}</td>
-            <td class="muted small">${esc(s.school || '')}</td>
-            <td class="nowrap summon-cell">${summonSpell(s.name) ? `<button class="btn small" data-summon="${esc(s.name)}" data-summon-cls="${esc(cls)}" title="Choose a creature; it is added to Buffs &amp; Conditions → Summons">Summon…</button>` : ''}</td>
-            <td class="muted small summary">${s.id ? esc(s.summary || '') : tf(`spellbooks.${cls}.spells.${s.i}.notes`, { multiline: true, placeholder: 'Add a description', read: { title: s.name, titlePath: `spellbooks.${cls}.spells.${s.i}.name`, cat: 'Custom spell' } })}</td>
-            ${prepared && !(l === 0 && sc.kind !== 'arcanist' && false) ? `<td class="nowrap small">Prep ${inp(`spellbooks.${cls}.spells.${s.i}.prepared`, { type: 'num', cls: 'w2', rerender: true })}</td>` : ''}
-            ${sc.kind === 'prepared' && l > 0 ? `<td class="nowrap"><button class="btn small" data-cast="${s.i}" ${num(s.cast) >= num(s.prepared) ? 'disabled' : ''}>Cast</button>
-              <span class="small dim">${num(s.cast)}/${num(s.prepared)}</span></td>` : ''}
-            ${spont && l > 0 ? `<td><button class="btn small" data-cast-spont="${l}">Cast</button></td>` : ''}
-            <td><button class="icon-btn" data-del="spellbooks.${cls}.spells.${s.i}">✕</button></td></tr>`).join('')}</tbody></table>`
-            : '<p class="muted small">None.</p>'}
-          ${sc.kind === 'prepared' && sc.slots[l] != null && sc.slots[l] !== Infinity ? `<div class="small ${preparedCount(book, l) > sc.slots[l] ? 'bad' : 'muted'}">Prepared ${preparedCount(book, l)} of ${sc.slots[l]} slots</div>` : ''}
+          ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>`
+            : '<p class="muted small sl-none">No spells yet.</p>'}
         </div>`;
       }).join('')}
     </section>`;
   }).join('');
   wireCommon(body);
   wireResources(body, c);
+  if (spellDrawer?.el?.isConnected) renderSpellActions(); // the open spell's bar shows the same numbers as the tab
   body.addEventListener('click', async e => {
     const sbEl = e.target.closest('[data-cls]');
     if (!sbEl) return;
     const cls = sbEl.dataset.cls;
     const book = c.spellbooks[cls];
     const sc = d.spellcasting[cls];
-    const t = e.target.closest('[data-add-spell],[data-custom-spell],[data-cast],[data-cast-spont],[data-rest]');
+    const t = e.target.closest('[data-slot-adj],[data-sp-select],[data-add-spell],[data-custom-spell],[data-cast],[data-cast-spont],[data-rest],[data-prep]');
     if (!t) return;
+    if (t.dataset.slotAdj !== undefined) {
+      const l = +t.dataset.slotAdj;
+      book.used[l] = Math.min(sc.slots[l], Math.max(0, num(book.used[l]) - +t.dataset.d)); // + = a slot back, - = one spent
+      changed({ rerender: true });
+      return;
+    }
+    if (t.dataset.spSelect !== undefined) {
+      openSpell(cls, +t.dataset.spSelect, t);
+      return;
+    }
     if (t.dataset.customSpell !== undefined) {
       book.spells.push({ name: '', level: +t.dataset.customSpell, school: '', notes: '', prepared: 0, cast: 0 });
       changed({ rerender: true });
+      openSpell(cls, book.spells.length - 1, null); // open it in the side panel so it can be named
       return;
     }
     if (t.dataset.addSpell !== undefined) {
@@ -569,27 +583,161 @@ function spells(body, c, d) {
         book.spells.push({ id: picked.id, name: picked.name, level: +t.dataset.addSpell, school: picked.school, summary: picked.summary, prepared: 0, cast: 0 });
         changed({ rerender: true });
       }
+    } else if (t.dataset.prep !== undefined) {
+      const s = book.spells[+t.dataset.prep];
+      s.prepared = Math.max(0, num(s.prepared) + +t.dataset.d);
+      changed({ rerender: true });
     } else if (t.dataset.cast !== undefined) {
       const s = book.spells[+t.dataset.cast];
+      if (num(s.prepared) <= 0) return;
+      s.prepared = num(s.prepared) - 1; // casting uses up a prepared spell; Rest gives it back
       s.cast = num(s.cast) + 1;
       changed({ rerender: true });
     } else if (t.dataset.castSpont !== undefined) {
       const l = +t.dataset.castSpont;
-      if (num(book.used[l]) >= sc.slots[l]) { toast(`No ${ORD[l]}-level slots left`, 'err'); return; }
+      if (slotsLeft(book, sc, l) <= 0) { toast(`No ${ORD[l]}-level slots left`, 'err'); return; }
       book.used[l] = num(book.used[l]) + 1;
+      const left = slotsLeft(book, sc, l);
+      toast(`${book.spells[+t.dataset.spell]?.name || 'Spell'} cast. ${left} ${left === 1 ? 'slot' : 'slots'} left at ${ORD[l]} level`);
       changed({ rerender: true });
     } else if (t.dataset.rest !== undefined) {
       book.used = Array(10).fill(0);
-      for (const s of book.spells) s.cast = 0;
+      for (const s of book.spells) { s.prepared = num(s.prepared) + num(s.cast); s.cast = 0; } // the spells cast today are prepared again
       if (cls === 'Arcanist' && c.resources) delete c.resources['arcane-reservoir'];
-      toast('Spell slots reset');
+      toast('Rested: slots reset and cast spells are prepared again');
       changed({ rerender: true });
     }
   });
 }
+// The spell shown in the side panel, with its actions (Roll, Summon, Prepared, Cast, Delete) under the name. {cls, i, armed, el}
+// `armed` means the next entry the panel shows is this spell, so its actions go into that entry's action area.
+let spellDrawer = null;
+const isActive = (cls, i) => spellDrawer?.cls === cls && spellDrawer.i === i;
+
+function clearActiveSpell() {
+  spellDrawer = null;
+  document.querySelectorAll('.sp-chip.on').forEach(x => x.classList.remove('on'));
+}
+
+/** Clicking a spell chip: show the spell in the side panel (its text, then the actions under its name). */
+function openSpell(cls, i, chip) {
+  const s = state.char.spellbooks[cls]?.spells[i];
+  if (!s) return;
+  spellDrawer = { cls, i, armed: true, id: s.id || null };
+  document.querySelectorAll('.sp-chip.on').forEach(x => x.classList.remove('on'));
+  chip?.classList.add('on');
+  if (s.id) showEntry(s.id);
+  else showCustom({ name: s.name || 'New spell', cat: 'Custom spell', sub: ORD[s.level] + ' level', html: '' });
+}
+
+document.addEventListener('entry-shown', e => {
+  const sd = spellDrawer;
+  if (sd?.armed && (e.detail.entry.id ?? null) === sd.id) { sd.armed = false; sd.el = e.detail.actions; renderSpellActions(); }
+  else clearActiveSpell(); // the panel moved on to something else
+});
+document.addEventListener('drawer-closed', clearActiveSpell);
+
+/** Fills the side panel's action area for the open spell. Called again after every change so the numbers stay right. */
+function renderSpellActions() {
+  const sd = spellDrawer;
+  if (!sd?.el?.isConnected) return;
+  const c = state.char, d = state.derived;
+  const book = c.spellbooks[sd.cls], s = book?.spells[sd.i], sc = d?.spellcasting?.[sd.cls];
+  if (!s || !sc) { sd.el.innerHTML = ''; return; }
+  const l = s.level, prepared = sc.kind === 'prepared' || sc.kind === 'arcanist', spont = sc.kind === 'spontaneous' || sc.kind === 'arcanist';
+  const left = num(s.prepared);
+  sd.el.dataset.cls = sd.cls; // the roll window finds the caster class from here
+  const slotsHere = spont && l > 0 && sc.slots[l] != null && sc.slots[l] !== Infinity;
+  sd.el.innerHTML = `<div class="sp-actions">
+      <div class="sp-group">
+        ${s.id ? `<span data-spell-slot="${sd.i}" data-spell-id="${s.id}"></span>` : `<button class="btn" data-spell-roll="${sd.i}" title="Roll an attack, concentration or the damage for this spell">Roll</button>`}
+        ${summonSpell(s.name) ? `<button class="btn" data-summon="${esc(s.name)}" data-summon-cls="${esc(sd.cls)}" title="Choose a creature; it is added to Buffs &amp; Conditions → Summons">Summon…</button>` : ''}
+      </div>
+      ${prepared ? `<div class="sp-group" title="Prepared and not cast yet. Casting uses one; Rest gives them back.">
+        <span class="sp-group-label">Prepared</span>
+        <span class="stepper"><button data-sa="prep" data-d="-1" title="One fewer prepared" aria-label="One fewer prepared">−</button><input type="number" min="0" data-sa-prep value="${left}" aria-label="Prepared"><button data-sa="prep" data-d="1" title="One more prepared" aria-label="One more prepared">＋</button></span>
+      </div>` : ''}
+      ${l > 0 && sc.kind === 'prepared' ? `<div class="sp-group">
+        <button class="btn primary sp-cast" data-sa="cast" ${left <= 0 ? 'disabled' : ''} title="${left <= 0 ? 'None prepared' : 'Cast it: uses up one prepared copy until you rest'}">Cast</button>
+        ${num(s.cast) ? `<span class="sp-cast-n" title="Cast since your last rest">cast ${num(s.cast)}</span>` : ''}
+      </div>` : ''}
+      ${l > 0 && spont ? `<div class="sp-group">
+        <button class="btn primary sp-cast" data-sa="cast-spont" ${slotsLeft(book, sc, l) <= 0 ? 'disabled' : ''} title="${slotsLeft(book, sc, l) <= 0 ? 'No slots left at this level' : 'Cast it: uses one ' + ORD[l] + '-level slot. Prepared spells can be cast again while you have slots.'}">Cast</button>
+      </div>` : ''}
+      ${slotsHere ? `<div class="sp-group" title="Slots left at ${ORD[l]} level today. Use − and + to correct the count.">
+        <span class="sp-group-label">${ORD[l]}-level slots left</span>
+        <span class="stepper"><button data-sa="slot" data-d="-1" title="Spend a slot (one fewer left)" aria-label="One fewer slot left">−</button><span class="val ${slotsLeft(book, sc, l) <= 0 ? 'bad' : ''}">${slotsLeft(book, sc, l)}</span><button data-sa="slot" data-d="1" title="Get a slot back (one more left)" aria-label="One more slot left">＋</button></span>
+        ${spontPips(book, sc, l)}
+      </div>` : ''}
+    </div>
+    ${s.id ? '' : `<div class="sp-custom"><label class="small muted">Name</label><input class="grow" data-sa-name value="${esc(s.name || '')}" placeholder="Spell name"><label class="small muted">Description</label><textarea rows="5" data-sa-notes placeholder="What it does">${esc(s.notes || '')}</textarea></div>`}`;
+  fillSpellRolls(sd.el);
+  const body = sd.el.parentElement?.querySelector('.entry-body');
+  if (body) {
+    body.querySelector('.sp-foot')?.remove();
+    const foot = document.createElement('div');
+    foot.className = 'sp-foot';
+    foot.innerHTML = `<button class="btn danger-solid" title="Remove this spell from your ${esc(sd.cls)} list">Delete spell</button>`;
+    body.appendChild(foot);
+    foot.querySelector('button').onclick = async () => {
+      if (!(await confirmBox(`Remove ${s.name || 'this spell'} from your ${sd.cls} spells?`, 'Delete spell'))) return;
+      book.spells.splice(sd.i, 1);
+      closeDrawer();
+      changed({ rerender: true });
+    };
+  }
+  sd.el.onclick = async e => {
+    const b = e.target.closest('[data-sa]');
+    if (!b) return;
+    const act = b.dataset.sa;
+    if (act === 'prep') s.prepared = Math.max(0, num(s.prepared) + +b.dataset.d);
+    else if (act === 'slot') book.used[l] = Math.min(sc.slots[l], Math.max(0, num(book.used[l]) - +b.dataset.d)); // + = a slot back, - = one spent
+    else if (act === 'cast') { if (num(s.prepared) <= 0) return; s.prepared = num(s.prepared) - 1; s.cast = num(s.cast) + 1; }
+    else if (act === 'cast-spont') {
+      if (slotsLeft(book, sc, l) <= 0) { toast(`No ${ORD[l]}-level slots left`, 'err'); return; }
+      book.used[l] = num(book.used[l]) + 1;
+      const n = slotsLeft(book, sc, l);
+      toast(`${s.name || 'Spell'} cast. ${n} ${n === 1 ? 'slot' : 'slots'} left at ${ORD[l]} level`);
+    }
+    changed({ rerender: true });
+    renderSpellActions();
+  };
+  sd.el.onchange = e => {
+    if (e.target.matches('[data-sa-prep]')) s.prepared = Math.max(0, Math.round(num(e.target.value)));
+    else if (e.target.matches('[data-sa-name]')) { s.name = e.target.value; const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = s.name || 'New spell'; }
+    else if (e.target.matches('[data-sa-notes]')) s.notes = e.target.value;
+    else return;
+    changed({ rerender: true });
+    renderSpellActions();
+  };
+}
+
+/** A row of small circles for a level's slots: filled = still available, ringed = used, dashed = not filled. Nothing when there are too many to draw. */
+function slotPips(full, used, empty, title) {
+  const n = full + used + empty;
+  if (!n || n > 14) return '';
+  return `<span class="slot-pips" title="${esc(title)}">${'<i class="spip full"></i>'.repeat(full)}${'<i class="spip used"></i>'.repeat(used)}${'<i class="spip empty"></i>'.repeat(empty)}</span>`;
+}
+function spontPips(book, sc, l) {
+  const n = sc.slots[l];
+  if (n == null || n === Infinity) return '';
+  const left = slotsLeft(book, sc, l);
+  return slotPips(left, n - left, 0, `${left} of ${n} slots left`);
+}
+function preparedPips(book, sc, l) {
+  const n = sc.slots[l];
+  if (n == null || n === Infinity) return '';
+  let ready = 0, spent = 0;
+  for (const sp of book.spells) if (sp.level === l) { ready += num(sp.prepared); spent += num(sp.cast); }
+  const full = Math.min(ready, n), used = Math.min(spent, n - full);
+  return slotPips(full, used, Math.max(0, n - full - used), `${full} prepared, ${used} cast, ${Math.max(0, n - full - used)} slots not filled`);
+}
+/** Slots still free at a spell level for a spontaneous caster (the Used box counts the ones spent). */
+const slotsLeft = (book, sc, l) => (sc.slots[l] == null ? 0 : sc.slots[l] === Infinity ? Infinity : Math.max(0, sc.slots[l] - num((book.used || [])[l])));
 const fmtSlots = v => (v == null ? '—' : v === Infinity ? '∞' : v);
 const knownCount = (book, l) => book.spells.filter(s => s.level === l).length;
-const preparedCount = (book, l) => book.spells.filter(s => s.level === l).reduce((a, s) => a + num(s.prepared), 0);
+// the day's preparation: what is left plus what has been cast, so casting does not look like unpreparing
+const preparedCount = (book, l) => book.spells.filter(s => s.level === l).reduce((a, s) => a + num(s.prepared) + num(s.cast), 0);
 
 export function pickSpell(cls, sc, level) {
   return modal(`Add ${cls} spell`, (body, close) => {
