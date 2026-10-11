@@ -1,12 +1,13 @@
-// Rolling from the sheet. Click a number to roll it; the result is shown on the sheet and, when a webhook is set in Options,
-// posted to Discord in the layout of the Tad bot. The dice logic is in dice.js (pure, tested).
+// Rolling from the sheet. Click a number to roll it; the result is shown on the sheet. When a webhook is set in Options and
+// sending is on, nothing is rolled here: the command ("roll d20+5") is posted under the character's name and the Tad bot rolls.
+// The dice logic is in dice.js (pure, tested).
 //   data-roll="init"              d20 + a derived value (any path in compute() output, e.g. saves.fort.total, skills.Stealth.total)
 //   data-roll-label="Initiative"  shown in the message
 //   data-roll-add="7" / data-roll-dice="1d6+2"   a literal d20 bonus or dice expression (companion cards)
 //   data-roll-weapon="2" data-roll-kind="attack|damage|full"   a weapon row
 // The roll bar (in the buff strip) holds Advantage / Disadvantage for the next d20 roll, the Modifier chip (situational + and -, such as
 // not being proficient or shooting past a range increment), the dice box, and the Discord switch.
-import { rollMessage, rollMany, bonusText, addMods, modsLabel, MOD_PRESETS, presetsFor } from './dice.js';
+import { rollMessage, rollMany, bonusText, addMods, modsLabel, MOD_PRESETS, presetsFor, sendName, parseDice } from './dice.js';
 import { spellInfo } from './spellinfo.js';
 import { state } from './app.js';
 import { getPath, toast, esc, modal } from './ui.js';
@@ -34,9 +35,7 @@ export function rollBar() {
   const o = options();
   return `<span class="roll-bar">
     <span class="roll-hint" title="Highlighted numbers are buttons: click one to roll it. Hover one to see where its bonuses come from." aria-label="Click a highlighted number to roll">${D20}</span>
-    <button class="rchip ${mode === 'adv' ? 'on' : ''}" data-rmode="adv" title="Roll the next d20 twice and keep the higher">Advantage</button>
-    <button class="rchip ${mode === 'dis' ? 'on' : ''}" data-rmode="dis" title="Roll the next d20 twice and keep the lower">Disadvantage</button>
-    <button class="rchip ${mods.length ? 'on' : ''}" id="roll-mods" title="Add a situational modifier to your d20 rolls: not proficient, a range increment, flanking, or your own number">${esc(modsChip())}</button>
+    <button class="rchip ${mods.length || mode ? 'on' : ''}" id="roll-mods" title="Add a situational modifier to your d20 rolls: not proficient, a range increment, flanking, or your own number">${esc(modsChip())}</button>
     <input id="dice-box" class="w8" placeholder="2d6+3" title="Dice box: Tad notation such as 2d6+3, adv d20+5 or 3xd20. Press Roll or Enter." autocomplete="off" aria-label="Dice box">
     <button class="rchip go" id="dice-go" title="Roll the dice box (or press Enter)">🎲 Roll</button>
     <button class="rchip ${o.webhook && o.rollSend ? 'on' : ''}" id="roll-discord" title="Post rolls to your Discord channel">${esc(discordLabel())}</button>
@@ -44,11 +43,11 @@ export function rollBar() {
 }
 
 const modsTotal = () => mods.reduce((t, m) => t + m.n, 0);
-const modsChip = () => (mods.length ? 'Modifier ' + (bonusText(modsTotal()) || '+0') : 'Modifier');
+const modsChip = () => ['Modifier', mods.length ? bonusText(modsTotal()) || '+0' : '', mode === 'adv' ? 'Adv' : mode === 'dis' ? 'Disadv' : ''].filter(Boolean).join(' ');
 
 function syncBar() {
   const mb = document.getElementById('roll-mods');
-  if (mb) { mb.textContent = modsChip(); mb.classList.toggle('on', mods.length > 0); }
+  if (mb) { mb.textContent = modsChip(); mb.classList.toggle('on', mods.length > 0 || !!mode); }
   document.querySelectorAll('[data-rmode]').forEach(b => b.classList.toggle('on', b.dataset.rmode === mode));
   const d = document.getElementById('roll-discord');
   if (d) { d.textContent = discordLabel(); d.classList.toggle('on', !!(options().webhook && options().rollSend)); }
@@ -69,6 +68,9 @@ function modsWindow() {
   modal('Roll modifier', (body, close) => {
     const draw = () => {
       body.innerHTML = `<p class="small muted">Added to your d20 rolls (attacks, saves, skills, checks) ${keepMods ? 'until you clear it' : 'for the next roll only'}.</p>
+        <div class="roll-bar" style="margin:4px 0 8px">
+          <button class="rchip ${mode === 'adv' ? 'on' : ''}" data-rmode="adv" title="Roll the next d20 twice and keep the higher">Advantage</button>
+          <button class="rchip ${mode === 'dis' ? 'on' : ''}" data-rmode="dis" title="Roll the next d20 twice and keep the lower">Disadvantage</button></div>
         ${presetGroups(MOD_PRESETS)}
         <div class="row" style="margin:10px 0"><input id="mod-n" class="w3" type="number" placeholder="±" aria-label="Modifier"><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>
         <div class="small" style="margin:6px 0">${mods.length ? 'Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b>' : '<span class="muted">No modifier set.</span>'}</div>
@@ -83,12 +85,14 @@ function modsWindow() {
     };
     body.onclick = e => {
       const p = e.target.closest('[data-mod-preset]');
-      if (p) {
+      const am = e.target.closest('[data-rmode]');
+      if (am) mode = mode === am.dataset.rmode ? '' : am.dataset.rmode;
+      else if (p) {
         const m = MOD_PRESETS[+p.dataset.modPreset], had = mods.some(x => x.label === m.label);
         mods = mods.filter(x => x.label !== m.label && !(m.group && x.group === m.group)); // one range increment at a time
         if (!had) mods.push({ ...m });
       } else if (e.target.closest('#mod-add')) add();
-      else if (e.target.closest('#mod-clear')) mods = [];
+      else if (e.target.closest('#mod-clear')) { mods = []; mode = ''; }
       else if (e.target.closest('#mod-done')) { syncBar(); return close(); }
       else return;
       syncBar(); draw();
@@ -140,6 +144,19 @@ function tipFor(el) {
 
 export async function doRoll(p) {
   const who = state.char?.name || 'Someone';
+  const o = options();
+  if ((p.send ?? o.rollSend) && o.webhook) {
+    // Tad rolls: post only the command under the character's name and show nothing here, so the sheet and Discord never disagree.
+    // The roll goes out under "Character · what it is for" (a webhook can change its display name per message), so the channel sees what was rolled.
+    const sends = (p.items || [p]).map(it => ({ expr: withMode(it.expr), who: sendName(who, withModLabel(it.label, it.expr)) }));
+    try { sends.forEach(x => parseDice(x.expr)); } catch (e) { return toast(e.message, 'err'); }
+    afterRoll();
+    try {
+      for (const x of sends) await api.discord(o.webhook, 'roll ' + x.expr.trim(), x.who);
+      toast('Sent to Discord');
+    } catch (e) { toast('Discord: ' + e.message, 'err'); }
+    return;
+  }
   let r;
   try {
     r = p.items
@@ -148,9 +165,6 @@ export async function doRoll(p) {
   } catch (e) { return toast(e.message, 'err'); }
   afterRoll();
   toast(r.short);
-  const o = options();
-  if (!((p.send ?? o.rollSend) && o.webhook)) return;
-  try { await api.discord(o.webhook, r.text, who); } catch (e) { toast('Discord: ' + e.message, 'err'); }
 }
 
 /** Is this roll an attack? Attack rolls get the attack modifiers (proficiency, range increments, flanking...) in the roll window. */
@@ -226,8 +240,6 @@ export function initRoller() {
     if (el) el.dataset.tip = tipFor(el);
   }, true);
   document.addEventListener('click', e => {
-    const m = e.target.closest('[data-rmode]');
-    if (m) { mode = mode === m.dataset.rmode ? '' : m.dataset.rmode; return syncBar(); }
     if (e.target.closest('#roll-mods')) return modsWindow();
     if (e.target.closest('#dice-go')) return rollDiceBox();
     if (e.target.closest('#roll-discord')) {
