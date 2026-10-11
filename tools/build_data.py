@@ -489,7 +489,9 @@ def write_db(entries):
         create table entries (id integer primary key, cat text, sub text, name text, source text,
                               summary text, html text, meta text);
         create index entries_cat on entries(cat, name);
-        create virtual table entries_fts using fts5(name, summary, text, tokenize='porter unicode61');
+        -- content='' (contentless): the index only, no second copy of the text. app.py always joins entries by rowid and never asks
+        -- the index for column values, snippets or highlights, so nothing is lost and the file is about a third smaller.
+        create virtual table entries_fts using fts5(name, summary, text, content='', tokenize='porter unicode61');
     ''')
     entries.sort(key=lambda e: (e['cat'], e['name'].lower()))
     for i, e in enumerate(entries, 1):
