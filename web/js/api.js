@@ -2,8 +2,13 @@ async function req(method, path, body) {
   const r = await fetch('/api/' + path, {
     method, headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined,
   });
-  const data = await r.json();
-  if (!r.ok) throw new Error(data?.error || r.statusText);
+  // Read the text first: an answer that is not JSON (the file server's 404 page, a half-closed connection) should show its
+  // status, not a parse error. Note a route may legitimately answer null (an entry that does not exist).
+  const text = await r.text();
+  let data, isJson = true;
+  try { data = JSON.parse(text); } catch { isJson = false; }
+  if (!r.ok) throw new Error((isJson && data?.error) || `${r.status} ${r.statusText}`.trim());
+  if (!isJson) throw new Error('The server sent an answer that is not JSON');
   return data;
 }
 const qs = o => new URLSearchParams(Object.entries(o).filter(([, v]) => v !== undefined && v !== null && v !== '')).toString();
@@ -38,6 +43,9 @@ export const api = {
   character: id => req('GET', 'character?' + qs({ id })),
   saveCharacter: c => req('POST', 'character', c),
   deleteCharacter: id => req('POST', 'character/delete?' + qs({ id })),
+  deleted: () => req('GET', 'deleted'),
+  restoreCharacter: file => req('POST', 'character/restore?' + qs({ file })),
+  purgeCharacter: file => req('POST', 'character/purge?' + qs({ file })),
   openFolder: () => req('POST', 'open-folder'),
   csFetch: ref => req('GET', 'cs-fetch?' + qs({ id: ref })),
   sounds: () => req('GET', 'sounds'),

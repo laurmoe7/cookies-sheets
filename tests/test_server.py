@@ -9,6 +9,7 @@ import os
 import shutil
 import sys
 import tempfile
+import time
 import unittest
 import urllib.error
 import urllib.request
@@ -22,6 +23,7 @@ import app  # noqa: E402
 
 
 def tearDownModule():
+    app.close_db()  # the tests above call the compendium functions on this thread
     shutil.rmtree(TMP, ignore_errors=True)
 
 
@@ -43,6 +45,35 @@ class CharacterStorage(unittest.TestCase):
         app.delete_character(r['id'])
         self.assertFalse(os.path.exists(os.path.join(TMP, r['id'] + '.json')))
         self.assertTrue(any(f.startswith(r['id']) for f in os.listdir(app.TRASH_DIR)))
+
+    def test_restore_and_purge(self):
+        r = app.save_character({'id': None, 'name': 'Kyra', 'race': 'Human', 'levelUps': [{'cls': 'Cleric'}]})
+        app.delete_character(r['id'])
+        gone = [d for d in app.list_deleted() if d['id'] == r['id']]
+        self.assertEqual(len(gone), 1)
+        self.assertEqual((gone[0]['name'], gone[0]['race'], gone[0]['summary']), ('Kyra', 'Human', 'Cleric 1'))
+        self.assertAlmostEqual(gone[0]['deleted'], time.time(), delta=5)
+        back = app.restore_character(gone[0]['file'])
+        self.assertEqual(back['id'], r['id'], 'the id is free, so the character keeps it')
+        self.assertEqual(app.load_character(r['id'])['name'], 'Kyra')
+        self.assertFalse([d for d in app.list_deleted() if d['id'] == r['id']], 'restoring empties the bin of it')
+        # Deleted, then another character saved under the same id (a re-import): restoring must not overwrite the newer one.
+        app.delete_character(r['id'])
+        app.save_character({'id': r['id'], 'name': 'Kyra the second', 'levelUps': []})
+        f = next(d['file'] for d in app.list_deleted() if d['id'] == r['id'])
+        back2 = app.restore_character(f)
+        self.assertNotEqual(back2['id'], r['id'])
+        self.assertEqual(app.load_character(r['id'])['name'], 'Kyra the second')
+        self.assertEqual(app.load_character(back2['id'])['name'], 'Kyra')
+        app.delete_character(back2['id'])
+        f = next(d['file'] for d in app.list_deleted() if d['id'] == back2['id'])
+        app.purge_character(f)
+        self.assertFalse(os.path.exists(os.path.join(app.TRASH_DIR, f)))
+        for bad in ('../x.json', 'abc.json', '', 'abc-12.txt', 'abc-12.json.bak'):
+            with self.assertRaises(ValueError):
+                app.restore_character(bad)
+            with self.assertRaises(ValueError):
+                app.purge_character(bad)
 
     def test_rejects_path_tricks(self):
         for bad in ['../evil', 'a/b', '', 'x.json']:
@@ -121,10 +152,11 @@ class HttpApi(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.srv.shutdown()
+        cls.srv.server_close()
 
-    def call(self, path, body=None):
+    def call(self, path, body=None, method=None):
         req = urllib.request.Request(self.base + path, data=None if body is None else json.dumps(body).encode(),
-                                     headers={'Content-Type': 'application/json'})
+                                     headers={'Content-Type': 'application/json'}, method=method)
         try:
             with urllib.request.urlopen(req, timeout=10) as r:
                 return r.status, json.loads(r.read())
@@ -162,6 +194,30 @@ class HttpApi(unittest.TestCase):
         status, r = self.call('/api/character', {'name': 'Ezren'})
         self.assertEqual(status, 200)
         self.assertEqual(self.call(f'/api/character?id={r["id"]}')[1]['name'], 'Ezren')
+
+    def test_deleted_bin_routes(self):
+        status, r = self.call('/api/character', {'name': 'Seoni'})
+        self.assertEqual(self.call(f'/api/character/delete?id={r["id"]}', method='POST')[0], 200)
+        status, gone = self.call('/api/deleted')
+        self.assertEqual(status, 200)
+        f = next(d['file'] for d in gone if d['id'] == r['id'])
+        status, back = self.call(f'/api/character/restore?file={f}', method='POST')
+        self.assertEqual((status, back['id']), (200, r['id']))
+        self.assertEqual(self.call(f'/api/character?id={r["id"]}')[1]['name'], 'Seoni')
+        self.assertEqual(self.call('/api/character/purge?file=nope.json', method='POST')[0], 500)
+        self.assertEqual(self.call('/api/character/purge?file=abc-1.json', method='POST')[0], 404, 'well-formed name, no such file')
+
+    def test_cache_headers(self):
+        with urllib.request.urlopen(self.base + '/css/app.css', timeout=10) as r:
+            self.assertEqual(r.headers['Cache-Control'], 'no-cache', 'UI files may be kept and revalidated')
+            stamp = r.headers['Last-Modified']
+        req = urllib.request.Request(self.base + '/css/app.css', headers={'If-Modified-Since': stamp})
+        with self.assertRaises(urllib.error.HTTPError) as cm:
+            urllib.request.urlopen(req, timeout=10)
+        self.assertEqual(cm.exception.code, 304)
+        cm.exception.close()
+        with urllib.request.urlopen(self.base + '/api/classes', timeout=10) as r:
+            self.assertEqual(r.headers['Cache-Control'], 'no-store', 'API answers are never cached')
 
     def test_errors_are_json(self):
         status, data = self.call('/api/cs-fetch?id=junk')
@@ -306,3 +362,4 @@ class EntriesBatch(unittest.TestCase):
             self.assertTrue(all('html' in e and 'meta' in e for e in got))
         finally:
             srv.shutdown()
+            srv.server_close()

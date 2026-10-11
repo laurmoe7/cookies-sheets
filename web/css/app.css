@@ -241,6 +241,10 @@ html[data-theme] .btn.primary.discord-btn:hover, .btn.discord-btn:hover { backgr
 .char-card { display: flex; gap: 10px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; cursor: pointer; box-shadow: var(--shadow); }
 .char-card:hover, .char-card.current { border-color: var(--accent); }
 .char-card h3 { margin: 0; color: var(--ink); }
+details.bin { margin-top: 22px; }
+details.bin summary { cursor: pointer; font-size: 13px; }
+details.bin .char-card { margin-top: 10px; cursor: default; border-style: dashed; opacity: .85; }
+details.bin .char-card:hover { border-color: var(--line); }
 .empty { text-align: center; padding: 40px 20px; }
 
 /* ---------- compendium ---------- */

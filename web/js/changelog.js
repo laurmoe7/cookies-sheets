@@ -3,6 +3,14 @@
 
 export const CHANGELOG = [
   {
+    version: 'Deleted characters', date: '2026-10-11',
+    items: [
+      'The Characters page lists deleted characters at the bottom: bring one back with Restore, or remove it for good.',
+      'The compendium database is a third smaller, with the same search results.',
+      'Only the app itself can talk to its local server now; other web pages open on the computer are refused.',
+    ],
+  },
+  {
     version: 'Familiar variants', date: '2026-10-11',
     items: [
       'Familiars can be any Improved Familiar kind (imp, quasit, pseudodragon, homunculus, stirge, mephit, small elementals and more), with their own stat blocks, damage reduction, resistances and fast healing.',

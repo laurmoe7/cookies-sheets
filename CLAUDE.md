@@ -7,7 +7,8 @@ Windows desktop app for Pathfinder 1st Edition characters: live character sheet,
 - **`app.py`**: stdlib `ThreadingHTTPServer` on 127.0.0.1 that serves `web/` and a small JSON API, shown in a pywebview (WebView2) window. `--browser` serves only.
   - `Handler._allowed` refuses requests from other web pages (wrong `Host`, foreign `Origin`, or `Sec-Fetch-Site` cross-site/same-site), since any page open in a browser can otherwise call 127.0.0.1. Our own page, the address bar, tests and curl pass. Anything that serves the UI on another name or port must be added to `srv.hosts` in `start_server`.
   - The compendium is read-only SQLite (`data/pf1e.db`, an FTS5 table `entries_fts` over `entries`). The index is contentless (`content=''`), so it holds no copy of the text: always join `entries` by rowid for values, and don't use `snippet()` or `highlight()`.
-  - Characters are plain JSON files in `Documents\Pathfinder Characters`. Delete moves them to `.deleted/`.
+  - Characters are plain JSON files in `Documents\Pathfinder Characters`. Delete moves them to `.deleted/` as `<id>-<unix time>.json`; the Characters page lists that folder (`/api/deleted`) with Restore (`character/restore`, which gives the copy a new id if its old id is taken again) and Delete for good (`character/purge`).
+  - Static files are sent with `Cache-Control: no-cache` (the stdlib handler answers `If-Modified-Since` with 304), API answers with `no-store`.
 - **`web/`**: vanilla ES modules, no build step, no framework. Edit and reload.
   - `js/calc.js`: **all rules math**. `compute(char, classesByName)` returns every derived number. Views never do rules math themselves.
   - `js/data.js`: rules tables (races, skills, sizes, bonus types, buff presets, XP tracks). `js/rulesdata.js` holds the Quick Rules cards.

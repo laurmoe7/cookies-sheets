@@ -17,6 +17,7 @@ export async function renderHome(main) {
       </div>
     </div>
     <div id="char-list" class="char-list"><p class="muted">Loading…</p></div>
+    <div id="char-bin"></div>
   </div>`;
   $('#new-char').onclick = createCharacter;
   $('#open-folder').onclick = () => api.openFolder();
@@ -34,7 +35,8 @@ export async function renderHome(main) {
       openCharacter(r.id);
     } catch (err) { toast('Import failed: ' + err.message, 'err'); }
   };
-  const list = await api.characters();
+  const [list, gone] = await Promise.all([api.characters(), api.deleted().catch(() => [])]);
+  renderBin($('#char-bin'), gone);
   const el = $('#char-list');
   if (!list.length) {
     el.innerHTML = `<div class="empty"><p>No characters yet.</p><p class="muted">Click <b>New character</b> to roll one up. The level-up wizard walks you through 1st level.</p></div>`;
@@ -69,5 +71,34 @@ export async function renderHome(main) {
     }
     const card = e.target.closest('.char-card');
     if (card) openCharacter(card.dataset.id);
+  };
+}
+
+let binOpen = false; // whether the deleted list is unfolded, kept across re-draws of the page
+
+/** Deleted characters (the .deleted folder): each can be brought back or removed for good. */
+function renderBin(bin, gone) {
+  if (!gone.length) { bin.innerHTML = ''; return; }
+  bin.innerHTML = `<details class="bin" ${binOpen ? 'open' : ''}><summary class="muted">Deleted characters (${gone.length})</summary>
+    ${gone.map(c => `<div class="char-card gone">
+      <div class="grow"><h3>${esc(c.name)}</h3>
+      <div class="muted">${esc(c.race)} · ${esc(c.summary)}</div>
+      <div class="muted small">Deleted ${new Date(c.deleted * 1000).toLocaleString()}</div></div>
+      <button class="btn small" data-restore="${esc(c.file)}">Restore</button>
+      <button class="btn small danger" data-purge="${esc(c.file)}" title="Remove the file for good">Delete for good</button></div>`).join('')}
+  </details>`;
+  $('details', bin).ontoggle = e => { binOpen = e.target.open; };
+  bin.onclick = async e => {
+    const restore = e.target.closest('[data-restore]'), purge = e.target.closest('[data-purge]');
+    try {
+      if (restore) {
+        const r = await api.restoreCharacter(restore.dataset.restore);
+        toast('Restored', 'good');
+        openCharacter(r.id);
+      } else if (purge && await confirmBox('Delete this character for good? There is no way back after this.', 'Delete for good')) {
+        await api.purgeCharacter(purge.dataset.purge);
+        go('home');
+      }
+    } catch (err) { toast(err.message, 'err'); }
   };
 }

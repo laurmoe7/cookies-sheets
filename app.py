@@ -62,6 +62,14 @@ def db():
     return _local.db
 
 
+def close_db():
+    """Closes this thread's connection. The server gives every browser connection its own thread, which closes it when the connection ends."""
+    conn = getattr(_local, 'db', None)
+    if conn is not None:
+        conn.close()
+        del _local.db
+
+
 def fts_query(q):
     words = re.findall(r'[\w\']+', q.lower())
     return ' AND '.join('"%s"*' % w.replace('"', '') for w in words)
@@ -163,6 +171,14 @@ def _char_path(cid):
     return os.path.join(CHAR_DIR, cid + '.json')
 
 
+def _summary(c):
+    """'Fighter 2 / Rogue 1' from the level-ups."""
+    levels = {}
+    for lu in c.get('levelUps', []):
+        levels[lu.get('cls')] = levels.get(lu.get('cls'), 0) + 1
+    return ' / '.join(f'{k} {v}' for k, v in levels.items()) or 'Level 0'
+
+
 def list_characters():
     os.makedirs(CHAR_DIR, exist_ok=True)
     out = []
@@ -172,12 +188,8 @@ def list_characters():
         try:
             with open(os.path.join(CHAR_DIR, fn), encoding='utf-8') as f:
                 c = json.load(f)
-            levels = {}
-            for lu in c.get('levelUps', []):
-                levels[lu.get('cls')] = levels.get(lu.get('cls'), 0) + 1
-            summary = ' / '.join(f'{k} {v}' for k, v in levels.items()) or 'Level 0'
             out.append(dict(id=c.get('id'), name=c.get('name') or 'Unnamed', race=c.get('race', ''),
-                            summary=summary, updated=c.get('updated', 0)))
+                            summary=_summary(c), updated=c.get('updated', 0)))
         except Exception:
             continue
     return sorted(out, key=lambda c: -c['updated'])
@@ -205,6 +217,57 @@ def delete_character(cid):
     """Moves the file to a .deleted folder rather than destroying it."""
     os.makedirs(TRASH_DIR, exist_ok=True)
     shutil.move(_char_path(cid), os.path.join(TRASH_DIR, f'{cid}-{int(time.time())}.json'))
+    return {'ok': True}
+
+
+TRASH_FILE = re.compile(r'^([A-Za-z0-9_-]+)-([0-9]+)[.]json$')  # <id>-<deleted at>.json, as delete_character names them
+
+
+def _trash_path(fn):
+    if not TRASH_FILE.match(fn or ''):
+        raise ValueError('bad file')
+    return os.path.join(TRASH_DIR, fn)
+
+
+def list_deleted():
+    """The characters in .deleted, newest first: [{file, id, name, race, summary, deleted}]."""
+    if not os.path.isdir(TRASH_DIR):
+        return []
+    out = []
+    for fn in os.listdir(TRASH_DIR):
+        m = TRASH_FILE.match(fn)
+        if not m:
+            continue
+        try:
+            with open(os.path.join(TRASH_DIR, fn), encoding='utf-8') as f:
+                c = json.load(f)
+        except Exception:
+            continue
+        out.append(dict(file=fn, id=m.group(1), name=c.get('name') or 'Unnamed', race=c.get('race', ''), summary=_summary(c),
+                        deleted=int(m.group(2))))
+    return sorted(out, key=lambda c: -c['deleted'])
+
+
+def restore_character(fn):
+    """Moves a character back out of .deleted. If its id is in use again (say it was re-imported meanwhile), the restored copy
+    gets a new id, so nothing is overwritten."""
+    path = _trash_path(fn)
+    with open(path, encoding='utf-8') as f:
+        c = json.load(f)
+    try:
+        taken = os.path.exists(_char_path(c.get('id')))
+    except ValueError:
+        taken = True
+    if taken:
+        c['id'] = None
+    r = save_character(c)
+    os.remove(path)
+    return r
+
+
+def purge_character(fn):
+    """Removes a deleted character for good."""
+    os.remove(_trash_path(fn))
     return {'ok': True}
 
 
@@ -384,8 +447,16 @@ class Handler(SimpleHTTPRequestHandler):
         pass
 
     def end_headers(self):
-        self.send_header('Cache-Control', 'no-store')
+        # API answers change with every edit, so never cache them. The UI files may be kept and revalidated (If-Modified-Since
+        # gets a 304 from the stdlib handler) instead of being sent again on every launch.
+        self.send_header('Cache-Control', 'no-store' if getattr(self, 'path', '').startswith('/api/') else 'no-cache')
         super().end_headers()
+
+    def finish(self):
+        try:
+            super().finish()
+        finally:
+            close_db()
 
     def _json(self, obj, status=200):
         body = json.dumps(obj).encode('utf-8')
@@ -439,6 +510,12 @@ class Handler(SimpleHTTPRequestHandler):
                 self._json(save_character(self._body()))
             elif route == ('POST', 'character/delete'):
                 self._json(delete_character(p.get('id')))
+            elif route == ('GET', 'deleted'):
+                self._json(list_deleted())
+            elif route == ('POST', 'character/restore'):
+                self._json(restore_character(p.get('file', '')))
+            elif route == ('POST', 'character/purge'):
+                self._json(purge_character(p.get('file', '')))
             elif route == ('POST', 'open-folder'):
                 self._json(open_folder())
             elif route == ('GET', 'cs-fetch'):
