@@ -931,7 +931,7 @@ export const ATTITUDES = [['ally', 'Ally'], ['friendly', 'Friendly'], ['neutral'
 export const LORE_KINDS = ['Place', 'Faction', 'Item', 'Lore'];
 
 /** Story notes: free text, quests, NPCs, places and factions, and a session log (newest first), one inner tab each. */
-const NOTE_TABS = [['story', 'Story'], ['quests', 'Quests & goals'], ['npcs', 'People'], ['lore', 'Places & lore'], ['sessions', 'Session log']];
+const NOTE_TABS = [['story', 'Story'], ['general', 'General notes'], ['quests', 'Quests & goals'], ['npcs', 'People'], ['lore', 'Places & lore'], ['sessions', 'Session log']];
 let notesTab = 'story';
 
 function notes(body, c) {
@@ -954,8 +954,10 @@ function notes(body, c) {
       <textarea class="full" rows="8" data-bind="sessions.${i}.notes" placeholder="What happened, decisions, loot, what to do next…">${esc(x.notes || '')}</textarea></div>`;
   const grid = (key, fn, empty, one) => `<div class="note-grid ${one ? 'one' : ''}">${(c[key] || []).length ? entries(key).map(fn).reverse().join('') : `<p class="muted small">${empty}</p>`}</div>`;
   const panels = {
-    story: () => `<h3>Story &amp; general notes</h3>
-      <textarea data-bind="notes" class="full story-text" placeholder="Backstory, the plot so far, theories, contacts, loot to sell…">${esc(c.notes)}</textarea>`,
+    story: () => `<h3>Story</h3>
+      <textarea data-bind="story" class="full story-text" placeholder="The plot so far, what the party is after, theories, loose threads…">${esc(c.story || '')}</textarea>`,
+    general: () => `<h3>General notes</h3>
+      <textarea data-bind="notes" class="full story-text" placeholder="Anything else: house rules, loot to sell, contacts, reminders…">${esc(c.notes || '')}</textarea>`,
     quests: () => {
       const open = entries('quests').filter(q => !q.x.done), done = entries('quests').filter(q => q.x.done);
       return `<h3>Quests &amp; goals <button class="btn small ghost" data-add="quests">＋ Add</button></h3>
@@ -971,9 +973,9 @@ function notes(body, c) {
   };
   const draw = () => {
     if (!panels[notesTab]) notesTab = 'story';
-    const count = k => (c[k] || []).length;
+    const count = k => (Array.isArray(c[k]) ? c[k].length : 0);
     body.innerHTML = `<div class="notes-tab">
-      <div class="subtabs" role="tablist">${NOTE_TABS.map(([k, l]) => `<button class="subtab ${k === notesTab ? 'active' : ''}" role="tab" data-note-tab="${k}">${l}${k !== 'story' && count(k) ? ` <span class="count">${count(k)}</span>` : ''}</button>`).join('')}</div>
+      <div class="subtabs" role="tablist">${NOTE_TABS.map(([k, l]) => `<button class="subtab ${k === notesTab ? 'active' : ''}" role="tab" data-note-tab="${k}">${l}${count(k) ? ` <span class="count">${count(k)}</span>` : ''}</button>`).join('')}</div>
       <section class="card">${panels[notesTab]()}</section></div>`;
   };
   draw();
@@ -1021,6 +1023,10 @@ function bio(body, c, d) {
       ${d.xp.levelByXp > d.level ? `<b class="good">You have enough XP to reach level ${d.xp.levelByXp}!</b> <button class="btn small primary" data-goto-lu>Level up</button>` : ''}</p>
     <h3>Appearance</h3>
     <div class="kv">${['gender', 'age', 'height', 'weight', 'hair', 'eyes'].map(k => `<label>${k[0].toUpperCase() + k.slice(1)} ${inp(k, { cls: 'w6' })}</label>`).join('')}</div>
+  </section>
+  <section class="card span2">
+    <h3>Biography</h3>
+    <textarea data-bind="bio" class="full bio-text" placeholder="Who is your character? Where they come from, what they want, what they fear, how they got here…">${esc(c.bio || '')}</textarea>
   </section>
   <section class="card span2">
     <h3>Level history</h3>

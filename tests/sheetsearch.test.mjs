@@ -30,6 +30,8 @@ test('the Notes tab entries are searchable and old saves get empty lists', async
   old.sessions.push({ date: '2026-10-11', name: 'The Fenwick ambush', notes: 'goblins' });
   old.lore.push({ name: 'The Gilded Lantern', kind: 'Faction', notes: '' });
   old.notes = 'Backstory';
+  old.story = 'The vault heist';
+  old.bio = 'Raised by wolves';
   const idx = buildIndex(old);
   const hit = q => searchIndex(idx, q)[0];
   assert.deepEqual([hit('veyra').kind, hit('veyra').tab], ['NPC', 'notes']);
@@ -38,4 +40,6 @@ test('the Notes tab entries are searchable and old saves get empty lists', async
   assert.equal(hit('ambush').kind, 'Session');
   assert.equal(hit('lantern').kind, 'Faction');
   assert.equal(hit('backstory').tab, 'notes');
+  assert.deepEqual([hit('vault heist').name, hit('vault heist').tab], ['Story', 'notes']);
+  assert.deepEqual([hit('wolves').name, hit('wolves').tab], ['Biography', 'bio']);
 });

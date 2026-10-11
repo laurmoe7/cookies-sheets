@@ -35,7 +35,9 @@ export function newCharacter() {
     spellbooks: {},
     resources: {}, // current points in class pools by id (arcane reservoir...); absent = full for the day
     trackers: [], // the player's own counters {name, max, cur}
-    notes: '',
+    bio: '', // the character's biography (Biography tab)
+    story: '', // the plot so far (Notes tab, Story)
+    notes: '', // general notes (Notes tab)
     sessions: [], // {date, name, notes}: the session log on the Notes tab
     npcs: [], // {name, role, attitude, where, notes}
     quests: [], // {name, done, notes}

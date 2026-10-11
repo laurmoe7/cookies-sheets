@@ -377,6 +377,7 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 /* Notes tab */
 .notes-tab h3 .btn { margin-left: 8px; vertical-align: middle; }
 .notes-tab textarea { width: 100%; resize: vertical; }
+.bio-text { width: 100%; min-height: 240px; resize: vertical; line-height: 1.5; }
 .notes-tab .story-text { min-height: 62vh; font-size: 1.02em; line-height: 1.5; }
 .subtabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .subtab { font: inherit; cursor: pointer; padding: 6px 16px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--muted); }
