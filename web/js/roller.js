@@ -38,7 +38,7 @@ export function rollBar() {
     <button class="rchip ${mode === 'dis' ? 'on' : ''}" data-rmode="dis" title="Roll the next d20 twice and keep the lower">Disadvantage</button>
     <button class="rchip ${mods.length ? 'on' : ''}" id="roll-mods" title="Add a situational modifier to your d20 rolls: not proficient, a range increment, flanking, or your own number">${esc(modsChip())}</button>
     <input id="dice-box" class="w8" placeholder="2d6+3" title="Dice box: Tad notation such as 2d6+3, adv d20+5 or 3xd20. Press Roll or Enter." autocomplete="off" aria-label="Dice box">
-    <button class="rchip go" id="dice-go" title="Roll the dice box (or press Enter)">Roll</button>
+    <button class="rchip go" id="dice-go" title="Roll the dice box (or press Enter)">🎲 Roll</button>
     <button class="rchip ${o.webhook && o.rollSend ? 'on' : ''}" id="roll-discord" title="Post rolls to your Discord channel">${esc(discordLabel())}</button>
   </span>`;
 }
