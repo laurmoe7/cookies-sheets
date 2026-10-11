@@ -286,13 +286,19 @@ export function snapshotPage(body) {
   return clone;
 }
 
+/** How many hinged strips the page turn uses for a page with this many elements: 14 for a plain page, down to 7 for a busy one. */
+export const pageTurnStrips = size => (size > 420 ? 7 : size > 260 ? 9 : size > 150 ? 11 : 14);
+
 /**
  * Tome theme: the old page (a snapshot) swings over from the spine like a sheet of loose paper, uncovering the new page underneath.
  * Going back a tab plays it in reverse: the new page swings back over the old one. The animation itself is CSS (see theme-tome.css).
  */
 export function playPageTurn(body, snapshot, back = false) {
   if (!snapshot || !body?.parentElement) return;
-  const STRIPS = current.pageTurn === 'light' ? 1 : 14; // 'light' is one flat sheet: much less to draw on a slow machine
+  // 'light' is one flat sheet: much less to draw on a slow machine. The full turn is 14 hinged strips, each holding its own copy of the page, so a busy
+  // page (the Skills tab, the Overview) gets fewer strips: the work grows with strips x page size. A bend of 7 to 9 strips still reads as a curl.
+  const size = (back ? body : snapshot)?.querySelectorAll('*').length || 0;
+  const STRIPS = current.pageTurn === 'light' ? 1 : pageTurnStrips(size);
   const W = body.offsetWidth;
   const sw = W / STRIPS;
   const main = document.getElementById('main');

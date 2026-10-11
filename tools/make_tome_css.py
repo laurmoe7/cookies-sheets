@@ -1,17 +1,27 @@
 """Writes web/css/theme-tome.css (the Dusty tome theme).
 
-The paper and leather textures are SVG filters inlined as data URIs; building them here keeps the escaping out of the CSS by hand.
+The paper and leather textures are SVG filters (feTurbulence). Drawn live they are re-rendered every time the browser repaints a tile
+(a hover is enough), which made this theme several times dearer than Dark; so they are baked once into web/css/tome/*.png|jpg by
+tools/bake_tome_textures.mjs and the CSS only points at those files. This script owns the SVG sources (`--dump` lists them for the baker).
 Everything is drawn with normal blending (no blend modes, no fixed backgrounds) so scrolling stays cheap.
-Run:  python tools/make_tome_css.py
+Run:  python tools/make_tome_css.py   (then node tools/bake_tome_textures.mjs when a texture changed)
 """
+import json
 import os
-from urllib.parse import quote
+import re
+import sys
 
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'web', 'css', 'theme-tome.css')
 
 
-def uri(svg):
-    return 'url("data:image/svg+xml;utf8,' + quote(svg, safe=" /:=,.'()-") + '")'
+TEXTURES = {}  # name -> source of the baked image
+
+
+def uri(svg, name, ext='png', scale=1):
+    """Registers an SVG texture and returns the CSS url() of its baked image (drawn at `scale` times its size; the CSS gives the size)."""
+    m = re.search(r"width='(\d+)' height='(\d+)'", svg)
+    TEXTURES[name] = dict(svg=svg, w=int(m.group(1)), h=int(m.group(2)), ext=ext, scale=scale)
+    return f'url("tome/{name}.{ext}")'
 
 
 def paper(seed, azimuth, freq, scale, size=520):
@@ -21,13 +31,13 @@ def paper(seed, azimuth, freq, scale, size=520):
         f"<feTurbulence type='fractalNoise' baseFrequency='{freq}' numOctaves='3' seed='{seed}' stitchTiles='stitch' result='n'/>"
         f"<feDiffuseLighting in='n' surfaceScale='{scale}' diffuseConstant='1' lighting-color='#fff'><feDistantLight azimuth='{azimuth}' elevation='58'/></feDiffuseLighting>"
         "<feColorMatrix values='1.2 0 0 0 -.3786  0 1.2 0 0 -.4416  0 0 1.2 0 -.5666  0 0 0 0 1'/></filter>"
-        "<rect width='100%' height='100%' filter='url(#c)'/></svg>")
+        "<rect width='100%' height='100%' filter='url(#c)'/></svg>", f'paper{seed}', 'jpg')
 
 
 GRAIN = uri(
     "<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='g'>"
     "<feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/>"
-    "<feColorMatrix values='0 0 0 0 .12  0 0 0 0 .07  0 0 0 0 .02  .5 0 0 0 -.12'/></filter><rect width='100%' height='100%' filter='url(#g)'/></svg>")
+    "<feColorMatrix values='0 0 0 0 .12  0 0 0 0 .07  0 0 0 0 .02  .5 0 0 0 -.12'/></filter><rect width='100%' height='100%' filter='url(#g)'/></svg>", 'grain', 'webp', 2)
 
 LEATHER = uri(
     "<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'>"
@@ -43,7 +53,7 @@ LEATHER = uri(
     "<feColorMatrix values='0 0 0 0 .55  0 0 0 0 .38  0 0 0 0 .22  1.1 0 0 0 -.45'/></filter>"
     "<rect width='100%' height='100%' filter='url(#m)'/><rect width='100%' height='100%' filter='url(#w)' opacity='.24'/>"
     "<rect width='100%' height='100%' filter='url(#k)' opacity='.16'/><rect width='100%' height='100%' filter='url(#p)' opacity='.16'/>"
-    "<rect width='100%' height='100%' filter='url(#f)' opacity='.3'/></svg>")
+    "<rect width='100%' height='100%' filter='url(#f)' opacity='.3'/></svg>", 'leather', 'webp')
 
 def burn(corner, seed, size=170):
     """A scorched corner: charred, ragged, with a brown scorch rim. Drawn once at a fixed size and tucked into a corner of a page."""
@@ -60,7 +70,7 @@ def burn(corner, seed, size=170):
         "<feFlood flood-color='#6a3a14' flood-opacity='.42' result='f1'/><feComposite in='f1' in2='rim' operator='in' result='r1'/>"
         "<feFlood flood-color='#2a1608' flood-opacity='.6' result='f2'/><feComposite in='f2' in2='char' operator='in' result='c1'/>"
         "<feMerge result='all'><feMergeNode in='r1'/><feMergeNode in='c1'/></feMerge><feGaussianBlur in='all' stdDeviation='1.1'/></filter></defs>"
-        "<rect width='100%' height='100%' fill='url(#g)' filter='url(#b)'/></svg>")
+        "<rect width='100%' height='100%' fill='url(#g)' filter='url(#b)'/></svg>", f'burn-{corner}{seed}')
 
 
 def brass(size=48):
@@ -73,7 +83,7 @@ def brass(size=48):
         "<feColorMatrix values='0 0 0 0 .13  0 0 0 0 .08  0 0 0 0 .02  1.1 0 0 0 -.4'/></filter></defs>"
         f"<rect width='{size}' height='{size}' fill='url(#b)'/><rect width='{size}' height='{size}' filter='url(#n)' opacity='.8'/>"
         f"<rect x='.5' y='.5' width='{size - 1}' height='{size - 1}' fill='none' stroke='#3b2808' stroke-opacity='.7'/>"
-        f"<rect x='2.5' y='2.5' width='{size - 5}' height='{size - 5}' fill='none' stroke='#f3dc98' stroke-opacity='.35'/></svg>")
+        f"<rect x='2.5' y='2.5' width='{size - 5}' height='{size - 5}' fill='none' stroke='#f3dc98' stroke-opacity='.35'/></svg>", 'brass')
 
 
 # Pages of one book: the same paper colour, but each sheet has its own crumples, light direction and burnt side.
@@ -110,14 +120,14 @@ def paper_rules():
                 corner, seed, size = m
                 pos = {'tl': 'top left', 'tr': 'top right', 'bl': 'bottom left', 'br': 'bottom right'}[corner]
                 layers.append(f"{burn(corner, seed, size)} no-repeat {pos} / {size}px {size}px")
-        base = f"radial-gradient(ellipse at {p['at']}, {EDGE}), var(--grain), {paper(p['seed'], p['az'], p['freq'], p['scale'])}"
+        base = f"radial-gradient(ellipse at {p['at']}, {EDGE}), var(--grain) 0 0 / 220px 220px, {paper(p['seed'], p['az'], p['freq'], p['scale'])}"
         out.append(f"{sel} {{ background: {', '.join(layers + [base])}; {extras}box-shadow: {p['burn']}, var(--shadow); }}")
     return '\n'.join(out)
 
 
 def sheet(i=0):
     p = PAPERS[i]
-    return f"radial-gradient(ellipse at {p['at']}, {EDGE}), var(--grain), {paper(p['seed'], p['az'], p['freq'], p['scale'])}"
+    return f"radial-gradient(ellipse at {p['at']}, {EDGE}), var(--grain) 0 0 / 220px 220px, {paper(p['seed'], p['az'], p['freq'], p['scale'])}"
 
 
 CSS = '''/* Dusty tome: dim parchment pages on dark leather. Generated by tools/make_tome_css.py; edit the script, not this file. */
@@ -165,10 +175,13 @@ html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="
 html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer {
   --ink: #261a0b; --muted: #3f2f18; --accent: #7a2415; --accent-soft: #c9b48a; --gold: #6b4f10; --good: #3b5714; --warn: #80520a; --bad: #8a2616;
   --line: #5a4a2c; --panel: #9a8b68; --panel-2: #8d7f5d; --input: #3a2c19; color: var(--ink); }
-html[data-theme="tome"] .card { outline: 1px solid #2c1f10; outline-offset: -5px; padding: 17px 19px; }
+/* the inner frame line is a pseudo-element: as an outline it made every hover or scroll step repaint the whole card (3x the raster work) */
+html[data-theme="tome"] .card { position: relative; padding: 17px 19px; }
+html[data-theme="tome"] .card::before { content: ""; position: absolute; inset: 4px; border: 1px solid #2c1f10; pointer-events: none; }
+html[data-theme="tome"] .card .card::before { display: none; }
 @PAPERS@
 html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-image: @SHEET@; }
-html[data-theme="tome"] .card .card { clip-path: none; outline: none; background-image: none; box-shadow: none; background-color: #0000001f; }
+html[data-theme="tome"] .card .card { clip-path: none; background-image: none; box-shadow: none; background-color: #0000001f; }
 html[data-theme="tome"] .stat, html[data-theme="tome"] .summon-card, html[data-theme="tome"] .mod { background-color: #00000026; border-color: #5a4a30; }
 html[data-theme="tome"] input, html[data-theme="tome"] select, html[data-theme="tome"] textarea { background: var(--input); border-color: #5a4a30; color: #f0e3c0; font-family: inherit; }
 html[data-theme="tome"] .btn { background: #9a8b66; border-color: #5a4a2c; color: #261a0b; font-style: italic; }
@@ -241,9 +254,12 @@ html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
   background-image: radial-gradient(ellipse at 50% 35%, rgba(70,48,28,.35), rgba(0,0,0,.45) 100%), var(--leather);
   background-size: var(--mw, 100%) var(--mh, 100%), auto;
   background-position: calc(0px - var(--bx, 0px) - var(--sx, 0px)) calc(0px - var(--by, 0px)), calc(0px - var(--bx, 0px) - var(--sx, 0px)) calc(0px - var(--by, 0px)); }
-.pt-back { transform: rotateY(180deg); background-color: #4f4129; background-image: var(--grain); background-position: calc(0px - var(--sx, 0px)) 0; }
+.pt-back { transform: rotateY(180deg); background-color: #4f4129; background-image: var(--grain); background-size: 220px 220px; background-position: calc(0px - var(--sx, 0px)) 0; }
 .pt-front::after, .pt-back::after { content: ""; position: absolute; inset: 0; background: #000; pointer-events: none; opacity: calc(var(--c) * (.03 + var(--i, 0) * .34)); }
-.pt-clone { position: absolute; top: 0; }
+/* --c (how far the sheet is bent) is animated on the sheet and inherits; without --c: 0 here the page copies inside the strips restyled every element of every copy on every frame */
+.pt-clone { position: absolute; top: 0; --c: 0; }
+/* The turning page is 7 to 14 copies of the old page. Each card in each copy used to paint the grain and crumple textures (about 45% of the first frame); in the copies a plain vignette is enough. */
+.pt-clone .card { background-image: radial-gradient(ellipse at 50% 38%, rgba(255,238,196,.16) 0%, rgba(0,0,0,0) 40%, rgba(24,12,3,.5) 100%) !important; }
 .page-turn.go .pt-sheet { animation: leaf-flip .64s cubic-bezier(.45, .05, .4, 1) forwards, leaf-bend .64s ease-in-out forwards; }
 .page-turn.go .pt-shadow { animation: leaf-shadow .64s ease-in-out forwards; }
 .page-turn.go .pt-face { animation: leaf-fade .64s linear forwards; }
@@ -278,4 +294,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if '--dump' in sys.argv:
+        main()
+        json.dump(TEXTURES, sys.stdout)
+    else:
+        main()
