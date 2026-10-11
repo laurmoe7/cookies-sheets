@@ -178,3 +178,103 @@ class HttpApi(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class DiscordRelay(unittest.TestCase):
+    """The roll relay only talks to discord.com webhooks; these cases fail before any network call."""
+
+    def test_rejects_other_hosts_and_empty_rolls(self):
+        for url in ('https://evil.example/api/webhooks/1/abc', 'http://discord.com/api/webhooks/1/abc',
+                    'https://discord.com.evil.example/api/webhooks/1/abc', ''):
+            with self.assertRaises(ValueError):
+                app.post_discord({'url': url, 'content': 'hi'})
+        with self.assertRaises(ValueError):
+            app.post_discord({'url': 'https://discord.com/api/webhooks/1/abc', 'content': '  '})
+
+    def test_accepts_real_webhook_shapes(self):
+        for url in ('https://discord.com/api/webhooks/123456/abc-DEF_1', 'https://discordapp.com/api/v10/webhooks/1/x'):
+            self.assertTrue(app.WEBHOOK.match(url), url)
+
+
+class CustomSounds(unittest.TestCase):
+    """Players can add their own audio files to the sound effects (any number per effect, stored on disk)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.dir = tempfile.mkdtemp(prefix='pf-test-sounds-')
+        cls.old = app.SOUND_DIR
+        app.SOUND_DIR = cls.dir
+
+    @classmethod
+    def tearDownClass(cls):
+        app.SOUND_DIR = cls.old
+        shutil.rmtree(cls.dir, ignore_errors=True)
+
+    def setUp(self):
+        for f in os.listdir(self.dir):
+            os.remove(os.path.join(self.dir, f))
+
+    def test_add_several_read_remove_one_and_restore(self):
+        self.assertEqual(app.list_sounds(), {'levelUp': [], 'heal': [], 'fullHeal': [], 'hit': []})
+        app.save_sound('hit', b'ID3one', 'audio/mpeg', 'ouch one.mp3')
+        out = app.save_sound('hit', b'OggStwo', 'audio/ogg', 'bang!.ogg')
+        self.assertEqual([s['label'] for s in out['hit']], ['ouch one', 'bang'], 'labels are the file names, made safe')
+        self.assertEqual(out['heal'], [], 'other effects are untouched')
+        first, second = [s['id'] for s in out['hit']]
+        self.assertEqual(app.read_sound('hit', first), (b'ID3one', 'audio/mpeg'))
+        self.assertEqual(app.read_sound('hit', second), (b'OggStwo', 'audio/ogg'))
+        self.assertEqual([s['id'] for s in app.delete_sound('hit', first)['hit']], [second], 'removes only that one')
+        app.save_sound('hit', b'RIFFwav', 'audio/wav', 'c.wav')
+        self.assertEqual(app.delete_sound('hit'), {'levelUp': [], 'heal': [], 'fullHeal': [], 'hit': []}, 'no id = back to the built-ins')
+        self.assertEqual(os.listdir(self.dir), [])
+        with self.assertRaises(FileNotFoundError):
+            app.read_sound('hit', first)
+
+    def test_rejects_bad_names_types_sizes_and_ids(self):
+        for name in ('../evil', 'heal.mp3', 'nope', ''):
+            with self.assertRaises(ValueError):
+                app.save_sound(name, b'x', 'audio/mpeg', 'a.mp3')
+        with self.assertRaises(ValueError):
+            app.save_sound('heal', b'x', 'text/html', 'a.html')
+        with self.assertRaises(ValueError):
+            app.save_sound('heal', b'', 'audio/mpeg', 'a.mp3')
+        with self.assertRaises(ValueError):
+            app.save_sound('heal', b'x' * (app.MAX_SOUND + 1), 'audio/mpeg', 'a.mp3')
+        self.assertEqual(os.listdir(self.dir), [])
+        app.save_sound('heal', b'abc', 'audio/mpeg', 'a.mp3')
+        for bad in ('../x', '..', 'zzzzzzzz', ''):
+            with self.assertRaises(FileNotFoundError):
+                app.read_sound('heal', bad)
+
+    def test_an_effect_holds_a_limited_number(self):
+        for n in range(app.MAX_PER_SOUND):
+            app.save_sound('heal', b'abc', 'audio/mpeg', f'{n}.mp3')
+        with self.assertRaises(ValueError):
+            app.save_sound('heal', b'abc', 'audio/mpeg', 'one too many.mp3')
+        self.assertEqual(len(app.list_sounds()['heal']), app.MAX_PER_SOUND)
+        app.save_sound('hit', b'abc', 'audio/mpeg', 'other effect still ok.mp3')
+
+    def test_label_cleaning(self):
+        out = app.save_sound('levelUp', b'abc', 'audio/mpeg', '../../C:/evil\\name <script>.mp3')
+        label = out['levelUp'][0]['label']
+        self.assertTrue(label and all(ch.isalnum() or ch in ' .-' for ch in label), label)
+        self.assertEqual(app.save_sound('fullHeal', b'abc', 'audio/mpeg', '')['fullHeal'][0]['label'], 'My sound')
+
+
+class EntriesBatch(unittest.TestCase):
+    """The Spells tab asks for every spell on the page at once."""
+
+    @NEEDS_DB
+    def test_batch_returns_the_entries_asked_for_and_skips_missing_ones(self):
+        hits = app.search('fireball', 'Spell', 2)
+        ids = [h['id'] for h in hits][:2]
+        self.assertTrue(ids)
+        srv = app.start_server(0)
+        try:
+            base = f'http://127.0.0.1:{srv.server_address[1]}'
+            with urllib.request.urlopen(f'{base}/api/entries?ids={",".join(map(str, ids))},99999999,abc', timeout=10) as r:
+                got = json.loads(r.read())
+            self.assertEqual([e['id'] for e in got], ids)
+            self.assertTrue(all('html' in e and 'meta' in e for e in got))
+        finally:
+            srv.shutdown()

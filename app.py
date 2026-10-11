@@ -244,6 +244,107 @@ def fetch_charactersheet(ref):
     return data
 
 
+# Custom sound effects: any number of audio files per effect (up to MAX_PER_SOUND), kept next to the app's other local data (not in the app folder,
+# so updates keep them). A file is named <effect>__<id>__<label><ext>; the id is 8 hex digits and the label is the original file name.
+SOUND_DIR = os.environ.get('PF_SOUND_DIR') or os.path.join(os.environ.get('LOCALAPPDATA') or os.path.expanduser('~'), APP_NAME, 'sounds')
+SOUND_NAMES = ('levelUp', 'heal', 'fullHeal', 'hit')
+SOUND_TYPES = {'audio/mpeg': '.mp3', 'audio/mp3': '.mp3', 'audio/ogg': '.ogg', 'audio/wav': '.wav', 'audio/x-wav': '.wav', 'audio/wave': '.wav',
+               'audio/mp4': '.m4a', 'audio/x-m4a': '.m4a', 'audio/aac': '.aac', 'audio/webm': '.webm', 'audio/flac': '.flac'}
+MAX_SOUND = 6 * 1024 * 1024
+MAX_PER_SOUND = 8
+SOUND_ID = re.compile(r'^[0-9a-f]{8}$')
+
+
+def _check_sound(name):
+    if name not in SOUND_NAMES:
+        raise ValueError('Unknown sound.')
+
+
+def _sound_entries(name):
+    """[(id, label, path)] for one effect, oldest first."""
+    _check_sound(name)
+    if not os.path.isdir(SOUND_DIR):
+        return []
+    out = []
+    for f in sorted(os.listdir(SOUND_DIR), key=lambda f: (os.stat(os.path.join(SOUND_DIR, f)).st_mtime_ns, f)):  # oldest first
+        stem, ext = os.path.splitext(f)
+        parts = stem.split('__', 2)
+        if ext in SOUND_TYPES.values() and len(parts) == 3 and parts[0] == name and SOUND_ID.match(parts[1]):
+            out.append((parts[1], parts[2], os.path.join(SOUND_DIR, f)))
+    return out
+
+
+def list_sounds():
+    """The custom files per effect: {name: [{id, label}]}."""
+    return {n: [{'id': i, 'label': label} for i, label, _ in _sound_entries(n)] for n in SOUND_NAMES}
+
+
+def save_sound(name, data, ctype, label=''):
+    ext = SOUND_TYPES.get((ctype or '').split(';')[0].strip().lower())
+    if not ext:
+        raise ValueError('That is not an audio file the app can play (use mp3, ogg, wav, m4a, aac, webm or flac).')
+    if not data:
+        raise ValueError('The file is empty.')
+    if len(data) > MAX_SOUND:
+        raise ValueError('That file is too big (the limit is 6 MB). Use a short sound effect.')
+    if len(_sound_entries(name)) >= MAX_PER_SOUND:
+        raise ValueError(f'That effect already has {MAX_PER_SOUND} sounds. Remove one first.')
+    label = re.sub(r'[^A-Za-z0-9 .\-]', '', os.path.splitext(label or '')[0]).strip()[:40] or 'My sound'
+    os.makedirs(SOUND_DIR, exist_ok=True)
+    path = os.path.join(SOUND_DIR, f'{name}__{uuid.uuid4().hex[:8]}__{label}{ext}')
+    with open(path, 'wb') as f:
+        f.write(data)
+    # Files are listed oldest first by modified time, which can tie on Windows when two are saved close together: make each newer than the last.
+    newest = max((os.stat(p).st_mtime_ns for _, _, p in _sound_entries(name) if p != path), default=0)
+    stamp = max(time.time_ns(), newest + 1_000_000)
+    os.utime(path, ns=(stamp, stamp))
+    return list_sounds()
+
+
+def delete_sound(name, sid=''):
+    """Removes one custom file, or all of an effect's when no id is given (back to the built-in sounds)."""
+    for i, _, path in _sound_entries(name):
+        if not sid or i == sid:
+            os.remove(path)
+    return list_sounds()
+
+
+def read_sound(name, sid):
+    for i, _, path in _sound_entries(name):
+        if i == sid:
+            ext = os.path.splitext(path)[1]
+            with open(path, 'rb') as f:
+                return f.read(), next(t for t, e in SOUND_TYPES.items() if e == ext)
+    raise FileNotFoundError(name)
+
+
+WEBHOOK = re.compile(r'^https://(?:(?:canary|ptb)\.)?discord(?:app)?\.com/api/(?:v\d+/)?webhooks/\d+/[\w-]+/?$')
+
+
+def post_discord(body):
+    """Send a dice roll to a Discord channel through its webhook. Only discord.com webhook URLs are accepted."""
+    import urllib.request
+    body = body or {}
+    url = str(body.get('url') or '').strip()
+    content = str(body.get('content') or '').strip()
+    if not WEBHOOK.match(url):
+        raise ValueError('That is not a Discord webhook URL (Channel settings > Integrations > Webhooks).')
+    if not content:
+        raise ValueError('Nothing to send.')
+    payload = {'content': content[:1900], 'allowed_mentions': {'parse': []}}
+    name = str(body.get('username') or '').strip()
+    if name:
+        payload['username'] = name[:80]
+    req = urllib.request.Request(url + ('&' if '?' in url else '?') + 'wait=false', data=json.dumps(payload).encode('utf-8'),
+                                 headers={'Content-Type': 'application/json', 'User-Agent': 'DiscordBot (CookiesSheets, 1.0)'})
+    try:
+        with urllib.request.urlopen(req, timeout=15):
+            pass
+    except Exception as e:
+        raise ValueError(f'Discord did not accept the roll ({e}).')
+    return {'ok': True}
+
+
 def resolve_names(body):
     """Match free-text names to compendium entries.
 
@@ -310,6 +411,9 @@ class Handler(SimpleHTTPRequestHandler):
                     self._json(json.load(f))
             elif route == ('GET', 'search'):
                 self._json(search(p.get('q', ''), p.get('cat', ''), int(p.get('limit', 60)), int(p.get('offset', 0))))
+            elif route == ('GET', 'entries'):
+                ids = [int(x) for x in (p.get('ids') or '').split(',') if x.strip().isdigit()][:300]
+                self._json([e for e in (get_entry(i) for i in ids) if e])
             elif route == ('GET', 'entry'):
                 self._json(get_entry(p.get('id'), p.get('name'), p.get('cat')))
             elif route == ('GET', 'spells'):
@@ -339,6 +443,24 @@ class Handler(SimpleHTTPRequestHandler):
                 self._json(open_folder())
             elif route == ('GET', 'cs-fetch'):
                 self._json(fetch_charactersheet(p.get('id', '')))
+            elif route == ('GET', 'sounds'):
+                self._json(list_sounds())
+            elif route == ('POST', 'sound'):
+                n = int(self.headers.get('Content-Length') or 0)
+                if n > MAX_SOUND:
+                    raise ValueError('That file is too big (the limit is 6 MB). Use a short sound effect.')
+                self._json(save_sound(p.get('name', ''), self.rfile.read(n), self.headers.get('Content-Type'), p.get('label', '')))
+            elif route == ('POST', 'sound/delete'):
+                self._json(delete_sound(p.get('name', ''), p.get('id', '')))
+            elif route == ('GET', 'sound-file'):
+                data, ctype = read_sound(p.get('name', ''), p.get('id', ''))
+                self.send_response(200)
+                self.send_header('Content-Type', ctype)
+                self.send_header('Content-Length', str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+            elif route == ('POST', 'discord'):
+                self._json(post_discord(self._body()))
             elif route == ('POST', 'resolve'):
                 self._json(resolve_names(self._body()))
             else:
