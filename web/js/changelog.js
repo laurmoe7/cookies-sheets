@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Discord rolls', date: '2026-10-10',
     items: [
+      'The dice box has a Roll button next to it.',
       'New Notes tab for the story, with its own tabs for quests, NPCs, places and lore, and a session log. Bio is now the Biography tab.',
       'The Overview Notes box now fills the empty space under Offense.',
       'Rolls sent to Discord now say what they are for, next to the character name.',

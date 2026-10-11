@@ -173,6 +173,7 @@ input.sub { margin-left: 6px; font-size: 12px; padding: 2px 5px; }
 .nb:active { transform: scale(.96); }
 .rchip { font: inherit; font-size: 12px; cursor: pointer; padding: 1px 9px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--muted); }
 .rchip:hover { border-color: var(--accent); color: var(--accent); }
+.rchip.go { border-color: var(--accent); color: var(--accent); font-weight: 600; }
 .rchip.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
 .buff-strip { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 12px; }
 .saves td, .saves th { text-align: center; }

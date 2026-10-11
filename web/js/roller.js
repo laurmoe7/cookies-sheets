@@ -37,7 +37,8 @@ export function rollBar() {
     <button class="rchip ${mode === 'adv' ? 'on' : ''}" data-rmode="adv" title="Roll the next d20 twice and keep the higher">Advantage</button>
     <button class="rchip ${mode === 'dis' ? 'on' : ''}" data-rmode="dis" title="Roll the next d20 twice and keep the lower">Disadvantage</button>
     <button class="rchip ${mods.length ? 'on' : ''}" id="roll-mods" title="Add a situational modifier to your d20 rolls: not proficient, a range increment, flanking, or your own number">${esc(modsChip())}</button>
-    <input id="dice-box" class="w8" placeholder="2d6+3" title="Dice box: Tad notation such as 2d6+3, adv d20+5 or 3xd20. Press Enter to roll." autocomplete="off" aria-label="Dice box">
+    <input id="dice-box" class="w8" placeholder="2d6+3" title="Dice box: Tad notation such as 2d6+3, adv d20+5 or 3xd20. Press Roll or Enter." autocomplete="off" aria-label="Dice box">
+    <button class="rchip go" id="dice-go" title="Roll the dice box (or press Enter)">Roll</button>
     <button class="rchip ${o.webhook && o.rollSend ? 'on' : ''}" id="roll-discord" title="Post rolls to your Discord channel">${esc(discordLabel())}</button>
   </span>`;
 }
@@ -156,6 +157,7 @@ export function initRoller() {
     const m = e.target.closest('[data-rmode]');
     if (m) { mode = mode === m.dataset.rmode ? '' : m.dataset.rmode; return syncBar(); }
     if (e.target.closest('#roll-mods')) return modsWindow();
+    if (e.target.closest('#dice-go')) return rollDiceBox();
     if (e.target.closest('#roll-discord')) {
       if (!options().webhook) return showOptions();
       setOption('rollSend', !options().rollSend);
@@ -173,9 +175,15 @@ export function initRoller() {
   document.addEventListener('keydown', e => {
     if (e.key !== 'Enter' || e.target.id !== 'dice-box') return;
     e.preventDefault();
-    const v = e.target.value.trim();
-    if (v) doRoll({ expr: v, label: '' });
+    rollDiceBox();
   });
+}
+
+function rollDiceBox() {
+  const box = document.getElementById('dice-box');
+  const v = box?.value.trim();
+  if (!v) { box?.focus(); return toast('Type dice first, such as 2d6+3', 'err'); }
+  doRoll({ expr: v, label: '' });
 }
 
 /**
