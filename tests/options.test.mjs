@@ -21,3 +21,24 @@ test('valid choices are kept', () => {
   const o = sanitize({ theme: 'tome', accent: 'blue', textSize: '112' });
   assert.deepEqual([o.theme, o.accent, o.textSize], ['tome', 'blue', 112]);
 });
+
+test('one volume slider replaces the Sound effects checkbox', () => {
+  assert.equal(sanitize(null).volume, 100);
+  assert.equal('sfx' in sanitize(null), false);
+  assert.equal(sanitize({ volume: 40 }).volume, 40);
+  assert.equal(sanitize({ volume: '65' }).volume, 65);
+  assert.equal(sanitize({ volume: 250 }).volume, 100, 'clamped');
+  assert.equal(sanitize({ volume: -5 }).volume, 0, 'clamped');
+  assert.equal(sanitize({ volume: 'loud' }).volume, 100, 'junk falls back to the default');
+  assert.equal(sanitize({ sfx: false }).volume, 0, 'an old save with sound effects off stays silent');
+  assert.equal(sanitize({ sfx: true }).volume, 100);
+  assert.equal(sanitize({ sfx: false, volume: 30 }).volume, 30, 'a chosen volume wins over the old checkbox');
+});
+
+test('the Options window never keeps state in a data-pick attribute on its own body', async () => {
+  // It used to (body.dataset.pick = effect). Click handling then runs closest('[data-pick]'), which finds the body itself,
+  // so after one "Add sound" every later click in the window (the remove buttons too) reopened the file chooser.
+  const { readFileSync } = await import('node:fs');
+  const src = readFileSync(new URL('../web/js/options.js', import.meta.url), 'utf8');
+  assert.equal(/body\.dataset\.pick/.test(src), false);
+});

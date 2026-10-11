@@ -441,6 +441,27 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .opt-grid { display: grid; gap: 4px; margin-bottom: 14px; min-width: 420px; }
 .opt-row { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .opt-row input[type=checkbox] { width: 18px; height: 18px; flex: none; }
+.opt-row .vol { display: inline-flex; align-items: center; gap: 8px; flex: none; }
+.opt-row .vol input[type=range] { width: 170px; }
+.opt-row .vol b { min-width: 40px; text-align: right; }
+.opt-tabs { display: flex; margin: 0 0 8px; }
+.opt-tabs .seg-btn { flex: 1; }
+.opt-grid { min-height: 290px; align-content: start; flex: none; }
+.opt-tabs, .opt-foot { flex: none; }
+.opt-head { margin: 14px 0 0; font-family: var(--serif); font-size: 15px; color: var(--accent); }
+.sfx-cat { border-bottom: 1px solid var(--line); }
+.sfx-cat > summary { cursor: pointer; padding: 9px 0; display: flex; gap: 10px; align-items: baseline; list-style: none; }
+.sfx-cat > summary::-webkit-details-marker { display: none; }
+.sfx-cat > summary::before { content: "▸"; color: var(--muted); width: 12px; flex: none; }
+.sfx-cat[open] > summary::before { content: "▾"; }
+.sfx-cat > summary .muted { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.sfx-list { padding: 0 0 10px 22px; display: grid; gap: 4px; }
+.sfx-item { display: flex; align-items: center; gap: 8px; }
+.sfx-item.off .sfx-name { opacity: .5; text-decoration: line-through; }
+.sfx-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sfx-add { gap: 6px; margin-top: 4px; }
+.sfx-empty { margin: 2px 0; }
+.opt-foot { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 8px; }
 .swatches { display: flex; gap: 8px; }
 .swatch { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; }
 .swatch.on { border-color: var(--ink); box-shadow: 0 0 0 2px var(--panel) inset; }

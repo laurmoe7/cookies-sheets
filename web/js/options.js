@@ -1,6 +1,8 @@
 // App options (theme, accent colour, text size...) kept in localStorage and applied to the page.
 // `sanitize` and `ACCENTS` are pure; `applyOptions` and `showOptions` touch the DOM.
-import { modal, esc } from './ui.js';
+import { modal, esc, toast, confirmBox } from './ui.js';
+import { api } from './api.js';
+import { SOUND_CATS, soundItems, isCustomized, refreshSounds as loadCustomSounds, previewSound } from './sfx.js';
 import { VERSION } from './version.js';
 import { CHANGELOG } from './changelog.js';
 
@@ -16,7 +18,7 @@ export const TEXT_SIZES = [[90, 'Small'], [100, 'Normal'], [112, 'Large'], [125,
 
 export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
 
-export const DEFAULTS = { theme: 'tome', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: 'full', pageSound: true, sfx: true, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false };
+export const DEFAULTS = { theme: 'tome', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: 'full', pageSound: true, volume: 100, soundOff: {}, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false, webhook: '', rollSend: true };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
@@ -28,7 +30,20 @@ export function sanitize(raw) {
   if (!['full', 'light', 'off'].includes(o.pageTurn)) o.pageTurn = DEFAULTS.pageTurn;
   if (!['quiet', 'normal', 'chatty'].includes(o.cookieTalk)) o.cookieTalk = DEFAULTS.cookieTalk;
   if (!['full', 'bleep'].includes(o.cookieSwear)) o.cookieSwear = DEFAULTS.cookieSwear;
-  for (const k of ['compact', 'motion', 'pageSound', 'sfx', 'cookieSound']) o[k] = !!o[k];
+  for (const k of ['compact', 'motion', 'pageSound', 'cookieSound']) o[k] = !!o[k];
+  // One volume for every sound. Saves from before the slider had a "Sound effects" checkbox: unchecked becomes volume 0.
+  const v = Math.round(Number(o.volume));
+  o.volume = !(raw && typeof raw === 'object') || raw.volume === undefined ? (raw && raw.sfx === false ? 0 : DEFAULTS.volume) : Number.isFinite(v) ? Math.max(0, Math.min(100, v)) : DEFAULTS.volume;
+  delete o.sfx;
+  // Built-in sounds the player switched off, per effect: {hit: ['sounds/hit-2.ogg']}.
+  const off = {};
+  for (const k of ['levelUp', 'heal', 'fullHeal', 'hit']) {
+    const list = o.soundOff && Array.isArray(o.soundOff[k]) ? o.soundOff[k].filter(x => typeof x === 'string' && x.length < 80).slice(0, 8) : [];
+    if (list.length) off[k] = list;
+  }
+  o.soundOff = off;
+  o.webhook = typeof o.webhook === 'string' ? o.webhook.trim() : '';
+  o.rollSend = !!o.rollSend;
   o.cookie = true; // he is not going anywhere (unchecking the box only makes him laugh)
   return o;
 }
@@ -39,6 +54,11 @@ fetch('dev/animlab.js', { method: 'HEAD' }).then(r => (r.ok ? import('../dev/ani
 
 let current = sanitize(null);
 export const options = () => current;
+/** The volume slider as 0 to 1, for every sound the app plays. */
+export const volume = () => current.volume / 100;
+
+/** Change one option from code (the roll bar's Discord switch). */
+export function setOption(k, v) { current = sanitize({ ...current, [k]: v }); save(); }
 
 export function loadOptions() {
   let raw = null;
@@ -68,46 +88,133 @@ export function applyOptions() {
 
 export function initOptions() {
   loadOptions();
+  loadCustomSounds(); // which custom sound files exist
+}
+
+const OPT_TABS = [['look', 'Look'], ['sound', 'Sound'], ['cookie', 'Cookie'], ['discord', 'Discord']];
+const openCats = new Set(); // which sound effects are expanded in the Sound tab
+const AUDIO_TYPES = { mp3: 'audio/mpeg', ogg: 'audio/ogg', wav: 'audio/wav', m4a: 'audio/mp4', aac: 'audio/aac', webm: 'audio/webm', flac: 'audio/flac' };
+let optTab = 'look'; // the window opens on the tab you used last
+
+const seg = (key, value, items) => `<div class="seg">${items.map(([k, l]) => `<button class="seg-btn ${value === k ? 'on' : ''}" data-opt="${key}" data-v="${k}">${l}</button>`).join('')}</div>`;
+const check = (key, label, on) => `<label class="opt-row"><b>${label}</b><input type="checkbox" data-opt="${key}" ${on ? 'checked' : ''}></label>`;
+
+/** One effect in the Sound tab: a summary of what plays now, and (when opened) every sound it has with Play and a way to remove or bring it back. */
+function soundCategory(k, label, o, customSounds) {
+  const items = soundItems(k, customSounds, o.soundOff);
+  const active = items.filter(s => s.enabled);
+  const summary = active.length ? active.map(s => s.label).join(', ') : 'silent';
+  const rows = items.map(s => {
+    const mine = s.kind === 'custom';
+    const act = mine ? `<button class="icon-btn" data-sfx-remove="${k}" data-ref="${esc(s.ref)}" title="Remove this sound">✕</button>`
+      : s.enabled ? `<button class="icon-btn" data-sfx-off="${k}" data-ref="${esc(s.ref)}" title="Switch this built-in sound off">✕</button>`
+        : `<button class="btn small ghost" data-sfx-on="${k}" data-ref="${esc(s.ref)}">Bring back</button>`;
+    return `<div class="sfx-item ${s.enabled ? '' : 'off'}"><button class="btn small ghost" data-play="${k}" data-kind="${s.kind}" data-ref="${esc(s.ref)}" title="Play">▶</button>
+      <span class="sfx-name">${esc(s.label)}${mine ? ' <span class="muted small">(yours)</span>' : ''}</span>${act}</div>`;
+  }).join('');
+  return `<details class="sfx-cat" data-cat="${k}" ${openCats.has(k) ? 'open' : ''}><summary><b>${label}</b> <span class="muted small">${esc(summary)}</span></summary>
+    <div class="sfx-list">${rows || ''}
+      ${active.length ? '' : '<p class="muted small sfx-empty">Nothing plays for this effect.</p>'}
+      <div class="row sfx-add"><button class="btn small" data-pick="${k}">＋ Add sound…</button>${isCustomized(k, customSounds, o.soundOff) ? `<button class="btn small ghost" data-sfx-restore="${k}" title="Back to the factory sounds: removes the ones you added">Restore defaults</button>` : ''}</div></div></details>`;
+}
+
+/** One tab's rows. Pure string building from the current options (and which sounds are custom). */
+function optionRows(tab, o, customSounds) {
+  const tome = o.theme === 'tome';
+  if (tab === 'look') {
+    return `<div class="opt-row"><b>Theme</b>${seg('theme', o.theme, THEMES)}</div>
+      ${tome ? `<div class="opt-row"><b>Page turn</b><select data-opt="pageTurn">${[['full', 'Full (bending page)'], ['light', 'Light (flat page)'], ['off', 'Off']].map(([k, l]) => `<option value="${k}" ${o.pageTurn === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>` : ''}
+      <div class="opt-row" ${tome ? 'style="opacity:.45"' : ''}><b>Accent color <span class="muted small">(Classic dark only)</span></b><div class="swatches">${Object.entries(ACCENTS).map(([k, a]) => `<button class="swatch ${o.accent === k ? 'on' : ''}" data-opt="accent" data-v="${k}" title="${a.name}" style="background:${a.dark || '#e0605a'}" ${tome ? 'disabled' : ''}></button>`).join('')}</div></div>
+      <div class="opt-row"><b>Text size</b>${seg('textSize', o.textSize, TEXT_SIZES)}</div>
+      ${check('compact', 'Compact layout', o.compact)}
+      ${check('motion', 'Animations', o.motion)}`;
+  }
+  if (tab === 'sound') {
+    return `<div class="opt-row"><b>Volume</b><span class="vol"><input type="range" min="0" max="100" step="5" data-opt="volume" value="${o.volume}" aria-label="Volume"> <b id="vol-out">${o.volume}%</b></span></div>
+      ${check('pageSound', 'Page turn sound' + (tome ? '' : ' <span class="muted small">(Dusty tome)</span>'), o.pageSound)}
+      ${check('cookieSound', 'Cookie’s squawks', o.cookieSound)}
+      <h4 class="opt-head">Sound effects</h4>
+      ${SOUND_CATS.map(([k, label]) => soundCategory(k, label, o, customSounds)).join('')}
+      <input type="file" id="sfx-file" accept="audio/*" hidden>`;
+  }
+  if (tab === 'cookie') {
+    return `${check('cookie', 'Cookie, the rude bird', o.cookie)}
+      <div class="opt-row"><b>How much he talks</b>${seg('cookieTalk', o.cookieTalk, [['quiet', 'Quiet'], ['normal', 'Normal'], ['chatty', 'Chatty']])}</div>
+      <div class="opt-row"><b>Swearing</b>${seg('cookieSwear', o.cookieSwear, [['full', 'Full'], ['bleep', 'Bleeped']])}</div>`;
+  }
+  return `<div class="opt-row"><span><b>Webhook</b><br><span class="muted small">The channel's webhook URL (Channel settings, Integrations, Webhooks).</span></span><input type="password" class="w20" data-opt="webhook" value="${esc(o.webhook)}" placeholder="https://discord.com/api/webhooks/..." autocomplete="off"></div>
+    ${check('rollSend', 'Send rolls to Discord', o.rollSend)}`;
 }
 
 export function showOptions() {
   return modal('Options', body => {
+    let customSounds = {};
+    let pickFor = ''; // the effect the file chooser was opened for (a variable, not an attribute on the body: closest('[data-pick]') would then match the body itself for every later click)
     const draw = () => {
-      const o = current;
-      const tome = o.theme === 'tome';
-      body.innerHTML = `<div class="opt-grid">
-        <div class="opt-row"><b>Theme</b><div class="seg">${THEMES.map(([k, l]) => `<button class="seg-btn ${o.theme === k ? 'on' : ''}" data-opt="theme" data-v="${k}">${l}</button>`).join('')}</div></div>
-        ${tome ? `<div class="opt-row"><b>Page turn</b><select data-opt="pageTurn">${[['full', 'Full (bending page)'], ['light', 'Light (flat page)'], ['off', 'Off']].map(([k, l]) => `<option value="${k}" ${o.pageTurn === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
-        <label class="opt-row"><span><b>Page turn sound</b><br><span class="muted small">Dusty tome only: a paper rustle when a page turns.</span></span><input type="checkbox" data-opt="pageSound" ${o.pageSound ? 'checked' : ''}></label>` : ''}
-        <div class="opt-row" ${tome ? 'style="opacity:.45"' : ''}><b>Accent color <span class="muted small">(Classic dark only)</span></b><div class="swatches">${Object.entries(ACCENTS).map(([k, a]) => `<button class="swatch ${o.accent === k ? 'on' : ''}" data-opt="accent" data-v="${k}" title="${a.name}" style="background:${a.dark || '#e0605a'}" ${tome ? 'disabled' : ''}></button>`).join('')}</div></div>
-        <div class="opt-row"><b>Text size</b><div class="seg">${TEXT_SIZES.map(([v, l]) => `<button class="seg-btn ${o.textSize === v ? 'on' : ''}" data-opt="textSize" data-v="${v}">${l}</button>`).join('')}</div></div>
-        <label class="opt-row"><b>Compact layout</b><input type="checkbox" data-opt="compact" ${o.compact ? 'checked' : ''}></label>
-        <label class="opt-row"><b>Sound effects</b><input type="checkbox" data-opt="sfx" ${o.sfx ? 'checked' : ''}></label>
-        <label class="opt-row"><b>Animations</b><input type="checkbox" data-opt="motion" ${o.motion ? 'checked' : ''}></label>
-        <label class="opt-row"><b>Cookie, the rude bird</b><input type="checkbox" data-opt="cookie" ${o.cookie ? 'checked' : ''}></label>
-        ${`<div class="opt-row"><b>How much he talks</b><div class="seg">${[['quiet', 'Quiet'], ['normal', 'Normal'], ['chatty', 'Chatty']].map(([k, l]) => `<button class="seg-btn ${o.cookieTalk === k ? 'on' : ''}" data-opt="cookieTalk" data-v="${k}">${l}</button>`).join('')}</div></div>
-        <div class="opt-row"><b>Swearing</b><div class="seg">${[['full', 'Full'], ['bleep', 'Bleeped']].map(([k, l]) => `<button class="seg-btn ${o.cookieSwear === k ? 'on' : ''}" data-opt="cookieSwear" data-v="${k}">${l}</button>`).join('')}</div></div>
-        <label class="opt-row"><b>Cookie’s squawks</b><input type="checkbox" data-opt="cookieSound" ${o.cookieSound ? 'checked' : ''}></label>`}
-      </div>
-      <p class="muted small" style="margin:10px 0 0">Cookie’s Sheets, version ${VERSION}</p>
-      <div class="row end"><button class="btn ghost" data-changelog>What’s new</button><button class="btn ghost" data-ogl>Game content &amp; license</button>${devTools ? '<button class="btn ghost" data-dev>Developer tools</button>' : ''}</div>`;
+      body.innerHTML = `<div class="seg opt-tabs">${OPT_TABS.map(([k, l]) => `<button class="seg-btn ${optTab === k ? 'on' : ''}" data-tab="${k}">${l}</button>`).join('')}</div>
+        <div class="opt-grid">${optionRows(optTab, current, customSounds)}</div>
+        <div class="opt-foot"><span class="muted small">Cookie’s Sheets, version ${VERSION}</span><span class="grow"></span>
+          <button class="btn small ghost" data-changelog>What’s new</button><button class="btn small ghost" data-ogl>Game content &amp; license</button>${devTools ? '<button class="btn small ghost" data-dev>Developer tools</button>' : ''}</div>`;
     };
     const set = (k, v) => { current = sanitize({ ...current, [k]: v }); save(); applyOptions(); draw(); };
-    body.onclick = e => {
+    const refreshSounds = async () => { customSounds = await loadCustomSounds(); };
+    body.onclick = async e => {
+      const tab = e.target.closest('[data-tab]');
+      if (tab) { optTab = tab.dataset.tab; return draw(); }
       const b = e.target.closest('button[data-opt]');
       if (b) return set(b.dataset.opt, b.dataset.opt === 'textSize' ? +b.dataset.v : b.dataset.v);
+      const play = e.target.closest('[data-play]');
+      if (play) return previewSound(play.dataset.play, play.dataset.kind, play.dataset.ref);
+      const pick = e.target.closest('[data-pick]');
+      if (pick) { pickFor = pick.dataset.pick; return body.querySelector('#sfx-file').click(); }
+      const off = (k, f) => { const list = current.soundOff[k] || []; set('soundOff', { ...current.soundOff, [k]: f(list) }); };
+      const sOff = e.target.closest('[data-sfx-off]'), sOn = e.target.closest('[data-sfx-on]');
+      if (sOff) return off(sOff.dataset.sfxOff, l => [...l, sOff.dataset.ref]);
+      if (sOn) return off(sOn.dataset.sfxOn, l => l.filter(x => x !== sOn.dataset.ref));
+      const del = e.target.closest('[data-sfx-remove]'), restore = e.target.closest('[data-sfx-restore]');
+      if (del || restore) {
+        const k = restore?.dataset.sfxRestore;
+        const mine = restore ? (customSounds[k] || []).length : 0;
+        // Restoring removes the files the player added, so ask first when there are any.
+        if (mine && !(await confirmBox(`This puts this effect back to its built-in sounds and removes the ${mine} sound${mine === 1 ? '' : 's'} you added. Continue?`, 'Restore defaults'))) return;
+        try {
+          if (del) await api.removeSound(del.dataset.sfxRemove, del.dataset.ref);
+          else { await api.removeSound(k); current = sanitize({ ...current, soundOff: { ...current.soundOff, [k]: [] } }); save(); }
+        } catch (err) { toast(err.message, 'err'); }
+        await refreshSounds(); return draw();
+      }
       if (e.target.closest('[data-changelog]')) return showChangelog();
       if (e.target.closest('[data-ogl]')) return showLicense();
       if (e.target.closest('[data-dev]')) { e.target.closest('.modal-back')?.querySelector('[data-close]')?.click(); devTools.showAnimLab(); }
     };
-    body.onchange = e => {
+    body.addEventListener('toggle', e => { const d = e.target.closest?.('details[data-cat]'); if (d) (d.open ? openCats.add(d.dataset.cat) : openCats.delete(d.dataset.cat)); }, true);
+    body.oninput = e => { if (e.target.dataset?.opt === 'volume') body.querySelector('#vol-out').textContent = e.target.value + '%'; };
+    body.onchange = async e => {
+      if (e.target.id === 'sfx-file') {
+        const file = e.target.files?.[0], name = pickFor;
+        e.target.value = ''; // so choosing the same file again still fires
+        if (!file || !name) return;
+        const ext = (file.name.split('.').pop() || '').toLowerCase();
+        const typed = file.type && file.type.startsWith('audio/') ? file : new Blob([file], { type: AUDIO_TYPES[ext] || '' }); // some browsers leave .ogg or .flac untyped
+        try {
+          const all = await api.addSound(name, typed, file.name);
+          openCats.add(name);
+          await refreshSounds();
+          draw();
+          const added = (all[name] || []).slice(-1)[0];
+          if (added) previewSound(name, 'custom', added.id);
+        } catch (err) { toast(err.message, 'err'); }
+        return;
+      }
       const t = e.target.closest('[data-opt]');
       if (!t || t.tagName === 'BUTTON') return;
       if (t.dataset.opt === 'cookie') { if (!t.checked) document.dispatchEvent(new Event('cookie-refuse')); draw(); return; }
-      set(t.dataset.opt, t.type === 'checkbox' ? t.checked : t.value);
+      set(t.dataset.opt, t.type === 'checkbox' ? t.checked : t.type === 'range' ? +t.value : t.value);
+      if (t.dataset.opt === 'volume') import('./sfx.js').then(m => m.playSfx('heal')); // so you can hear the level you picked
     };
     draw();
-  });
+    refreshSounds().then(draw);
+  }, { top: true });
 }
 
 /** The "What’s new" window. */
@@ -147,7 +254,7 @@ function loadSounds() {
 }
 /** A short paper rustle: a different recording from last time, pitched up or down a little (and a touch louder or softer) each play. */
 async function playPageSound() {
-  if (!current.pageSound) return;
+  if (!current.pageSound || current.volume === 0) return;
   try {
     const bufs = await loadSounds();
     if (!bufs || !audioCtx) return;
@@ -162,7 +269,7 @@ async function playPageSound() {
     src.buffer = bufs[i];
     src.playbackRate.value = rate;
     const gain = audioCtx.createGain();
-    gain.gain.value = 0.55 + Math.random() * 0.2;
+    gain.gain.value = (0.55 + Math.random() * 0.2) * volume();
     src.connect(gain).connect(audioCtx.destination);
     src.start();
   } catch { /* no audio available */ }

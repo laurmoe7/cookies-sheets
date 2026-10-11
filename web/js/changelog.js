@@ -5,7 +5,10 @@ export const CHANGELOG = [
   {
     version: 'Discord rolls', date: '2026-10-10',
     items: [
+      'Options is now split into Look, Sound, Cookie and Discord tabs (it opens on the one you used last). The Volume slider sets the loudness of every sound, 0 is silent, and it replaces the Sound effects checkbox; the squawks checkbox still mutes just Cookie’s squawks.',
+      'Each sound effect (level up, heal, full heal, damage) can have several sounds and plays one at random. In Options, Sound tab, open an effect to see what it uses now: you can add your own audio files, remove them, switch built-in sounds off and bring them back one by one, or Restore defaults for that effect (which also removes the sounds you added, after asking).',
       'Clicking outside the side panel (the rules and spell reference) closes it, unless you click a button, a field or a link. On the Spells tab, prepared spells stand out and spells you have not prepared are faded and dashed.',
+      'The Options window now stays put when its content changes instead of moving up and down.',
       'Spell descriptions are easier to read at a glance: the school on top, the classes that can cast it as chips grouped by spell level, then casting time, range, duration, saving throw and spell resistance in one labelled row, and components, area and target below.',
     ],
   },
