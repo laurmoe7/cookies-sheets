@@ -148,6 +148,8 @@ html[data-theme="tome"] {
 html[data-theme="tome"] body { background: var(--bg); }
 /* dark leather: a little lighter in the middle, darker toward the edges */
 html[data-theme="tome"] #main { background: radial-gradient(ellipse at 50% 35%, rgba(70,48,28,.35), rgba(0,0,0,.45) 100%), var(--leather), #26190f; }
+/* The leather is not opaque, so the browser repainted the whole scroller on every scroll step (about 14 times slower than the dark theme in a headless test). Giving #main its own layer paints it once. */
+html[data-theme="tome"] #main { will-change: transform; }
 html[data-theme="tome"] h3 { font-variant: small-caps; letter-spacing: .04em; font-weight: 500; }
 html[data-theme="tome"] h1, html[data-theme="tome"] h2 { font-weight: 500; }
 
