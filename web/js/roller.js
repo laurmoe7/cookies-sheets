@@ -275,7 +275,7 @@ export function fillSpellRolls(root) {
       if (!sc || !slot.isConnected) return;
       const i = spellInfo(list[n], sc.cl);
       if (!(i.kind || i.attack || i.sr)) return;
-      slot.innerHTML = '<button class="btn small" data-spell-roll="' + slot.dataset.spellSlot + '" title="Roll an attack, the damage or healing, or a caster level check for this spell">Roll</button>';
+      slot.innerHTML = '<button class="btn small" data-spell-roll="' + slot.dataset.spellSlot + '" title="Roll an attack, the damage or healing, or a caster level check for this spell">🎲 Roll</button>';
     });
   }).catch(() => {});
 }
@@ -301,6 +301,7 @@ async function spellWindow(btn) {
     ...(!known || info.attack === 'ranged' ? [chip('Roll to hit: ranged ' + (info.touch === false ? 'attack' : 'touch'), d.ranged, 'ranged ' + (info.touch === false ? 'attack' : 'touch attack'))] : []),
     ...(!known || info.attack === 'melee' ? [chip('Roll to hit: melee ' + (info.touch === false ? 'attack' : 'touch'), d.melee, 'melee ' + (info.touch === false ? 'attack' : 'touch attack'))] : []),
     chip('Concentration', sc.concentration, 'concentration check'),
+    chip('Cast defensively (DC ' + (15 + 2 * (Number(sp.level) || 0)) + ')', sc.concentration, 'cast defensively, DC ' + (15 + 2 * (Number(sp.level) || 0))),
     ...(!known || info.sr ? [chip('Caster level check', sc.cl, 'caster level check' + (info.sr ? ' to beat spell resistance' : ''))] : []),
   ];
   const facts = [`${cls} caster level ${sc.cl}`,

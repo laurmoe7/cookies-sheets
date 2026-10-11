@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Discord rolls', date: '2026-10-10',
     items: [
+      'Spell roll windows have a Cast defensively roll (concentration against DC 15 + twice the spell level), and the spell page Roll button has a dice.',
       'Spell roll windows have a Roll to hit button for spells that need an attack roll, including ones that use a normal attack (Magic Stone, Stone Discus), and the dice-guess note is gone.',
       'In the roll window, Roll comes first and Sending to Discord second. New modifiers: target prone, firing into melee, improvised weapon, unseen attacker, strong wind, favorable or unfavorable conditions and more. Flanking, prone and dazzled moved from the Buffs menu to the roll window.',
       'The Biography tab has a box for your character\u2019s bio. In Notes, Story and General notes are now separate tabs.',
