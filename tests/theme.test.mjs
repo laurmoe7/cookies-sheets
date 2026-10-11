@@ -11,9 +11,9 @@ test('Dusty tome keeps its scrolling page on its own layer', () => {
 });
 
 test('the page turn keeps its copies cheap', async () => {
-  // The animated --c inherits into every element of every copy of the old page unless the copy resets it; the copies also skip the card textures.
+  // The animated --c inherits into every element of every copy of the old page unless the copy resets it; the copies keep their paper (the textures are baked images, cheap to draw).
   assert.match(tome, /\.pt-clone \{ position: absolute; top: 0; --c: 0; \}/);
-  assert.match(tome, /\.pt-clone \.card \{ background-image: radial-gradient/);
+  assert.doesNotMatch(tome, /.pt-clone .card {[^}]*background/, 'a copy of a page must keep its paper: a dark base with no texture looked wrong');
   const { pageTurnStrips } = await import('../web/js/options.js');
   assert.deepEqual([100, 200, 300, 500].map(pageTurnStrips), [14, 11, 9, 7], 'busier pages get fewer strips');
 });

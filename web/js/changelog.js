@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Discord rolls', date: '2026-10-10',
     items: [
+      'Page turn is now a simple on/off option, and the turning page keeps its colors.',
       'Click a save, skill, check, attack or damage number to roll it. The roll bar has advantage, disadvantage and a dice box.',
       'Hover a rollable number to see where each + and - comes from.',
       'Spells and companions can roll too. Spells show only the rolls they have.',

@@ -18,7 +18,7 @@ export const TEXT_SIZES = [[90, 'Small'], [100, 'Normal'], [112, 'Large'], [125,
 
 export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
 
-export const DEFAULTS = { theme: 'tome', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: 'full', pageSound: true, volume: 100, soundOff: {}, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false, webhook: '', rollSend: true };
+export const DEFAULTS = { theme: 'tome', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: true, pageSound: true, volume: 100, soundOff: {}, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false, webhook: '', rollSend: true };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
@@ -27,7 +27,7 @@ export function sanitize(raw) {
   if (!ACCENTS[o.accent]) o.accent = DEFAULTS.accent;
   o.textSize = Number(o.textSize);
   if (!TEXT_SIZES.some(([v]) => v === o.textSize)) o.textSize = DEFAULTS.textSize;
-  if (!['full', 'light', 'off'].includes(o.pageTurn)) o.pageTurn = DEFAULTS.pageTurn;
+  o.pageTurn = o.pageTurn !== 'off' && o.pageTurn !== false; // used to be Full / Light / Off
   if (!['quiet', 'normal', 'chatty'].includes(o.cookieTalk)) o.cookieTalk = DEFAULTS.cookieTalk;
   if (!['full', 'bleep'].includes(o.cookieSwear)) o.cookieSwear = DEFAULTS.cookieSwear;
   for (const k of ['compact', 'motion', 'pageSound', 'cookieSound']) o[k] = !!o[k];
@@ -123,7 +123,7 @@ function optionRows(tab, o, customSounds) {
   const tome = o.theme === 'tome';
   if (tab === 'look') {
     return `<div class="opt-row"><b>Theme</b>${seg('theme', o.theme, THEMES)}</div>
-      ${tome ? `<div class="opt-row"><b>Page turn</b><select data-opt="pageTurn">${[['full', 'Full (bending page)'], ['light', 'Light (flat page)'], ['off', 'Off']].map(([k, l]) => `<option value="${k}" ${o.pageTurn === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>` : ''}
+      ${tome ? check('pageTurn', 'Page turn', o.pageTurn) : ''}
       <div class="opt-row" ${tome ? 'style="opacity:.45"' : ''}><b>Accent color <span class="muted small">(Classic dark only)</span></b><div class="swatches">${Object.entries(ACCENTS).map(([k, a]) => `<button class="swatch ${o.accent === k ? 'on' : ''}" data-opt="accent" data-v="${k}" title="${a.name}" style="background:${a.dark || '#e0605a'}" ${tome ? 'disabled' : ''}></button>`).join('')}</div></div>
       <div class="opt-row"><b>Text size</b>${seg('textSize', o.textSize, TEXT_SIZES)}</div>
       ${check('compact', 'Compact layout', o.compact)}
@@ -277,7 +277,7 @@ async function playPageSound() {
 
 /** A copy of the page for the page turn, holding only the part that is on screen. null unless the tome theme and animations are on. */
 export function snapshotPage(body) {
-  if (current.theme !== 'tome' || !current.motion || current.pageTurn === 'off' || !body) return null;
+  if (current.theme !== 'tome' || !current.motion || !current.pageTurn || !body) return null;
   const clone = body.cloneNode(true);
   clone.dataset.h = body.offsetHeight;
   clone.removeAttribute('id');
@@ -295,10 +295,10 @@ export const pageTurnStrips = size => (size > 420 ? 7 : size > 260 ? 9 : size > 
  */
 export function playPageTurn(body, snapshot, back = false) {
   if (!snapshot || !body?.parentElement) return;
-  // 'light' is one flat sheet: much less to draw on a slow machine. The full turn is 14 hinged strips, each holding its own copy of the page, so a busy
+  // The turn is hinged strips, each holding its own copy of the page, so a busy
   // page (the Skills tab, the Overview) gets fewer strips: the work grows with strips x page size. A bend of 7 to 9 strips still reads as a curl.
   const size = (back ? body : snapshot)?.querySelectorAll('*').length || 0;
-  const STRIPS = current.pageTurn === 'light' ? 1 : pageTurnStrips(size);
+  const STRIPS = pageTurnStrips(size);
   const W = body.offsetWidth;
   const sw = W / STRIPS;
   const main = document.getElementById('main');

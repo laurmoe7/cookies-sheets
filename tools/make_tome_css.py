@@ -258,8 +258,8 @@ html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
 .pt-front::after, .pt-back::after { content: ""; position: absolute; inset: 0; background: #000; pointer-events: none; opacity: calc(var(--c) * (.03 + var(--i, 0) * .34)); }
 /* --c (how far the sheet is bent) is animated on the sheet and inherits; without --c: 0 here the page copies inside the strips restyled every element of every copy on every frame */
 .pt-clone { position: absolute; top: 0; --c: 0; }
-/* The turning page is 7 to 14 copies of the old page. Each card in each copy used to paint the grain and crumple textures (about 45% of the first frame); in the copies a plain vignette is enough. */
-.pt-clone .card { background-image: radial-gradient(ellipse at 50% 38%, rgba(255,238,196,.16) 0%, rgba(0,0,0,0) 40%, rgba(24,12,3,.5) 100%) !important; }
+/* the copies keep the paper, but not the big blurred inner shadow: it is the dearest thing to draw and the gradient already darkens the edges */
+.pt-clone .card { box-shadow: var(--shadow) !important; }
 .page-turn.go .pt-sheet { animation: leaf-flip .64s cubic-bezier(.45, .05, .4, 1) forwards, leaf-bend .64s ease-in-out forwards; }
 .page-turn.go .pt-shadow { animation: leaf-shadow .64s ease-in-out forwards; }
 .page-turn.go .pt-face { animation: leaf-fade .64s linear forwards; }
