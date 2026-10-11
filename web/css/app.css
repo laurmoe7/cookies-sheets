@@ -646,8 +646,12 @@ html[data-motion="off"] .fx-spark { display: none; }
 .stepper input, .stepper .val { box-sizing: border-box; width: 44px; height: 30px; text-align: center; font: inherit; font-weight: 700; font-size: 16px; line-height: 30px; border: 0; border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-radius: 0; background: var(--panel); color: var(--ink); padding: 0; -moz-appearance: textfield; appearance: textfield; }
 .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .stepper .val.bad { color: var(--bad); }
-.sp-custom { display: grid; gap: 4px; padding-bottom: 8px; }
-.sp-custom input, .sp-custom textarea { width: 100%; box-sizing: border-box; }
+.sp-custom { display: grid; gap: 6px; padding-bottom: 8px; flex: 1 1 100%; min-width: 0; }
+.sp-custom input, .sp-custom textarea { width: 100%; box-sizing: border-box; font-size: 1.05em; padding: 9px 12px; }
+.sp-custom textarea { min-height: 280px; resize: vertical; line-height: 1.45; }
+/* the Roll button in a spell's side panel has a red outline, like Delete spell */
+#drawer [data-spell-roll] { border: 1.5px solid #b3352c; color: #a82a22; background: transparent; }
+#drawer [data-spell-roll]:hover { background: rgba(179, 53, 44, .15); border-color: #c43b31; color: #8f1f18; }
 /* spell slots as circles: filled = available, ringed = used, dashed = not filled */
 .slot-pips { display: inline-flex; flex-wrap: wrap; gap: 3px; align-items: center; vertical-align: middle; }
 .spip { display: block; width: 11px; height: 11px; border-radius: 50%; box-sizing: border-box; border: 1.5px solid var(--accent); }
