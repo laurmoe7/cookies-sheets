@@ -1,7 +1,7 @@
 import { api } from './api.js';
 import { compute, sign } from './calc.js';
 import { newCharacter, migrate } from './model.js';
-import { $, $$, getPath, setPath, toast, showEntry, closeDrawer, debounce, modal, initTextFields, initTooltips } from './ui.js';
+import { $, $$, getPath, setPath, toast, showEntry, closeDrawer, initDrawerDismiss, debounce, modal, initTextFields, initTooltips } from './ui.js';
 import { initSheetSearch } from './sheetsearch.js';
 import { initOptions, showOptions, showChangelog } from './options.js';
 import { choosePicture, repositionPicture } from './cropper.js';
@@ -150,6 +150,7 @@ async function init() {
   mountPet($('#cookie-slot'));
   document.addEventListener('input', onInput);
   initTooltips();
+  initDrawerDismiss();
   initSheetSearch();
   initSummons();
   initTextFields({

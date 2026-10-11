@@ -1,5 +1,6 @@
 // Small DOM helpers shared by all views.
 import { api } from './api.js';
+import { spellStatHtml } from './spellstat.js';
 import { lookup as petLookup } from './pet/pet.js';
 
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -26,10 +27,11 @@ export function toast(msg, kind = '') {
 }
 
 /** Opens a modal. `render(body, close)` fills it. Returns a promise resolved with close(value). */
-export function modal(title, render, { wide = false } = {}) {
+/** `top` pins the window's top edge near the top of the screen instead of centring it, so it does not jump when its content grows or shrinks (Options). */
+export function modal(title, render, { wide = false, top = false } = {}) {
   return new Promise(resolve => {
     const back = document.createElement('div');
-    back.className = 'modal-back';
+    back.className = 'modal-back' + (top ? ' top' : '');
     back.innerHTML = `<div class="modal ${wide ? 'wide' : ''}" role="dialog" aria-modal="true">
       <header><h2>${esc(title)}</h2><button class="icon-btn" data-close aria-label="Close">✕</button></header>
       <div class="modal-body"></div></div>`;
@@ -90,8 +92,10 @@ export function showCustom({ name, cat = '', sub = '', html = '', source = '' })
 /** Plain text (with blank-line paragraphs) as HTML. */
 export const textToHtml = t => String(t || '').trim().split(/\n\s*\n/).map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
 
+let drawerShownAt = 0; // when the side panel last showed (or changed) an entry
 function renderDrawer(entry) {
   const dr = $('#drawer');
+  drawerShownAt = Date.now();
   dr.classList.add('open');
   dr.innerHTML = `<header>
       ${drawerHistory.length > 1 ? '<button class="icon-btn" data-back title="Back">←</button>' : ''}
@@ -110,14 +114,29 @@ function renderDrawer(entry) {
   document.dispatchEvent(new CustomEvent('entry-shown', { detail: { entry, actions: $('.entry-actions', dr) } }));
 }
 
+/**
+ * Clicking outside the side panel closes it, unless the click was on something you use (a button, field, link, label...) or inside a window.
+ * The check waits a moment, so a click that opens or changes the panel (a rule link, a read-more text) does not close it again.
+ */
+export function initDrawerDismiss() {
+  document.addEventListener('click', e => {
+    const dr = $('#drawer');
+    if (!dr?.classList.contains('open') || dr.contains(e.target)) return;
+    if (e.target.closest?.('button, input, select, textarea, a, label, summary, [contenteditable], [data-entry], .tf, .modal-back, #tooltip, #toasts')) return;
+    const at = Date.now();
+    setTimeout(() => { if (drawerShownAt < at && dr.classList.contains('open') && !$('.modal-back')) closeDrawer(); }, 150);
+  });
+}
+
 export function closeDrawer() {
   $('#drawer').classList.remove('open');
+  document.dispatchEvent(new Event('drawer-closed'));
   drawerHistory = [];
 }
 
 export function entryHtml(entry) {
   const src = entry.source ? `<p class="source">Source: ${esc(entry.source)}</p>` : '';
-  return (entry.html || '') + src;
+  return (entry.cat === 'Spell' ? spellStatHtml(entry.html || '') : entry.html || '') + src;
 }
 
 /** Make links inside OGL text open the referenced entry instead of navigating away. */

@@ -3,6 +3,13 @@
 
 export const CHANGELOG = [
   {
+    version: 'Discord rolls', date: '2026-10-10',
+    items: [
+      'Clicking outside the side panel (the rules and spell reference) closes it, unless you click a button, a field or a link. On the Spells tab, prepared spells stand out and spells you have not prepared are faded and dashed.',
+      'Spell descriptions are easier to read at a glance: the school on top, the classes that can cast it as chips grouped by spell level, then casting time, range, duration, saving throw and spell resistance in one labelled row, and components, area and target below.',
+    ],
+  },
+  {
     version: 'Latest', date: '2026-10-07',
     items: [
       'Cookie now also comments when you write in your notes, look things up in the side panel, search the Compendium or the Quick Rules, spend any currency, or change your picture or name icon.',
