@@ -49,7 +49,7 @@ Feats, traits, abilities, spells, and magic items are matched to the compendium 
 - New class features (click any feature to read it)
 - Spells to learn: only levels you can actually learn, with a "left to choose" counter (e.g. bard 1: 4 cantrips and 2 1st-level spells). Spellbook casters get every cantrip automatically.
 
-You can undo the last level from the Bio & Notes tab. 32 classes are supported: the 11 core classes, plus APG, Magus, Gunslinger, Ninja, Samurai, Antipaladin, and all 10 ACG hybrid classes.
+You can undo the last level from the Bio tab. 32 classes are supported: the 11 core classes, plus APG, Magus, Gunslinger, Ninja, Samurai, Antipaladin, and all 10 ACG hybrid classes.
 
 **Compendium** (Ctrl+K): full-text search over about 2,250 spells, 1,200 feats, 240 traits, races, classes, archetypes, class features, magic items, conditions, and the rules text. You can filter spells by class, level, and school, and add entries straight to your character.
 

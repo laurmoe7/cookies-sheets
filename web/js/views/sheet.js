@@ -28,13 +28,14 @@ const ICONS = {
   gear: '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V6a2 2 0 012-2h2a2 2 0 012 2v2M3 14h18"/>',
   companions: '<circle cx="6" cy="10" r="1.8"/><circle cx="10" cy="6" r="1.8"/><circle cx="15" cy="6" r="1.8"/><circle cx="19" cy="10" r="1.8"/><path d="M12.5 12c-3 0-5.5 3-5.5 5.2 0 1.6 1.4 2.3 3 2 1-.2 1.6-.5 2.5-.5s1.5.3 2.5.5c1.6.3 3-.4 3-2 0-2.2-2.5-5.2-5.5-5.2z"/>',
   buffs: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  notes: '<path d="M4 20l1-4L16.5 4.5a2 2 0 013 3L8 19z"/><path d="M14 7l3 3M4 20l4-1"/>',
   bio: '<path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M8 8h7M8 12h7M8 16h4"/>',
 };
 const icon = k => `<svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
 
 const TABS = [
   ['overview', 'Overview'], ['skills', 'Skills'], ['feats', 'Feats & Abilities'], ['spells', 'Spells'],
-  ['gear', 'Gear'], ['companions', 'Companions'], ['buffs', 'Buffs & Conditions'], ['bio', 'Bio & Notes'],
+  ['gear', 'Gear'], ['companions', 'Companions'], ['buffs', 'Buffs & Conditions'], ['bio', 'Bio'], ['notes', 'Notes'],
 ];
 
 /** Read-first text bound to a character path: click to read in full, double-click to edit. */
@@ -84,7 +85,7 @@ export function renderSheet(main) {
   const turn = state.turn;
   state.turn = false;
   const body = $('#tab-body', main);
-  ({ overview, skills, feats, spells, gear, companions: renderCompanions, buffs, bio })[state.sheetTab](body, c, d);
+  ({ overview, skills, feats, spells, gear, companions: renderCompanions, buffs, bio, notes })[state.sheetTab](body, c, d);
   if (turn) playPageTurn(body, turn.snap, turn.back);
 }
 
@@ -173,6 +174,7 @@ function overview(body, c, d) {
       </div>
     </section>
 
+    <div class="stack">
     <section class="card offense">
       <h3>Offense</h3>
       <div class="stat-row">
@@ -191,6 +193,11 @@ function overview(body, c, d) {
       </div>
       <div class="small muted">Flat-footed CMD ${calc('cmdFlat')} · Size ${esc(d.size)} · ${ref('Attacks of Opportunity', 'Rules', 'AoO rules')} · ${ref('Combat Maneuvers', 'Rules', 'Maneuvers')}</div>
     </section>
+    <section class="card quick-notes">
+      <h3>Notes</h3>
+      <textarea class="full" data-bind="quickNotes" placeholder="Reminders, anything you want at a glance. The Notes tab is for the story, NPCs and quests.">${esc(c.quickNotes || '')}</textarea>
+    </section>
+    </div>
 
     <section class="card weapons span2">
       <div class="row"><h3 class="grow">Weapons & Attacks</h3><button class="btn small" data-add="weapons">＋ Add weapon</button></div>
@@ -219,10 +226,6 @@ function overview(body, c, d) {
 
     <section class="card span2" id="res-card"></section>
 
-    <section class="card span2 quick-notes">
-      <h3>Notes</h3>
-      <textarea class="full" data-bind="quickNotes" rows="5" placeholder="Session notes, reminders, anything you want to see at a glance…">${esc(c.quickNotes || '')}</textarea>
-    </section>
   </div>`;
   wireCommon(body);
   wireImages(body, c);
@@ -326,6 +329,10 @@ function wireCommon(body) {
         gear: { name: '', qty: 1, weight: 0, value: '', notes: '' },
         specials: { name: '', notes: '' },
         'money.custom': { name: '', amount: 0 },
+        sessions: { date: new Date().toISOString().slice(0, 10), name: '', notes: '' },
+        npcs: { name: '', role: '', attitude: 'neutral', where: '', notes: '' },
+        quests: { name: '', done: false, notes: '' },
+        lore: { name: '', kind: 'Place', notes: '' },
       }[t.dataset.add];
       getPath(c, t.dataset.add).push(structuredClone(blank));
       changed({ rerender: true });
@@ -918,6 +925,59 @@ function editModifier(m) {
 }
 
 // =====================================================================
+// NOTES
+// =====================================================================
+export const ATTITUDES = [['ally', 'Ally'], ['friendly', 'Friendly'], ['neutral', 'Neutral'], ['wary', 'Wary'], ['hostile', 'Hostile'], ['unknown', 'Unknown']];
+export const LORE_KINDS = ['Place', 'Faction', 'Item', 'Lore'];
+
+/** Story notes: free text, quests, NPCs, places and factions, and a session log (newest first). */
+function notes(body, c) {
+  const entries = key => (c[key] || []).map((x, i) => ({ x, i }));
+  const quests = entries('quests');
+  const open = quests.filter(q => !q.x.done), done = quests.filter(q => q.x.done);
+  const quest = ({ x, i }) => `<div class="note-row quest ${x.done ? 'done' : ''}">
+      ${chk(`quests.${i}.done`, { rerender: true, title: 'Done' })}
+      ${inp(`quests.${i}.name`, { cls: 'grow', ph: 'Quest, goal or lead' })}
+      <button class="icon-btn" data-del="quests.${i}" title="Remove">✕</button>
+      <textarea class="full" rows="2" data-bind="quests.${i}.notes" placeholder="Who gave it, reward, what you know…">${esc(x.notes || '')}</textarea></div>`;
+  const npc = ({ x, i }) => `<div class="note-card att-${esc(x.attitude || 'unknown')}">
+      <div class="row">${inp(`npcs.${i}.name`, { cls: 'grow', ph: 'Name' })}<button class="icon-btn" data-del="npcs.${i}" title="Remove">✕</button></div>
+      <div class="row">${inp(`npcs.${i}.role`, { cls: 'grow', ph: 'Who they are' })}${sel(`npcs.${i}.attitude`, ATTITUDES, { rerender: true })}</div>
+      ${inp(`npcs.${i}.where`, { cls: 'full', ph: 'Where to find them' })}
+      <textarea class="full" rows="3" data-bind="npcs.${i}.notes" placeholder="What they want, what they know, how they spoke…">${esc(x.notes || '')}</textarea></div>`;
+  const lore = ({ x, i }) => `<div class="note-card">
+      <div class="row">${inp(`lore.${i}.name`, { cls: 'grow', ph: 'Name' })}${sel(`lore.${i}.kind`, LORE_KINDS)}<button class="icon-btn" data-del="lore.${i}" title="Remove">✕</button></div>
+      <textarea class="full" rows="3" data-bind="lore.${i}.notes" placeholder="Details…">${esc(x.notes || '')}</textarea></div>`;
+  const session = ({ x, i }) => `<div class="note-card session">
+      <div class="row">${inp(`sessions.${i}.date`, { cls: 'w8', ph: 'Date' })}${inp(`sessions.${i}.name`, { cls: 'grow', ph: 'Session title or one-line recap' })}<button class="icon-btn" data-del="sessions.${i}" title="Remove">✕</button></div>
+      <textarea class="full" rows="5" data-bind="sessions.${i}.notes" placeholder="What happened, decisions, loot, what to do next…">${esc(x.notes || '')}</textarea></div>`;
+  const list = (key, fn, empty) => (c[key] || []).length ? entries(key).map(fn).reverse().join('') : `<p class="muted small">${empty}</p>`;
+  body.innerHTML = `<div class="grid two notes-tab">
+  <section class="card">
+    <h3>Story &amp; general notes</h3>
+    <textarea data-bind="notes" rows="12" class="full" placeholder="Backstory, the plot so far, theories, contacts, loot to sell…">${esc(c.notes)}</textarea>
+  </section>
+  <section class="card">
+    <h3>Quests &amp; goals <button class="btn small ghost" data-add="quests">＋ Add</button></h3>
+    ${open.length ? open.map(quest).join('') : '<p class="muted small">Nothing open. Add the jobs, leads and personal goals you are chasing.</p>'}
+    ${done.length ? `<h4 class="muted">Done</h4>${done.map(quest).join('')}` : ''}
+  </section>
+  <section class="card span2">
+    <h3>People (NPCs) <button class="btn small ghost" data-add="npcs">＋ Add</button></h3>
+    <div class="note-grid">${list('npcs', npc, 'Who have you met? Note their name, what they want and whether they can be trusted.')}</div>
+  </section>
+  <section class="card span2">
+    <h3>Places, factions &amp; lore <button class="btn small ghost" data-add="lore">＋ Add</button></h3>
+    <div class="note-grid">${list('lore', lore, 'Towns, guilds, cults, famous items, rumours you want to keep straight.')}</div>
+  </section>
+  <section class="card span2">
+    <h3>Session log <button class="btn small ghost" data-add="sessions">＋ New session</button></h3>
+    <div class="note-grid one">${list('sessions', session, 'Add a session after each game so you can remember what happened. The newest is first.')}</div>
+  </section></div>`;
+  wireCommon(body);
+}
+
+// =====================================================================
 // BIO
 // =====================================================================
 function bio(body, c, d) {
@@ -953,10 +1013,6 @@ function bio(body, c, d) {
       ${d.xp.levelByXp > d.level ? `<b class="good">You have enough XP to reach level ${d.xp.levelByXp}!</b> <button class="btn small primary" data-goto-lu>Level up</button>` : ''}</p>
     <h3>Appearance</h3>
     <div class="kv">${['gender', 'age', 'height', 'weight', 'hair', 'eyes'].map(k => `<label>${k[0].toUpperCase() + k.slice(1)} ${inp(k, { cls: 'w6' })}</label>`).join('')}</div>
-  </section>
-  <section class="card span2">
-    <h3>Notes</h3>
-    <textarea data-bind="notes" rows="14" class="full" placeholder="Backstory, session notes, contacts, loot to sell…">${esc(c.notes)}</textarea>
   </section>
   <section class="card span2">
     <h3>Level history</h3>

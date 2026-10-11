@@ -68,8 +68,8 @@ html[data-theme="tome"] .tbl th, html[data-theme="tome"] .tbl td { border-color:
 html[data-theme="tome"] .portrait-frame, html[data-theme="tome"] .pic-frame, html[data-theme="tome"] .char-icon.has { border-color: #b08a3e; outline: 1px solid #3a2a18; outline-offset: 2px; }
 
 /* satin bookmark ribbons as tabs: smooth, with soft lengthwise highlights and gold piping along both edges, and a V-cut tail */
-html[data-theme="tome"] .tabs { border-bottom: 2px solid #6a5535; padding-left: 8px; gap: 6px; }
-html[data-theme="tome"] .tab { position: relative; border-radius: 0; margin-top: 16px; padding: 19px 16px 9px; color: #f6ecce; text-shadow: 0 1px 1px rgba(30,16,4,.7);
+html[data-theme="tome"] .tabs { border-bottom: 2px solid #6a5535; padding-left: 8px; gap: 4px; }
+html[data-theme="tome"] .tab { position: relative; border-radius: 0; margin-top: 16px; padding: 19px 11px 9px; color: #f6ecce; text-shadow: 0 1px 1px rgba(30,16,4,.7);
   clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%);
   background-color: #7b6741;
   background-image: linear-gradient(90deg, transparent 0, transparent 5px, rgba(226,190,108,.85) 5px, rgba(226,190,108,.85) 6px, transparent 6px,

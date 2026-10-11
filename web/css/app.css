@@ -363,7 +363,25 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 /* ---------- class-skill dot ---------- */
 .skills-tbl th:first-child, .skills-tbl td:first-child { text-align: center; width: 36px; }
 .cs-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); vertical-align: middle; }
-.quick-notes textarea { width: 100%; min-height: 110px; resize: vertical; }
+/* Overview: Offense with the Notes card filling the space under it */
+.stack { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.stack > .card { margin: 0; }
+.stack > .quick-notes { flex: 1; display: flex; flex-direction: column; min-height: 150px; }
+.quick-notes textarea { width: 100%; flex: 1; min-height: 110px; resize: vertical; }
+/* Notes tab */
+.notes-tab h3 .btn { margin-left: 8px; vertical-align: middle; }
+.notes-tab textarea { width: 100%; resize: vertical; }
+.note-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.note-grid.one { grid-template-columns: 1fr; }
+.note-card { border: 1px solid var(--line); border-left-width: 4px; border-radius: var(--radius); padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; background: var(--panel-2); }
+.note-card .row { display: flex; gap: 6px; align-items: center; }
+.note-card .row .grow, .note-row .grow { flex: 1; min-width: 0; }
+.note-card.att-ally { border-left-color: var(--good); } .note-card.att-friendly { border-left-color: #6ea36b; }
+.note-card.att-neutral { border-left-color: var(--muted); } .note-card.att-wary { border-left-color: var(--warn, #c9902b); }
+.note-card.att-hostile { border-left-color: var(--bad); } .note-card.att-unknown { border-left-style: dashed; }
+.note-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.note-row textarea { flex-basis: 100%; }
+.note-row.done input[type=text] { text-decoration: line-through; opacity: .6; }
 
 /* ---------- sheet search ---------- */
 #sheet-search-wrap { position: relative; }
@@ -510,7 +528,7 @@ html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="
 
 /* ---------- tab-shaped tabs (no transitions or size changes, so nothing flickers) ---------- */
 .tabs { display: flex; gap: 4px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 14px; padding: 0 2px; border-bottom: 3px solid var(--accent); }
-.tab { display: inline-flex; align-items: center; gap: 7px; font: inherit; font-weight: 600; border: 0; border-radius: 10px 10px 0 0; padding: 9px 15px; margin: 0; cursor: pointer; background: var(--panel-2); color: var(--muted); }
+.tab { display: inline-flex; align-items: center; gap: 7px; font: inherit; font-weight: 600; border: 0; border-radius: 10px 10px 0 0; padding: 9px 12px; margin: 0; cursor: pointer; background: var(--panel-2); color: var(--muted); }
 .tab:hover { background: var(--line); color: var(--ink); }
 .tab.active, .tab.active:hover { background: var(--accent); color: var(--accent-ink, #fff); }
 .block-toggle { border: 1px solid var(--line); border-radius: var(--radius); padding: 0 12px; background: var(--panel-2); }

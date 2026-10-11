@@ -18,3 +18,24 @@ test('index and ranking', () => {
   assert.equal(searchIndex(idx, 'mitt')[0].tab, 'companions');
   assert.deepEqual(searchIndex(idx, '  '), []);
 });
+
+test('the Notes tab entries are searchable and old saves get empty lists', async () => {
+  const { migrate } = await import('../web/js/model.js');
+  const old = newCharacter();
+  delete old.sessions; delete old.npcs; delete old.quests; delete old.lore;
+  migrate(old);
+  assert.deepEqual([old.sessions, old.npcs, old.quests, old.lore], [[], [], [], []]);
+  old.npcs.push({ name: 'Captain Veyra', role: 'Harbor guard', attitude: 'ally', where: 'The docks', notes: 'Owes us a favor' });
+  old.quests.push({ name: 'Find the caravan', done: false, notes: '' });
+  old.sessions.push({ date: '2026-10-11', name: 'The Fenwick ambush', notes: 'goblins' });
+  old.lore.push({ name: 'The Gilded Lantern', kind: 'Faction', notes: '' });
+  old.notes = 'Backstory';
+  const idx = buildIndex(old);
+  const hit = q => searchIndex(idx, q)[0];
+  assert.deepEqual([hit('veyra').kind, hit('veyra').tab], ['NPC', 'notes']);
+  assert.equal(hit('docks').name, 'Captain Veyra', 'finds an NPC by where they are');
+  assert.equal(hit('caravan').kind, 'Quest');
+  assert.equal(hit('ambush').kind, 'Session');
+  assert.equal(hit('lantern').kind, 'Faction');
+  assert.equal(hit('backstory').tab, 'notes');
+});

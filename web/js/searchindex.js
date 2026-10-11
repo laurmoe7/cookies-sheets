@@ -22,7 +22,11 @@ export function buildIndex(c, classesByName = {}) {
   for (const s of c.summons || []) add('Summon', s.name, 'buffs', s.spell);
   for (const k of c.companions || []) add('Companion', k.name, 'companions', k.species || k.form || '');
   if (c.quickNotes) add('Notes', 'Overview notes', 'overview', c.quickNotes);
-  if (c.notes) add('Notes', 'Bio & notes', 'bio', c.notes);
+  if (c.notes) add('Notes', 'Story notes', 'notes', c.notes);
+  for (const s of c.sessions || []) add('Session', s.name || s.date, 'notes', `${s.date || ''} ${s.notes || ''}`);
+  for (const n of c.npcs || []) add('NPC', n.name, 'notes', [n.role, n.where, n.notes].filter(Boolean).join(' '));
+  for (const q of c.quests || []) add('Quest', q.name, 'notes', q.notes);
+  for (const l of c.lore || []) add(l.kind || 'Lore', l.name, 'notes', l.notes);
   return out;
 }
 

@@ -5,6 +5,8 @@ export const CHANGELOG = [
   {
     version: 'Discord rolls', date: '2026-10-10',
     items: [
+      'New Notes tab for the story: quests, NPCs, places and factions, and a session log. Bio is its own tab again.',
+      'The Overview Notes box now fills the empty space under Offense.',
       'Rolls sent to Discord now say what they are for, next to the character name.',
       'New Modifier button in the roll bar: add a situational + or - to your d20 rolls, like not being proficient, a range increment, flanking, or your own number.',
       'Page turn is now a simple on/off option, and the turning page keeps its colors.',

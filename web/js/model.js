@@ -36,6 +36,10 @@ export function newCharacter() {
     resources: {}, // current points in class pools by id (arcane reservoir...); absent = full for the day
     trackers: [], // the player's own counters {name, max, cur}
     notes: '',
+    sessions: [], // {date, name, notes}: the session log on the Notes tab
+    npcs: [], // {name, role, attitude, where, notes}
+    quests: [], // {name, done, notes}
+    lore: [], // {name, kind, notes}: places, factions, items
     quickNotes: '', // the Notes box at the bottom of the Overview tab
   };
 }
