@@ -94,3 +94,19 @@ test('writing notes, changing pictures and spending other currencies are noticed
   const gems = n => ({ money: { pp: 0, gp: 0, sp: 0, cp: 0, custom: [{ name: 'Gems', amount: n }] } });
   assert.deepEqual(ev(at(gems(10)), at(gems(4))), ['gold-down'], 'spending a custom currency counts as spending money');
 });
+
+test('sprinkleMalaka adds his favourite word to the end of a sentence, only sometimes and never twice', async () => {
+  const { sprinkleMalaka } = await import('../web/js/pet/lines.js');
+  const always = () => 0, never = () => 0.99;
+  assert.equal(sprinkleMalaka('Fine. Do what you want.', 0.4, always), 'Fine. Do what you want, malaka.');
+  assert.equal(sprinkleMalaka('Are you serious right now?', 0.4, always), 'Are you serious right now, malaka?');
+  assert.equal(sprinkleMalaka('Wait for it...', 0.4, always), 'Wait for it, malaka...');
+  assert.equal(sprinkleMalaka('Fine. Do what you want.', 0.4, never), 'Fine. Do what you want.', 'it only happens some of the time');
+  assert.equal(sprinkleMalaka('You again, malaka.', 1, always), 'You again, malaka.', 'never twice');
+  assert.equal(sprinkleMalaka('*lights a cigarette* Talk fast.', 1, always), '*lights a cigarette* Talk fast.', 'actions are left alone');
+  assert.equal(sprinkleMalaka('Hm.', 1, always), 'Hm.', 'too short');
+  assert.equal(sprinkleMalaka('No sentence mark here', 1, always), 'No sentence mark here');
+  let hits = 0;
+  for (let i = 0; i < 1000; i++) if (sprinkleMalaka('Talk to me, you big idiot.', 0.4) !== 'Talk to me, you big idiot.') hits++;
+  assert.ok(hits > 300 && hits < 500, `about 40% of lines get it, got ${hits / 10}%`);
+});

@@ -3,8 +3,9 @@
 // decides whether he bothers to speak (options, cooldown, priority), and plays his faces and moves.
 import { COOKIE_HTML } from './art.js';
 import { facts, diffFacts } from './facts.js';
-import { pickLine, bleep } from './lines.js';
-import { options } from '../options.js';
+import { pickLine, bleep, sprinkleMalaka } from './lines.js';
+import { options, volume } from '../options.js';
+import { initDrag, placeBubble } from './drag.js';
 
 // Faces use the same data attributes as the Pet Shopper bird: eyes, mouth (the beak), arms and extras.
 const FACES = {
@@ -26,6 +27,7 @@ const FACES = {
   shifty: { eyes: 'open', mouth: 'wavy', arms: 'idle', x: ['sweat'] },
   sulk: { eyes: 'closed', mouth: 'wavy', arms: 'cover', x: [] },
   gloat: { eyes: 'evil', mouth: 'open', arms: 'cheer', x: [] },
+  snack: { eyes: 'happy', mouth: 'smile', arms: 'eat', x: [] },
   lighting: { eyes: 'squint', mouth: 'smile', arms: 'hold', x: [] },
   panic: { eyes: 'open', mouth: 'o', arms: 'cover', x: ['shock', 'sweat'] },
 };
@@ -85,6 +87,8 @@ const REACT = {
   search: { prio: 2, face: 'shifty', move: '' },
   'search-rules': { prio: 2, face: 'sneer', move: '' },
   poke: { prio: 5, face: 'mad', move: 'wiggle' },
+  drag: { prio: 4, face: 'shock', move: 'wiggle' },
+  dock: { prio: 4, face: 'smug', move: 'hop' },
   'poke-many': { prio: 5, face: 'mad', move: 'hophop' },
   idle: { prio: 1, face: 'smug', move: 'sniff' },
   prank: { prio: 1, face: 'wink', move: 'wiggle' },
@@ -105,12 +109,13 @@ const REACT = {
   'chatty-on': { prio: 5, face: 'evil', move: 'hop' },
 };
 // Some things he mentions at most this often (ms), so typing in the notes or searching does not make him nag.
-const TYPE_GAP = { notes: 45000, 'notes-erased': 45000, lookup: 20000, 'lookup-rule': 20000, search: 25000, 'search-rules': 25000, 'portrait-changed': 15000, 'icon-changed': 15000 };
+const TYPE_GAP = { notes: 45000, 'notes-erased': 45000, lookup: 20000, 'lookup-rule': 20000, search: 25000, 'search-rules': 25000, 'portrait-changed': 15000, 'icon-changed': 15000, drag: 12000, dock: 12000 };
 const lastType = {};
 const typeReady = key => !TYPE_GAP[key] || Date.now() - (lastType[key] || 0) >= TYPE_GAP[key];
 // How likely a line is at each chattiness, and the quiet gap he leaves between lines (ms).
 const TALK = { quiet: { odds: 0.3, gap: 45000 }, normal: { odds: 0.75, gap: 10000 }, chatty: { odds: 1, gap: 3500 } };
 
+let drag = null;
 let wrap, pet, bubble, bubbleTimer, faceTimer, moveTimer, moving = '';
 let settled = null, debounce = null, lastSpoke = 0, lastPrio = 0, pokes = [], idleTimer = null, name = '';
 
@@ -122,7 +127,8 @@ export function mountPet(slot) {
   wrap.innerHTML = COOKIE_HTML + '<div id="cookie-bubble" class="cookie-bubble" role="status" aria-live="polite" hidden></div>';
   pet = wrap.querySelector('#cookie');
   bubble = wrap.querySelector('#cookie-bubble');
-  pet.addEventListener('click', poke);
+  drag = initDrag(wrap, pet, bubble, { onDrop: () => sayKey('drag', 4), onDock: () => sayKey('dock', 4) });
+  pet.addEventListener('click', () => { if (!drag.justDragged()) poke(); });
   document.addEventListener('optionschange', refreshOptions);
   document.addEventListener('cookie-refuse', () => { const l = pickLine('refuse', baseVars()); if (l) speak(l, 5, 'refuse'); });
   refreshOptions();
@@ -188,7 +194,7 @@ function move(cls, ms = 900) {
 /** A short bird chirp made with the Web Audio API (only when "Cookie's squawks" is on). */
 let audio;
 function squawk() {
-  if (!options().cookieSound) return;
+  if (!options().cookieSound || volume() === 0) return;
   try {
     audio ||= new AudioContext();
     const t = audio.currentTime;
@@ -199,7 +205,7 @@ function squawk() {
       o.frequency.setValueAtTime(f, s);
       o.frequency.exponentialRampToValueAtTime(f * (1.4 + Math.random() * 0.5), s + 0.07);
       g.gain.setValueAtTime(0.0001, s);
-      g.gain.exponentialRampToValueAtTime(0.045, s + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.045 * volume(), s + 0.01);
       g.gain.exponentialRampToValueAtTime(0.0001, s + 0.09);
       o.connect(g).connect(audio.destination);
       o.start(s); o.stop(s + 0.1);
@@ -211,12 +217,14 @@ function squawk() {
 function speak(line, prio, key) {
   const r = REACT[key] || REACT.idle;
   let text = line.text;
+  text = sprinkleMalaka(text); // his favourite word, added to a line here and there
   if (options().cookieSwear === 'bleep') text = bleep(text);
   bubble.textContent = text;
   bubble.classList.toggle('action', text.startsWith('*'));
   bubble.hidden = true;
   void bubble.offsetWidth;
   bubble.hidden = false;
+  placeBubble();
   const ms = Math.min(9000, 2600 + text.length * 62);
   const cuteFace = line.cute ? (Math.random() < 0.4 ? 'fakecry' : 'cute') : r.face;
   face(cuteFace, ms);
@@ -359,7 +367,7 @@ function prop(cls, ms, style = {}, html = '') {
 }
 
 /** Names of the idle moves below, in the same order (shown in the developer tool). */
-export const IDLE_NAMES = ['blink', 'look around', 'roll eyes', 'long drag', 'yawn', 'scratch', 'tap feet', 'sway', 'sniff', 'flick ash', 'sit down', 'glare', 'peek', 'nod off', 'smoke ring', 'flick ash', 'light up', 'spit', 'tantrum', 'strut', 'boogie', 'twirl', 'roll about', 'stare you down', 'wink', 'scheme', 'play dead', 'fake cry', 'get dizzy', 'shifty look', 'sulk', 'gloat'];
+export const IDLE_NAMES = ['blink', 'look around', 'roll eyes', 'long drag', 'yawn', 'scratch', 'tap feet', 'sway', 'sniff', 'flick ash', 'sit down', 'glare', 'peek', 'nod off', 'smoke ring', 'flick ash', 'light up', 'spit', 'tantrum', 'strut', 'boogie', 'twirl', 'roll about', 'stare you down', 'wink', 'scheme', 'play dead', 'fake cry', 'get dizzy', 'shifty look', 'sulk', 'gloat', 'eat a cookie', 'take a poop'];
 
 const IDLE_MOVES = [
   () => { face('smug'); pet.dataset.eyes = 'closed'; later(180, () => { pet.dataset.eyes = 'open'; }); return 300; },                       // blink
@@ -380,7 +388,8 @@ const IDLE_MOVES = [
   () => { face('smug', 1600); move('hopsmall', 450); later(200, () => { prop('ash', 1300); prop('ash a2', 1300, { animationDelay: '.15s' }); }); return 1600; }, // flicks his ash
   () => {                                                                                                                              // flicks his lighter and lights up
     face('lighting', 1500);
-    prop('lighter', 1800, {}, '<b class="lt-flame"></b><b class="lt-body"></b>');
+    pet.classList.add('lighter-on');                       // the lighter is in his hand (drawn in his arm) for as long as the pose lasts
+    later(1500, () => pet.classList.remove('lighter-on'));
     later(650, () => { pet.classList.add('puff'); });
     later(1600, () => { pet.classList.remove('puff'); face('huff', 1500); });
     return 3100;
@@ -400,6 +409,20 @@ const IDLE_MOVES = [
   () => { face('shifty', 2400); return glance([[-3.4, 0, 500], [3.4, 0, 500], [-3.4, 0, 400], [3.4, 0, 500], [0, 0, 100]]); },          // looks around shiftily
   () => { face('sulk', 2400); return 2400; },                                                                                           // sulks
   () => { face('gloat', 1800); move('hop', 500); return 1800; },                                                                        // gloats
+  () => {                                                                                                                              // eats a cookie, a bite at a time
+    face('snack', 3600);
+    prop('snack', 3500, {}, '<i class="snack-chips"></i>');
+    later(400, () => { pet.dataset.mouth = 'chew'; });
+    for (const [t, c] of [[900, 'c1'], [1700, 'c2'], [2500, 'c3']]) later(t, () => { prop('crumb ' + c, 700); prop('crumb ' + c + ' b', 700, { animationDelay: '.08s' }); });
+    later(3000, () => { face('laugh', 600); });
+    return 3600;
+  },
+  () => {                                                                                                                              // squats and leaves a little present on the floor
+    face('mad', 1100); move('sit', 2600);
+    later(1000, () => { prop('poop', 3700, {}, '<svg viewBox="0 -10 40 46" width="100%" height="100%" aria-hidden="true"><g class="stink"><path d="M12 -2 q-3 -3 0 -6 q3 -3 0 -6"/><path d="M20 -3 q-3 -3 0 -6 q3 -3 0 -6"/><path d="M28 -2 q-3 -3 0 -6 q3 -3 0 -6"/></g><path class="poop-body" d="M20 2 q5 2 4 6 q8 1 9 7 q7 2 6 9 q0 8 -19 8 q-19 0 -19 -8 q-1 -7 6 -9 q1 -6 9 -7 q-1 -4 4 -6z"/><path class="poop-line" d="M9 23 q11 5 22 0 M12 15 q8 4 16 0"/></svg>'); face('shock', 700); });
+    later(1850, () => { face('smug', 1400); glance([[0, 3, 900], [3.4, 1, 300], [0, 0, 100]]); });
+    return 3500;
+  },
 ];
 
 /** Plays idle move number `i` (for trying them out); with no number, a random one. */

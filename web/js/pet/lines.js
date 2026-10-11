@@ -19,6 +19,8 @@ export const LINES = {
     "{name}! My favorite idiot. Don't touch my cigarettes.",
     "~Hi {name}! I definitely didn't go through your pockets while you were gone.",
     "Back already? I was having a nice, quiet, {name}-free time.",
+    "~Oh, {name}! You're back! *sniff* I wasn't waiting. I just happened to be here. Crying. About something else.",
+    "Welcome back, malaka. Try not to die in the first five minutes.",
   ],
   welcome_new: [
     "A new character? Fresh meat. Hope this one has more brains than the last, malaka.",
@@ -40,6 +42,7 @@ export const LINES = {
     "Don't look at me. I don't do healing. I do watching.",
     "That's {n} less HP. Nobody's surprised.",
     "*takes a drag* Mm. Do that again.",
+    "Ouch, that looked like it hurt, malaka. ...Do it again.",
   ],
   'big-hit': [
     "OH. Oh that's a lot. That's a LOT, {name}.",
@@ -59,6 +62,9 @@ export const LINES = {
     "{hp} HP. One sneeze and you're done, malaka.",
     "You're one bad roll from a funeral. I'll bring snacks.",
     "Hey. HEY. {hp} HP. Don't die before you pay me back.",
+    "~*sniffles* You can't die yet, {name}. I haven't finished robbing you.",
+    "~Oh no, you're almost dead? Who's going to pay me? *sob* Don't you dare.",
+    "You're bleeding on my floor, malaka.",
   ],
   downed: [
     "*pecks your forehead* Still breathing? Pity.",
@@ -70,6 +76,9 @@ export const LINES = {
     "*stands on your chest and lights a cigarette* Comfy?",
     "Aww, are we dying? Do you need a hug? No? Good. *kicks you again*",
     "Down, bleeding, and useless. A hat trick.",
+    "~Don't leave me, {name}! You still owe me eleven gold! *sob*",
+    "~*wails* Get up! Get up, you big baby! I can't carry you, I've got a cigarette going!",
+    "Get up, malaka! You're embarrassing the Crumblers!",
   ],
   revived: [
     "Back already? The worms were so excited.",
@@ -90,6 +99,9 @@ export const LINES = {
     "Dead. Fine. I'm taking the gold, the boots, and the nice pen.",
     "*puts out cigarette on your forehead* Just making sure.",
     "Pour one out for {name}. Actually, give it to me. I'm thirsty.",
+    "~*wails* Who's going to buy my cigarettes now?! Did you leave a will?",
+    "~I'm not crying. It's smoke. It's definitely smoke. *sniff* ...Did you leave a will?",
+    "Well. You died, malaka. Unlucky. ...Can I have your stuff?",
   ],
   'hp-heal': [
     "Healed {n}. Don't thank me, I did nothing.",
@@ -125,11 +137,13 @@ export const LINES = {
     "*slow clap* Level {level}. Your mother must be so disappointed in other ways.",
     "Level {level}. More power, same bad decisions.",
     "A new level. Let me guess, you'll put it all in the wrong stat.",
+    "Look at you, malaka, all grown up. Level {level}!",
   ],
   'level-down': [
     "Lost a level? Best news all day.",
     "Level {level}. Going the wrong way, malaka.",
     "Ha! A level down. Don't tell the Crumblers, they'll lose respect for you. More.",
+    "~You lost a level? That's so sad, {name}. *sniff* Can I have what fell out?",
   ],
   xp: [
     "More XP. Slowly. You'll be level 20 by the time I'm dead.",
@@ -150,6 +164,7 @@ export const LINES = {
     "Burning your spells like they're free. Count 'em, genius.",
     "{spell}. If it goes wrong, I was never here.",
     "~Ooh, {spell}! Pretty! (Don't aim it at me.)",
+    "Nice spell, malaka. Don't blow us all up.",
   ],
   'cast-generic': [
     "Another spell, another headache for the rest of us.",
@@ -165,6 +180,9 @@ export const LINES = {
     "Eight hours of sleep, and you'll still wake up useless.",
     "Spell slots back. Don't blow them all in the first five minutes. (You will.)",
     "New day, same malaka.",
+    "~Five more minutes. *fake sob* Nobody ever lets me sleep.",
+    "Sleep well, {name}. I'll keep watch. Over your coin purse.",
+    "Sleep tight, malaka. I'll be counting your coins.",
   ],
   'pool-spend': [
     "Spent one. The well isn't bottomless, you know.",
@@ -200,6 +218,7 @@ export const LINES = {
     "{summon} is gone. Bet it's relieved.",
     "Dismissed. Back to hell with you, {summon}.",
     "Cleaning up the evidence. I'm impressed.",
+    "~Aww, the little guy's gone. *sniff* Did he leave a tip?",
   ],
   companion: [
     "A new pet? I'm warning you. I'm the cute one around here.",
@@ -216,12 +235,14 @@ export const LINES = {
     "RIP {pet}. Great pet. Terrible owner.",
     "You got {pet} killed. You absolute fucking disaster.",
     "{pet} is dead. I was always the better pet anyway.",
+    "~*wails* {pet}! My only real friend! ...Second only to cigarettes.",
   ],
   'comp-down': [
     "{pet} is down. Tickle it. See if it moves.",
     "Look at {pet} on the floor. Must run in the family.",
     "{pet} is bleeding out. Do something. Or don't. I'm enjoying this.",
     "*pokes {pet} with a wing* Still breathing. Disappointing.",
+    "~Oh no, {pet}! Somebody do something! (Not me, I just ate.)",
   ],
   'comp-hurt-big': [
     "{pet} just lost {n} HP! Do you even feed this thing?",
@@ -259,6 +280,7 @@ export const LINES = {
     "Deleting your notes? Smart. They were awful.",
     "Poof. Gone. Nobody will miss that.",
     "Burning the evidence, huh? I like your style.",
+    "~You deleted your notes? *sniff* All that beautiful gossip. Gone.",
   ],
   'portrait-changed': [
     "New picture? Same ugly mug, though.",
@@ -313,6 +335,7 @@ export const LINES = {
     "A {item}. I'd steal it, but it's you who has to lug it around.",
     "~Ooh, a {item}! Can I hold it? Just for a second? I won't run off. I swear!",
     "*eyes the {item}* How much do you want for it? Name your price. Then double it, I'll be paying in cigarettes.",
+    "Nice {item}, malaka. Mine now.",
   ],
   'item-weapon': [
     "A {item}. Pointy. Finally something you can't mess up. ...You'll mess it up.",
@@ -331,6 +354,7 @@ export const LINES = {
     "Where's the {item}? Don't look at me. ~I didn't take it. Look at my face.",
     "Sold it? Dropped it? Lost it? Doesn't matter, you're a malaka either way.",
     "There goes the {item}. Hope you got a decent price. You didn't.",
+    "~Oh no, your {item} is gone! *sob* ...Where did you say you put it? Asking for a friend.",
   ],
   feat: [
     "'{item}'. A feat! I'm so proud. Truly.",
@@ -352,6 +376,7 @@ export const LINES = {
     "You got paid. Share it. With me. Right now.",
     "Ca-ching. Don't spend it all in one tavern. You will.",
     "Nice. Now hand over my cut.",
+    "Now we're talking, malaka. Split it with me?",
   ],
   rich: [
     "{n} gold?! Where'd you steal that from? Teach me.",
@@ -366,12 +391,15 @@ export const LINES = {
     "There goes your gold. Wasn't me. ~Look at my little face.",
     "Hah. Poorer by {n}. Smart.",
     "Money goes out, nothing comes in. Brilliant business plan, malaka.",
+    "~*sniff* All that lovely money, gone. Can I at least have what's left?",
+    "Where'd the money go, malaka? Don't look at me.",
   ],
   splurge: [
     "You blew {n} gold?! On what, malaka?",
     "Did you just drop {n} on that? I hope it comes with a hug.",
     "{n} gold gone. I know a guy. He's not a good guy, but he'd have done it cheaper.",
     "Fuck me, that's a lot of coin. Could've bought a thousand cigarettes.",
+    "~You spent {n} gold on THAT? *sobs* And nothing for me? After everything I've done?",
   ],
 
   // ---- buffs
@@ -385,6 +413,7 @@ export const LINES = {
     "{item} wore off. Back to your usual crap.",
     "No more {item}. Back to being you.",
     "And there it goes. Easy come, easy go.",
+    "~Aww, the nice glow's gone. *sniff* Cast it again? Pretty please?",
   ],
   'ability-hurt': [
     "Ability damage? Stupid and weak. How surprising.",
@@ -560,12 +589,31 @@ export const LINES = {
     "~Aww, you want to pet the little birdy? ...Try it. See what happens.",
     "Poke me one more time. I dare you.",
     "Keep poking, see where that gets you.",
+    "Malaka! What did I say about the feathers?",
+    "Poke me again, malaka. See what happens.",
+  ],
+  drag: [
+    "*flaps around* Hands off the wings! ...Fine, this spot's better anyway.",
+    "Oi! Warn a bird before you grab him, malaka.",
+    "*straightens his feathers* Put me down somewhere with a view next time.",
+    "You could've just asked. ...No, you couldn't. Nobody ever asks.",
+    "I'll allow it. Once.",
+    "~*sniff* Put me down gently, I bruise easy. ...You're getting a bill.",
+    "Whee. No. Not whee. I hate this. Put me down somewhere quiet.",
+  ],
+  dock: [
+    "*settles back in* Home, sweet leather home.",
+    "Back in the sidebar. Where the smoke can't hurt anyone.",
+    "Fine, fine. Put the bird back in his box.",
+    "~Oh, thank goodness, my own little corner. *sniff* I was so scared out there.",
   ],
   'poke-many': [
     "THAT'S IT. You're on the list. The Crumblers' list.",
     "You like getting pecked, don't you? You sick fuck.",
     "Fine. Tell me what you want. Spit it out, malaka.",
     "I swear to every god there is. One more.",
+    "~*sniff* Why does everyone keep poking me? I'm just a little birdy. ...Poke again and the Crumblers hear about this.",
+    "MALAKA! One. More. Poke.",
   ],
   idle: [
     "*taps ash on the floor* Anyone home?",
@@ -586,8 +634,23 @@ export const LINES = {
     "*stares at you* ...What?",
     "I knew a witch who died of boredom. It's not pretty. She was boring.",
     "Hey {name}. Hey. Hey. Hey. Nothing. Just wanted to see you jump.",
+    "~*sniff* Nobody ever asks how I'm doing. ...Don't. I don't want to talk about it.",
+    "*flicks ash* I should've been a pirate. Nobody asks pirates for a character sheet.",
+    "Malaka, I've been standing here for an hour. Do something.",
+    "*taps ash* You know what your problem is, malaka? You think too much.",
+    "Hey, malaka. Yeah, you. Nice sheet. Terrible taste.",
   ],
 };
+
+/**
+ * Now and then he tacks "malaka" onto the end of a line that does not have it yet ("Fine, malaka."). Skips actions (*...*), very short or very
+ * long lines, and lines that do not end in a sentence mark. \`odds\` is the chance (0 to 1) and \`rng\` returns [0, 1), so tests can fix both.
+ */
+export function sprinkleMalaka(text, odds = 0.4, rng = Math.random) {
+  if (/malaka/i.test(text) || text.includes('*') || text.length < 12 || text.length > 150) return text;
+  if (!/[.!?…]$/.test(text) || rng() >= odds) return text;
+  return text.replace(/\s*([.!?…]+)$/, ', malaka$1');
+}
 
 /** Strong words the "Bleeped" option turns into stars. */
 const SWEARS = /\b(fuck\w*|shit\w*|ass(?:hole)?|bastards?|piss\w*|dick\w*|bitch\w*|cunt\w*|prick\w*|damn\w*)\b/gi;

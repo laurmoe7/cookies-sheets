@@ -81,8 +81,9 @@
 #cookie[data-arms="reach"] .arm-r{transform: translate(-6px, -30px) rotate(-160deg);}
 #cookie[data-arms="nom"] .arm-l{animation: nom-l .32s ease-in-out infinite alternate;}
 #cookie[data-arms="nom"] .arm-r{animation: nom-r .32s ease-in-out infinite alternate .16s;}
-#cookie[data-arms="hold"] .arm-l{transform: translate(20px, -10px) rotate(-120deg);}
-#cookie[data-arms="hold"] .arm-r{transform: translate(-20px, -10px) rotate(120deg);}
+/* holding the lighter: only the arm on the lighter's side comes up, to the lighter's body at his cigarette; the other hangs and sways */
+#cookie[data-arms="hold"] .arm-l{animation: sway-l 2.6s ease-in-out infinite;}
+#cookie[data-arms="hold"] .arm-r{transform: translate(-14px, 3px) rotate(100deg);}
 #cookie[data-arms="cover"] .arm-l{transform: translate(24px, -12px) rotate(-130deg);}
 #cookie[data-arms="cover"] .arm-r{transform: translate(-24px, -12px) rotate(130deg);}
 #cookie[data-arms="cheer"] .arm-l{animation: cheer-l .3s ease-in-out infinite alternate;}
@@ -95,7 +96,7 @@
 #cookie[data-arms="pat"] .arm-l{animation: cheer-l .3s ease-in-out infinite alternate;}
 #cookie[data-arms="pat"] .arm-r{animation: pat .28s ease-in-out infinite alternate;}
 #cookie[data-arms="eyerub"] .arm-l{animation: eyerub-l .4s ease-in-out infinite alternate;}
-#cookie[data-arms="eyerub"] .arm-r{animation: eyerub-r .4s ease-in-out infinite alternate .2s;}
+#cookie[data-arms="eyerub"] .arm-r{animation: eyerub-r .4s ease-in-out infinite alternate;}
 #cookie[data-arms="rub"] .arm-l{animation: rub-l .55s linear infinite;}
 #cookie[data-arms="rub"] .arm-r{animation: rub-r .55s linear infinite;}
 #cookie .arm-cuff,#cookie .arm-hand{display: none;}
@@ -169,8 +170,8 @@
 @keyframes ear-jiggle-r{ 0%, 100% { transform: rotate(0); } 18% { transform: rotate(16deg); } 38% { transform: rotate(-11deg); } 58% { transform: rotate(6deg); } 78% { transform: rotate(-3deg); } }
 @keyframes eye-squint{ 0% { scale: 1 1; } 18% { scale: 1.15 .32; } 26% { scale: 1.12 .42; } 80% { scale: 1.12 .42; } 100% { scale: 1 1; } }
 @keyframes eye-wide{ 0% { scale: 1 1; } 16% { scale: 1.38 1.6; } 28% { scale: 1.28 1.45; } 78% { scale: 1.28 1.45; } 100% { scale: 1 1; } }
-@keyframes eyerub-l{ from { transform: translate(28px, -22px) rotate(-140deg); } to { transform: translate(32px, -18px) rotate(-150deg); } }
-@keyframes eyerub-r{ from { transform: translate(-28px, -22px) rotate(140deg); } to { transform: translate(-32px, -18px) rotate(150deg); } }
+@keyframes eyerub-l{ from { transform: translate(25px, -11px) rotate(-140deg); } to { transform: translate(28px, -14px) rotate(-150deg); } }
+@keyframes eyerub-r{ from { transform: translate(-25px, -11px) rotate(140deg); } to { transform: translate(-28px, -14px) rotate(150deg); } }
 @keyframes fan-l{ from { transform: translate(10px, -14px) rotate(-150deg); } to { transform: translate(10px, -14px) rotate(-100deg); } }
 @keyframes fan-r{ from { transform: translate(-10px, -14px) rotate(150deg); } to { transform: translate(-10px, -14px) rotate(100deg); } }
 @keyframes foot-wiggle{ 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-1.2px, 0); } 50% { transform: translate(1.2px, 0); } 75% { transform: translate(-.6px, 0); } }
@@ -229,7 +230,10 @@
 /* ---- how Cookie sits in this app (everything above is the Pet Shopper bird) ---- */
 #cookie-slot { --cs: 1.25; position: relative; height: calc(140px * var(--cs)); margin: 4px 0 8px; }
 #cookie-slot[hidden] { display: none; }
-#cookie { --pet-size: var(--cs); position: absolute; left: 2px; top: 0; margin: 0; z-index: 5; cursor: pointer; user-select: none; -webkit-user-select: none; }
+/* Dragged out of the sidebar: he floats over the page, and the bubble (positioned by drag.js) stays on screen. */
+#cookie-slot.floating { position: fixed; z-index: 45; width: calc(154px * var(--cs)); margin: 0; }
+#cookie-slot.dragging #cookie { cursor: grabbing; }
+#cookie { --pet-size: var(--cs); position: absolute; left: 2px; top: 0; margin: 0; z-index: 5; cursor: grab; user-select: none; -webkit-user-select: none; }
 #cookie .cig-body { fill: #f4efe4; stroke: var(--pet-ink); stroke-width: 1.1; }
 #cookie .cig-filter { fill: #d49b52; stroke: var(--pet-ink); stroke-width: 1.1; }
 #cookie .cig-ember { fill: #ff6a1f; animation: cig-ember 1.4s ease-in-out infinite alternate; }
@@ -239,12 +243,15 @@
 @keyframes cig-smoke { 0% { stroke-dashoffset: 34; opacity: 0; } 15% { opacity: .9; } 70% { stroke-dashoffset: 0; opacity: .5; } 100% { stroke-dashoffset: 0; opacity: 0; transform: translate(3px, -8px); } }
 html[data-motion="off"] #cookie *, html[data-motion="off"] #cookie { animation: none !important; transition: none !important; }
 
-.cookie-bubble { position: absolute; left: calc(2px + 142px * var(--cs)); top: calc(92px * var(--cs)); transform: translateY(-100%); z-index: 55; width: max-content; max-width: min(320px, 40vw); padding: 10px 14px; border-radius: 14px 14px 14px 4px;
+.cookie-bubble { position: absolute; left: calc(2px + 142px * var(--cs)); top: calc(92px * var(--cs)); transform: translateY(var(--ty, -100%)); z-index: 55; width: max-content; max-width: min(320px, 40vw); padding: 10px 14px; border-radius: 14px 14px 14px 4px;
   background: var(--panel); color: var(--ink); border: 2px solid var(--line, #3a3d46); box-shadow: 0 6px 22px rgba(0, 0, 0, .45); font-size: 14px; line-height: 1.35;
   animation: cookie-pop .22s cubic-bezier(.2, 1.4, .4, 1); pointer-events: none; transform-origin: left bottom; }
 .cookie-bubble[hidden] { display: none; }
 .cookie-bubble.action { font-style: italic; opacity: .92; }
-@keyframes cookie-pop { from { transform: translateY(-100%) scale(.6); opacity: 0; } to { transform: translateY(-100%); opacity: 1; } }
+@keyframes cookie-pop { from { transform: translateY(var(--ty, -100%)) scale(.6); opacity: 0; } to { transform: translateY(var(--ty, -100%)); opacity: 1; } }
+.cookie-bubble.left { border-radius: 14px 14px 4px 14px; transform-origin: right bottom; }
+.cookie-bubble.below { border-radius: 4px 14px 14px 14px; transform-origin: left top; }
+.cookie-bubble.left.below { border-radius: 14px 4px 14px 14px; transform-origin: right top; }
 html[data-theme="tome"] .cookie-bubble { background: #bba97f; color: #261a0b; border-color: #8a6a25; font-family: var(--serif, Georgia, serif); }
 html[data-theme="tome"] @media (max-height: 520px) { #cookie-slot { display: none; } }
 #cookie .brows path { fill: none; stroke: var(--pet-ink); stroke-width: 3.4; stroke-linecap: round; transition: transform .2s; }
@@ -261,6 +268,12 @@ html[data-theme="tome"] @media (max-height: 520px) { #cookie-slot { display: non
 #cookie .star path:not(.glint) { transform-box: fill-box; transform-origin: center; animation: star-flash 1.1s ease-in-out infinite; }
 #cookie .star .glint { fill: #fff; stroke: #e0a92a; stroke-width: .5; opacity: 0; animation: glint .9s ease-in-out infinite; }
 #cookie .tear { fill: #a9dcff; stroke: var(--pet-ink); stroke-width: 1.2; }
+/* fake crying: the tears run down his cheeks, two drops per eye, staggered (still drops when animations are off) */
+#cookie [data-eyes="teary"] .tear { transform-box: fill-box; transform-origin: 50% 0; animation: cookie-tear 1.4s ease-in infinite backwards; }
+#cookie [data-eyes="teary"] .tear2 { animation-delay: .7s; }
+#cookie [data-eyes="teary"] .eye-r.tear { animation-delay: .25s; }
+#cookie [data-eyes="teary"] .eye-r.tear2 { animation-delay: .95s; }
+@keyframes cookie-tear { 0% { transform: translateY(-3px) scale(.45); opacity: 0; } 14% { transform: translateY(0) scale(1); opacity: 1; } 78% { opacity: 1; } 100% { transform: translateY(15px) scale(.9, 1.2); opacity: 0; } }
 @keyframes star-flash { 0%, 100% { fill: var(--pet-star); transform: scale(1); } 40% { fill: #fffbe8; transform: scale(1.15); } }
 @keyframes glint { 0%, 100% { opacity: 0; } 40%, 60% { opacity: 1; } }
 #cookie[data-eyes="squint"] .line path { stroke-width: 3.8; }
@@ -273,21 +286,54 @@ html[data-theme="tome"] @media (max-height: 520px) { #cookie-slot { display: non
 .cookie-prop.ring.r2 { width: 9px; height: 5px; }
 .cookie-prop.ash { left: calc(2px + 94px * var(--cs)); top: calc(100px * var(--cs)); width: 3px; height: 3px; border-radius: 50%; background: #9a948e; opacity: 0; animation: cookie-ash 1.2s ease-in forwards; }
 .cookie-prop.ash.a2 { left: calc(2px + 98px * var(--cs)); background: #ff8a3c; width: 2px; height: 2px; }
-.cookie-prop.lighter { left: calc(2px + 93.4px * var(--cs) - 5px); top: calc(97.8px * var(--cs) - 13px); width: 10px; height: 30px; transform-origin: 50% 90%; animation: cookie-lighter 1.8s ease-in-out forwards; }
-.cookie-prop.lighter b { position: absolute; display: block; }
-.lt-body { left: 0; top: 14px; width: 10px; height: 15px; border-radius: 2px; border: 1px solid #3a2a22; background: linear-gradient(90deg, #8a8f98, #eef0f4 45%, #8a8f98); box-sizing: border-box; }
-.lt-body::before { content: ""; position: absolute; left: -1px; top: -1px; width: 10px; height: 4px; border-radius: 2px 2px 0 0; background: #c9a24a; border: 1px solid #3a2a22; box-sizing: content-box; }
-.lt-flame { left: .5px; top: 0; width: 9px; height: 15px; border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%; background: radial-gradient(ellipse at 50% 75%, #fff6b0 0, #ffb53c 45%, rgba(255, 90, 20, .8) 100%); transform-origin: 50% 100%; opacity: 0; animation: cookie-flame 1.8s ease-in-out forwards; }
 .cookie-prop.spit { left: calc(2px + 86px * var(--cs)); top: calc(96px * var(--cs)); width: 5px; height: 5px; border-radius: 50%; background: #cfe9ff; border: 1px solid #7fa8c9; animation: cookie-spit .8s cubic-bezier(.3, .6, .6, 1) forwards; }
 @keyframes cookie-ring { 0% { opacity: 0; transform: translate(0, 0) scale(.4); } 15% { opacity: .9; } 100% { opacity: 0; transform: translate(46px, -34px) scale(3.4); } }
 @keyframes cookie-ash { 0% { opacity: 0; transform: translateY(0); } 15% { opacity: 1; } 100% { opacity: 0; transform: translateY(calc(40px * var(--cs))); } }
 @keyframes cookie-flame { 0%, 26% { opacity: 0; transform: scale(.2); } 33% { opacity: 1; transform: scale(1, 1.2); } 46% { opacity: 1; transform: scale(.88, 1.3) skewX(6deg); } 60% { opacity: 1; transform: scale(1, 1.1) skewX(-6deg); } 72% { opacity: 1; transform: scale(.9, 1.25) skewX(4deg); } 80%, 100% { opacity: 0; transform: scale(.2); } }
 @keyframes cookie-spit { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(70px, 36px); } }
 html[data-motion="off"] .cookie-prop { display: none; }
+/* eating a cookie: both hands bring it up to his beak, he chews, and it goes a bite at a time (the cookie is a prop in front of him) */
+#cookie[data-arms="eat"] .arm-l{animation: eat-l .35s ease-in-out infinite alternate;}
+#cookie[data-arms="eat"] .arm-r{animation: eat-r .35s ease-in-out infinite alternate;}
+@keyframes eat-l{ from { transform: translate(30px, 1px) rotate(-100deg); } to { transform: translate(31px, -1px) rotate(-104deg); } }
+@keyframes eat-r{ from { transform: translate(-30px, 1px) rotate(100deg); } to { transform: translate(-31px, -1px) rotate(104deg); } }
+.cookie-prop.snack { --b1: radial-gradient(circle at 88% 22%, transparent 0 30%, #000 31%); --b2: radial-gradient(circle at 93% 72%, transparent 0 32%, #000 33%); --b3: radial-gradient(circle at 45% 55%, transparent 0 46%, #000 47%);
+  left: calc(2px + 67px * var(--cs)); top: calc(94px * var(--cs)); width: calc(16px * var(--cs)); height: calc(16px * var(--cs)); border-radius: 50%; box-sizing: border-box;
+  background: radial-gradient(circle at 32% 28%, #f2c985, #c98e49 72%); border: 1.5px solid #3a2a22; -webkit-mask-composite: source-in; mask-composite: intersect; animation: cookie-snack 3.5s linear forwards; }
+.cookie-prop.snack .snack-chips { position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 30% 38%, #4a2a18 0 9%, transparent 10%), radial-gradient(circle at 64% 26%, #4a2a18 0 8%, transparent 9%), radial-gradient(circle at 52% 62%, #4a2a18 0 9%, transparent 10%), radial-gradient(circle at 76% 58%, #4a2a18 0 7%, transparent 8%), radial-gradient(circle at 26% 70%, #4a2a18 0 7%, transparent 8%); }
+@keyframes cookie-snack {
+  0% { opacity: 0; transform: scale(.3) rotate(-10deg); -webkit-mask-image: none; mask-image: none; }
+  6%, 24% { opacity: 1; transform: scale(1) rotate(-6deg); -webkit-mask-image: none; mask-image: none; }
+  25%, 48% { -webkit-mask-image: var(--b1); mask-image: var(--b1); }
+  49%, 70% { -webkit-mask-image: var(--b1), var(--b2); mask-image: var(--b1), var(--b2); }
+  71%, 90% { opacity: 1; transform: scale(.92) rotate(-6deg); -webkit-mask-image: var(--b1), var(--b2), var(--b3); mask-image: var(--b1), var(--b2), var(--b3); }
+  100% { opacity: 0; transform: scale(.3) rotate(-6deg); -webkit-mask-image: var(--b1), var(--b2), var(--b3); mask-image: var(--b1), var(--b2), var(--b3); } }
+.cookie-prop.crumb { left: calc(2px + 74px * var(--cs)); top: calc(100px * var(--cs)); width: 3px; height: 3px; border-radius: 50%; background: #c98e49; --dx: -8px; animation: cookie-crumb .7s ease-in forwards; }
+.cookie-prop.crumb.b { margin-left: 5px; --dx: 9px; width: 2px; height: 2px; background: #4a2a18; }
+.cookie-prop.crumb.c2 { --dx: 7px; } .cookie-prop.crumb.c2.b { --dx: -9px; } .cookie-prop.crumb.c3 { --dx: -3px; }
+@keyframes cookie-crumb { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(var(--dx), calc(34px * var(--cs))); } }
+
+/* a little present on the floor: a cartoon poop with a face that pops out with a squish and gets a few stink lines */
+.cookie-prop.poop { z-index: 4; left: calc(2px + 66px * var(--cs)); top: calc(132px * var(--cs)); width: calc(18px * var(--cs)); height: calc(20.7px * var(--cs)); transform-origin: 50% 85%; animation: cookie-poop 3.6s ease-out forwards; } /* z 4 is behind him (he is 5): it drops out from behind his belly and lands under him, between his feet, and is never drawn over him */
+.cookie-prop.poop .poop-body { fill: #9a6a3a; stroke: #3a2a22; stroke-width: 1.8; stroke-linejoin: round; }
+.cookie-prop.poop .poop-line { fill: none; stroke: #6b4423; stroke-width: 1.4; stroke-linecap: round; }
+.cookie-prop.poop .stink path { fill: none; stroke: #8fbf4a; stroke-width: 1.6; stroke-linecap: round; animation: cookie-stink 1.1s ease-in-out infinite; }
+.cookie-prop.poop .stink path:nth-child(2) { animation-delay: .3s; } .cookie-prop.poop .stink path:nth-child(3) { animation-delay: .6s; }
+@keyframes cookie-stink { 0%, 100% { opacity: .15; transform: translateY(2px); } 50% { opacity: .9; transform: translateY(-2px); } }
+@keyframes cookie-poop { 0% { opacity: 0; transform: translateY(calc(-34px * var(--cs))) scale(.6, .6); } 4% { opacity: 1; transform: translateY(calc(-34px * var(--cs))) scale(.6, .6); } 20% { opacity: 1; transform: translateY(0) scale(1, 1); animation-timing-function: ease-in; } 25% { transform: translateY(0) scale(1.25, .6); } 31% { transform: translateY(0) scale(.92, 1.1); } 37%, 86% { opacity: 1; transform: translateY(0) scale(1, 1); } 100% { opacity: 0; transform: translateY(0) scale(1, 1); } }
+/* the lighter is drawn inside his right arm (see art.js), so he holds it for the whole move; pet.js adds .lighter-on while he does */
+#cookie .lighter-svg { display: none; }
+#cookie.lighter-on .lighter-svg { display: inline; }
+#cookie .lt-body { fill: #cfd3da; stroke: var(--pet-ink); stroke-width: 1.1; }
+#cookie .lt-cap { fill: #c9a24a; stroke: var(--pet-ink); stroke-width: 1.1; }
+#cookie .lt-flame, #cookie .lt-flame-in { transform-box: fill-box; transform-origin: 50% 100%; opacity: 0; }
+#cookie .lt-flame { fill: #ff8a1f; }
+#cookie .lt-flame-in { fill: #fff2a8; }
+#cookie.lighter-on .lt-flame, #cookie.lighter-on .lt-flame-in { animation: cookie-flame 1.5s ease-in-out forwards; }
 
 /* more eyes: wink, X (dead), dizzy spirals and slanted evil eyes */
 #cookie[data-eyes="wink"] [data-eyes="wink"], #cookie[data-eyes="xx"] [data-eyes="xx"], #cookie[data-eyes="dizzy"] [data-eyes="dizzy"], #cookie[data-eyes="evil"] [data-eyes="evil"] { display: inline; }
 #cookie [data-eyes="dizzy"] path { stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: cookie-dizzy .7s linear infinite; }
 #cookie [data-eyes="xx"] path { stroke-width: 3.4; }
 @keyframes cookie-dizzy { to { transform: rotate(360deg); } }
-@keyframes cookie-lighter { 0% { opacity: 0; transform: translate(28px, 24px) rotate(28deg); } 22% { opacity: 1; transform: none; } 78% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translate(28px, 24px) rotate(28deg); } }
