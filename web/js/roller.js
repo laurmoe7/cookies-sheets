@@ -56,6 +56,12 @@ function syncBar() {
 
 const withMode = expr => { expr = addMods(expr, modsTotal()); return mode && /^d20/.test(expr) ? mode + ' ' + expr : expr; };
 const withModLabel = (label, expr) => (mods.length && /^d20/.test(expr) ? [label, modsLabel(mods)].filter(Boolean).join(' ') : label);
+/** Preset chips in two rows: bonuses, then penalties. */
+const presetGroups = list => [['Bonuses', 'plus', list.filter(m => m.n > 0)], ['Penalties', 'minus', list.filter(m => m.n < 0)]]
+  .filter(([, , l]) => l.length)
+  .map(([head, cls, l]) => '<div class="small mod-head ' + cls + '">' + head + '</div><div class="roll-bar" style="margin:4px 0 8px">' +
+    l.map(m => '<button class="rchip ' + (mods.some(x => x.label === m.label) ? 'on' : '') + '" data-mod-preset="' + MOD_PRESETS.indexOf(m) + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(bonusText(m.n)) + '</button>').join(' ') + '</div>').join('');
+
 const afterRoll = () => { mode = ''; if (!keepMods) mods = []; syncBar(); };
 
 /** The Modifier window: preset situational modifiers (toggle them), your own number, and whether they stay after the next roll. */
@@ -63,7 +69,7 @@ function modsWindow() {
   modal('Roll modifier', (body, close) => {
     const draw = () => {
       body.innerHTML = `<p class="small muted">Added to your d20 rolls (attacks, saves, skills, checks) ${keepMods ? 'until you clear it' : 'for the next roll only'}.</p>
-        <div class="roll-bar" style="margin:6px 0">${MOD_PRESETS.map((m, i) => `<button class="rchip ${mods.some(x => x.label === m.label) ? 'on' : ''}" data-mod-preset="${i}" title="${esc(m.tip || '')}">${esc(m.label)} ${esc(bonusText(m.n))}</button>`).join(' ')}</div>
+        ${presetGroups(MOD_PRESETS)}
         <div class="row" style="margin:10px 0"><input id="mod-n" class="w3" type="number" placeholder="±" aria-label="Modifier"><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>
         <div class="small" style="margin:6px 0">${mods.length ? 'Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b>' : '<span class="muted">No modifier set.</span>'}</div>
         <label class="small"><input type="checkbox" id="mod-keep" ${keepMods ? 'checked' : ''}> Keep it until I clear it</label>
@@ -168,7 +174,6 @@ function rollWindow(p, attack) {
   const snap = { mods: mods.map(m => ({ ...m })), mode };
   let went = false;
   modal(title, (body, close) => {
-    const chips = list => list.map(m => '<button class="rchip ' + (mods.some(x => x.label === m.label) ? 'on' : '') + '" data-mod-preset="' + MOD_PRESETS.indexOf(m) + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(bonusText(m.n)) + '</button>').join(' ');
     const draw = () => {
       const exprs = items.map(it => withMode(it.expr));
       const shown = exprs[0] + (exprs.length > 1 ? ' … and ' + (exprs.length - 1) + ' more' : '');
@@ -176,7 +181,7 @@ function rollWindow(p, attack) {
       const sending = !!(options().webhook && options().rollSend);
       body.innerHTML = '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' +
         (d20 ? '<div class="roll-bar" style="margin:8px 0"><button class="rchip ' + (mode === 'adv' ? 'on' : '') + '" data-win-mode="adv">Advantage</button><button class="rchip ' + (mode === 'dis' ? 'on' : '') + '" data-win-mode="dis">Disadvantage</button></div>' : '') +
-        (presets.length ? '<div class="small muted">' + (attack ? 'Attack modifiers' : 'Modifiers') + '</div><div class="roll-bar" style="margin:4px 0 8px">' + chips(presets) + '</div>' : '') +
+        (presets.length ? presetGroups(presets) : '') +
         (d20 ? '<p class="small muted" style="margin:0">Charging, fighting defensively, shaken, power attack and other conditions that last or change your AC are on the Buffs &amp; Conditions tab and apply by themselves.</p>' : '') +
         '<div class="row" style="margin:8px 0"><input id="mod-n" class="w3" type="number" placeholder="±" aria-label="Modifier"><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>' +
         (d20 && mods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b></div>' : '') +
