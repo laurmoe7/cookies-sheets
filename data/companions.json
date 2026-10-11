@@ -4790,7 +4790,17 @@
     "racialText": "+4 Perception",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on Fly checks"
+    "masterBonus": "Master gains a +3 bonus on Fly checks",
+    "type": "animal",
+    "cr": "1/8",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Bat",
+    "fastHealing": 0
    },
    {
     "name": "Blue-ringed Octopus",
@@ -4839,7 +4849,17 @@
     "racialText": "+10 Escape Artist, +8 Stealth",
     "specialQualities": "",
     "specialAttacks": "poison",
-    "masterBonus": "Master gains a +3 bonus on Swim checks"
+    "masterBonus": "Master gains a +3 bonus on Swim checks",
+    "type": "animal (aquatic)",
+    "cr": "1/2",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "ink cloud",
+    "languages": "",
+    "entry": "Familiar, Octopus, Blue-Ringed",
+    "fastHealing": 0
    },
    {
     "name": "Cat",
@@ -4887,7 +4907,17 @@
     "racialText": "+4 Climb, +4 Stealth",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on Stealth checks"
+    "masterBonus": "Master gains a +3 bonus on Stealth checks",
+    "type": "animal",
+    "cr": "1/4",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Cat",
+    "fastHealing": 0
    },
    {
     "name": "Donkey Rat",
@@ -4926,7 +4956,17 @@
     "racialText": "",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +2 bonus on Fortitude saves"
+    "masterBonus": "Master gains a +2 bonus on Fortitude saves",
+    "type": "animal",
+    "cr": "1/4",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Donkey Rat",
+    "fastHealing": 0
    },
    {
     "name": "Flying Squirrel",
@@ -4969,7 +5009,17 @@
     "racialText": "+12 Acrobatics, +8 Climb",
     "specialQualities": "glide",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on Fly checks"
+    "masterBonus": "Master gains a +3 bonus on Fly checks",
+    "type": "animal",
+    "cr": "1/3",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Squirrel, Flying",
+    "fastHealing": 0
    },
    {
     "name": "Fox",
@@ -5012,7 +5062,17 @@
     "racialText": "+4 Acrobatics when jumping, +4 Survival when tracking by scent",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +2 bonus on Reflex saves"
+    "masterBonus": "Master gains a +2 bonus on Reflex saves",
+    "type": "animal",
+    "cr": "1/4",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Fox",
+    "fastHealing": 0
    },
    {
     "name": "Goat",
@@ -5054,7 +5114,17 @@
     "racialText": "+4 Acrobatics when jumping, +4 Survival to find food",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on Survival checks"
+    "masterBonus": "Master gains a +3 bonus on Survival checks",
+    "type": "animal",
+    "cr": "1/3",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Goat",
+    "fastHealing": 0
    },
    {
     "name": "Greensting Scorpion",
@@ -5097,7 +5167,17 @@
     "racialText": "+4 Climb, +4 Perception, +4 Stealth",
     "specialQualities": "",
     "specialAttacks": "poison",
-    "masterBonus": "Master gains a +4 bonus on Initiative checks"
+    "masterBonus": "Master gains a +4 bonus on Initiative checks",
+    "type": "vermin",
+    "cr": "1/4",
+    "dr": "",
+    "resist": "",
+    "immune": "mind-affecting effects",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Scorpion, Greensting",
+    "fastHealing": 0
    },
    {
     "name": "Hawk",
@@ -5137,7 +5217,17 @@
     "racialText": "+8 Perception",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on sight-based and opposed Perception checks in bright light"
+    "masterBonus": "Master gains a +3 bonus on sight-based and opposed Perception checks in bright light",
+    "type": "animal",
+    "cr": "1/3",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Hawk",
+    "fastHealing": 0
    },
    {
     "name": "Hedgehog",
@@ -5169,7 +5259,17 @@
     "racialText": "",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +2 bonus on Will saves"
+    "masterBonus": "Master gains a +2 bonus on Will saves",
+    "type": "animal",
+    "cr": "1/8",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Hedgehog",
+    "fastHealing": 0
    },
    {
     "name": "House Centipede",
@@ -5211,7 +5311,17 @@
     "racialText": "+4 Perception, +8 Stealth",
     "specialQualities": "",
     "specialAttacks": "poison",
-    "masterBonus": "Master gains a +3 bonus on Stealth checks"
+    "masterBonus": "Master gains a +3 bonus on Stealth checks",
+    "type": "vermin",
+    "cr": "1/8",
+    "dr": "",
+    "resist": "",
+    "immune": "mind-affecting effects",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Centipede, House",
+    "fastHealing": 0
    },
    {
     "name": "King Crab",
@@ -5249,7 +5359,17 @@
     "racialText": "+4 Perception",
     "specialQualities": "water dependency",
     "specialAttacks": "constrict (1d2-2)",
-    "masterBonus": "Master gains a +2 bonus on CMB checks to start and maintain a grapple"
+    "masterBonus": "Master gains a +2 bonus on CMB checks to start and maintain a grapple",
+    "type": "vermin (aquatic)",
+    "cr": "1/4",
+    "dr": "",
+    "resist": "",
+    "immune": "mind-affecting effects",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Crab, King",
+    "fastHealing": 0
    },
    {
     "name": "Lizard",
@@ -5290,7 +5410,17 @@
     "racialText": "+8 Acrobatics",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on Climb checks"
+    "masterBonus": "Master gains a +3 bonus on Climb checks",
+    "type": "animal",
+    "cr": "1/6",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Lizard",
+    "fastHealing": 0
    },
    {
     "name": "Monkey",
@@ -5324,7 +5454,17 @@
     "racialText": "+8 Acrobatics",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on Acrobatics checks"
+    "masterBonus": "Master gains a +3 bonus on Acrobatics checks",
+    "type": "animal",
+    "cr": "1/4",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Monkey",
+    "fastHealing": 0
    },
    {
     "name": "Otter",
@@ -5362,7 +5502,17 @@
     "racialText": "",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on Swim checks"
+    "masterBonus": "Master gains a +3 bonus on Swim checks",
+    "type": "animal",
+    "cr": "1/4",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Otter",
+    "fastHealing": 0
    },
    {
     "name": "Owl",
@@ -5404,7 +5554,17 @@
     "racialText": "+4 Perception, +4 Stealth",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on sight-based and opposed Perception checks in shadows or darkness"
+    "masterBonus": "Master gains a +3 bonus on sight-based and opposed Perception checks in shadows or darkness",
+    "type": "animal",
+    "cr": "1/3",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Owl",
+    "fastHealing": 0
    },
    {
     "name": "Pig",
@@ -5441,7 +5601,17 @@
     "racialText": "",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on Diplomacy checks"
+    "masterBonus": "Master gains a +3 bonus on Diplomacy checks",
+    "type": "animal",
+    "cr": "1/3",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Pig",
+    "fastHealing": 0
    },
    {
     "name": "Raccoon",
@@ -5479,7 +5649,17 @@
     "racialText": "",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on Sleight of Hand checks"
+    "masterBonus": "Master gains a +3 bonus on Sleight of Hand checks",
+    "type": "animal",
+    "cr": "1/2",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Raccoon",
+    "fastHealing": 0
    },
    {
     "name": "Rat",
@@ -5520,7 +5700,17 @@
     "racialText": "+4 Stealth",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +2 bonus on Fortitude saves"
+    "masterBonus": "Master gains a +2 bonus on Fortitude saves",
+    "type": "animal",
+    "cr": "1/4",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Rat",
+    "fastHealing": 0
    },
    {
     "name": "Raven",
@@ -5559,7 +5749,17 @@
     "racialText": "",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on Appraise checks"
+    "masterBonus": "Master gains a +3 bonus on Appraise checks",
+    "type": "animal",
+    "cr": "1/6",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Raven",
+    "fastHealing": 0
    },
    {
     "name": "Scarlet Spider",
@@ -5604,7 +5804,17 @@
     "racialText": "+8 Acrobatics, +8 Climb, +4 Perception, +4 Stealth",
     "specialQualities": "",
     "specialAttacks": "poison",
-    "masterBonus": "Master gains a +3 bonus on Climb checks"
+    "masterBonus": "Master gains a +3 bonus on Climb checks",
+    "type": "vermin",
+    "cr": "1/4",
+    "dr": "",
+    "resist": "",
+    "immune": "mind-affecting effects",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Spider, Scarlet",
+    "fastHealing": 0
    },
    {
     "name": "Thrush",
@@ -5642,7 +5852,17 @@
     "racialText": "",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on Diplomacy checks"
+    "masterBonus": "Master gains a +3 bonus on Diplomacy checks",
+    "type": "animal",
+    "cr": "1/3",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Thrush",
+    "fastHealing": 0
    },
    {
     "name": "Toad",
@@ -5675,7 +5895,17 @@
     "racialText": "+4 Stealth",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains +3 hit points"
+    "masterBonus": "Master gains +3 hit points",
+    "type": "animal",
+    "cr": "1/8",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Toad",
+    "fastHealing": 0
    },
    {
     "name": "Turtle",
@@ -5713,7 +5943,17 @@
     "racialText": "",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +1 natural armor bonus to AC"
+    "masterBonus": "Master gains a +1 natural armor bonus to AC",
+    "type": "animal",
+    "cr": "1/6",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Turtle",
+    "fastHealing": 0
    },
    {
     "name": "Viper",
@@ -5756,7 +5996,17 @@
     "racialText": "+4 Perception, +4 Stealth",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +3 bonus on Bluff checks"
+    "masterBonus": "Master gains a +3 bonus on Bluff checks",
+    "type": "animal",
+    "cr": "1/2",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Viper",
+    "fastHealing": 0
    },
    {
     "name": "Weasel",
@@ -5799,7 +6049,1549 @@
     "racialText": "+4 Stealth, +8 Acrobatics",
     "specialQualities": "",
     "specialAttacks": "",
-    "masterBonus": "Master gains a +2 bonus on Reflex saves"
+    "masterBonus": "Master gains a +2 bonus on Reflex saves",
+    "type": "animal",
+    "cr": "1/2",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Familiar, Weasel",
+    "fastHealing": 0
+   }
+  ],
+  "improved": [
+   {
+    "name": "Arbiter inevitable",
+    "source": "Bestiary 2",
+    "size": "Tiny",
+    "speed": "20 ft., fly 50 ft. (average)",
+    "natural": 1,
+    "senses": "darkvision 60 ft., detect chaos, low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "short sword",
+      "count": 1,
+      "dice": "1d3",
+      "extra": "/19-20"
+     }
+    ],
+    "abilities": {
+     "str": 11,
+     "dex": 16,
+     "con": 14,
+     "int": 11,
+     "wis": 11,
+     "cha": 14
+    },
+    "feats": [
+     "Flyby Attack",
+     "Weapon FinesseB"
+    ],
+    "skills": {
+     "Diplomacy": 7,
+     "Fly": 12,
+     "Knowledge (planes)": 5,
+     "Perception": 5,
+     "Sense Motive": 5,
+     "Stealth": 16
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "locate inevitable",
+    "specialAttacks": "electrical burst",
+    "masterBonus": "",
+    "type": "outsider (extraplanar, inevitable, lawful)",
+    "cr": "2",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": 13,
+    "defensive": "constant vigilance, constructed",
+    "languages": "truespeech",
+    "entry": "Inevitable, Arbiter",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "LN",
+    "minLevel": 7
+   },
+   {
+    "name": "Brownie",
+    "source": "Bestiary 2",
+    "size": "Tiny",
+    "speed": "20 ft.",
+    "natural": 0,
+    "senses": "low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "short sword",
+      "count": 1,
+      "dice": "1d2",
+      "extra": "/19-20"
+     }
+    ],
+    "abilities": {
+     "str": 7,
+     "dex": 18,
+     "con": 12,
+     "int": 14,
+     "wis": 15,
+     "cha": 17
+    },
+    "feats": [
+     "Dodge",
+     "Improved Initiative",
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Acrobatics": 8,
+     "Bluff": 7,
+     "Craft (any one)": 6,
+     "Escape Artist": 8,
+     "Handle Animal": 4,
+     "Perception": 8,
+     "Sense Motive": 6,
+     "Stealth": 16
+    },
+    "racial": {
+     "Perception": 2,
+     "Stealth in forests": 4
+    },
+    "racialText": "+2 Perception, +4 Stealth in forests",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "",
+    "type": "fey",
+    "cr": "1",
+    "dr": "5/cold iron",
+    "resist": "",
+    "immune": "",
+    "sr": 12,
+    "defensive": "",
+    "languages": "Common, Elven, Gnome, Sylvan",
+    "entry": "Brownie",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 7
+   },
+   {
+    "name": "Cacodaemon daemon",
+    "source": "Bestiary 2",
+    "size": "Tiny",
+    "speed": "5 ft., fly 50 ft. (perfect)",
+    "natural": 4,
+    "senses": "darkvision 60 ft., detect good, detect magic",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d4",
+      "extra": "plus disease"
+     }
+    ],
+    "abilities": {
+     "str": 12,
+     "dex": 11,
+     "con": 13,
+     "int": 8,
+     "wis": 13,
+     "cha": 12
+    },
+    "feats": [
+     "Improved Initiative",
+     "Lightning Reflexes"
+    ],
+    "skills": {
+     "Bluff": 7,
+     "Fly": 18,
+     "Knowledge (planes)": 5,
+     "Perception": 7,
+     "Stealth": 14
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "change shape (2 of the following forms: lizard, octopus, Small scorpion, venomous snake, polymorph)",
+    "specialAttacks": "soul lock",
+    "masterBonus": "",
+    "type": "outsider (daemon, evil, extraplanar)",
+    "cr": "2",
+    "dr": "5/good or silver",
+    "resist": "cold 10, electricity 10, fire 10",
+    "immune": "acid, death effects, disease, poison",
+    "sr": null,
+    "defensive": "",
+    "languages": "Abyssal, Common, Infernal; telepathy 100 ft.",
+    "entry": "Daemon, Cacodaemon",
+    "fastHealing": 2,
+    "improved": true,
+    "alignment": "NE",
+    "minLevel": 7
+   },
+   {
+    "name": "Cassisian angel",
+    "source": "Bestiary 2",
+    "size": "Small",
+    "speed": "fly 60 ft. (perfect)",
+    "natural": 3,
+    "senses": "darkvision 60 ft., detect evil, low-light vision",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "slam",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 3,
+     "dex": 11,
+     "con": 12,
+     "int": 6,
+     "wis": 11,
+     "cha": 10
+    },
+    "feats": [
+     "Iron Will"
+    ],
+    "skills": {
+     "Diplomacy": 2,
+     "Fly": 10,
+     "Knowledge (planes)": 2,
+     "Knowledge (religion)": 2,
+     "Perception": 5,
+     "Sense Motive": 4,
+     "Stealth": 8
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "change shape (2 of the following forms: Small human-like angel, dove, dog, or Tiny fish, polymorph), perfect memory",
+    "specialAttacks": "breath weapon (15-ft. line, 1d6 cold or 1d6 fire, Reflex DC 12 half, usable every 1d4 rounds)",
+    "masterBonus": "",
+    "type": "outsider (angel, extraplanar, good)",
+    "cr": "2",
+    "dr": "5/cold iron or evil",
+    "resist": "electricity 10, fire 10",
+    "immune": "acid, cold, petrification",
+    "sr": null,
+    "defensive": "",
+    "languages": "Celestial, Draconic, Infernal; truespeech",
+    "entry": "Angel, Cassisian",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "NG",
+    "minLevel": 7
+   },
+   {
+    "name": "Cythnigot qlippoth",
+    "source": "Bestiary 2",
+    "size": "Tiny",
+    "speed": "40 ft., fly 60 ft. (good)",
+    "natural": 1,
+    "senses": "darkvision 60 ft., detect law, detect magic",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d6",
+      "extra": "plus spores"
+     }
+    ],
+    "abilities": {
+     "str": 12,
+     "dex": 12,
+     "con": 11,
+     "int": 11,
+     "wis": 8,
+     "cha": 7
+    },
+    "feats": [
+     "Lightning Reflexes",
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Acrobatics": 7,
+     "Fly": 15,
+     "Knowledge (nature)": 6,
+     "Knowledge (planes)": 6,
+     "Perception": 5,
+     "Stealth": 15
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "horrific appearance (10 feet, DC 9)",
+    "masterBonus": "",
+    "type": "outsider (chaotic, evil, extraplanar, qlippoth)",
+    "cr": "2",
+    "dr": "5/cold iron or lawful",
+    "resist": "acid 10, electricity 10, fire 10",
+    "immune": "cold, poison, mind-affecting effects",
+    "sr": null,
+    "defensive": "",
+    "languages": "Abyssal; telepathy (touch)",
+    "entry": "Qlippoth, Cythnigot",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "CE",
+    "minLevel": 7
+   },
+   {
+    "name": "Dire rat",
+    "source": "Bestiary",
+    "size": "Small",
+    "speed": "40 ft., climb 20 ft., swim 20 ft.",
+    "natural": 0,
+    "senses": "low-light vision, scent",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d4",
+      "extra": "plus disease"
+     }
+    ],
+    "abilities": {
+     "str": 10,
+     "dex": 17,
+     "con": 13,
+     "int": 2,
+     "wis": 13,
+     "cha": 4
+    },
+    "feats": [
+     "Skill Focus (Perception)"
+    ],
+    "skills": {
+     "Climb": 11,
+     "Perception": 4,
+     "Stealth": 11,
+     "Swim": 11
+    },
+    "racial": {},
+    "racialText": "uses Dex to modify Climb and Swim",
+    "specialQualities": "",
+    "specialAttacks": "disease",
+    "masterBonus": "",
+    "type": "animal",
+    "cr": "1/3",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Rat, Dire",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 3
+   },
+   {
+    "name": "Homunculus",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "20 ft., fly 50 ft. (good)",
+    "natural": 0,
+    "senses": "darkvision 60 ft., low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d4",
+      "extra": "plus poison"
+     }
+    ],
+    "abilities": {
+     "str": 8,
+     "dex": 15,
+     "con": null,
+     "int": 10,
+     "wis": 12,
+     "cha": 7
+    },
+    "feats": [
+     "Lightning Reflexes"
+    ],
+    "skills": {
+     "Fly": 10,
+     "Perception": 3,
+     "Stealth": 12
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "",
+    "type": "construct",
+    "cr": "1",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "construct traits",
+    "languages": "Common (cannot speak); telepathic link",
+    "entry": "Homunculus",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "Any",
+    "minLevel": 7
+   },
+   {
+    "name": "Imp",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "20 ft., fly 50 ft. (perfect)",
+    "natural": 1,
+    "senses": "darkvision 60 ft., detect good, detect magic, see in darkness",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "sting",
+      "count": 1,
+      "dice": "1d4",
+      "extra": "plus poison"
+     }
+    ],
+    "abilities": {
+     "str": 10,
+     "dex": 17,
+     "con": 10,
+     "int": 13,
+     "wis": 12,
+     "cha": 14
+    },
+    "feats": [
+     "Dodge",
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Acrobatics": 9,
+     "Bluff": 8,
+     "Fly": 21,
+     "Knowledge (arcana)": 7,
+     "Knowledge (planes)": 7,
+     "Perception": 7,
+     "Spellcraft": 7
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "change shape (boar, giant spider, rat, or raven, beast shape I)",
+    "specialAttacks": "",
+    "masterBonus": "",
+    "type": "outsider (devil, evil, extraplanar, lawful)",
+    "cr": "2",
+    "dr": "5/good or silver",
+    "resist": "acid 10, cold 10",
+    "immune": "fire, poison",
+    "sr": null,
+    "defensive": "",
+    "languages": "Common, Infernal",
+    "entry": "Devil, Imp",
+    "fastHealing": 2,
+    "improved": true,
+    "alignment": "LE",
+    "minLevel": 7
+   },
+   {
+    "name": "Lyrakien azata",
+    "source": "Bestiary 2",
+    "size": "Tiny",
+    "speed": "30 ft., fly 80 ft. (perfect)",
+    "natural": 0,
+    "senses": "darkvision 60 ft., detect evil, detect magic, low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "slam",
+      "count": 1,
+      "dice": "1d2",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 5,
+     "dex": 19,
+     "con": 12,
+     "int": 14,
+     "wis": 17,
+     "cha": 20
+    },
+    "feats": [
+     "Agile Maneuvers",
+     "Improved Initiative"
+    ],
+    "skills": {
+     "Acrobatics": 10,
+     "Bluff": 11,
+     "Diplomacy": 11,
+     "Fly": 16,
+     "Knowledge (any one)": 8,
+     "Perception": 9,
+     "Perform (any one)": 11,
+     "Spellcraft": 5,
+     "Stealth": 18
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "traveler's friend",
+    "specialAttacks": "starlight blast",
+    "masterBonus": "",
+    "type": "outsider (azata, chaotic, extraplanar, good)",
+    "cr": "2",
+    "dr": "5/evil",
+    "resist": "cold 10, fire 10",
+    "immune": "electricity, petrification",
+    "sr": null,
+    "defensive": "",
+    "languages": "Celestial, Draconic, Infernal; truespeech",
+    "entry": "Azata, Lyrakien",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "CG",
+    "minLevel": 7
+   },
+   {
+    "name": "Mephit",
+    "source": "Bestiary",
+    "size": "Small",
+    "speed": "30 ft., fly 40 ft. (average)",
+    "natural": 3,
+    "senses": "darkvision 60 ft.",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "claw",
+      "count": 2,
+      "dice": "1d3",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 13,
+     "dex": 15,
+     "con": 12,
+     "int": 6,
+     "wis": 11,
+     "cha": 14
+    },
+    "feats": [
+     "Dodge",
+     "Improved Initiative"
+    ],
+    "skills": {
+     "Bluff": 8,
+     "Fly": 10,
+     "Perception": 6,
+     "Stealth": 12
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "breath weapon (15-foot cone, effect based on type, Reflex DC 13 for half)",
+    "masterBonus": "",
+    "type": "outsider",
+    "cr": "3",
+    "dr": "5/magic",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "Common, one appropriate elemental language (Aquan, Auran, Ignan, or Terran)",
+    "entry": "Mephit",
+    "fastHealing": 2,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 7
+   },
+   {
+    "name": "Nuglub gremlin",
+    "source": "Bestiary 2",
+    "size": "Small",
+    "speed": "30 ft., climb 20 ft.",
+    "natural": 3,
+    "senses": "darkvision 120 ft., low-light vision",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d4",
+      "extra": "plus grab"
+     },
+     {
+      "name": "claw",
+      "count": 2,
+      "dice": "1d3",
+      "extra": "plus trip"
+     }
+    ],
+    "abilities": {
+     "str": 13,
+     "dex": 18,
+     "con": 15,
+     "int": 8,
+     "wis": 9,
+     "cha": 12
+    },
+    "feats": [
+     "Step Up",
+     "ToughnessB",
+     "Weapon Focus (claw)"
+    ],
+    "skills": {
+     "Acrobatics": 10,
+     "Climb": 9,
+     "Craft (traps)": 9,
+     "Intimidate": 8,
+     "Perception": 9,
+     "Stealth": 14
+    },
+    "racial": {
+     "Intimidate": 4,
+     "Perception": 4
+    },
+    "racialText": "+4 Craft (traps), +4 Intimidate, +4 Perception",
+    "specialQualities": "kneecapper",
+    "specialAttacks": "",
+    "masterBonus": "",
+    "type": "fey",
+    "cr": "2",
+    "dr": "5/cold iron",
+    "resist": "",
+    "immune": "",
+    "sr": 13,
+    "defensive": "",
+    "languages": "Undercommon",
+    "entry": "Gremlin, Nuglub",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "CE",
+    "minLevel": 7
+   },
+   {
+    "name": "Paracletus aeon",
+    "source": "Bestiary 2",
+    "size": "Small",
+    "speed": "fly 40 ft. (good)",
+    "natural": 1,
+    "senses": "darkvision 60 ft.",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "slam",
+      "count": 1,
+      "dice": "1d3",
+      "extra": "plus 1d6 electricity"
+     }
+    ],
+    "abilities": {
+     "str": 8,
+     "dex": 14,
+     "con": 9,
+     "int": 11,
+     "wis": 13,
+     "cha": 12
+    },
+    "feats": [
+     "Great Fortitude",
+     "Iron Will"
+    ],
+    "skills": {
+     "Fly": 8,
+     "Intimidate": 7,
+     "Knowledge (arcana)": 7,
+     "Knowledge (planes)": 7,
+     "Perception": 7,
+     "Sense Motive": 7,
+     "Stealth": 12
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "extension of all, void form",
+    "specialAttacks": "",
+    "masterBonus": "",
+    "type": "outsider (aeon, extraplanar)",
+    "cr": "2",
+    "dr": "",
+    "resist": "electricity 10, fire 10",
+    "immune": "cold, critical hits, poison",
+    "sr": 7,
+    "defensive": "",
+    "languages": "envisaging",
+    "entry": "Aeon, Paracletus",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 7
+   },
+   {
+    "name": "Pseudodragon",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "15 ft., fly 60 ft. (good)",
+    "natural": 2,
+    "senses": "blindsense 60 ft., darkvision 60 ft., low-light vision",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft. (5 ft. with tail)",
+    "attacks": [
+     {
+      "name": "sting",
+      "count": 1,
+      "dice": "1d3",
+      "extra": "plus poison"
+     },
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d2",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 7,
+     "dex": 15,
+     "con": 13,
+     "int": 10,
+     "wis": 12,
+     "cha": 10
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Diplomacy": 5,
+     "Fly": 15,
+     "Perception": 6,
+     "Sense Motive": 6,
+     "Stealth": 19,
+     "Survival": 6
+    },
+    "racial": {},
+    "racialText": "+4 Stealth (improves to +8 in forests)",
+    "specialQualities": "",
+    "specialAttacks": "",
+    "masterBonus": "",
+    "type": "dragon",
+    "cr": "1",
+    "dr": "",
+    "resist": "",
+    "immune": "paralysis, sleep",
+    "sr": 12,
+    "defensive": "",
+    "languages": "Draconic; telepathy (60 ft.)",
+    "entry": "Pseudodragon",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "NG",
+    "minLevel": 7
+   },
+   {
+    "name": "Quasit",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "20 ft., fly 50 ft. (perfect)",
+    "natural": 2,
+    "senses": "darkvision 60 ft.",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "claw",
+      "count": 2,
+      "dice": "1d3",
+      "extra": "plus poison"
+     },
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d4",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 8,
+     "dex": 14,
+     "con": 11,
+     "int": 11,
+     "wis": 12,
+     "cha": 11
+    },
+    "feats": [
+     "Improved Initiative",
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Bluff": 6,
+     "Fly": 20,
+     "Intimidate": 6,
+     "Knowledge (planes)": 6,
+     "Perception": 7,
+     "Stealth": 16
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "change shape (2 of the following forms: bat, Small centipede, toad, or wolf; polymorph)",
+    "specialAttacks": "",
+    "masterBonus": "",
+    "type": "outsider (chaotic, demon, evil, extraplanar)",
+    "cr": "2",
+    "dr": "5/cold iron or good",
+    "resist": "acid 10, cold 10, fire 10",
+    "immune": "electricity, poison",
+    "sr": null,
+    "defensive": "",
+    "languages": "Abyssal, Common; telepathy (touch)",
+    "entry": "Demon, Quasit",
+    "fastHealing": 2,
+    "improved": true,
+    "alignment": "CE",
+    "minLevel": 7
+   },
+   {
+    "name": "Silvanshee agathion",
+    "source": "Bestiary 2",
+    "size": "Tiny",
+    "speed": "30 ft., fly 90 ft. (good)",
+    "natural": 1,
+    "senses": "darkvision 60 ft., low-light vision",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     },
+     {
+      "name": "claw",
+      "count": 2,
+      "dice": "1d2",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 3,
+     "dex": 15,
+     "con": 12,
+     "int": 10,
+     "wis": 12,
+     "cha": 13
+    },
+    "feats": [
+     "Improved Initiative",
+     "Weapon FinesseB"
+    ],
+    "skills": {
+     "Acrobatics": 11,
+     "Climb": 7,
+     "Fly": 6,
+     "Knowledge (arcana)": 5,
+     "Knowledge (planes)": 5,
+     "Perception": 10,
+     "Stealth": 19
+    },
+    "racial": {
+     "Acrobatics": 4,
+     "Perception": 4,
+     "Stealth": 4
+    },
+    "racialText": "+4 Acrobatics, +4 Perception, +4 Stealth",
+    "specialQualities": "cat's luck, flight, lay on hands (1d6, 1/day, always as a 2nd-level paladin), spectral mist",
+    "specialAttacks": "heroic strength, pounce",
+    "masterBonus": "",
+    "type": "outsider (agathion, extraplanar, good)",
+    "cr": "2",
+    "dr": "5/evil or silver",
+    "resist": "cold 10, sonic 10",
+    "immune": "electricity, petrification",
+    "sr": 13,
+    "defensive": "",
+    "languages": "Celestial, Draconic, Infernal; speak with animals, truespeech",
+    "entry": "Agathion, Silvanshee",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "NG",
+    "minLevel": 7
+   },
+   {
+    "name": "Small air elemental",
+    "source": "Bestiary",
+    "size": "Small",
+    "speed": "fly 100 ft. (perfect)",
+    "natural": 3,
+    "senses": "darkvision 60 ft.",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "slam",
+      "count": 1,
+      "dice": "1d4",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 12,
+     "dex": 17,
+     "con": 12,
+     "int": 4,
+     "wis": 11,
+     "cha": 11
+    },
+    "feats": [
+     "Flyby Attack",
+     "Improved InitiativeB",
+     "Weapon FinesseB"
+    ],
+    "skills": {
+     "Acrobatics": 7,
+     "Escape Artist": 7,
+     "Fly": 17,
+     "Knowledge (planes)": 1,
+     "Perception": 4,
+     "Stealth": 11
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "whirlwind (DC 12)",
+    "masterBonus": "",
+    "type": "outsider (air, elemental, extraplanar)",
+    "cr": "1",
+    "dr": "",
+    "resist": "",
+    "immune": "elemental traits",
+    "sr": null,
+    "defensive": "air mastery",
+    "languages": "",
+    "entry": "Elemental, Air, Small",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 5
+   },
+   {
+    "name": "Small earth elemental",
+    "source": "Bestiary",
+    "size": "Small",
+    "speed": "20 ft., burrow 20 ft., earth glide",
+    "natural": 7,
+    "senses": "darkvision 60 ft., tremorsense 60 ft.",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "slam",
+      "count": 1,
+      "dice": "1d6",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 16,
+     "dex": 8,
+     "con": 13,
+     "int": 4,
+     "wis": 11,
+     "cha": 11
+    },
+    "feats": [
+     "Improved Bull RushB",
+     "Power Attack"
+    ],
+    "skills": {
+     "Appraise": 1,
+     "Climb": 7,
+     "Knowledge (dungeoneering)": 1,
+     "Knowledge (planes)": 1,
+     "Perception": 4,
+     "Stealth": 7
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "earth mastery",
+    "masterBonus": "",
+    "type": "outsider (earth, elemental, extraplanar)",
+    "cr": "1",
+    "dr": "",
+    "resist": "",
+    "immune": "elemental traits",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Elemental, Earth, Small",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 5
+   },
+   {
+    "name": "Small fire elemental",
+    "source": "Bestiary",
+    "size": "Small",
+    "speed": "50 ft.",
+    "natural": 3,
+    "senses": "darkvision 60 ft.",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "slam",
+      "count": 1,
+      "dice": "1d4",
+      "extra": "plus burn"
+     }
+    ],
+    "abilities": {
+     "str": 10,
+     "dex": 13,
+     "con": 10,
+     "int": 4,
+     "wis": 11,
+     "cha": 11
+    },
+    "feats": [
+     "Dodge",
+     "Improved InitiativeB",
+     "Weapon FinesseB"
+    ],
+    "skills": {
+     "Acrobatics": 5,
+     "Climb": 4,
+     "Escape Artist": 5,
+     "Intimidate": 4,
+     "Knowledge (planes)": 1,
+     "Perception": 4
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "burn (1d4, DC 11)",
+    "masterBonus": "",
+    "type": "outsider (elemental, extraplanar, fire)",
+    "cr": "1",
+    "dr": "",
+    "resist": "",
+    "immune": "elemental traits, fire",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Elemental, Fire, Small",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 5
+   },
+   {
+    "name": "Small ice elemental",
+    "source": "Bestiary 2",
+    "size": "Small",
+    "speed": "20 ft., burrow (ice and snow only) 20 ft., swim 60 ft.",
+    "natural": 6,
+    "senses": "darkvision 60 ft., snow vision",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "slam",
+      "count": 1,
+      "dice": "1d4",
+      "extra": "plus 1d3 cold"
+     }
+    ],
+    "abilities": {
+     "str": 12,
+     "dex": 8,
+     "con": 13,
+     "int": 4,
+     "wis": 11,
+     "cha": 11
+    },
+    "feats": [
+     "Power Attack"
+    ],
+    "skills": {
+     "Knowledge (planes)": 2,
+     "Perception": 5,
+     "Stealth": 8,
+     "Swim": 9
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "ice glide, icewalking",
+    "specialAttacks": "numbing cold (DC 12)",
+    "masterBonus": "",
+    "type": "outsider (air, cold, elemental, extraplanar, water)",
+    "cr": "1",
+    "dr": "",
+    "resist": "",
+    "immune": "cold, elemental traits",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Elemental, Ice, Small",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 5
+   },
+   {
+    "name": "Small lightning elemental",
+    "source": "Bestiary 2",
+    "size": "Small",
+    "speed": "fly 100 ft. (perfect)",
+    "natural": 1,
+    "senses": "darkvision 60 ft.",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "slam",
+      "count": 1,
+      "dice": "1d4",
+      "extra": "plus 1d3 electricity"
+     }
+    ],
+    "abilities": {
+     "str": 10,
+     "dex": 15,
+     "con": 10,
+     "int": 4,
+     "wis": 11,
+     "cha": 11
+    },
+    "feats": [
+     "Improved Initiative",
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Acrobatics": 7,
+     "Escape Artist": 6,
+     "Fly": 12,
+     "Knowledge (planes)": 1,
+     "Perception": 5
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "metal mastery, spark leap",
+    "masterBonus": "",
+    "type": "outsider (air, elemental, extraplanar)",
+    "cr": "1",
+    "dr": "",
+    "resist": "",
+    "immune": "electricity, elemental traits",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Elemental, Lightning, Small",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 5
+   },
+   {
+    "name": "Small magma elemental",
+    "source": "Bestiary 2",
+    "size": "Small",
+    "speed": "20 ft., burrow 20 ft.; earth glide",
+    "natural": 5,
+    "senses": "darkvision 60 ft.",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "slam",
+      "count": 1,
+      "dice": "1d3",
+      "extra": "plus burn"
+     }
+    ],
+    "abilities": {
+     "str": 10,
+     "dex": 8,
+     "con": 11,
+     "int": 4,
+     "wis": 11,
+     "cha": 11
+    },
+    "feats": [
+     "Improved Initiative"
+    ],
+    "skills": {
+     "Knowledge (dungeoneering)": 2,
+     "Perception": 5,
+     "Stealth": 8
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "earth glide",
+    "specialAttacks": "burn (1d4, DC 9), lava puddle",
+    "masterBonus": "",
+    "type": "outsider (earth, elemental, extraplanar, fire)",
+    "cr": "1",
+    "dr": "",
+    "resist": "",
+    "immune": "fire, elemental traits",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Elemental, Magma, Small",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 5
+   },
+   {
+    "name": "Small mud elemental",
+    "source": "Bestiary 2",
+    "size": "Small",
+    "speed": "20 ft., burrow 10 ft., swim 30 ft.; earth glide",
+    "natural": 6,
+    "senses": "darkvision 60 ft., tremorsense 30 ft.",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "slam",
+      "count": 1,
+      "dice": "1d4",
+      "extra": "plus entrap"
+     }
+    ],
+    "abilities": {
+     "str": 14,
+     "dex": 8,
+     "con": 13,
+     "int": 4,
+     "wis": 11,
+     "cha": 11
+    },
+    "feats": [
+     "Improved Bull Rush",
+     "Power Attack"
+    ],
+    "skills": {
+     "Climb": 6,
+     "Escape Artist": 3,
+     "Knowledge (planes)": 1,
+     "Perception": 5,
+     "Stealth": 7,
+     "Swim": 10
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "entrap (DC 12, 10 minutes, hardness 5, hp 5)",
+    "masterBonus": "",
+    "type": "outsider (earth, elemental, extraplanar, water)",
+    "cr": "1",
+    "dr": "",
+    "resist": "",
+    "immune": "acid, elemental traits",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Elemental, Mud, Small",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 5
+   },
+   {
+    "name": "Small water elemental",
+    "source": "Bestiary",
+    "size": "Small",
+    "speed": "20 ft., swim 90 ft.",
+    "natural": 6,
+    "senses": "darkvision 60 ft.",
+    "space": "",
+    "reach": "",
+    "attacks": [
+     {
+      "name": "slam",
+      "count": 1,
+      "dice": "1d6",
+      "extra": ""
+     }
+    ],
+    "abilities": {
+     "str": 14,
+     "dex": 10,
+     "con": 13,
+     "int": 4,
+     "wis": 11,
+     "cha": 11
+    },
+    "feats": [
+     "Power Attack"
+    ],
+    "skills": {
+     "Acrobatics": 4,
+     "Escape Artist": 4,
+     "Knowledge (planes)": 1,
+     "Perception": 4,
+     "Stealth": 8,
+     "Swim": 14
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "",
+    "specialAttacks": "drench, vortex (DC 13), water mastery",
+    "masterBonus": "",
+    "type": "outsider (elemental, extraplanar, water)",
+    "cr": "1",
+    "dr": "",
+    "resist": "",
+    "immune": "elemental traits",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Elemental, Water, Small",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 5
+   },
+   {
+    "name": "Stirge",
+    "source": "Bestiary",
+    "size": "Tiny",
+    "speed": "10 ft., fly 40 ft. (average)",
+    "natural": 0,
+    "senses": "darkvision 60 ft., low-light vision, scent",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "touch",
+      "count": 1,
+      "dice": "",
+      "extra": "attach"
+     }
+    ],
+    "abilities": {
+     "str": 3,
+     "dex": 19,
+     "con": 10,
+     "int": 1,
+     "wis": 12,
+     "cha": 6
+    },
+    "feats": [
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Fly": 8,
+     "Stealth": 16
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "diseased",
+    "specialAttacks": "blood drain",
+    "masterBonus": "",
+    "type": "magical beast",
+    "cr": "1/2",
+    "dr": "",
+    "resist": "",
+    "immune": "",
+    "sr": null,
+    "defensive": "",
+    "languages": "",
+    "entry": "Stirge",
+    "fastHealing": 0,
+    "improved": true,
+    "alignment": "N",
+    "minLevel": 5
+   },
+   {
+    "name": "Voidworm protean",
+    "source": "Bestiary 2",
+    "size": "Tiny",
+    "speed": "20 ft., fly 50 ft. (perfect)",
+    "natural": 0,
+    "senses": "blindsense 30 ft., darkvision 30 ft., detect law",
+    "space": "2-1/2 ft.",
+    "reach": "0 ft.",
+    "attacks": [
+     {
+      "name": "bite",
+      "count": 1,
+      "dice": "1d3",
+      "extra": ""
+     },
+     {
+      "name": "tail slap",
+      "count": 1,
+      "dice": "1d3",
+      "extra": "plus confusion"
+     }
+    ],
+    "abilities": {
+     "str": 7,
+     "dex": 17,
+     "con": 10,
+     "int": 8,
+     "wis": 8,
+     "cha": 13
+    },
+    "feats": [
+     "Skill Focus (Perception)",
+     "Weapon Finesse"
+    ],
+    "skills": {
+     "Acrobatics": 9,
+     "Bluff": 7,
+     "Escape Artist": 7,
+     "Fly": 19,
+     "Knowledge (arcana)": 5,
+     "Perception": 8,
+     "Stealth": 15
+    },
+    "racial": {},
+    "racialText": "",
+    "specialQualities": "change shape (2 forms, both of which must be Tiny animals; beast shape II)",
+    "specialAttacks": "",
+    "masterBonus": "",
+    "type": "outsider (chaotic, extraplanar, protean, shapechanger)",
+    "cr": "2",
+    "dr": "",
+    "resist": "electricity 10, sonic 10",
+    "immune": "acid",
+    "sr": null,
+    "defensive": "amorphous anatomy, freedom of movement",
+    "languages": "Common, Protean",
+    "entry": "Protean, Voidworm",
+    "fastHealing": 2,
+    "improved": true,
+    "alignment": "CN",
+    "minLevel": 7
+   }
+  ],
+  "templates": [
+   {
+    "name": "Celestial",
+    "alignment": "NG",
+    "minLevel": 3,
+    "smite": "evil",
+    "resist": "Cold, Acid, and Electricity",
+    "source": "Bestiary",
+    "steps": [
+     {
+      "hd": 1,
+      "resist": 5,
+      "dr": ""
+     },
+     {
+      "hd": 5,
+      "resist": 10,
+      "dr": "5/evil"
+     },
+     {
+      "hd": 11,
+      "resist": 15,
+      "dr": "10/evil"
+     }
+    ]
+   },
+   {
+    "name": "Entropic",
+    "alignment": "CN",
+    "minLevel": 3,
+    "smite": "law",
+    "resist": "Acid and Fire",
+    "source": "Bestiary",
+    "steps": [
+     {
+      "hd": 1,
+      "resist": 5,
+      "dr": ""
+     },
+     {
+      "hd": 5,
+      "resist": 10,
+      "dr": "5/lawful"
+     },
+     {
+      "hd": 11,
+      "resist": 15,
+      "dr": "10/lawful"
+     }
+    ]
+   },
+   {
+    "name": "Fiendish",
+    "alignment": "NE",
+    "minLevel": 3,
+    "smite": "good",
+    "resist": "Cold and Fire",
+    "source": "Bestiary",
+    "steps": [
+     {
+      "hd": 1,
+      "resist": 5,
+      "dr": ""
+     },
+     {
+      "hd": 5,
+      "resist": 10,
+      "dr": "5/good"
+     },
+     {
+      "hd": 11,
+      "resist": 15,
+      "dr": "10/good"
+     }
+    ]
+   },
+   {
+    "name": "Resolute",
+    "alignment": "LN",
+    "minLevel": 3,
+    "smite": "chaos",
+    "resist": "Acid, Cold and Fire",
+    "source": "Bestiary",
+    "steps": [
+     {
+      "hd": 1,
+      "resist": 5,
+      "dr": ""
+     },
+     {
+      "hd": 5,
+      "resist": 10,
+      "dr": "5/chaotic"
+     },
+     {
+      "hd": 11,
+      "resist": 15,
+      "dr": "10/chaotic"
+     }
+    ]
    }
   ]
  }

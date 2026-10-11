@@ -88,14 +88,48 @@ export function companionSources(levels, names = [], archs = [], charLevel = 0) 
     part(animal, extra, 'Boon Companion feat');
   }
   const fmt = l => (l.length === 1 ? l[0].why : l.map(x => `${x.n} from ${x.why}`).join(' + '));
-  return { familiar: sum(fam), familiarWhy: fmt(fam), animal: sum(animal), animalWhy: fmt(animal) };
+  // The Improved Familiar feat, or a class ability that works like it (demonic apostle, fiendish vessel).
+  const improved = has({ test: n => /^improved familiar/.test(n) && !/mythic/.test(n) || /^(demonic|fiendish) familiar$/.test(n) });
+  return { familiar: sum(fam), familiarWhy: fmt(fam), animal: sum(animal), animalWhy: fmt(animal), improved };
 }
 
 /** `levels` plus the extra companion levels from chosen abilities, feats and archetypes (read by familiarLevel and animalCompanionLevel). */
 export function withCompanionSources(levels, c, features, archs, charLevel) {
   const s = companionSources(levels, ownedNames(c, features), archs, charLevel);
-  return { ...levels, _familiar: s.familiar, _animal: s.animal, _why: { familiar: s.familiarWhy, animal: s.animalWhy } };
+  return { ...levels, _familiar: s.familiar, _animal: s.animal, _improved: s.improved, _why: { familiar: s.familiarWhy, animal: s.animalWhy } };
 }
+
+const AXIS = { L: 0, G: 0, N: 1, C: 2, E: 2 };
+/** [law, good] position of an alignment code ('LG', 'N', 'CE'): 0 is lawful / good, 1 neutral, 2 chaotic / evil. `null` for "Any". */
+export function alignmentAxes(a) {
+  const s = String(a || '').trim().toUpperCase();
+  if (s === 'N' || s === 'TN') return [1, 1];
+  return /^[LNC][GNE]$/.test(s) ? [AXIS[s[0]], AXIS[s[1]]] : null;
+}
+/** Improved Familiar: the master's alignment may be up to one step from the familiar's on each axis. Unknown alignments pass. */
+export function alignmentWithinOneStep(master, familiar) {
+  const m = alignmentAxes(master), f = alignmentAxes(familiar);
+  return !m || !f || (Math.abs(m[0] - f[0]) <= 1 && Math.abs(m[1] - f[1]) <= 1);
+}
+
+/** Every familiar kind: the standard list, then the Improved Familiar list. */
+export const familiarKinds = data => [...data.species, ...(data.improved || [])];
+
+/** What an improved familiar or a templated one asks of its master: [{ok, text}]. Empty for a plain standard familiar. */
+export function familiarRequirements(sp, tpl, level, master = {}) {
+  const need = sp.improved ? { al: sp.alignment, lvl: sp.minLevel } : tpl ? { al: tpl.alignment, lvl: tpl.minLevel } : null;
+  if (!need) return [];
+  const out = [];
+  if (master.improvedFamiliar != null) out.push({ ok: !!master.improvedFamiliar, text: 'Improved Familiar feat (or an ability that grants it)' });
+  if (need.al !== 'Any') {
+    out.push({ ok: !master.alignment || alignmentWithinOneStep(master.alignment, need.al),
+      text: `Alignment within one step of ${need.al} on each axis${master.alignment ? ` (yours is ${master.alignment})` : ''}` });
+  }
+  out.push({ ok: level >= need.lvl, text: `Arcane caster level ${need.lvl}+ (master level here is ${level})` });
+  return out;
+}
+
+const crValue = s => { const m = String(s || '').match(/^(\d+)(?:\/(\d+))?$/); return m ? (m[2] ? +m[1] / +m[2] : +m[1]) : 0; };
 export const FAMILIAR_CLASS_SKILLS = ['Acrobatics', 'Climb', 'Fly', 'Perception', 'Stealth', 'Swim'];
 
 const hasFeat = (comp, name) => (comp.feats || []).some(f => (f.name || '').toLowerCase() === name.toLowerCase());
@@ -212,13 +246,19 @@ function computeAnimal(comp, levels, data) {
 function computeFamiliar(comp, levels, data, master) {
   const auto = familiarLevel(levels);
   const level = Math.max(1, Math.min(20, num(comp.levelOverride) || auto || 1));
-  const sp = data.species.find(x => x.name === comp.species) || data.species[0];
+  const sp = familiarKinds(data).find(x => x.name === comp.species) || data.species[0];
+  // A celestial, entropic, fiendish or resolute template goes on a standard animal familiar (improved kinds are already what they are).
+  const tpl = !sp.improved && comp.template ? (data.templates || []).find(t => t.name === comp.template) : null;
   const rows = data.progression.filter(r => r.minLevel <= level);
   const row = rows[rows.length - 1];
   const specials = [];
   for (const r of rows) for (const x of r.special) specials.push(x[0].toUpperCase() + x.slice(1));
-  if (level >= 11) specials.push(`Spell resistance ${level + 5}`);
-  const abilities = { ...sp.abilities, int: row.int };
+  // Template defenses go by Hit Dice, which for a familiar is the master's level.
+  const step = tpl && [...tpl.steps].reverse().find(x => x.hd <= level);
+  const resist = [sp.resist, ...(tpl ? tpl.resist.split(/,\s*and\s+|,\s*|\s+and\s+/).filter(Boolean).map(t => `${t.toLowerCase()} ${step.resist}`) : [])].filter(Boolean);
+  const sr = Math.max(sp.sr || 0, tpl ? Math.floor(crValue(sp.cr)) + (level >= 5 ? 1 : 0) + 5 : 0, level >= 11 ? level + 5 : 0);
+  if (sr) specials.push(`Spell resistance ${sr}`);
+  const abilities = { ...sp.abilities, int: Math.max(sp.abilities.int ?? 0, row.int) };
   const ranks = master.ranks || {};
   const mBase = master.saves || {};
   const out = {
@@ -229,9 +269,15 @@ function computeFamiliar(comp, levels, data, master) {
     saves: { fort: Math.max(2, mBase.fort ?? 0), ref: Math.max(2, mBase.ref ?? 0), will: Math.max(0, mBase.will ?? 0) },
     natural: sp.natural + row.natural, attacks: (sp.attacks || []).map(a => ({ ...a })), specials, increases: 0,
     skillRanks: 0, featSlots: 0, finesseAlways: true, multiattackSpecial: false,
-    qualities: sp.specialQualities, specialAttacks: sp.specialAttacks, bonusFeats: sp.feats.join(', '), classSkills: FAMILIAR_CLASS_SKILLS,
+    qualities: sp.specialQualities, specialAttacks: [sp.specialAttacks, tpl && `smite ${tpl.smite} 1/day`].filter(Boolean).join(', '),
+    bonusFeats: sp.feats.join(', '), classSkills: FAMILIAR_CLASS_SKILLS,
+    type: sp.improved ? sp.type : 'magical beast (augmented animal)', template: tpl, sr,
+    senses: [sp.senses, tpl && !/darkvision/i.test(sp.senses) && 'darkvision 60 ft.'].filter(Boolean).join(', '),
+    defense: { dr: [sp.dr, step?.dr].filter(Boolean).join('; '), resist: resist.join(', '), immune: sp.immune, defensive: sp.defensive, fastHealing: sp.fastHealing || 0 },
+    requirements: familiarRequirements(sp, tpl, level, master),
   };
-  finish(out, comp);
+  // The stat block's own feats count too (an imp's Dodge, an elemental's Improved Initiative); a trailing B marks a bonus feat.
+  finish(out, { ...comp, feats: [...(comp.feats || []), ...sp.feats.map(f => ({ name: f.replace(/(?<=[a-z])B$/, '') }))] });
   // Skills: the better of the animal's listed bonus or the master's ranks with the familiar's own ability modifier.
   const sz = out.sizeMods;
   const names = [...new Set([...Object.keys(sp.skills), ...Object.keys(ranks).filter(k => num(ranks[k]) > 0)])]
@@ -302,6 +348,6 @@ export function newCompanion(kind, data) {
     extraClassSkills: [], hpMisc: 0, acMisc: 0, attackMisc: 0, tricks: '', notes: '' };
   if (kind === 'animal') return { ...base, name: 'Animal companion', species: 'Wolf' };
   if (kind === 'eidolon') return { ...base, name: 'Eidolon', form: data?.eidolon?.forms?.[0]?.name || 'Biped', evolutions: [] };
-  if (kind === 'familiar') return { ...base, name: 'Familiar', species: data?.familiar?.species?.[0]?.name || 'Cat' };
+  if (kind === 'familiar') return { ...base, name: 'Familiar', species: data?.familiar?.species?.[0]?.name || 'Cat', template: '' };
   return { ...base, name: 'Companion', statblock: '' };
 }

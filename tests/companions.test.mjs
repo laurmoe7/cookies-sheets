@@ -165,3 +165,98 @@ test('shaman, sea singer and blight druid get familiars; paladin, Animal domain 
   assert.equal(companionSources({ Druid: 3, Fighter: 6 }, ['boon companion'], [], 9).animal, 7, '3 + 4, under character level 9');
   assert.equal(companionSources({ Druid: 8 }, ['boon companion'], [], 9).animal, 9, 'capped at character level');
 });
+
+// ---- Familiar variants: the Improved Familiar list and the celestial / entropic / fiendish / resolute archetypes
+import { alignmentWithinOneStep, familiarRequirements } from '../web/js/companions.js';
+
+const master7 = { bab: 3, hp: 40, saves: { fort: 2, ref: 2, will: 5 }, ranks: {} };
+
+test('data: 25 improved familiars (Core list + Ultimate Magic update) and 4 archetypes with defenses by Hit Dice', () => {
+  assert.equal(data.familiar.improved.length, 25);
+  for (const n of ['Imp', 'Quasit', 'Pseudodragon', 'Homunculus', 'Stirge', 'Dire rat', 'Brownie', 'Mephit', 'Silvanshee agathion', 'Small fire elemental']) {
+    assert.ok(data.familiar.improved.some(x => x.name === n), n);
+  }
+  assert.deepEqual(data.familiar.templates.map(t => t.name), ['Celestial', 'Entropic', 'Fiendish', 'Resolute']);
+  assert.deepEqual(data.familiar.templates[0].steps.map(x => [x.hd, x.resist, x.dr]), [[1, 5, ''], [5, 10, '5/evil'], [11, 15, '10/evil']]);
+});
+
+test('imp familiar of a 7th-level wizard keeps its own scores and gets the familiar rules', () => {
+  const s = computeCompanion(familiar('Imp'), { Wizard: 7 }, data, master7);
+  // Imp: Tiny, Str 10, Dex 17 (+3), Con 10, Int 13, Wis 12 (+1), 1 natural armor, feats Dodge and Weapon Finesse.
+  // 7th-level master row: natural armor +4, Int 9, so Int stays at the imp's 13.
+  assert.equal(s.abilities.int, 13);
+  assert.equal(s.ac.total, 10 + 5 + 3 + 2 + 1, 'AC = 10 + (1 + 4) natural + 3 Dex + 2 size + 1 Dodge (the imp\'s own feat)');
+  assert.equal(s.ac.touch, 10 + 3 + 2 + 1);
+  assert.equal(s.hp, 20, 'half of 40');
+  assert.deepEqual(s.saves, { fort: 2, ref: 2 + 3, will: 5 + 1 }, 'better of 2/2/0 and the master 2/2/5, plus Con 0, Dex 3, Wis 1');
+  assert.equal(s.attacks[0].bonus, 3 + 3 + 2, 'master BAB 3 + Dex 3 (finesse) + Tiny 2');
+  assert.equal(s.attacks[0].damage, '1d4');
+  assert.equal(s.type, 'outsider (devil, evil, extraplanar, lawful)');
+  assert.equal(s.defense.dr, '5/good or silver');
+  assert.equal(s.defense.fastHealing, 2);
+  assert.equal(s.sr, 0, 'no spell resistance below 11th');
+  assert.ok(computeCompanion(familiar('Imp'), { Wizard: 11 }, data, master7).specials.includes('Spell resistance 16'));
+});
+
+test('an improved familiar with its own spell resistance keeps it until the master level beats it', () => {
+  const brownie = lv => computeCompanion(familiar('Brownie'), { Wizard: lv }, data, master7).sr;
+  assert.equal(brownie(7), 12, 'printed SR 12');
+  assert.equal(brownie(11), 16, '11 + 5 beats 12');
+});
+
+test('celestial hawk: darkvision, smite, resistances and DR by master level (Hit Dice), SR from CR + 5', () => {
+  const hawk = (lv, template = 'Celestial') => computeCompanion(familiar('Hawk', { template }), { Wizard: lv }, data, master7);
+  const h4 = hawk(4), h7 = hawk(7), h11 = hawk(11);
+  assert.equal(h4.defense.resist, 'cold 5, acid 5, electricity 5');
+  assert.equal(h4.defense.dr, '');
+  assert.equal(h4.sr, 5, 'CR 1/3 rounds down to 0, +5; no +1 below 5 HD');
+  assert.equal(h7.defense.resist, 'cold 10, acid 10, electricity 10');
+  assert.equal(h7.defense.dr, '5/evil');
+  assert.equal(h7.sr, 6, '0 + 1 (5 or more HD) + 5');
+  assert.equal(h11.defense.resist, 'cold 15, acid 15, electricity 15');
+  assert.equal(h11.defense.dr, '10/evil');
+  assert.equal(h11.sr, 16, 'master level + 5 beats the template');
+  assert.equal(h7.senses, 'low-light vision, darkvision 60 ft.');
+  assert.ok(h7.specialAttacks.includes('smite evil 1/day'));
+  assert.equal(h7.type, 'magical beast (augmented animal)');
+  const e = computeCompanion(familiar('Viper', { template: 'Entropic' }), { Wizard: 5 }, data, master7);
+  assert.equal(e.defense.resist, 'acid 10, fire 10');
+  assert.equal(e.defense.dr, '5/lawful');
+  assert.ok(e.specialAttacks.includes('smite law 1/day'));
+  assert.equal(computeCompanion(familiar('Cat'), { Wizard: 5 }, data, master7).defense.resist, '', 'no archetype, no resistances');
+});
+
+test('an archetype is ignored on an improved familiar (those are already what they are)', () => {
+  const s = computeCompanion(familiar('Imp', { template: 'Celestial' }), { Wizard: 7 }, data, master7);
+  assert.equal(s.template, null);
+  assert.equal(s.defense.resist, 'acid 10, cold 10');
+});
+
+test('Improved Familiar alignment: up to one step from the familiar on each axis', () => {
+  assert.ok(alignmentWithinOneStep('N', 'LE'), 'neutral reaches every alignment');
+  assert.ok(alignmentWithinOneStep('LN', 'LE'));
+  assert.ok(!alignmentWithinOneStep('NG', 'LE'), 'good to evil is two steps');
+  assert.ok(!alignmentWithinOneStep('LG', 'CE'));
+  assert.ok(!alignmentWithinOneStep('CG', 'NE'));
+  assert.ok(alignmentWithinOneStep('CG', 'N'));
+  assert.ok(alignmentWithinOneStep('LG', 'Any') && alignmentWithinOneStep('', 'LE'), 'unknown alignments pass');
+});
+
+test('requirements: the feat, alignment and master level, each checked', () => {
+  const imp = data.familiar.improved.find(x => x.name === 'Imp');
+  const bad = familiarRequirements(imp, null, 5, { alignment: 'NG', improvedFamiliar: false });
+  assert.deepEqual(bad.map(r => r.ok), [false, false, false]);
+  const good = familiarRequirements(imp, null, 7, { alignment: 'LN', improvedFamiliar: true });
+  assert.deepEqual(good.map(r => r.ok), [true, true, true]);
+  assert.deepEqual(familiarRequirements(data.familiar.species[0], null, 1, {}), [], 'a standard familiar asks for nothing');
+  const cel = familiarRequirements(data.familiar.species[0], data.familiar.templates[0], 3, { alignment: 'CE', improvedFamiliar: true });
+  assert.deepEqual(cel.map(r => r.ok), [true, false, true], 'celestial needs NG; CE is two steps off on the good axis');
+  assert.equal(computeCompanion(familiar('Quasit'), { Wizard: 3 }, data, { ...master7, alignment: 'LG', improvedFamiliar: true }).requirements.filter(r => !r.ok).length, 2, 'LG is far from CE, and 3 is under 7');
+});
+
+test('Improved Familiar feat (or demonic / fiendish familiar abilities) is detected as a source', () => {
+  assert.equal(companionSources({ Wizard: 7 }, ['improved familiar']).improved, true);
+  assert.equal(companionSources({ Wizard: 7 }, ['fiendish familiar']).improved, true);
+  assert.equal(companionSources({ Wizard: 7 }, ['dodge']).improved, false);
+  assert.equal(withCompanionSources({ Wizard: 7 }, { feats: [{ name: 'Improved Familiar' }] }, [], [], 7)._improved, true);
+});

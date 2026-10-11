@@ -3,6 +3,14 @@
 
 export const CHANGELOG = [
   {
+    version: 'Familiar variants', date: '2026-10-11',
+    items: [
+      'Familiars can be any Improved Familiar kind (imp, quasit, pseudodragon, homunculus, stirge, mephit, small elementals and more), with their own stat blocks, damage reduction, resistances and fast healing.',
+      'Familiars can take the celestial, entropic, fiendish or resolute archetype, which adds darkvision, smite, resistances and damage reduction that grow with your level.',
+      'The familiar card checks the Improved Familiar feat, your alignment (within one step) and your level, and tells you what is missing.',
+    ],
+  },
+  {
     version: 'Discord rolls', date: '2026-10-10',
     items: [
       'The Roll button in a spell’s side panel has a red outline, and the name and description boxes of custom spells are much bigger.',

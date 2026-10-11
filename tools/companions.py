@@ -243,6 +243,29 @@ def racial_modifiers(s):
     return out
 
 
+def familiar_entry(b, r, d, name, bonus=None):
+    """One familiar kind from a creature stat block. Standard and improved familiars share the same shape."""
+    senses = text_of(d['senses']).split(';')[0].strip()
+    nat = re.search(r'([+-]\d+)\s*natural', text_of(d['ac']))
+    fh = re.search(r'fast healing\s*(\d+)', text_of(d['hp']), re.I)
+    ctype = text_of(d['creature_type'])
+    sub = text_of(d['creature_subtype'])
+    return dict(
+        name=name, source=r['source'] or b.key, size=(d['size'] or 'Tiny').strip(), speed=text_of(d['speed']),
+        natural=num(nat.group(1)) if nat else 0, senses=senses, space=text_of(d['space']), reach=text_of(d['reach']),
+        attacks=parse_melee(d['melee']), abilities={a: num(d[k]) for a, k in zip(ABIL, ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'])},
+        feats=[x.strip() for x in text_of(d['feats']).split(',') if x.strip()],
+        skills=familiar_skill_totals(text_of(d['skills'])), racial=racial_modifiers(text_of(d['racial_modifiers'])),
+        racialText=text_of(d['racial_modifiers']),
+        specialQualities=text_of(d['special_qualities']), specialAttacks=text_of(d['special_attacks']),
+        masterBonus=bonus[0] if bonus else '',
+        type=ctype.lower() + (f' ({sub})' if sub and sub != 'varies' else ''), cr=text_of(d['cr']),
+        dr=text_of(d['dr']), resist=text_of(d['resist']), immune=text_of(d['immune']), sr=num(text_of(d['sr'])),
+        defensive=text_of(d['defensive_abilities']), languages=text_of(d['languages']), entry=r['name'],
+        fastHealing=num(fh.group(1)) if fh else 0,
+    )
+
+
 def familiars(books):
     bonuses = familiar_bonuses(books)
     out, seen = [], set()
@@ -255,24 +278,60 @@ def familiars(books):
             if not d or key in seen:
                 continue
             seen.add(key)
-            bonus = bonuses.get(key)
-            senses = text_of(d['senses']).split(';')[0].strip()
-            base = text_of(d['ac'])
-            out.append(dict(
-                name=' '.join(w.capitalize() if w != 'and' else w for w in key.split(' ')).replace('-Ringed', '-Ringed'),
-                source=r['source'] or b.key, size=(d['size'] or 'Tiny').strip(), speed=text_of(d['speed']),
-                natural=num(re.search(r'([+-]\d+)\s*natural', base).group(1)) if re.search(r'([+-]\d+)\s*natural', base) else 0, senses=senses, space=text_of(d['space']), reach=text_of(d['reach']),
-                attacks=parse_melee(d['melee']), abilities={a: num(d[k]) for a, k in zip(ABIL, ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'])},
-                feats=[x.strip() for x in text_of(d['feats']).split(',') if x.strip()],
-                skills=familiar_skill_totals(text_of(d['skills'])), racial=racial_modifiers(text_of(d['racial_modifiers'])),
-                racialText=text_of(d['racial_modifiers']),
-                specialQualities=text_of(d['special_qualities']), specialAttacks=text_of(d['special_attacks']),
-                masterBonus=bonus[0] if bonus else '',
-            ))
+            out.append(familiar_entry(b, r, d, ' '.join(w.capitalize() if w != 'and' else w for w in key.split(' ')), bonuses.get(key)))
     return sorted(out, key=lambda x: x['name'])
+
+
+# Improved Familiar feat: Core Rulebook list plus the Ultimate Magic update.
+# (stat block name, familiar name, alignment, arcane caster level)
+IMPROVED = [
+    ('Inevitable, Arbiter', 'Arbiter inevitable', 'LN', 7), ('Brownie', 'Brownie', 'N', 7), ('Daemon, Cacodaemon', 'Cacodaemon daemon', 'NE', 7),
+    ('Angel, Cassisian', 'Cassisian angel', 'NG', 7), ('Qlippoth, Cythnigot', 'Cythnigot qlippoth', 'CE', 7), ('Rat, Dire', 'Dire rat', 'N', 3),
+    ('Elemental, Air, Small', 'Small air elemental', 'N', 5), ('Elemental, Earth, Small', 'Small earth elemental', 'N', 5),
+    ('Elemental, Fire, Small', 'Small fire elemental', 'N', 5), ('Elemental, Water, Small', 'Small water elemental', 'N', 5),
+    ('Elemental, Ice, Small', 'Small ice elemental', 'N', 5), ('Elemental, Lightning, Small', 'Small lightning elemental', 'N', 5),
+    ('Elemental, Magma, Small', 'Small magma elemental', 'N', 5), ('Elemental, Mud, Small', 'Small mud elemental', 'N', 5),
+    ('Homunculus', 'Homunculus', 'Any', 7), ('Devil, Imp', 'Imp', 'LE', 7), ('Azata, Lyrakien', 'Lyrakien azata', 'CG', 7),
+    ('Mephit', 'Mephit', 'N', 7), ('Gremlin, Nuglub', 'Nuglub gremlin', 'CE', 7), ('Aeon, Paracletus', 'Paracletus aeon', 'N', 7),
+    ('Pseudodragon', 'Pseudodragon', 'NG', 7), ('Demon, Quasit', 'Quasit', 'CE', 7), ('Agathion, Silvanshee', 'Silvanshee agathion', 'NG', 7),
+    ('Stirge', 'Stirge', 'N', 5), ('Protean, Voidworm', 'Voidworm protean', 'CN', 7),
+]
+
+
+def improved_familiars(books):
+    want = {n: (label, al, lvl) for n, label, al, lvl in IMPROVED}
+    out = {}
+    for b in books:
+        rows = b.db.execute("select s.section_id, s.name, s.source from sections s where s.type='creature'").fetchall()
+        det = {r['section_id']: dict(r) for r in b.db.execute('select * from creature_details')}
+        for r in rows:
+            if r['name'] not in want or r['name'] in out or r['section_id'] not in det:
+                continue
+            label, al, lvl = want[r['name']]
+            out[r['name']] = dict(familiar_entry(b, r, det[r['section_id']], label), improved=True, alignment=al, minLevel=lvl)
+    missing = [n for n in want if n not in out]
+    if missing:
+        raise KeyError(f'improved familiar stat blocks not found: {missing}')
+    return sorted(out.values(), key=lambda x: x['name'])
+
+
+# Bestiary templates a familiar can take (the "celestial hawk", "fiendish viper"... of the Improved Familiar list):
+# name -> (alignment the master needs, what its smite works against)
+TEMPLATES = {'Celestial': ('NG', 'evil'), 'Entropic': ('CN', 'law'), 'Fiendish': ('NE', 'good'), 'Resolute': ('LN', 'chaos')}
+
+
+def familiar_templates(books):
+    out = []
+    for name, (alignment, smite) in TEMPLATES.items():
+        t = find_table(books, f'{name} Creature Defenses')
+        resist = re.sub(r'^Resist\s*', '', t['headers'][1])
+        out.append(dict(name=name, alignment=alignment, minLevel=3, smite=smite, resist=resist, source='Bestiary',
+                        steps=[dict(hd=num(r[0]), resist=num(r[1]), dr=text_of(r[2]).replace('—', '').strip()) for r in t['rows']]))
+    return out
 
 
 def build(books):
     return dict(animal=dict(progression=animal_progression(books), species=animal_species(books)),
                 eidolon=dict(progression=eidolon_progression(books), forms=eidolon_forms(books), evolutions=evolutions(books)),
-                familiar=dict(progression=familiar_progression(books), species=familiars(books)))
+                familiar=dict(progression=familiar_progression(books), species=familiars(books),
+                              improved=improved_familiars(books), templates=familiar_templates(books)))

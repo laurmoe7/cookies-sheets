@@ -509,7 +509,7 @@ def write_ogl(books):
         return
     root = next(sid for sid, s in ogl.sections.items() if s['parent_id'] is None)
     body = ogl.render(root, depth=1)
-    extra = ('<h4>Cookie's Sheets</h4><p>This application is not published, endorsed, or specifically approved by Paizo Inc. '
+    extra = ('<h4>Cookie\'s Sheets</h4><p>This application is not published, endorsed, or specifically approved by Paizo Inc. '
              'Game content is Open Game Content used under the Open Game License v1.0a. Data compiled from the PSRD-Data project '
              '(github.com/devonjones/PSRD-Data) and the community Pathfinder spell spreadsheet. '
              'Quick-rules summaries and application code are original to this application.</p>')

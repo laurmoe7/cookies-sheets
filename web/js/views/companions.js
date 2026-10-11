@@ -18,11 +18,11 @@ import { picAction, picFrame } from '../cropper.js';
 const PIC = { w: 3, h: 4, out: 800 };
 
 // What a familiar borrows from its master: base attack bonus, base saves, hit points and skill ranks.
-function masterOf(c) {
+function masterOf(c, levels = {}) {
   const d = state.derived;
   if (!d) return {};
   return { bab: d.bab, hp: d.hp.max, saves: { fort: d.saves.fort.base, ref: d.saves.ref.base, will: d.saves.will.base },
-    ranks: Object.fromEntries((c.skills || []).map(s => [s.name, num(s.ranks)])) };
+    ranks: Object.fromEntries((c.skills || []).map(s => [s.name, num(s.ranks)])), alignment: c.alignment, improvedFamiliar: levels._improved };
 }
 
 let dataPromise = null;
@@ -48,7 +48,7 @@ export async function renderCompanions(body, c) {
     ${c.companions.length ? '' : `<section class="card"><p class="muted">No companions yet.</p>
       <p class="small muted">Animal companions come from druid, hunter, ranger (from 4th level), cavalier, samurai and paladin (divine bond) levels, the Animal domain, and the Animal Ally and Boon Companion feats; eidolons from summoner levels; familiars from wizard, sorcerer, witch and shaman levels, the arcanist’s Familiar exploit, and a few archetypes.
       Levels are worked out from your classes automatically, and you can override them.</p></section>`}
-    ${c.companions.map((comp, i) => companionCard(comp, i, levels, data, masterOf(c))).join('')}`;
+    ${c.companions.map((comp, i) => companionCard(comp, i, levels, data, masterOf(c, levels))).join('')}`;
   if (state.compFx) {
     const fx = state.compFx;
     state.compFx = null;
@@ -70,7 +70,7 @@ export async function renderCompanions(body, c) {
     const i = +t.closest('[data-comp]').dataset.comp;
     const comp = c.companions[i];
     if (t.dataset.chp !== undefined) {
-      const s = computeCompanion(comp, levels, data, masterOf(c));
+      const s = computeCompanion(comp, levels, data, masterOf(c, levels));
       const row = t.closest('[data-comp]');
       const amt = Math.abs(num($('[data-chp-amt]', row).value));
       let cur = comp.hpCur == null || comp.hpCur === '' ? s.hp : num(comp.hpCur);
@@ -223,10 +223,11 @@ function extras(comp, s) {
 
 /** Short facts shown as chips: size and type, level, hit dice, senses, space and reach. */
 function glance(s) {
-  const type = s.kind === 'animal' ? 'animal' : s.kind === 'familiar' ? 'magical beast' : 'outsider';
+  const type = s.kind === 'animal' ? 'animal' : s.kind === 'familiar' ? s.type : 'outsider';
   const out = [`${s.size} ${type}`, `${s.kind === 'familiar' ? 'Master level' : 'Level'} ${s.level}`, `${s.hd} HD`];
   if (s.kind === 'familiar') {
-    if (s.species.senses) out.push(s.species.senses);
+    if (s.template) out.push(`${s.template.name} archetype`);
+    if (s.senses) out.push(s.senses);
     if (s.species.space || s.species.reach) out.push(`Space ${s.species.space || '—'}, reach ${s.species.reach || '—'}`);
   } else if (s.kind === 'animal') {
     const sn = s.qualities.match(/low-light vision|darkvision[^,]*|scent|tremorsense[^,]*/gi);
@@ -235,7 +236,13 @@ function glance(s) {
   if (s.kind === 'animal') out.push(`${s.bonusTricks} bonus tricks`);
   return out;
 }
-const defenseLine = s => (s.qualities && s.kind === 'animal' ? `<p class="small"><b>Qualities</b> ${esc(s.qualities)}</p>` : '');
+/** Damage reduction, resistances, immunities and the like, as one line (familiars; stat-block order). */
+const defenseText = s => {
+  const d = s.defense || {};
+  return [d.defensive, d.fastHealing ? `fast healing ${d.fastHealing}` : '', d.dr && `DR ${d.dr}`, d.immune && `immune ${d.immune}`, d.resist && `resist ${d.resist}`, s.sr && `SR ${s.sr}`].filter(Boolean).join('; ');
+};
+const defenseLine = s => (s.qualities && s.kind === 'animal' ? `<p class="small"><b>Qualities</b> ${esc(s.qualities)}</p>`
+  : s.kind === 'familiar' && defenseText(s) ? `<p class="small"><b>Defenses</b> ${linkTerms(defenseText(s))}</p>` : '');
 
 function companionCard(comp, i, levels, data, master) {
   const p = `companions.${i}`;
@@ -315,8 +322,12 @@ function familiarCard(comp, i, levels, data, master, head) {
   <div class="grid two">
     <div>
       <div class="form">
-        <label>Kind ${select(`${p}.species`, comp.species, data.familiar.species.map(x => [x.name, `${x.name} (${x.size})`]))}</label>
-        <p class="small muted">${esc(sp.source)} · <a href="#" class="ref" data-entry="Familiar" data-cat="Rules">familiar rules</a></p>
+        <label>Kind ${kindSelect(`${p}.species`, comp.species, data.familiar)}</label>
+        ${sp.improved ? '' : `<label>Archetype ${select(`${p}.template`, comp.template, [['', 'None'], ...(data.familiar.templates || []).map(t => [t.name, `${t.name} (${t.alignment})`])])}</label>`}
+        <p class="small muted">${esc(sp.source)} · <a href="#" class="ref" data-entry="Familiar" data-cat="Rules">familiar rules</a>
+          · <a href="#" class="ref" data-entry="Improved Familiar" data-cat="Feat">Improved Familiar</a>
+          ${sp.improved ? `· <a href="#" class="ref" data-entry="${esc(sp.entry)}" data-cat="Monster">${esc(sp.entry)} stat block</a>` : ''}</p>
+        ${s.requirements.length ? `<ul class="small">${s.requirements.map(r => `<li class="${r.ok ? 'good' : 'warn'}">${r.ok ? '✓' : '✗'} ${esc(r.text)}</li>`).join('')}</ul>` : ''}
         <label>Effective master level ${bind(`${p}.levelOverride`, comp.levelOverride, { type: 'num', ph: String(s.autoLevel || 1) })}
           <span class="small muted">${levelNote}</span></label>
       </div>
@@ -325,7 +336,7 @@ function familiarCard(comp, i, levels, data, master, head) {
       <h4>Familiar abilities</h4>
       <ul class="small">${s.specials.map(x => `<li><a href="#" class="ref" data-entry="${esc(x.replace(/ \d+$/, ''))}" data-cat="Class Feature">${esc(x)}</a></li>`).join('')}</ul>
       <p class="small muted">Hit points are half the master's, attacks use the master's base attack bonus, and saves and skill ranks are the better of the familiar's or the master's.
-        Feats and conditional skill bonuses (such as Skill Focus) are shown as printed. Variants (the Improved Familiar feat, archetypes and other changes) aren't calculated; note them below.</p>
+        Feats and conditional skill bonuses (such as Skill Focus) are shown as printed. Improved Familiar kinds and the celestial, entropic, fiendish and resolute archetypes are calculated; other changes (such as the Evolved Familiar feat) aren't, so note them below.</p>
       <h4>Adjustments</h4>
       <div class="kv"><label title="Barding, items">AC misc ${bind(`${p}.acMisc`, comp.acMisc, { type: 'num' })}</label>
         <label>HP misc ${bind(`${p}.hpMisc`, comp.hpMisc, { type: 'num' })}</label>
@@ -334,6 +345,13 @@ function familiarCard(comp, i, levels, data, master, head) {
     </div>
     <div>${statBlock(comp, s)}</div>
   </div></details></div>`;
+}
+
+/** The familiar Kind picker: the standard list, then what the Improved Familiar feat adds. */
+function kindSelect(path, cur, fam) {
+  const opt = x => `<option value="${esc(x.name)}" ${x.name === cur ? 'selected' : ''}>${esc(`${x.name} (${x.size})`)}</option>`;
+  return `<select data-bind="${path}" data-rerender><optgroup label="Standard familiars">${fam.species.map(opt).join('')}</optgroup>
+    <optgroup label="Improved Familiar feat">${(fam.improved || []).map(opt).join('')}</optgroup></select>`;
 }
 
 function evolutionsBlock(comp, s, data, p) {
@@ -357,18 +375,19 @@ function evolutionsBlock(comp, s, data, p) {
 function statBlock(comp, s) {
   const M = a => (s.mods[a] == null ? '—' : sign(s.mods[a]));
   const ab = a => `${a[0].toUpperCase() + a.slice(1)} ${s.abilities[a] ?? '—'}`;
-  const typ = s.kind === 'animal' ? 'animal' : s.kind === 'familiar' ? 'magical beast (augmented animal)' : 'outsider';
+  const typ = s.kind === 'animal' ? 'animal' : s.kind === 'familiar' ? s.type : 'outsider';
   const fam = s.kind === 'familiar';
   return `<div class="statblock">
     <p><b style="font-size:15px">${esc(comp.name || (s.kind === 'animal' ? s.species.name : 'Eidolon'))}</b>
-      <span class="muted"> · ${s.kind === 'eidolon' ? esc(s.form.name) + ' eidolon' : esc(s.species.name)} · ${fam ? 'master level' : 'level'} ${s.level}</span></p>
+      <span class="muted"> · ${s.kind === 'eidolon' ? esc(s.form.name) + ' eidolon' : esc((s.template ? s.template.name + ' ' : '') + s.species.name)} · ${fam ? 'master level' : 'level'} ${s.level}</span></p>
     <p>${esc(s.size)} ${typ}${fam ? `<span class="muted small"> · space ${esc(s.species.space || '—')}, reach ${esc(s.species.reach || '—')}</span>` : ''}</p>
-    <p><b>Init</b> ${sign(s.init)}; <b>Senses</b> ${fam ? linkTerms(s.species.senses || '—') : s.kind === 'animal' ? linkTerms(s.qualities.match(/low-light vision|darkvision[^,]*|scent|tremorsense[^,]*/gi)?.join(', ') || '—') : linkTerms('darkvision 60 ft.')}; Perception ${sign((s.skills.find(x => x.name === 'Perception')?.total) ?? s.mods.wis)}</p>
+    <p><b>Init</b> ${sign(s.init)}; <b>Senses</b> ${fam ? linkTerms(s.senses || '—') : s.kind === 'animal' ? linkTerms(s.qualities.match(/low-light vision|darkvision[^,]*|scent|tremorsense[^,]*/gi)?.join(', ') || '—') : linkTerms('darkvision 60 ft.')}; Perception ${sign((s.skills.find(x => x.name === 'Perception')?.total) ?? s.mods.wis)}</p>
     <h4>Defense</h4>
     <p><b>AC</b> ${s.ac.total}, touch ${s.ac.touch}, flat-footed ${s.ac.flat} <span class="muted small">(${[`${M('dex')} Dex`, `+${s.natural} natural`, s.sizeMods.ac ? `${sign(s.sizeMods.ac)} size` : ''].filter(Boolean).join(', ')})</span></p>
     <p><b>hp</b> ${s.hp} ${fam ? '(half the master’s)' : `(${s.hd}d${s.hdDie}${s.mods.con ? sign(s.mods.con * s.hd) : ''})`}</p>
     <p><b>Fort</b> ${sign(s.saves.fort)}, <b>Ref</b> ${sign(s.saves.ref)}, <b>Will</b> ${sign(s.saves.will)}${s.specials.some(x => /devotion/i.test(x)) ? ' (+4 vs. enchantment)' : ''}</p>
     ${s.specials.some(x => /evasion/i.test(x)) ? `<p><b>Defensive Abilities</b> ${linkTerms(s.specials.filter(x => /evasion/i.test(x)).join(', ').toLowerCase())}</p>` : ''}
+    ${fam && defenseText(s) ? `<p><b>Defenses</b> ${linkTerms(defenseText(s))}</p>` : ''}
     <h4>Offense</h4>
     <p><b>Speed</b> ${esc(s.speed)}</p>
     <p><b>Melee</b> ${s.attacks.length ? linkTerms(s.attacks.map(a => a.text).join(', ')) : '—'}</p>

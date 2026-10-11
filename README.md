@@ -34,7 +34,7 @@ Feats, traits, abilities, spells, and magic items are matched to the compendium 
 - Gear, money, magic items, and encumbrance
 - Archetypes: choose them when you take a class (descriptions and what each replaces). Their features replace the class features they replace, and class-skill and spellcasting changes apply automatically.
 - Portrait (Overview tab) and a small name icon (top bar), stored in the character file as downscaled images
-- Companions tab: animal companions (68 species, advancing at 4th/7th level) and eidolons (base forms, evolution points) with full stat blocks, plus familiars (26 kinds from the Bestiary, Ultimate Magic and Bestiary 3, advancing with your wizard, sorcerer and witch levels) and free-form entries for mounts and cohorts
+- Companions tab: animal companions (68 species, advancing at 4th/7th level) and eidolons (base forms, evolution points) with full stat blocks, plus familiars (26 kinds from the Bestiary, Ultimate Magic and Bestiary 3, advancing with your wizard, sorcerer and witch levels, plus 25 Improved Familiar kinds and the celestial, entropic, fiendish and resolute archetypes) and free-form entries for mounts and cohorts
 - A search box in the top bar (Ctrl+F) finds anything on the open character, from skills to spells to notes, and jumps to it
 - Summons: a "Summon…" button beside Summon Monster / Summon Nature's Ally spells (and in Buffs & Conditions) picks a creature by list level; it is tracked under Buffs & Conditions → Summons with its key stats, hit points, rounds left, template and stat block
 - Custom traits, feats, items and spells read like official ones: click to read the full text, double-click to edit
