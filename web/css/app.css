@@ -371,6 +371,12 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 /* Notes tab */
 .notes-tab h3 .btn { margin-left: 8px; vertical-align: middle; }
 .notes-tab textarea { width: 100%; resize: vertical; }
+.notes-tab .story-text { min-height: 62vh; font-size: 1.02em; line-height: 1.5; }
+.subtabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.subtab { font: inherit; cursor: pointer; padding: 6px 16px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--muted); }
+.subtab:hover { border-color: var(--accent); color: var(--accent); }
+.subtab.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.subtab .count { font-size: 11px; opacity: .8; padding: 0 5px; border-radius: 99px; background: var(--panel-2); margin-left: 2px; }
 .note-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
 .note-grid.one { grid-template-columns: 1fr; }
 .note-card { border: 1px solid var(--line); border-left-width: 4px; border-radius: var(--radius); padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; background: var(--panel-2); }

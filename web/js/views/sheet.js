@@ -35,7 +35,7 @@ const icon = k => `<svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="
 
 const TABS = [
   ['overview', 'Overview'], ['skills', 'Skills'], ['feats', 'Feats & Abilities'], ['spells', 'Spells'],
-  ['gear', 'Gear'], ['companions', 'Companions'], ['buffs', 'Buffs & Conditions'], ['bio', 'Bio'], ['notes', 'Notes'],
+  ['gear', 'Gear'], ['companions', 'Companions'], ['buffs', 'Buffs & Conditions'], ['bio', 'Biography'], ['notes', 'Notes'],
 ];
 
 /** Read-first text bound to a character path: click to read in full, double-click to edit. */
@@ -930,11 +930,12 @@ function editModifier(m) {
 export const ATTITUDES = [['ally', 'Ally'], ['friendly', 'Friendly'], ['neutral', 'Neutral'], ['wary', 'Wary'], ['hostile', 'Hostile'], ['unknown', 'Unknown']];
 export const LORE_KINDS = ['Place', 'Faction', 'Item', 'Lore'];
 
-/** Story notes: free text, quests, NPCs, places and factions, and a session log (newest first). */
+/** Story notes: free text, quests, NPCs, places and factions, and a session log (newest first), one inner tab each. */
+const NOTE_TABS = [['story', 'Story'], ['quests', 'Quests & goals'], ['npcs', 'People'], ['lore', 'Places & lore'], ['sessions', 'Session log']];
+let notesTab = 'story';
+
 function notes(body, c) {
   const entries = key => (c[key] || []).map((x, i) => ({ x, i }));
-  const quests = entries('quests');
-  const open = quests.filter(q => !q.x.done), done = quests.filter(q => q.x.done);
   const quest = ({ x, i }) => `<div class="note-row quest ${x.done ? 'done' : ''}">
       ${chk(`quests.${i}.done`, { rerender: true, title: 'Done' })}
       ${inp(`quests.${i}.name`, { cls: 'grow', ph: 'Quest, goal or lead' })}
@@ -944,37 +945,44 @@ function notes(body, c) {
       <div class="row">${inp(`npcs.${i}.name`, { cls: 'grow', ph: 'Name' })}<button class="icon-btn" data-del="npcs.${i}" title="Remove">✕</button></div>
       <div class="row">${inp(`npcs.${i}.role`, { cls: 'grow', ph: 'Who they are' })}${sel(`npcs.${i}.attitude`, ATTITUDES, { rerender: true })}</div>
       ${inp(`npcs.${i}.where`, { cls: 'full', ph: 'Where to find them' })}
-      <textarea class="full" rows="3" data-bind="npcs.${i}.notes" placeholder="What they want, what they know, how they spoke…">${esc(x.notes || '')}</textarea></div>`;
+      <textarea class="full" rows="4" data-bind="npcs.${i}.notes" placeholder="What they want, what they know, how they spoke…">${esc(x.notes || '')}</textarea></div>`;
   const lore = ({ x, i }) => `<div class="note-card">
       <div class="row">${inp(`lore.${i}.name`, { cls: 'grow', ph: 'Name' })}${sel(`lore.${i}.kind`, LORE_KINDS)}<button class="icon-btn" data-del="lore.${i}" title="Remove">✕</button></div>
-      <textarea class="full" rows="3" data-bind="lore.${i}.notes" placeholder="Details…">${esc(x.notes || '')}</textarea></div>`;
+      <textarea class="full" rows="4" data-bind="lore.${i}.notes" placeholder="Details…">${esc(x.notes || '')}</textarea></div>`;
   const session = ({ x, i }) => `<div class="note-card session">
       <div class="row">${inp(`sessions.${i}.date`, { cls: 'w8', ph: 'Date' })}${inp(`sessions.${i}.name`, { cls: 'grow', ph: 'Session title or one-line recap' })}<button class="icon-btn" data-del="sessions.${i}" title="Remove">✕</button></div>
-      <textarea class="full" rows="5" data-bind="sessions.${i}.notes" placeholder="What happened, decisions, loot, what to do next…">${esc(x.notes || '')}</textarea></div>`;
-  const list = (key, fn, empty) => (c[key] || []).length ? entries(key).map(fn).reverse().join('') : `<p class="muted small">${empty}</p>`;
-  body.innerHTML = `<div class="grid two notes-tab">
-  <section class="card">
-    <h3>Story &amp; general notes</h3>
-    <textarea data-bind="notes" rows="12" class="full" placeholder="Backstory, the plot so far, theories, contacts, loot to sell…">${esc(c.notes)}</textarea>
-  </section>
-  <section class="card">
-    <h3>Quests &amp; goals <button class="btn small ghost" data-add="quests">＋ Add</button></h3>
-    ${open.length ? open.map(quest).join('') : '<p class="muted small">Nothing open. Add the jobs, leads and personal goals you are chasing.</p>'}
-    ${done.length ? `<h4 class="muted">Done</h4>${done.map(quest).join('')}` : ''}
-  </section>
-  <section class="card span2">
-    <h3>People (NPCs) <button class="btn small ghost" data-add="npcs">＋ Add</button></h3>
-    <div class="note-grid">${list('npcs', npc, 'Who have you met? Note their name, what they want and whether they can be trusted.')}</div>
-  </section>
-  <section class="card span2">
-    <h3>Places, factions &amp; lore <button class="btn small ghost" data-add="lore">＋ Add</button></h3>
-    <div class="note-grid">${list('lore', lore, 'Towns, guilds, cults, famous items, rumours you want to keep straight.')}</div>
-  </section>
-  <section class="card span2">
-    <h3>Session log <button class="btn small ghost" data-add="sessions">＋ New session</button></h3>
-    <div class="note-grid one">${list('sessions', session, 'Add a session after each game so you can remember what happened. The newest is first.')}</div>
-  </section></div>`;
+      <textarea class="full" rows="8" data-bind="sessions.${i}.notes" placeholder="What happened, decisions, loot, what to do next…">${esc(x.notes || '')}</textarea></div>`;
+  const grid = (key, fn, empty, one) => `<div class="note-grid ${one ? 'one' : ''}">${(c[key] || []).length ? entries(key).map(fn).reverse().join('') : `<p class="muted small">${empty}</p>`}</div>`;
+  const panels = {
+    story: () => `<h3>Story &amp; general notes</h3>
+      <textarea data-bind="notes" class="full story-text" placeholder="Backstory, the plot so far, theories, contacts, loot to sell…">${esc(c.notes)}</textarea>`,
+    quests: () => {
+      const open = entries('quests').filter(q => !q.x.done), done = entries('quests').filter(q => q.x.done);
+      return `<h3>Quests &amp; goals <button class="btn small ghost" data-add="quests">＋ Add</button></h3>
+        ${open.length ? open.map(quest).join('') : '<p class="muted small">Nothing open. Add the jobs, leads and personal goals you are chasing.</p>'}
+        ${done.length ? `<h4 class="muted">Done</h4>${done.map(quest).join('')}` : ''}`;
+    },
+    npcs: () => `<h3>People (NPCs) <button class="btn small ghost" data-add="npcs">＋ Add</button></h3>
+      ${grid('npcs', npc, 'Who have you met? Note their name, what they want and whether they can be trusted.')}`,
+    lore: () => `<h3>Places, factions &amp; lore <button class="btn small ghost" data-add="lore">＋ Add</button></h3>
+      ${grid('lore', lore, 'Towns, guilds, cults, famous items, rumours you want to keep straight.')}`,
+    sessions: () => `<h3>Session log <button class="btn small ghost" data-add="sessions">＋ New session</button></h3>
+      ${grid('sessions', session, 'Add a session after each game so you can remember what happened. The newest is first.', true)}`,
+  };
+  const draw = () => {
+    if (!panels[notesTab]) notesTab = 'story';
+    const count = k => (c[k] || []).length;
+    body.innerHTML = `<div class="notes-tab">
+      <div class="subtabs" role="tablist">${NOTE_TABS.map(([k, l]) => `<button class="subtab ${k === notesTab ? 'active' : ''}" role="tab" data-note-tab="${k}">${l}${k !== 'story' && count(k) ? ` <span class="count">${count(k)}</span>` : ''}</button>`).join('')}</div>
+      <section class="card">${panels[notesTab]()}</section></div>`;
+  };
+  draw();
   wireCommon(body);
+  body.addEventListener('click', e => {
+    const t = e.target.closest('[data-note-tab]');
+    if (t) { notesTab = t.dataset.noteTab; draw(); }
+  });
+  // adding or removing an entry redraws the whole sheet, which comes back here with the same inner tab
 }
 
 // =====================================================================
