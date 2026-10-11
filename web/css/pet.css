@@ -64,7 +64,7 @@
 }
 #cookie.tired .tired-lid{display: inline;}
 #cookie.tired .eyes-open .pupils :is(.eye-l, .eye-r):not(.tired-lid){transform-box: fill-box; transform-origin: 50% 75%; scale: 1.05 .55;}
-#cookie.tired .eyes-open .glint{opacity: .5;}
+#cookie.tired .eyes-open .glint{opacity: .5; translate: 0 2.4px;} /* the pupil is squashed under the lid: keep its highlight inside it, not poking through the lid line */
 #cookie.tired[data-eyes="open"] .eyes-open{animation: none;}
 #cookie.tired .eyes-open .pupils :is(.eye-l, .eye-r):not(.tired-lid){animation: tired-blink 4.5s infinite;}
 #cookie.tired.eyewide .eyes-open .pupils :is(.eye-l, .eye-r):not(.tired-lid){animation: tired-wide 1s ease-out;}
