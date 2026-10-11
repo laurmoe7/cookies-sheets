@@ -126,10 +126,19 @@ function finish(out, comp) {
   const toughness = hasFeat(comp, 'Toughness') ? Math.max(3, out.hd) : 0;
   out.hp = out.hpFixed != null ? Math.max(1, out.hpFixed + num(comp.hpMisc))
     : Math.max(1, Math.floor(out.hd * out.hdAvg) + conHp + toughness + num(comp.hpMisc));
+  const baseSaves = { ...out.saves };
   out.saves.fort += M('con') + (hasFeat(comp, 'Great Fortitude') ? 2 : 0);
   out.saves.ref += M('dex') + (hasFeat(comp, 'Lightning Reflexes') ? 2 : 0);
   out.saves.will += M('wis') + (hasFeat(comp, 'Iron Will') ? 2 : 0);
   out.init = M('dex') + (hasFeat(comp, 'Improved Initiative') ? 4 : 0);
+  const P = (...xs) => xs.filter(p => p.value);
+  out.bd = {
+    fort: P({ label: 'Base save', value: baseSaves.fort }, { label: 'Con modifier', value: M('con') }, { label: 'Great Fortitude', value: hasFeat(comp, 'Great Fortitude') ? 2 : 0 }),
+    ref: P({ label: 'Base save', value: baseSaves.ref }, { label: 'Dex modifier', value: M('dex') }, { label: 'Lightning Reflexes', value: hasFeat(comp, 'Lightning Reflexes') ? 2 : 0 }),
+    will: P({ label: 'Base save', value: baseSaves.will }, { label: 'Wis modifier', value: M('wis') }, { label: 'Iron Will', value: hasFeat(comp, 'Iron Will') ? 2 : 0 }),
+    init: P({ label: 'Dex modifier', value: M('dex') }, { label: 'Improved Initiative', value: hasFeat(comp, 'Improved Initiative') ? 4 : 0 }),
+    cmb: P({ label: 'Base attack bonus', value: out.bab }, { label: 'Str modifier', value: M('str') }, { label: `Size (${out.size}, maneuvers)`, value: sz.cmb }),
+  };
   out.cmb = out.bab + M('str') + sz.cmb;
   out.cmd = 10 + out.bab + M('str') + M('dex') + sz.cmb + dodge;
   // Natural attacks: full BAB; Str (or Dex with Weapon Finesse); secondary attacks -5 (-2 with Multiattack) and ½ Str.
@@ -142,7 +151,8 @@ function finish(out, comp) {
     const bonus = out.bab + (finesse ? M('dex') : strM) + sz.ac + num(comp.attackMisc) - (secondary ? (multi ? 2 : 5) : 0);
     const mult = totalAttacks === 1 && !secondary ? 1.5 : secondary ? 0.5 : 1;
     const dmg = strM < 0 ? strM : Math.floor(strM * mult);
-    return { ...a, secondary, bonus, damage: a.dice ? `${a.dice}${dmg ? sign(dmg) : ''}` : '',
+    const parts = P({ label: 'Base attack bonus', value: out.bab }, { label: finesse ? 'Dex modifier (Weapon Finesse)' : 'Str modifier', value: finesse ? M('dex') : strM }, { label: `Size (${out.size})`, value: sz.ac }, { label: 'Misc attack bonus', value: num(comp.attackMisc) }, { label: multi ? 'Secondary attack (Multiattack)' : 'Secondary attack', value: secondary ? -(multi ? 2 : 5) : 0 });
+    return { ...a, parts, secondary, bonus, damage: a.dice ? `${a.dice}${dmg ? sign(dmg) : ''}` : '',
       text: `${a.count > 1 ? a.count + ' ' : ''}${a.count > 1 ? plural(a.name) : a.name} ${sign(bonus)} (${a.dice ? a.dice + (dmg ? sign(dmg) : '') : '—'}${a.extra ? ' ' + a.extra : ''})` };
   });
   // Skills

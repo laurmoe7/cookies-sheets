@@ -5,11 +5,15 @@ export const CHANGELOG = [
   {
     version: 'Discord rolls', date: '2026-10-10',
     items: [
+      'Roll from the sheet: click any save, skill, ability check, initiative, melee, ranged or CMB number, or a weapon’s attack or damage (Full rolls every iterative attack). The roll bar in the buff strip has Advantage and Disadvantage for the next d20, a dice box that understands Tad notation (2d6+3, adv d20+5, 3xd20), and the Discord switch.',
+      'The Spells tab has a Roll window for each spell (it shows only what the spell has: an attack roll for touch and ray spells, its saving throw with your DC, a caster level check when spell resistance applies, and a dice box filled in from the spell text, such as 7d6 for a caster level 7 Fireball, or 1d8+3 for Cure Light Wounds); caster level and concentration are clickable too. On the Companions tab, saves, initiative, CMB, skills and each natural attack and its damage are clickable.',
       'Options is now split into Look, Sound, Cookie and Discord tabs (it opens on the one you used last). The Volume slider sets the loudness of every sound, 0 is silent, and it replaces the Sound effects checkbox; the squawks checkbox still mutes just Cookie’s squawks.',
       'Each sound effect (level up, heal, full heal, damage) can have several sounds and plays one at random. In Options, Sound tab, open an effect to see what it uses now: you can add your own audio files, remove them, switch built-in sounds off and bring them back one by one, or Restore defaults for that effect (which also removes the sounds you added, after asking).',
       'Clicking outside the side panel (the rules and spell reference) closes it, unless you click a button, a field or a link. On the Spells tab, prepared spells stand out and spells you have not prepared are faded and dashed.',
+      'Numbers you can click to roll now look like buttons (a tinted pill with an outline), and the roll bar says so. Hover one to see where it comes from: each + or - is listed with its source, such as the base attack bonus, your Str modifier, a weapon’s enhancement, or a buff like Bless (morale) or a penalty like Power Attack. This works for saves, skills, attacks, damage, initiative, CMB, ability checks, spell numbers and companions.',
       'The Options window now stays put when its content changes instead of moving up and down.',
       'Spell descriptions are easier to read at a glance: the school on top, the classes that can cast it as chips grouped by spell level, then casting time, range, duration, saving throw and spell resistance in one labelled row, and components, area and target below.',
+      'Rolls are posted to a Discord channel in Tad’s format. Paste the channel’s webhook in Options to turn it on; without one, rolls only show on the sheet.',
     ],
   },
   {

@@ -6,6 +6,7 @@ import { initSheetSearch } from './sheetsearch.js';
 import { initOptions, showOptions, showChangelog } from './options.js';
 import { choosePicture, repositionPicture } from './cropper.js';
 import { initSummons } from './views/summons.js';
+import { initRoller } from './roller.js';
 import { mountPet, observe as petObserve, opened as petOpened, view as petView } from './pet/pet.js';
 import { renderHome } from './views/home.js';
 import { renderSheet } from './views/sheet.js';
@@ -153,6 +154,7 @@ async function init() {
   initDrawerDismiss();
   initSheetSearch();
   initSummons();
+  initRoller();
   initTextFields({
     get: path => (state.char ? getPath(state.char, path) : ''),
     set: (path, v) => { if (state.char) { setPath(state.char, path, v); changed(); } },

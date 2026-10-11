@@ -53,6 +53,30 @@ export function stack(list) {
   return { total, byType };
 }
 
+/**
+ * The bonuses that actually count in stack(list), one entry per bonus: [{label, value}]. The label is the buff's name and its bonus type, so a
+ * roll's hover text can say where each + or - comes from. Bonuses that did not count (a lower bonus of a type that does not stack) are left out.
+ */
+export function stackParts(list) {
+  const groups = {};
+  for (const m of list) {
+    if (!m.value) continue;
+    (groups[m.type || 'untyped'] ||= []).push(m);
+  }
+  const out = [];
+  for (const [type, items] of Object.entries(groups)) {
+    const label = m => (m.source || 'Bonus') + (type === 'untyped' ? '' : ' (' + type + ')');
+    if (STACKING_TYPES.has(type)) { for (const m of items) out.push({ label: label(m), value: m.value }); continue; }
+    const pos = items.filter(m => m.value > 0);
+    if (pos.length) { const best = pos.reduce((a, b) => (b.value > a.value ? b : a)); out.push({ label: label(best), value: best.value }); }
+    for (const m of items.filter(m => m.value < 0)) out.push({ label: label(m), value: m.value });
+  }
+  return out;
+}
+/** Flattens parts (single entries and lists) and drops the zeros. */
+const parts = (...xs) => xs.flat().filter(p => p && p.value);
+const ABIL_SHORT = { str: 'Str', dex: 'Dex', con: 'Con', int: 'Int', wis: 'Wis', cha: 'Cha' };
+
 const SPEED_REDUCED = { 5: 5, 10: 5, 15: 10, 20: 15, 25: 20, 30: 20, 35: 25, 40: 30, 45: 30, 50: 35, 60: 40, 70: 50, 80: 55, 90: 60, 100: 70, 110: 75, 120: 80 };
 const reduceSpeed = s => SPEED_REDUCED[s] ?? Math.round(s * 2 / 3 / 5) * 5;
 
@@ -88,6 +112,7 @@ export function classSkillSet(c, classesByName) {
 
 export function compute(c, classesByName) {
   const d = { abilities: {}, saves: {}, skills: {}, weapons: [], spellcasting: {}, warnings: [] };
+  const bd = d.bd = {}; // where each rolled number comes from: {'saves.fort.total': [{label, value}]}, shown when hovering a roll
   const race = raceInfo(c);
   const size = race.size || 'Medium';
   const sz = SIZES[size] || SIZES.Medium;
@@ -133,6 +158,7 @@ export function compute(c, classesByName) {
     const score = num(ab.base) + racial + (increases[a] || 0) + st.total - num(ab.drain);
     const m = mod(score) - Math.floor(num(ab.damage) / 2);
     d.abilities[a] = { score, mod: m, racial, increase: increases[a] || 0, bonus: st.total, base: num(ab.base) };
+    bd[`abilities.${a}.mod`] = parts({ label: `${ABIL_SHORT[a]} score ${score}`, value: mod(score) }, { label: 'Ability damage', value: -Math.floor(num(ab.damage) / 2) });
   }
   const M = a => d.abilities[a].mod;
 
@@ -190,10 +216,12 @@ export function compute(c, classesByName) {
     const st = stack(listOf('saves', s));
     d.saves[s] = { base: baseSave[s], ability: M(saveAbility[s]), misc: num(c.saveMisc[s]), bonus: st.total,
       total: baseSave[s] + M(saveAbility[s]) + num(c.saveMisc[s]) + st.total };
+    bd[`saves.${s}.total`] = parts({ label: 'Base save (class levels)', value: baseSave[s] }, { label: ABIL_SHORT[saveAbility[s]] + ' modifier', value: M(saveAbility[s]) }, { label: 'Misc', value: num(c.saveMisc[s]) }, stackParts(listOf('saves', s)));
   }
 
   // ---- initiative / speed ----
   d.init = M('dex') + num(c.initMisc) + stack(listOf('init')).total;
+  bd.init = parts({ label: 'Dex modifier', value: M('dex') }, { label: 'Misc', value: num(c.initMisc) }, stackParts(listOf('init')));
   let speed = race.speed || 30;
   const dwarfLike = c.race === 'Dwarf';
   if (!dwarfLike && (armorSlow || load === 'medium' || load === 'heavy')) speed = reduceSpeed(speed);
@@ -210,9 +238,12 @@ export function compute(c, classesByName) {
   for (let b = bab - 5; b > 0; b -= 5) d.iteratives.push(b);
   d.melee = bab + M('str') + sz.ac + meleeSt.total;
   d.ranged = bab + M('dex') + sz.ac + rangedSt.total;
+  bd.melee = parts({ label: 'Base attack bonus', value: bab }, { label: 'Str modifier', value: M('str') }, { label: `Size (${size})`, value: sz.ac }, stackParts(listOf('attack', 'melee')));
+  bd.ranged = parts({ label: 'Base attack bonus', value: bab }, { label: 'Dex modifier', value: M('dex') }, { label: `Size (${size})`, value: sz.ac }, stackParts(listOf('attack', 'ranged')));
   // CMB uses attack-roll bonuses, except size bonuses (CMB has its own special size modifier)
   const cmbList = [...(mods.cmb || []), ...listOf('attack', 'melee').filter(m => m.type !== 'size')];
   d.cmb = bab + M('str') + sz.cmb + num(c.cmbMisc) + stack(cmbList).total;
+  bd.cmb = parts({ label: 'Base attack bonus', value: bab }, { label: 'Str modifier', value: M('str') }, { label: `Size (${size}, maneuvers)`, value: sz.cmb }, { label: 'Misc', value: num(c.cmbMisc) }, stackParts(cmbList));
   const cmdAc = Object.entries(acSt.byType).filter(([t]) => CMD_AC_TYPES.has(t)).reduce((s, [, v]) => s + v, 0);
   d.cmd = 10 + bab + M('str') + M('dex') + sz.cmb + num(c.cmdMisc) + cmdAc + stack(listOf('cmd')).total;
   d.cmdFlat = d.cmd - M('dex') - Math.max(dodge, 0);
@@ -227,6 +258,9 @@ export function compute(c, classesByName) {
     const strDmg = strM < 0 && mult > 0 ? strM : Math.floor(strM * mult);
     const scaled = ranged ? 0 : Math.floor(meleeDmgScaled.total * (mult === 1.5 ? 1.5 : mult === 0.5 ? 0.5 : 1));
     const dmgBonus = strDmg + num(w.enh) + num(w.dmgMisc) + (ranged ? rangedDmg.total : meleeDmg.total) + scaled;
+    const atkBuffs = stackParts(listOf('attack', ranged ? 'ranged' : 'melee'));
+    bd[`weapons.${d.weapons.length}.attack`] = parts({ label: 'Base attack bonus', value: bab }, { label: ABIL_SHORT[abil] + ' modifier', value: M(abil) }, { label: `Size (${size})`, value: sz.ac }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Misc (attack)', value: num(w.misc) }, atkBuffs);
+    bd[`weapons.${d.weapons.length}.damage`] = parts({ label: mult === 1 ? 'Str modifier' : mult === 0 ? 'Str modifier (not added)' : `Str modifier (${mult === 1.5 ? 'x1.5, two-handed' : mult === 0.5 ? 'x0.5, off-hand' : 'x' + mult})`, value: strDmg }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Misc (damage)', value: num(w.dmgMisc) }, stackParts((ranged ? listOf('damage', 'rangedDamage') : listOf('damage', 'meleeDamage')).filter(m => !m.scale)), { label: 'Power Attack-style bonuses', value: scaled });
     d.weapons.push({
       attack: attacks[0], attacks,
       attackText: attacks.map(sign).join('/'),
@@ -255,6 +289,7 @@ export function compute(c, classesByName) {
     if (def.acp) total += acp;
     if (s.name === 'Stealth') total += sz.stealth;
     if (s.name === 'Fly') total += sz.fly;
+    bd[`skills.${key}.total`] = parts({ label: 'Ranks', value: ranks }, { label: ABIL_SHORT[def.ability] + ' modifier', value: M(def.ability) }, { label: 'Class skill', value: isClass && ranks > 0 ? 3 : 0 }, { label: 'Misc', value: num(s.misc) }, stackParts(listOf('skills', 'checks')), { label: 'Armor check penalty', value: def.acp ? acp : 0 }, { label: `Size (${size})`, value: s.name === 'Stealth' ? sz.stealth : s.name === 'Fly' ? sz.fly : 0 });
     d.skills[key] = { total, isClass, ability: def.ability, trained: def.trained, untrainedBlocked: def.trained && ranks === 0, acp: def.acp, overMax: ranks > lvl };
   }
   d.skillPoints = { available, spent, maxRanks: lvl };
@@ -290,6 +325,8 @@ export function compute(c, classesByName) {
       prepared.push(row.spells_prepared?.[sl] ?? null);
       dcs.push(10 + sl + statMod);
     }
+    bd[`spellcasting.${cls}.cl`] = parts({ label: `${cls} levels`, value: n }, { label: 'Class caster level adjustment', value: cast.cl_offset || 0 }, stackParts(listOf('cl')));
+    bd[`spellcasting.${cls}.concentration`] = parts({ label: 'Caster level', value: cl }, { label: ABIL_SHORT[cast.stat] + ' modifier', value: statMod }, stackParts(listOf('concentration')));
     d.spellcasting[cls] = {
       cl, stat: cast.stat, statMod, kind: cast.kind, lists: cast.lists, slots, known, prepared, dcs,
       concentration: cl + statMod + concSt.total, maxLevel: cast.max_level, extracts: !!cast.extracts, hasExtraSlot: !!cast.domain,

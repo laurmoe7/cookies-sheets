@@ -10,6 +10,7 @@ import { choosePicture, repositionPicture } from '../cropper.js';
 import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
 import { summonSpell } from '../summons.js';
+import { rollBar, fillSpellRolls } from '../roller.js';
 import { renderSummons, chooseSummon } from './summons.js';
 import { renderCompanions } from './companions.js';
 import { playPageTurn, snapshotPage } from '../options.js';
@@ -56,6 +57,7 @@ function sel(path, options, { rerender = false, cls = '' } = {}) {
     return `<option value="${esc(v)}" ${String(v) === cur ? 'selected' : ''}>${esc(l)}</option>`;
   }).join('')}</select>`;
 }
+const roll = (key, label, inner) => `<button class="nb" data-roll="${esc(key)}" data-roll-label="${esc(label)}">${inner}</button>`;
 const calc = (key, fmt = 'plain', cls = '') => `<span class="calc ${cls}" data-calc="${key}" data-fmt="${fmt}"></span>`;
 const ref = (name, cat, label) => `<a href="#" class="ref" data-entry="${esc(name)}" ${cat ? `data-cat="${esc(cat)}"` : ''}>${esc(label ?? name)}</a>`;
 const refId = (id, label) => `<a href="#" class="ref" data-entry="${esc(label)}" data-entry-id="${id}">${esc(label)}</a>`;
@@ -96,6 +98,8 @@ function overview(body, c, d) {
     <span class="muted small">Active:</span>
     ${activeMods.length ? activeMods.map((m, i) => `<span class="chip on" data-toggle-mod="${c.modifiers.indexOf(m)}" title="Click to turn off">${esc(m.name)} ✕</span>`).join('') : '<span class="muted small">no buffs or conditions</span>'}
     <button class="btn small ghost" data-quick-buff>＋ Buff / condition</button>
+    <span class="grow"></span>
+    ${rollBar()}
   </div>
   <div class="grid overview-grid">
     <section class="card hp has-portrait">
@@ -137,7 +141,7 @@ function overview(body, c, d) {
           <td>${inp(`abilities.${a}.damage`, { type: 'num', cls: 'w3' })}</td>
           <td>${inp(`abilities.${a}.drain`, { type: 'num', cls: 'w3' })}</td>
           <td class="big">${calc(`abilities.${a}.score`)}</td>
-          <td class="big accent">${calc(`abilities.${a}.mod`, 'sign')}</td></tr>`).join('')}</tbody>
+          <td class="big accent">${roll(`abilities.${a}.mod`, a.toUpperCase() + ' check', calc(`abilities.${a}.mod`, 'sign'))}</td></tr>`).join('')}</tbody>
       </table>
       <div class="row small muted"><span>Point buy: <b id="pointbuy"></b></span><span class="grow"></span><span>Buffs to ability scores are applied automatically.</span></div>
     </section>
@@ -159,7 +163,7 @@ function overview(body, c, d) {
       </div>
       <table class="tbl saves"><thead><tr><th>Save</th><th>Total</th><th>Base</th><th>Ability</th><th>Buffs</th><th>Misc</th></tr></thead><tbody>
         ${[['fort', 'Fortitude'], ['ref', 'Reflex'], ['will', 'Will']].map(([s, n]) => `<tr>
-          <th>${ref(n + ' Saves', 'Rules', n)}</th><td class="big accent">${calc(`saves.${s}.total`, 'sign')}</td>
+          <th>${ref(n + ' Saves', 'Rules', n)}</th><td class="big accent">${roll(`saves.${s}.total`, n + ' save', calc(`saves.${s}.total`, 'sign'))}</td>
           <td>${calc(`saves.${s}.base`, 'sign', 'dim')}</td><td>${calc(`saves.${s}.ability`, 'sign', 'dim')}</td>
           <td>${calc(`saves.${s}.bonus`, 'sign', 'dim')}</td><td>${inp(`saveMisc.${s}`, { type: 'num', cls: 'w3' })}</td></tr>`).join('')}
       </tbody></table>
@@ -172,11 +176,11 @@ function overview(body, c, d) {
     <section class="card offense">
       <h3>Offense</h3>
       <div class="stat-row">
-        <div class="stat"><div class="label">${ref('Initiative', 'Rules')}</div>${calc('init', 'sign', 'big')}</div>
+        <div class="stat"><div class="label">${ref('Initiative', 'Rules')}</div>${roll('init', 'Initiative', calc('init', 'sign', 'big'))}</div>
         <div class="stat"><div class="label">${ref('Base Attack Bonus', 'Rules', 'BAB')}</div><span class="big" id="bab-text"></span></div>
-        <div class="stat"><div class="label">Melee</div>${calc('melee', 'sign', 'big')}</div>
-        <div class="stat"><div class="label">Ranged</div>${calc('ranged', 'sign', 'big')}</div>
-        <div class="stat"><div class="label">${ref('Combat Maneuver Bonus', 'Rules', 'CMB')}</div>${calc('cmb', 'sign', 'big')}</div>
+        <div class="stat"><div class="label">Melee</div>${roll('melee', 'Melee attack', calc('melee', 'sign', 'big'))}</div>
+        <div class="stat"><div class="label">Ranged</div>${roll('ranged', 'Ranged attack', calc('ranged', 'sign', 'big'))}</div>
+        <div class="stat"><div class="label">${ref('Combat Maneuver Bonus', 'Rules', 'CMB')}</div>${roll('cmb', 'CMB', calc('cmb', 'sign', 'big'))}</div>
         <div class="stat"><div class="label">Speed</div><span class="big">${calc('speed')}<small> ft</small></span></div>
       </div>
       <div class="kv">
@@ -196,8 +200,8 @@ function overview(body, c, d) {
         <th>Range</th><th>Type</th><th></th></tr></thead><tbody>
         ${c.weapons.map((w, i) => `<tr>
           <td class="w10">${tf(`weapons.${i}.name`, { placeholder: 'Name (double-click)' })}</td>
-          <td class="big accent nowrap">${calc(`weapons.${i}.attackText`)}</td>
-          <td class="big nowrap">${calc(`weapons.${i}.damageText`)}</td>
+          <td class="big accent nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="attack">${calc(`weapons.${i}.attackText`)}</button>${d.iteratives.length > 1 ? `<button class="rchip" data-roll-weapon="${i}" data-roll-kind="full">Full</button>` : ''}</td>
+          <td class="big nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="damage">${calc(`weapons.${i}.damageText`)}</button></td>
           <td>${inp(`weapons.${i}.crit`, { cls: 'w5', ph: '19-20/x2' })}</td>
           <td>${sel(`weapons.${i}.ability`, [['', 'auto'], ['str', 'Str'], ['dex', 'Dex']])}</td>
           <td>${chk(`weapons.${i}.ranged`)}</td>
@@ -390,7 +394,7 @@ function skills(body, c, d) {
         <td>${ref(s.name.startsWith('Knowledge') ? 'Knowledge' : s.name, 'Skill', s.name)}${def.trained ? '<sup title="Trained only">T</sup>' : ''}${def.acp ? '<sup title="Armor check penalty applies">A</sup>' : ''}
           ${multi ? inp(`skills.${i}.sub`, { cls: 'w8 sub', ph: 'type', rerender: true }) : ''}</td>
         <td class="dim">${(def.ability || '').toUpperCase()}</td>
-        <td class="big accent">${sd.untrainedBlocked ? '<span class="dim" title="Trained only">—</span>' : `<span data-calc="skills.${esc(key)}.total" data-fmt="sign"></span>`}</td>
+        <td class="big accent">${sd.untrainedBlocked ? '<span class="dim" title="Trained only">—</span>' : roll('skills.' + key + '.total', s.name + (s.sub ? ` (${s.sub})` : ''), `<span data-calc="skills.${esc(key)}.total" data-fmt="sign"></span>`)}</td>
         <td>${inp(`skills.${i}.ranks`, { type: 'num', cls: 'w3' + (sd.overMax ? ' bad' : ''), rerender: true })}</td>
         <td>${inp(`skills.${i}.misc`, { type: 'num', cls: 'w3', title: 'Racial, trait, item, feat bonuses' })}</td>
         <td>${multi ? `<button class="icon-btn" data-dup-skill="${i}" title="Add another ${s.name}">＋</button>` : ''}

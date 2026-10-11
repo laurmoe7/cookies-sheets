@@ -9,6 +9,7 @@ import { linkTerms } from '../termlinks.js';
 import { hpSegments, segsHtml } from '../bars.js';
 import { hpFx } from '../healfx.js';
 import { playSfx } from '../sfx.js';
+import { tipText } from '../rolltip.js';
 import { event as petEvent } from '../pet/pet.js';
 import { SKILLS } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom } from '../ui.js';
@@ -161,6 +162,9 @@ function topPanels(comp, s, p) {
         <div class="portrait-tools"><button class="icon-btn" data-pic title="Change picture">✎</button><button class="icon-btn" data-pic-edit title="Recenter or resize">⤢</button><button class="icon-btn" data-pic-clear title="Remove picture">✕</button></div></div>`
     : '<button class="portrait-frame empty" data-pic title="Add a picture">＋ Add a picture</button>';
   const M = a => (s.mods[a] == null ? '—' : sign(s.mods[a]));
+  const rb = (n, label, parts) => `<button class="nb" data-roll-add="${n}" data-roll-label="${esc(comp.name + ' ' + label)}" data-tip="${esc(tipText(`${comp.name} ${label}`, n, parts, `Click to roll d20${sign(n)}`))}">${sign(n)}</button>`;
+  // A skill's parts, worked out from the stat block; whatever they do not cover (a species' listed bonus, the master's ranks) is shown as other bonuses.
+  const skillParts = k => { const ab = skillAbility(k.name), sz = s.sizeMods || {}; return [{ label: 'Ranks', value: k.ranks || 0 }, { label: `${ab.toUpperCase()} modifier`, value: s.mods?.[ab] ?? 0 }, { label: 'Class skill', value: k.isClass && k.ranks > 0 ? 3 : 0 }, { label: 'Size', value: k.name === 'Stealth' ? sz.stealth || 0 : k.name === 'Fly' ? sz.fly || 0 : 0 }].filter(p => p.value); };
   const stat = (label, v) => `<div class="stat"><div class="label">${label}</div><span class="big">${v}</span></div>`;
   return `<div class="grid overview-grid comp-top">
     <section class="card hp has-portrait ${state}">
@@ -182,21 +186,21 @@ function topPanels(comp, s, p) {
       <div class="stat-row">${stat('AC', s.ac.total)}${stat('Touch', s.ac.touch)}${stat('Flat-footed', s.ac.flat)}${stat('CMD', s.cmd)}</div>
       <p class="small muted">AC = 10 ${[s.mods.dex ? `${sign(s.mods.dex)} Dex` : '', s.natural ? `+${s.natural} natural` : '', s.sizeMods.ac ? `${sign(s.sizeMods.ac)} size` : ''].filter(Boolean).join(' ')}</p>
       <table class="tbl saves"><thead><tr><th>Save</th><th>Total</th></tr></thead><tbody>
-        ${[['Fortitude', 'fort'], ['Reflex', 'ref'], ['Will', 'will']].map(([n, k]) => `<tr><th>${n}</th><td class="big accent">${sign(s.saves[k])}</td></tr>`).join('')}</tbody></table>
+        ${[['Fortitude', 'fort'], ['Reflex', 'ref'], ['Will', 'will']].map(([n, k]) => `<tr><th>${n}</th><td class="big accent">${rb(s.saves[k], n + ' save', s.bd?.[k])}</td></tr>`).join('')}</tbody></table>
       ${defenseLine(s)}
     </section>
     <section class="card offense"><h3>Offense</h3>
-      <div class="stat-row">${stat('Init', sign(s.init))}${stat('BAB', sign(s.bab))}${stat('CMB', sign(s.cmb))}${stat('Speed', `${esc(String(s.speed))}`)}</div>
+      <div class="stat-row">${stat('Init', rb(s.init, 'initiative', s.bd?.init))}${stat('BAB', sign(s.bab))}${stat('CMB', rb(s.cmb, 'CMB', s.bd?.cmb))}${stat('Speed', `${esc(String(s.speed))}`)}</div>
       ${s.attacks.length ? `<table class="tbl"><thead><tr><th>Attack</th><th>Bonus</th><th>Damage</th></tr></thead><tbody>${s.attacks.map(a => `<tr>
-        <td>${a.count > 1 ? a.count + ' ' : ''}${linkTerms(a.name)}${a.secondary ? ' <span class="dim small">(secondary)</span>' : ''}</td><td class="big accent">${sign(a.bonus)}</td>
-        <td>${linkTerms(a.dice ? a.dice + (a.damage.slice(a.dice.length) || '') + (a.extra ? ' ' + a.extra : '') : '—')}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">No natural attacks.</p>'}
+        <td>${a.count > 1 ? a.count + ' ' : ''}${linkTerms(a.name)}${a.secondary ? ' <span class="dim small">(secondary)</span>' : ''}</td><td class="big accent">${rb(a.bonus, a.name + ' attack', a.parts)}</td>
+        <td>${a.dice ? `<button class="nb" data-roll-dice="${esc(a.damage)}" data-roll-label="${esc(comp.name + ' ' + a.name + ' damage')}" data-tip="${esc(`${comp.name} ${a.name} damage` + '\n' + 'Click to roll ' + a.damage)}">${esc(a.damage)}</button>${a.extra ? ' ' + linkTerms(a.extra) : ''}` : '—'}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">No natural attacks.</p>'}
       ${s.specialAttacks ? `<p><b>Special attacks</b> ${linkTerms(s.specialAttacks)}</p>` : ''}
     </section>
     <section class="card span2"><h3>At a glance</h3>
       <div class="chips">${glance(s).map(x => `<span class="chip on">${esc(x)}</span>`).join('')}</div>
       ${extras(comp, s)}
       ${s.specials.length ? `<h4>Special abilities</h4><div class="chips">${s.specials.map(x => `<a href="#" class="chip ref" data-entry="${esc(x.replace(/ \d+$/, ''))}" data-cat="Class Feature">${esc(x)}</a>`).join('')}</div>` : ''}
-      <h4>Skills</h4><div class="stat-row">${skillTiles(s).map(k => stat(esc(k.name), sign(k.total))).join('')}</div>
+      <h4>Skills</h4><div class="stat-row">${skillTiles(s).map(k => stat(esc(k.name), rb(k.total, k.name, skillParts(k)))).join('')}</div>
     </section></div>`;
 }
 
