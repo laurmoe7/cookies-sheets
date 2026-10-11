@@ -123,7 +123,6 @@ export const BUFF_PRESETS = [
   { name: 'Fighting Defensively', group: 'Combat option', effects: [{ target: 'attack', value: -4, type: 'untyped' }, { target: 'ac', value: 2, type: 'dodge' }], note: '+3 dodge instead of +2 with 3+ ranks in Acrobatics.' },
   { name: 'Total Defense', group: 'Combat option', effects: [{ target: 'ac', value: 4, type: 'dodge' }], note: 'Standard action; no attacks or AoOs. +6 with 3+ Acrobatics ranks.' },
   { name: 'Charging', group: 'Combat option', effects: [{ target: 'melee', value: 2, type: 'untyped' }, { target: 'ac', value: -2, type: 'untyped' }] },
-  { name: 'Flanking', group: 'Combat option', effects: [{ target: 'melee', value: 2, type: 'untyped' }] },
   { name: 'Bless', group: 'Spell', effects: [{ target: 'attack', value: 1, type: 'morale' }], note: '+1 morale on saves vs fear.' },
   { name: 'Prayer (ally)', group: 'Spell', effects: [{ target: 'attack', value: 1, type: 'luck' }, { target: 'damage', value: 1, type: 'luck' }, { target: 'saves', value: 1, type: 'luck' }, { target: 'skills', value: 1, type: 'luck' }] },
   { name: 'Haste', group: 'Spell', effects: [{ target: 'attack', value: 1, type: 'untyped' }, { target: 'ac', value: 1, type: 'dodge' }, { target: 'ref', value: 1, type: 'dodge' }, { target: 'speed', value: 30, type: 'enhancement' }], note: 'One extra attack at highest bonus on a full attack.' },
@@ -149,8 +148,6 @@ export const BUFF_PRESETS = [
   { name: 'Exhausted', group: 'Condition', effects: [{ target: 'str', value: -6, type: 'untyped' }, { target: 'dex', value: -6, type: 'untyped' }], note: 'Half speed; can\'t run or charge.' },
   { name: 'Entangled', group: 'Condition', effects: [{ target: 'attack', value: -2, type: 'untyped' }, { target: 'dex', value: -4, type: 'untyped' }], note: 'Half speed, can\'t run or charge. Concentration DC 15 + spell level to cast.' },
   { name: 'Grappled', group: 'Condition', effects: [{ target: 'attack', value: -2, type: 'untyped' }, { target: 'dex', value: -4, type: 'untyped' }], note: 'CMB penalty does not apply to grapple/escape checks. Can\'t move. Concentration DC 10 + grappler CMB + spell level.' },
-  { name: 'Dazzled', group: 'Condition', effects: [{ target: 'attack', value: -1, type: 'untyped' }], note: '-1 on sight-based Perception checks.' },
-  { name: 'Prone', group: 'Condition', effects: [{ target: 'melee', value: -4, type: 'untyped' }], note: '+4 AC vs ranged, -4 AC vs melee. Only crossbows/shuriken can be fired.' },
 ];
 
 export const CASTING_STAT_NAMES = { int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };

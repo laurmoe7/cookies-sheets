@@ -101,8 +101,8 @@ export const sendName = (who, label) => {
 export const modsLabel = mods => '(' + mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ') + ')';
 
 /**
- * Situational modifiers offered in the roll window. Conditions the Buffs & Conditions tab already handles (flanking, charging, prone, shaken,
- * sickened, dazzled, fighting defensively, power attack...) are not repeated here: they apply by themselves.
+ * Situational, one-roll modifiers offered in the roll window (flanking, prone, dazzled and the like). Things that last or change your AC or damage
+ * (charging, fighting defensively, shaken, sickened, power attack...) are presets on the Buffs & Conditions tab instead and apply by themselves.
  * Range increments are one group: only one applies. "for: 'attack'" ones are only offered on attack rolls.
  */
 export const MOD_PRESETS = [
@@ -111,6 +111,9 @@ export const MOD_PRESETS = [
   { label: '3rd range increment', n: -4, group: 'range', for: 'attack' },
   { label: '4th range increment', n: -6, group: 'range', for: 'attack' },
   { label: '5th range increment', n: -8, group: 'range', for: 'attack' },
+  { label: 'flanking', n: 2, for: 'attack', tip: 'You and an ally threaten the target from opposite sides: +2 to melee attacks' },
+  { label: 'you are prone', n: -4, for: 'attack', tip: 'Making a melee attack while prone: -4' },
+  { label: 'dazzled', n: -1, for: 'attack', tip: '-1 on attacks (and sight-based Perception)' },
   { label: 'higher ground', n: 1, for: 'attack', tip: 'Melee against a lower foe: +1' },
   { label: 'target prone (melee)', n: 4, for: 'attack', tip: '+4 to melee attacks against a prone target' },
   { label: 'target prone (ranged)', n: -4, for: 'attack', tip: '-4 to ranged attacks against a prone target' },
