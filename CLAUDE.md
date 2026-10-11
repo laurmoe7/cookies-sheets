@@ -5,6 +5,7 @@ Windows desktop app for Pathfinder 1st Edition characters: live character sheet,
 ## Architecture
 
 - **`app.py`**: stdlib `ThreadingHTTPServer` on 127.0.0.1 that serves `web/` and a small JSON API, shown in a pywebview (WebView2) window. `--browser` serves only.
+  - `Handler._allowed` refuses requests from other web pages (wrong `Host`, foreign `Origin`, or `Sec-Fetch-Site` cross-site/same-site), since any page open in a browser can otherwise call 127.0.0.1. Our own page, the address bar, tests and curl pass. Anything that serves the UI on another name or port must be added to `srv.hosts` in `start_server`.
   - The compendium is read-only SQLite (`data/pf1e.db`, an FTS5 table `entries_fts` over `entries`). The index is contentless (`content=''`), so it holds no copy of the text: always join `entries` by rowid for values, and don't use `snippet()` or `highlight()`.
   - Characters are plain JSON files in `Documents\Pathfinder Characters`. Delete moves them to `.deleted/`.
 - **`web/`**: vanilla ES modules, no build step, no framework. Edit and reload.

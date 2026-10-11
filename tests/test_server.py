@@ -175,6 +175,34 @@ class HttpApi(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertTrue(data)
 
+    def headers(self, path, method='GET', **headers):
+        req = urllib.request.Request(self.base + path, method=method, headers=headers)
+        try:
+            with urllib.request.urlopen(req, timeout=10) as r:
+                return r.status
+        except urllib.error.HTTPError as e:
+            with e:
+                return e.code
+
+    def test_other_pages_are_refused(self):
+        # A web page open in a normal browser can send requests to 127.0.0.1; browsers label them, and the server refuses the labels.
+        port = self.srv.server_address[1]
+        self.assertEqual(self.headers('/api/characters', Origin='http://evil.example'), 403)  # fetch or form POST from another site
+        self.assertEqual(self.headers('/api/character/delete?id=abc', 'POST', Origin='http://evil.example'), 403)
+        self.assertEqual(self.headers('/api/characters', **{'Sec-Fetch-Site': 'cross-site'}), 403)  # <img src=...> has no Origin
+        self.assertEqual(self.headers('/api/characters', **{'Sec-Fetch-Site': 'same-site'}), 403)  # another local app on a different port
+        self.assertEqual(self.headers('/api/characters', Host=f'evil.example:{port}'), 403)  # DNS rebinding
+        self.assertEqual(self.headers('/', Host=f'evil.example:{port}'), 403)  # the page itself too
+        self.assertEqual(self.headers('/api/characters', Host='127.0.0.1:1'), 403)  # right name, wrong port
+
+    def test_own_page_is_allowed(self):
+        port = self.srv.server_address[1]
+        own = f'http://127.0.0.1:{port}'
+        self.assertEqual(self.headers('/api/characters', Origin=own, **{'Sec-Fetch-Site': 'same-origin'}), 200)  # a fetch from the app
+        self.assertEqual(self.headers('/api/characters', Host=f'localhost:{port}', Origin=f'http://localhost:{port}'), 200)
+        self.assertEqual(self.headers('/', **{'Sec-Fetch-Site': 'none'}), 200)  # typed into the address bar
+        self.assertEqual(self.headers('/api/characters'), 200)  # no browser headers at all (tests, curl)
+
 
 if __name__ == '__main__':
     unittest.main()

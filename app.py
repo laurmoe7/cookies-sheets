@@ -471,17 +471,47 @@ class Handler(SimpleHTTPRequestHandler):
             self._json({'error': str(e)}, 500)
         return True
 
+    def _allowed(self):
+        """Only this app's own page may use the server.
+
+        The server listens on 127.0.0.1, but any web page open in a browser on this computer can still send requests to it:
+        a hidden form can POST to /api/character/delete, and a DNS-rebinding page (a hostname that resolves to 127.0.0.1)
+        could read the character files. Browsers mark such requests, so refuse them: the Host header must be one of our own
+        loopback names, the Origin header (sent with every POST and cross-origin fetch) must be our own page, and
+        Sec-Fetch-Site must not say another site asked (an <img> or a form has no Origin, but it has that).
+        """
+        if self.headers.get('Host', '') not in self.server.hosts:
+            return False
+        origin = self.headers.get('Origin')
+        if origin is not None and origin not in self.server.origins:
+            return False
+        return self.headers.get('Sec-Fetch-Site') not in ('cross-site', 'same-site')
+
+    def _refuse(self):
+        if self.path.startswith('/api/'):
+            self._json({"error": "Only Cookie's Sheets itself may use this server."}, 403)
+        else:
+            self.send_error(403)
+
     def do_GET(self):
-        if not self._route('GET'):
+        if not self._allowed():
+            self._refuse()
+        elif not self._route('GET'):
             super().do_GET()
 
     def do_POST(self):
-        if not self._route('POST'):
+        if not self._allowed():
+            self._refuse()
+        elif not self._route('POST'):
             self._json({'error': 'not found'}, 404)
 
 
 def start_server(port):
     srv = ThreadingHTTPServer(('127.0.0.1', port), Handler)
+    port = srv.server_address[1]  # the real one when 0 was asked for
+    # The names a browser may call us by (see Handler._allowed). Anything else is another site's page or a rebinding trick.
+    srv.hosts = {f'127.0.0.1:{port}', f'localhost:{port}', f'[::1]:{port}'}
+    srv.origins = {'http://' + h for h in srv.hosts}
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     return srv
 
