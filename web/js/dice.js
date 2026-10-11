@@ -88,6 +88,27 @@ export function rollMany(who, items, { rng = Math.random } = {}) {
 /** "+7" / "-1" / "" to append to a d20 expression. */
 export const bonusText = n => { n = Math.trunc(Number(n) || 0); return n ? (n > 0 ? '+' : '-') + Math.abs(n) : ''; };
 
+/** A d20 expression with a situational modifier added ("d20+7" and -4 give "d20+7-4"); other dice are left alone. */
+export const addMods = (expr, n) => (n && /^d20/.test(expr) ? expr + bonusText(n) : expr);
+
+/** "(-4 not proficient, -2 2nd range increment)" for the roll's label. */
+export const modsLabel = mods => '(' + mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ') + ')';
+
+/** Situational modifiers offered in the roll window. Range increments are one group: only one applies. */
+export const MOD_PRESETS = [
+  { label: 'not proficient', n: -4, tip: 'Using a weapon you are not proficient with' },
+  { label: '2nd range increment', n: -2, group: 'range', tip: 'Each range increment past the first is -2 to hit' },
+  { label: '3rd range increment', n: -4, group: 'range' },
+  { label: '4th range increment', n: -6, group: 'range' },
+  { label: '5th range increment', n: -8, group: 'range' },
+  { label: 'flanking', n: 2 },
+  { label: 'charging', n: 2 },
+  { label: 'higher ground', n: 1 },
+  { label: 'prone', n: -4, tip: 'Attacking while prone (melee)' },
+  { label: 'dazzled', n: -1 },
+  { label: 'shaken', n: -2 },
+];
+
 const DIVISOR = { two: 2, three: 3, four: 4, five: 5 };
 const divisor = w => (w ? DIVISOR[w.toLowerCase()] ?? (+w || 1) : 1);
 // "/level", "per level", "damage/two levels", "per two caster levels": the text right after the dice, with no "+" or sentence break before it.

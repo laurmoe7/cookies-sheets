@@ -94,3 +94,16 @@ test('spell dice guess reads the compendium shorthand (summaries from the real d
   for (const [name, text, cl, want] of cases) assert.equal(g(text, cl), want, `${name} at caster level ${cl}`);
   assert.equal(g('Cure Light Wounds', 5), '', 'no dice in the text means no guess');
 });
+
+test('situational modifiers go on d20 rolls only', async () => {
+  const { addMods, modsLabel, MOD_PRESETS } = await import('../web/js/dice.js');
+  assert.equal(addMods('d20+7', -4), 'd20+7-4');
+  assert.equal(addMods('d20', 2), 'd20+2');
+  assert.equal(addMods('d20+7', 0), 'd20+7', 'nothing to add');
+  assert.equal(addMods('2d6+3', -4), '2d6+3', 'damage and other dice are left alone');
+  assert.deepEqual(parseDice(addMods('d20+7', -4)).terms, [[1, 20], [7, 0], [-4, 0]], 'Tad can parse the result');
+  assert.equal(modsLabel([{ n: -4, label: 'not proficient' }, { n: -2, label: '2nd range increment' }]), '(-4 not proficient, -2 2nd range increment)');
+  const range = MOD_PRESETS.filter(m => m.group === 'range').map(m => m.n);
+  assert.deepEqual(range, [-2, -4, -6, -8], 'each range increment past the first is -2 more (Pathfinder core rules)');
+  assert.equal(MOD_PRESETS.find(m => m.label === 'not proficient').n, -4, 'weapon non-proficiency is -4 to hit');
+});

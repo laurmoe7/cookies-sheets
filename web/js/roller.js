@@ -4,8 +4,9 @@
 //   data-roll-label="Initiative"  shown in the message
 //   data-roll-add="7" / data-roll-dice="1d6+2"   a literal d20 bonus or dice expression (companion cards)
 //   data-roll-weapon="2" data-roll-kind="attack|damage|full"   a weapon row
-// The roll bar (in the buff strip) holds Advantage / Disadvantage for the next d20 roll, the dice box, and the Discord switch.
-import { rollMessage, rollMany, bonusText } from './dice.js';
+// The roll bar (in the buff strip) holds Advantage / Disadvantage for the next d20 roll, the Modifier chip (situational + and -, such as
+// not being proficient or shooting past a range increment), the dice box, and the Discord switch.
+import { rollMessage, rollMany, bonusText, addMods, modsLabel, MOD_PRESETS } from './dice.js';
 import { spellInfo } from './spellinfo.js';
 import { state } from './app.js';
 import { getPath, toast, esc, modal } from './ui.js';
@@ -17,7 +18,11 @@ import { sign } from './calc.js';
 const D20 = '<svg class="d20" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 2l8.5 5v10L12 22l-8.5-5V7z"/><path d="M12 2l3.5 8.5H8.5zM3.5 7l5 3.5M20.5 7l-5 3.5M8.5 10.5L12 22l3.5-11.5M3.5 17l5-6.5M20.5 17l-5-6.5"/></svg>';
 let mode = ''; // '', 'adv' or 'dis': applies to the next d20 roll only
 
+let mods = []; // situational modifiers added to d20 rolls: {label, n, group?}
+let keepMods = false; // false: they apply to the next roll only, like Advantage
+
 export const rollMode = () => mode;
+export const rollMods = () => mods;
 
 const discordLabel = () => {
   const o = options();
@@ -31,18 +36,60 @@ export function rollBar() {
     <span class="roll-hint" title="Numbers with this look are buttons: click one to roll it. Hover one to see where its bonuses come from.">${D20}Click a highlighted number to roll</span>
     <button class="rchip ${mode === 'adv' ? 'on' : ''}" data-rmode="adv" title="Roll the next d20 twice and keep the higher">Advantage</button>
     <button class="rchip ${mode === 'dis' ? 'on' : ''}" data-rmode="dis" title="Roll the next d20 twice and keep the lower">Disadvantage</button>
+    <button class="rchip ${mods.length ? 'on' : ''}" id="roll-mods" title="Add a situational modifier to your d20 rolls: not proficient, a range increment, flanking, or your own number">${esc(modsChip())}</button>
     <input id="dice-box" class="w8" placeholder="2d6+3" title="Dice box: Tad notation such as 2d6+3, adv d20+5 or 3xd20. Press Enter to roll." autocomplete="off" aria-label="Dice box">
     <button class="rchip ${o.webhook && o.rollSend ? 'on' : ''}" id="roll-discord" title="Post rolls to your Discord channel">${esc(discordLabel())}</button>
   </span>`;
 }
 
+const modsTotal = () => mods.reduce((t, m) => t + m.n, 0);
+const modsChip = () => (mods.length ? 'Modifier ' + (bonusText(modsTotal()) || '+0') : 'Modifier');
+
 function syncBar() {
+  const mb = document.getElementById('roll-mods');
+  if (mb) { mb.textContent = modsChip(); mb.classList.toggle('on', mods.length > 0); }
   document.querySelectorAll('[data-rmode]').forEach(b => b.classList.toggle('on', b.dataset.rmode === mode));
   const d = document.getElementById('roll-discord');
   if (d) { d.textContent = discordLabel(); d.classList.toggle('on', !!(options().webhook && options().rollSend)); }
 }
 
-const withMode = expr => (mode && /^d20/.test(expr) ? mode + ' ' + expr : expr);
+const withMode = expr => { expr = addMods(expr, modsTotal()); return mode && /^d20/.test(expr) ? mode + ' ' + expr : expr; };
+const withModLabel = (label, expr) => (mods.length && /^d20/.test(expr) ? [label, modsLabel(mods)].filter(Boolean).join(' ') : label);
+const afterRoll = () => { mode = ''; if (!keepMods) mods = []; syncBar(); };
+
+/** The Modifier window: preset situational modifiers (toggle them), your own number, and whether they stay after the next roll. */
+function modsWindow() {
+  modal('Roll modifier', (body, close) => {
+    const draw = () => {
+      body.innerHTML = `<p class="small muted">Added to your d20 rolls (attacks, saves, skills, checks) ${keepMods ? 'until you clear it' : 'for the next roll only'}.</p>
+        <div class="roll-bar" style="margin:6px 0">${MOD_PRESETS.map((m, i) => `<button class="rchip ${mods.some(x => x.label === m.label) ? 'on' : ''}" data-mod-preset="${i}" title="${esc(m.tip || '')}">${esc(m.label)} ${esc(bonusText(m.n))}</button>`).join(' ')}</div>
+        <div class="row" style="margin:10px 0"><input id="mod-n" class="w3" type="number" placeholder="±" aria-label="Modifier"><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>
+        <div class="small" style="margin:6px 0">${mods.length ? 'Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b>' : '<span class="muted">No modifier set.</span>'}</div>
+        <label class="small"><input type="checkbox" id="mod-keep" ${keepMods ? 'checked' : ''}> Keep it until I clear it</label>
+        <div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn small" id="mod-clear">Clear</button><button class="btn primary small" id="mod-done">Done</button></div>`;
+    };
+    draw();
+    const add = () => {
+      const n = Math.trunc(Number(body.querySelector('#mod-n').value));
+      if (!n) return;
+      mods.push({ n, label: body.querySelector('#mod-label').value.trim() || 'modifier' });
+    };
+    body.onclick = e => {
+      const p = e.target.closest('[data-mod-preset]');
+      if (p) {
+        const m = MOD_PRESETS[+p.dataset.modPreset], had = mods.some(x => x.label === m.label);
+        mods = mods.filter(x => x.label !== m.label && !(m.group && x.group === m.group)); // one range increment at a time
+        if (!had) mods.push({ ...m });
+      } else if (e.target.closest('#mod-add')) add();
+      else if (e.target.closest('#mod-clear')) mods = [];
+      else if (e.target.closest('#mod-done')) { syncBar(); return close(); }
+      else return;
+      syncBar(); draw();
+    };
+    body.onchange = e => { if (e.target.id === 'mod-keep') keepMods = e.target.checked; };
+    body.onkeydown = e => { if (e.key === 'Enter' && e.target.closest('#mod-n,#mod-label')) { add(); syncBar(); draw(); } };
+  });
+}
 
 function plan(el) {
   const d = state.derived, c = state.char;
@@ -89,11 +136,10 @@ export async function doRoll(p) {
   let r;
   try {
     r = p.items
-      ? rollMany(who, p.items.map(it => ({ ...it, expr: withMode(it.expr) })))
-      : rollMessage(who, withMode(p.expr), { label: p.label });
+      ? rollMany(who, p.items.map(it => ({ ...it, label: withModLabel(it.label, it.expr), expr: withMode(it.expr) })))
+      : rollMessage(who, withMode(p.expr), { label: withModLabel(p.label, p.expr) });
   } catch (e) { return toast(e.message, 'err'); }
-  mode = '';
-  syncBar();
+  afterRoll();
   toast(r.short);
   const o = options();
   if (!(o.rollSend && o.webhook)) return;
@@ -109,6 +155,7 @@ export function initRoller() {
   document.addEventListener('click', e => {
     const m = e.target.closest('[data-rmode]');
     if (m) { mode = mode === m.dataset.rmode ? '' : m.dataset.rmode; return syncBar(); }
+    if (e.target.closest('#roll-mods')) return modsWindow();
     if (e.target.closest('#roll-discord')) {
       if (!options().webhook) return showOptions();
       setOption('rollSend', !options().rollSend);
