@@ -107,3 +107,11 @@ test('situational modifiers go on d20 rolls only', async () => {
   assert.deepEqual(range, [-2, -4, -6, -8], 'each range increment past the first is -2 more (Pathfinder core rules)');
   assert.equal(MOD_PRESETS.find(m => m.label === 'not proficient').n, -4, 'weapon non-proficiency is -4 to hit');
 });
+
+test('rolls are posted under the character and what they are for', async () => {
+  const { sendName } = await import('../web/js/dice.js');
+  assert.equal(sendName('Fumu', 'Stealth'), 'Fumu · Stealth');
+  assert.equal(sendName('Fumu', ''), 'Fumu');
+  assert.equal(sendName('Fumu', 'Longbow attack (-4 not proficient, -2 2nd range increment)'), 'Fumu · Longbow attack (-4 not proficient, -2 2nd range increment)');
+  assert.equal(sendName('Fumu', 'x'.repeat(200)).length, 80, 'Discord allows 80 characters');
+});

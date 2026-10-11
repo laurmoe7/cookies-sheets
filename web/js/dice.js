@@ -91,6 +91,12 @@ export const bonusText = n => { n = Math.trunc(Number(n) || 0); return n ? (n > 
 /** A d20 expression with a situational modifier added ("d20+7" and -4 give "d20+7-4"); other dice are left alone. */
 export const addMods = (expr, n) => (n && /^d20/.test(expr) ? expr + bonusText(n) : expr);
 
+/** The display name a roll is posted under on Discord: "Fumu · Stealth (-4 not proficient)", cut to the 80 characters Discord allows. */
+export const sendName = (who, label) => {
+  const name = label ? `${who} · ${label}` : who;
+  return name.length > 80 ? name.slice(0, 79) + '…' : name;
+};
+
 /** "(-4 not proficient, -2 2nd range increment)" for the roll's label. */
 export const modsLabel = mods => '(' + mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ') + ')';
 

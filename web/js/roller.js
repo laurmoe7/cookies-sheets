@@ -33,7 +33,7 @@ const discordLabel = () => {
 export function rollBar() {
   const o = options();
   return `<span class="roll-bar">
-    <span class="roll-hint" title="Numbers with this look are buttons: click one to roll it. Hover one to see where its bonuses come from.">${D20}Click a highlighted number to roll</span>
+    <span class="roll-hint" title="Highlighted numbers are buttons: click one to roll it. Hover one to see where its bonuses come from." aria-label="Click a highlighted number to roll">${D20}</span>
     <button class="rchip ${mode === 'adv' ? 'on' : ''}" data-rmode="adv" title="Roll the next d20 twice and keep the higher">Advantage</button>
     <button class="rchip ${mode === 'dis' ? 'on' : ''}" data-rmode="dis" title="Roll the next d20 twice and keep the lower">Disadvantage</button>
     <button class="rchip ${mods.length ? 'on' : ''}" id="roll-mods" title="Add a situational modifier to your d20 rolls: not proficient, a range increment, flanking, or your own number">${esc(modsChip())}</button>
