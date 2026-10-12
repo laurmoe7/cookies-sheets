@@ -615,9 +615,12 @@ def main():
     install_new_db()
     browser = '--browser' in sys.argv
     srv = start_server_from(int(os.environ.get('PF_PORT') or 8765))
-    url = f'http://127.0.0.1:{srv.server_address[1]}/'
+    # The query string makes each launch's address new to the browser cache. Without it, a page some other program once served on
+    # this port (a dev server with no cache headers is cached for days on the strength of its Last-Modified date) came back from
+    # the cache instead of ours. The file server ignores the query.
+    url = f'http://127.0.0.1:{srv.server_address[1]}/?launch={int(time.time())}'
     if browser:
-        print('Serving', url)
+        print('Serving', url.split('?')[0])
         try:
             while True:
                 time.sleep(3600)

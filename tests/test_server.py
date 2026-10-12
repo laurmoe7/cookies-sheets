@@ -168,6 +168,8 @@ class HttpApi(unittest.TestCase):
     def test_serves_ui(self):
         with urllib.request.urlopen(self.base + '/', timeout=10) as r:
             self.assertIn(b'js/app.js', r.read())
+        with urllib.request.urlopen(self.base + '/?launch=123', timeout=10) as r:  # the window opens it with a per-launch query
+            self.assertIn(b'js/app.js', r.read())
 
     def test_classes(self):
         status, data = self.call('/api/classes')
