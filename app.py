@@ -583,8 +583,16 @@ class Handler(SimpleHTTPRequestHandler):
             self._json({'error': 'not found'}, 404)
 
 
+class Server(ThreadingHTTPServer):
+    # HTTPServer turns on SO_REUSEADDR. On Windows that lets us bind a port another program is already listening on, and that
+    # program keeps getting the connections: the app then opened its window on a stranger's page instead of moving to the next
+    # port. Without the flag a busy port fails to bind, which is what start_server_from relies on. On other systems the flag
+    # cannot take a port that is in use, and it is needed to restart right after closing, so it stays on there.
+    allow_reuse_address = sys.platform != 'win32'
+
+
 def start_server(port):
-    srv = ThreadingHTTPServer(('127.0.0.1', port), Handler)
+    srv = Server(('127.0.0.1', port), Handler)
     port = srv.server_address[1]  # the real one when 0 was asked for
     # The names a browser may call us by (see Handler._allowed). Anything else is another site's page or a rebinding trick.
     srv.hosts = {f'127.0.0.1:{port}', f'localhost:{port}', f'[::1]:{port}'}
@@ -593,18 +601,21 @@ def start_server(port):
     return srv
 
 
+def start_server_from(port, tries=20):
+    """Starts the server on the first free port counting up from `port`."""
+    for p in range(port, port + tries):
+        try:
+            return start_server(p)
+        except OSError:
+            continue
+    raise OSError(f'No free port between {port} and {port + tries - 1}')
+
+
 def main():
     install_new_db()
     browser = '--browser' in sys.argv
-    port = int(os.environ.get('PF_PORT') or 8765)
-    for p in range(port, port + 20):
-        try:
-            srv = start_server(p)
-            port = p
-            break
-        except OSError:
-            continue
-    url = f'http://127.0.0.1:{port}/'
+    srv = start_server_from(int(os.environ.get('PF_PORT') or 8765))
+    url = f'http://127.0.0.1:{srv.server_address[1]}/'
     if browser:
         print('Serving', url)
         try:

@@ -7,6 +7,7 @@ No network access is needed.
 import json
 import os
 import shutil
+import socket
 import sys
 import tempfile
 import time
@@ -343,6 +344,33 @@ class CustomSounds(unittest.TestCase):
         label = out['levelUp'][0]['label']
         self.assertTrue(label and all(ch.isalnum() or ch in ' .-' for ch in label), label)
         self.assertEqual(app.save_sound('fullHeal', b'abc', 'audio/mpeg', '')['fullHeal'][0]['label'], 'My sound')
+
+
+class PortChoice(unittest.TestCase):
+    def test_a_busy_port_is_skipped(self):
+        # Another program listening on our port, the way a leftover "python -m http.server 8765" did. http.server sets
+        # SO_REUSEADDR, and on Windows that let the app bind the same port anyway and open its window on the other program's page.
+        other = socket.socket()
+        other.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        other.bind(('127.0.0.1', 0))
+        other.listen()
+        busy = other.getsockname()[1]
+        try:
+            if sys.platform == 'win32':
+                with self.assertRaises(OSError):
+                    app.start_server(busy)
+            srv = app.start_server_from(busy)
+            try:
+                port = srv.server_address[1]
+                self.assertNotEqual(port, busy)
+                self.assertTrue(busy < port < busy + 20)
+                with urllib.request.urlopen(f'http://127.0.0.1:{port}/api/categories', timeout=10) as r:
+                    self.assertEqual(r.status, 200)
+            finally:
+                srv.shutdown()
+                srv.server_close()
+        finally:
+            other.close()
 
 
 class EntriesBatch(unittest.TestCase):
