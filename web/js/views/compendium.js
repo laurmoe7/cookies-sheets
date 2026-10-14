@@ -29,8 +29,8 @@ export async function renderCompendium(main) {
       </div>
       <div id="comp-results" class="results"></div>
     </div>
-    <article class="comp-detail entry-body" id="comp-detail"><div class="empty"><p class="muted">Search the full OGL compendium: about 2,250 spells, 1,200 feats, traits, classes, archetypes, races, magic items, conditions, and the core rules text.</p>
-      <p class="muted small">Tip: click any underlined link on your character sheet to open its rules here or in the side panel.</p></div></article>
+    <div class="comp-pane"><article class="comp-detail entry-body" id="comp-detail"><div class="empty"><p class="muted">Search the full OGL compendium: about 2,250 spells, 1,200 feats, traits, classes, archetypes, races, magic items, conditions, and the core rules text.</p>
+      <p class="muted small">Tip: click any underlined link on your character sheet to open its rules here or in the side panel.</p></div></article></div>
   </div>`;
   api.categories().then(cs => {
     let tot = 0;

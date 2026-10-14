@@ -99,10 +99,102 @@ PAPERS = [
 
 
 # Ragged tears are clip-paths on the page itself, so the leather shows through the gap.
-TEAR_EDGE = ("polygon(0 0, 100% 0, 100% 21%, calc(100% - 6px) 22.5%, calc(100% - 15px) 23.8%, calc(100% - 8px) 25.5%, calc(100% - 20px) 27%, calc(100% - 10px) 28.8%, "
-             "calc(100% - 17px) 30%, 100% 31.5%, 100% 100%, 38px 100%, 31px calc(100% - 8px), 24px calc(100% - 4px), 17px calc(100% - 12px), 9px calc(100% - 9px), 0 calc(100% - 22px))")
-TEAR_CORNER = ("polygon(0 0, calc(100% - 44px) 0, calc(100% - 37px) 8px, calc(100% - 28px) 4px, calc(100% - 21px) 15px, calc(100% - 12px) 11px, "
-               "calc(100% - 6px) 21px, 100% 18px, 100% 100%, 0 100%)")
+# They are generated: a smooth wandering depth (two scales of noise, an uneven step along the edge, now and then a bite) so the edge looks torn, not sawn.
+import math
+import random
+
+
+def _wander(rng, n=6):
+    """Smooth random curve on 0..1 (cosine-interpolated control points)."""
+    c = [rng.uniform(.25, 1) for _ in range(n + 1)]
+    def f(t):
+        x = min(max(t, 0), 1) * n
+        i = min(int(x), n - 1)
+        u = (1 - math.cos((x - i) * math.pi)) / 2
+        return c[i] * (1 - u) + c[i + 1] * u
+    return f
+
+
+def _depths(rng, depth, lo=.012, hi=.034):
+    """[(t, px)] along one torn stretch: depth rises from 0, wanders, and falls back to 0."""
+    f, g = _wander(rng, 4), _wander(rng, 12)
+    bites = [(rng.uniform(.15, .85), rng.uniform(.03, .08), rng.uniform(.5, 1.0)) for _ in range(rng.randint(2, 3))]
+    out, t = [(0.0, 0.0)], rng.uniform(lo, hi)
+    while t < 1:
+        env = math.sin(math.pi * t) ** .6
+        d = depth * env * (.1 + .6 * f(t) + .3 * g(t)) + rng.uniform(-1.8, 1.8) * env
+        for c, w, k in bites:
+            if abs(t - c) < w:
+                d += depth * k * (1 - abs(t - c) / w) * .55
+        out.append((t, max(d, 0)))
+        t += rng.uniform(lo, hi)
+    out.append((1.0, 0.0))
+    return out
+
+
+def _pt(x, y):
+    return f"{x} {y}"
+
+
+def _px(base, d, sign=-1):
+    """'100%' minus d px, or d px from 0."""
+    return f"calc({base} - {d:.1f}px)" if sign < 0 else f"{d:.1f}px"
+
+
+def tear_polygon(seed, tears=(), chunks=()):
+    """A page outline with ragged stretches. tears: (edge, start, end, depth_px) with edge top/right/bottom/left and start/end as fractions along it
+    (top and bottom run left to right, left and right top to bottom). chunks: (corner, size_px) for a torn-off corner (tr, br, bl, tl)."""
+    rng = random.Random(seed)
+    torn = {}
+    for edge, a, b, depth in tears:
+        torn.setdefault(edge, []).append((a, b, _depths(rng, depth)))
+
+    def edge_points(edge, reverse=False):
+        """Outline points of one edge, in the clockwise direction of travel."""
+        segs = sorted(torn.get(edge, []), key=lambda s: s[0])
+        pts = []
+        for a, b, ds in segs:
+            for t, d in ds:
+                u = a + (b - a) * t
+                if edge == 'top':
+                    pts.append((u, _pt(f"{u * 100:.2f}%", f"{d:.1f}px")))
+                elif edge == 'right':
+                    pts.append((u, _pt(_px('100%', d), f"{u * 100:.2f}%")))
+                elif edge == 'bottom':
+                    pts.append((u, _pt(f"{u * 100:.2f}%", _px('100%', d))))
+                else:
+                    pts.append((u, _pt(f"{d:.1f}px", f"{u * 100:.2f}%")))
+        pts.sort(key=lambda x: x[0])
+        out = [p for _, p in pts]
+        return out[::-1] if reverse else out
+
+    def chunk(corner, size):
+        """Points of a torn-off corner, an irregular diagonal, in clockwise order."""
+        n = rng.randint(9, 12)
+        along = [(i / n + (rng.uniform(-.025, .025) if 0 < i < n else 0), rng.uniform(-.14, .14) * size) for i in range(n + 1)]
+        res = []
+        for s, j in along:
+            k = size * s
+            wob = j if 0 < s < 1 else 0
+            if corner == 'tr':
+                res.append(_pt(f"calc(100% - {size * (1 - s) + wob:.1f}px)", f"{k - wob * .5:.1f}px"))
+            elif corner == 'br':
+                res.append(_pt(f"calc(100% - {k + wob:.1f}px)", f"calc(100% - {size * (1 - s) + wob * .5:.1f}px)"))
+            elif corner == 'bl':
+                res.append(_pt(f"{size * (1 - s) + wob:.1f}px", f"calc(100% - {k + wob * .5:.1f}px)"))
+            else:
+                res.append(_pt(f"{k + wob:.1f}px", f"{size * (1 - s) + wob * .5:.1f}px"))
+        return res
+
+    ch = dict(chunks)
+    corner = lambda name, vertex: chunk(name, ch[name]) if name in ch else [vertex]
+    pts = (corner('tl', '0 0') + edge_points('top') + corner('tr', '100% 0') + edge_points('right')
+           + corner('br', '100% 100%') + edge_points('bottom', True) + corner('bl', '0 100%') + edge_points('left', True))
+    return 'polygon(' + ', '.join(pts) + ')'
+
+
+TEAR_EDGE = tear_polygon(31, tears=[('right', .14, .42, 26), ('bottom', .0, .12, 14)], chunks=[('bl', 26)])
+TEAR_CORNER = tear_polygon(47, chunks=[('tr', 54)])
 
 
 def paper_rules():
@@ -121,6 +213,7 @@ def paper_rules():
                 pos = {'tl': 'top left', 'tr': 'top right', 'bl': 'bottom left', 'br': 'bottom right'}[corner]
                 layers.append(f"{burn(corner, seed, size)} no-repeat {pos} / {size}px {size}px")
         base = f"radial-gradient(ellipse at {p['at']}, {EDGE}), var(--grain) 0 0 / 220px 220px, {paper(p['seed'], p['az'], p['freq'], p['scale'])}"
+        sel += {1: ', html[data-theme="tome"] .comp-list', 4: ', html[data-theme="tome"] .comp-pane'}.get(i, '')  # the Compendium's two panes are pages of their own
         out.append(f"{sel} {{ background: {', '.join(layers + [base])}; {extras}box-shadow: {p['burn']}, var(--shadow); }}")
     return '\n'.join(out)
 
@@ -171,16 +264,18 @@ html[data-theme="tome"] #nav button.active { background: #8a3326; color: #f6ead0
 html[data-theme="tome"] #topbar { background: var(--leather), #2c1f14; border-bottom: 2px solid #0e0905; }
 
 /* parchment pages: light in the middle, burnt toward the edges, each with its own crumples */
-html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer, html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-detail { background-color: var(--panel); border: 1px solid #1f160c; box-shadow: var(--shadow); }
-html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer, html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-detail {
+html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer, html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-pane { background-color: var(--panel); border: 1px solid #1f160c; box-shadow: var(--shadow); }
+html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer, html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-pane {
   --ink: #261a0b; --muted: #3f2f18; --accent: #7a2415; --accent-soft: #c9b48a; --gold: #6b4f10; --good: #3b5714; --warn: #80520a; --bad: #8a2616;
   --line: #5a4a2c; --panel: #9a8b68; --panel-2: #8d7f5d; --input: #3a2c19; color: var(--ink); }
 /* the inner frame line is a pseudo-element: as an outline it made every hover or scroll step repaint the whole card (3x the raster work) */
 html[data-theme="tome"] .card { position: relative; padding: 17px 19px; }
 html[data-theme="tome"] .card::before { content: ""; position: absolute; inset: 4px; border: 1px solid #2c1f10; pointer-events: none; }
 html[data-theme="tome"] .card .card::before { display: none; }
+html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-pane { position: relative; }
+html[data-theme="tome"] .comp-list::before, html[data-theme="tome"] .comp-pane::before { content: ""; position: absolute; inset: 4px; border: 1px solid #2c1f10; pointer-events: none; z-index: 1; }
 @PAPERS@
-html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer, html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-detail { background-image: @SHEET@; }
+html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-image: @SHEET@; }
 html[data-theme="tome"] .card .card { clip-path: none; background-image: none; box-shadow: none; background-color: #0000001f; }
 html[data-theme="tome"] .stat, html[data-theme="tome"] .summon-card, html[data-theme="tome"] .mod { background-color: #00000026; border-color: #5a4a30; }
 html[data-theme="tome"] input, html[data-theme="tome"] select, html[data-theme="tome"] textarea { background: var(--input); border-color: #5a4a30; color: #f0e3c0; font-family: inherit; }

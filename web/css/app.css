@@ -270,7 +270,8 @@ details.bin .char-card:hover { border-color: var(--line); }
 .result:hover, .result:focus { background: var(--panel-2); outline: none; }
 .result.sel { background: var(--accent-soft); box-shadow: inset 3px 0 var(--accent); }
 .tag { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; color: var(--muted); }
-.comp-detail { overflow: auto; padding: 18px 26px 60px; }
+.comp-pane { min-height: 0; display: flex; flex-direction: column; }
+.comp-detail { overflow: auto; padding: 18px 26px 60px; flex: 1; min-height: 0; }
 
 /* ---------- entry text (OGL HTML) ---------- */
 .entry-body { font-size: 14.5px; line-height: 1.55; }
