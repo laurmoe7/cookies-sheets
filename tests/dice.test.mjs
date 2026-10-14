@@ -122,7 +122,7 @@ test('the roll window offers attack modifiers only on attacks', async () => {
   assert.ok(names(presetsFor(true)).includes('not proficient') && names(presetsFor(true)).includes('2nd range increment'));
   assert.ok(!names(presetsFor(false)).includes('not proficient'), 'a saving throw is not affected by weapon proficiency');
   assert.ok(names(presetsFor(false)).includes('aid another'), 'aid another applies to saves and skills too');
-  assert.ok(!names(MOD_PRESETS).some(n => /shaken|sickened|fighting defensively/.test(n)), 'conditions kept on the Buffs & Conditions tab are not repeated');
+  assert.ok(!names(MOD_PRESETS).some(n => /charging|shaken|sickened|fighting defensively/.test(n)), 'conditions kept on the Buffs & Conditions tab are not repeated');
   assert.ok(['flanking', 'you are prone', 'dazzled'].every(n => names(presetsFor(true)).includes(n)), 'one-roll situations live in the roll window');
   assert.ok(MOD_PRESETS.every(m => m.n !== 0));
 });
@@ -139,18 +139,4 @@ test('spell rolls get only the modifiers that apply to spells', async () => {
   assert.ok(melee.includes('flanking') && melee.includes('target prone (melee)') && !melee.includes('target prone (ranged)'));
   assert.ok(!names(presetsFor(false, { kind: null })).includes('dazzled'), 'a concentration check is not an attack');
   assert.ok(names(presetsFor(false, { kind: null })).includes('aid another'));
-});
-
-test('charging: the +2 to hit is a roll modifier, its -2 AC stays a buff, and an old saved Charging is updated', async () => {
-  const { MOD_PRESETS, presetsFor, BUFF_PRESETS } = await import('../web/js/data.js').then(async d => ({ ...d, ...(await import('../web/js/dice.js')) }));
-  const roll = MOD_PRESETS.find(m => m.label === 'charging');
-  assert.equal(roll.n, 2, 'charging is +2 to hit');
-  assert.ok(presetsFor(true, { kind: 'melee' }).some(m => m.label === 'charging') && !presetsFor(true, { kind: 'ranged' }).some(m => m.label === 'charging'), 'melee attacks only');
-  const buff = BUFF_PRESETS.find(b => b.name === 'Charging');
-  assert.deepEqual(buff.effects.map(e => [e.target, e.value]), [['ac', -2]], 'only the AC penalty lasts');
-  const { migrate, newCharacter } = await import('../web/js/model.js');
-  const c = newCharacter();
-  c.modifiers.push({ name: 'Charging', active: true, note: '', effects: [{ target: 'melee', value: 2, type: 'untyped' }, { target: 'ac', value: -2, type: 'untyped' }] });
-  migrate(c);
-  assert.deepEqual(c.modifiers[0].effects.map(e => e.target), ['ac'], 'no double +2 for a character saved before');
 });

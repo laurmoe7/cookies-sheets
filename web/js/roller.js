@@ -61,21 +61,11 @@ function syncBar() {
 
 const withMode = expr => { expr = addMods(expr, modsTotal()); return mode && /^d20/.test(expr) ? mode + ' ' + expr : expr; };
 const withModLabel = (label, expr) => (mods.length && /^d20/.test(expr) ? [label, modsLabel(mods)].filter(Boolean).join(' ') : label);
-let penaltiesOpen = false; // the Penalties row starts folded away to save room; a click on its heading shows it
-/** Preset chips in two rows: bonuses, then penalties (folded until their heading is clicked). */
+/** Preset chips in two rows: bonuses, then penalties. */
 const presetGroups = list => [['Bonuses', 'plus', list.filter(m => m.n > 0)], ['Penalties', 'minus', list.filter(m => m.n < 0)]]
   .filter(([, , l]) => l.length)
-  .map(([head, cls, l]) => {
-    if (cls === 'minus') {
-      const on = l.filter(m => mods.some(x => x.label === m.label)).length;
-      const toggle = '<button class="mod-head minus mod-fold" data-pen-toggle aria-expanded="' + penaltiesOpen + '" title="' + (penaltiesOpen ? 'Hide the penalties' : 'Show the penalties') + '">' +
-        (penaltiesOpen ? '▾' : '▸') + ' Penalties' + (on ? ' <span class="muted">(' + on + ' on)</span>' : '') + '</button>';
-      if (!penaltiesOpen) return toggle;
-      head = toggle;
-    } else head = '<div class="small mod-head ' + cls + '">' + head + '</div>';
-    return head + '<div class="roll-bar" style="margin:4px 0 8px">' +
-    l.map(m => '<button class="rchip ' + (mods.some(x => x.label === m.label) ? 'on' : '') + '" data-mod-preset="' + MOD_PRESETS.indexOf(m) + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(bonusText(m.n)) + '</button>').join(' ') + '</div>';
-  }).join('');
+  .map(([head, cls, l]) => '<div class="small mod-head ' + cls + '">' + head + '</div><div class="roll-bar" style="margin:4px 0 8px">' +
+    l.map(m => '<button class="rchip ' + (mods.some(x => x.label === m.label) ? 'on' : '') + '" data-mod-preset="' + MOD_PRESETS.indexOf(m) + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(bonusText(m.n)) + '</button>').join(' ') + '</div>').join('');
 
 const afterRoll = () => { mode = ''; if (!keepMods) mods = []; syncBar(); };
 
@@ -92,7 +82,6 @@ function buffNote(p) {
 
 /** The Modifier window: preset situational modifiers (toggle them), your own number, and whether they stay after the next roll. */
 function modsWindow() {
-  penaltiesOpen = false;
   modal('Roll modifier', (body, close) => {
     const draw = () => {
       body.innerHTML = `<p class="small muted">Added to your d20 rolls (attacks, saves, skills, checks) ${keepMods ? 'until you clear it' : 'for the next roll only'}.</p>
@@ -119,8 +108,7 @@ function modsWindow() {
         const m = MOD_PRESETS[+p.dataset.modPreset], had = mods.some(x => x.label === m.label);
         mods = mods.filter(x => x.label !== m.label && !(m.group && x.group === m.group)); // one range increment at a time
         if (!had) mods.push({ ...m });
-      } else if (e.target.closest('[data-pen-toggle]')) penaltiesOpen = !penaltiesOpen;
-      else if (e.target.closest('#mod-add')) add();
+      } else if (e.target.closest('#mod-add')) add();
       else if (e.target.closest('#mod-clear')) { mods = []; mode = ''; }
       else if (e.target.closest('#mod-done')) { syncBar(); return close(); }
       else return;
@@ -227,7 +215,6 @@ function rollWindow(p0, attack0, sp = null) {
   };
   const title = sp ? sp.title : p0.items ? p0.items[0].label.replace(/ attack \d+\/\d+$/, '') + ' full attack' : (p0.label || 'Roll');
   const snap = { mods: mods.map(m => ({ ...m })), mode };
-  penaltiesOpen = false;
   let went = false;
   modal(title, (body, close) => {
     const draw = () => {
@@ -287,7 +274,6 @@ function rollWindow(p0, attack0, sp = null) {
         mods = mods.filter(x => x.label !== m.label && !(m.group && x.group === m.group));
         if (!had) mods.push({ ...m });
       } else if (md) mode = mode === md.dataset.winMode ? '' : md.dataset.winMode;
-      else if (e.target.closest('[data-pen-toggle]')) penaltiesOpen = !penaltiesOpen;
       else if (e.target.closest('#mod-add')) add();
       else return;
       syncBar(); draw();
