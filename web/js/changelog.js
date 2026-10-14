@@ -3,6 +3,14 @@
 
 export const CHANGELOG = [
   {
+    version: 'Earlier saves', date: '2026-10-14',
+    items: [
+      'Summons now sit at the top of the Companions tab instead of Buffs & Conditions.',
+      'Pressing Back in the side panel after opening a creature from a spell brings the buttons of that spell (Summon, Prepared, Cast) back.',
+      'The Characters page keeps earlier saves of each character, so you can go back after a bad edit.',
+    ],
+  },
+  {
     version: 'Deleted characters', date: '2026-10-11',
     items: [
       'The Characters page lists deleted characters at the bottom: bring one back with Restore, or remove it for good.',

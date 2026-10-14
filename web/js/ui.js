@@ -93,7 +93,7 @@ export function showCustom({ name, cat = '', sub = '', html = '', source = '' })
 export const textToHtml = t => String(t || '').trim().split(/\n\s*\n/).map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
 
 let drawerShownAt = 0; // when the side panel last showed (or changed) an entry
-function renderDrawer(entry) {
+function renderDrawer(entry, goingBack = false) {
   const dr = $('#drawer');
   drawerShownAt = Date.now();
   dr.classList.add('open');
@@ -108,10 +108,10 @@ function renderDrawer(entry) {
   if (back) back.onclick = async () => {
     drawerHistory.pop();
     const prev = drawerHistory[drawerHistory.length - 1];
-    renderDrawer(typeof prev === 'object' ? prev : await api.entry(prev));
+    renderDrawer(typeof prev === 'object' ? prev : await api.entry(prev), true);
   };
   wireEntryLinks($('.entry-body', dr));
-  document.dispatchEvent(new CustomEvent('entry-shown', { detail: { entry, actions: $('.entry-actions', dr) } }));
+  document.dispatchEvent(new CustomEvent('entry-shown', { detail: { entry, actions: $('.entry-actions', dr), back: goingBack } }));
 }
 
 /**

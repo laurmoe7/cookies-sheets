@@ -429,7 +429,7 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 /* The desktop window turns text selection off app-wide; stat blocks and long text should be copyable. */
 .entry-body, .statblock, .summon-preview, .summon-card .sm-stats, .modal .statblock { -webkit-user-select: text; user-select: text; cursor: auto; }
 .entry-body *, .statblock * { -webkit-user-select: text; user-select: text; }
-#summons-card { margin-top: 18px; }
+#summons-card { margin-bottom: 18px; }
 .summon-block h4 { margin: 10px 0 4px; }
 
 /* ---------- summons ---------- */

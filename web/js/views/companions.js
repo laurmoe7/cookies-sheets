@@ -14,6 +14,7 @@ import { event as petEvent } from '../pet/pet.js';
 import { SKILLS } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
+import { renderSummons } from './summons.js';
 
 const PIC = { w: 3, h: 4, out: 800 };
 
@@ -40,6 +41,7 @@ export async function renderCompanions(body, c) {
   const archs = Object.keys(base).flatMap(cls => archetypesOf(c, cls).map(a => (a.name || '').toLowerCase()));
   const levels = withCompanionSources(base, c, classFeatures(c, state.classesByName), archs, state.derived?.level || 0);
   body.innerHTML = `
+    <section class="card summons" id="summons-card"></section>
     <div class="row"><h3 class="grow" style="margin:0">Companions</h3>
       <button class="btn small" data-new="animal">＋ Animal companion</button>
       <button class="btn small" data-new="eidolon">＋ Eidolon</button>
@@ -49,6 +51,7 @@ export async function renderCompanions(body, c) {
       <p class="small muted">Animal companions come from druid, hunter, ranger (from 4th level), cavalier, samurai and paladin (divine bond) levels, the Animal domain, and the Animal Ally and Boon Companion feats; eidolons from summoner levels; familiars from wizard, sorcerer, witch and shaman levels, the arcanist’s Familiar exploit, and a few archetypes.
       Levels are worked out from your classes automatically, and you can override them.</p></section>`}
     ${c.companions.map((comp, i) => companionCard(comp, i, levels, data, masterOf(c, levels))).join('')}`;
+  renderSummons($('#summons-card', body), c);
   if (state.compFx) {
     const fx = state.compFx;
     state.compFx = null;

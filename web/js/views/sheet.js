@@ -11,7 +11,7 @@ import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
 import { summonSpell } from '../summons.js';
 import { rollBar, fillSpellRolls } from '../roller.js';
-import { renderSummons, chooseSummon } from './summons.js';
+import { chooseSummon } from './summons.js';
 import { renderCompanions } from './companions.js';
 import { playPageTurn, snapshotPage } from '../options.js';
 import { hpSegments, segsHtml } from '../bars.js';
@@ -619,6 +619,7 @@ function spells(body, c, d) {
 // The spell shown in the side panel, with its actions (Roll, Summon, Prepared, Cast, Delete) under the name. {cls, i, armed, el}
 // `armed` means the next entry the panel shows is this spell, so its actions go into that entry's action area.
 let spellDrawer = null;
+let parkedSpell = null; // the open spell while the panel shows something else (a creature linked from its text); Back brings it home
 const isActive = (cls, i) => spellDrawer?.cls === cls && spellDrawer.i === i;
 
 function clearActiveSpell() {
@@ -630,6 +631,7 @@ function clearActiveSpell() {
 function openSpell(cls, i, chip) {
   const s = state.char.spellbooks[cls]?.spells[i];
   if (!s) return;
+  parkedSpell = null;
   spellDrawer = { cls, i, armed: true, id: s.id || null };
   document.querySelectorAll('.sp-chip.on').forEach(x => x.classList.remove('on'));
   chip?.classList.add('on');
@@ -640,9 +642,14 @@ function openSpell(cls, i, chip) {
 document.addEventListener('entry-shown', e => {
   const sd = spellDrawer;
   if (sd?.armed && (e.detail.entry.id ?? null) === sd.id) { sd.armed = false; sd.el = e.detail.actions; renderSpellActions(); }
-  else clearActiveSpell(); // the panel moved on to something else
+  else if (e.detail.back && parkedSpell && (e.detail.entry.id ?? null) === parkedSpell.id) { // Back to the spell: its actions return
+    spellDrawer = parkedSpell; parkedSpell = null; spellDrawer.el = e.detail.actions; renderSpellActions();
+  } else { // the panel moved on to something else
+    if (sd) parkedSpell = sd;
+    clearActiveSpell();
+  }
 });
-document.addEventListener('drawer-closed', clearActiveSpell);
+document.addEventListener('drawer-closed', () => { parkedSpell = null; clearActiveSpell(); });
 
 /** Fills the side panel's action area for the open spell. Called again after every change so the numbers stay right. */
 function renderSpellActions() {
@@ -658,7 +665,7 @@ function renderSpellActions() {
   sd.el.innerHTML = `<div class="sp-actions">
       <div class="sp-group">
         ${s.id ? `<span data-spell-slot="${sd.i}" data-spell-id="${s.id}"></span>` : `<button class="btn" data-spell-roll="${sd.i}" title="Roll an attack, concentration or the damage for this spell">🎲 Roll</button>`}
-        ${summonSpell(s.name) ? `<button class="btn" data-summon="${esc(s.name)}" data-summon-cls="${esc(sd.cls)}" title="Choose a creature; it is added to Buffs &amp; Conditions → Summons">Summon…</button>` : ''}
+        ${summonSpell(s.name) ? `<button class="btn" data-summon="${esc(s.name)}" data-summon-cls="${esc(sd.cls)}" title="Choose a creature; it is added to Companions → Summons">Summon…</button>` : ''}
       </div>
       ${prepared ? `<div class="sp-group" title="Prepared and not cast yet. Casting uses one; Rest gives them back.">
         <span class="sp-group-label">Prepared</span>
@@ -870,9 +877,7 @@ function buffs(body, c, d) {
       return `<button class="chip ${on ? 'on' : ''}" data-preset="${esc(p.name)}" title="${esc(p.note || '')}">${esc(p.name)}</button>`;
     }).join('')}</div>`).join('')}
     <p class="small muted">Power Attack, Deadly Aim, and Combat Expertise scale with your BAB automatically.</p>
-  </section></div>
-  <section class="card summons" id="summons-card"></section>`;
-  renderSummons($('#summons-card', body), c);
+  </section></div>`;
   wireCommon(body);
   body.addEventListener('click', async e => {
     const p = e.target.closest('[data-preset]');

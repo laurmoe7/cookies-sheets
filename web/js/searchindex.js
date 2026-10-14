@@ -19,7 +19,7 @@ export function buildIndex(c, classesByName = {}) {
   for (const a of c.armor || []) add('Armor', a.name, 'gear');
   for (const g of c.gear || []) add('Gear', g.name, 'gear', g.notes);
   for (const m of c.modifiers || []) add('Buff', m.name, 'buffs', m.note);
-  for (const s of c.summons || []) add('Summon', s.name, 'buffs', s.spell);
+  for (const s of c.summons || []) add('Summon', s.name, 'companions', s.spell);
   for (const k of c.companions || []) add('Companion', k.name, 'companions', k.species || k.form || '');
   if (c.quickNotes) add('Notes', 'Overview notes', 'overview', c.quickNotes);
   if (c.bio) add('Notes', 'Biography', 'bio', c.bio);

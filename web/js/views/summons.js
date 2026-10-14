@@ -1,5 +1,5 @@
 // Summons: the chooser (pick a Summon Monster / Summon Nature's Ally creature) and the Summons section of the
-// Buffs & Conditions tab, where each summoned creature is tracked with its key stats, hit points and rounds left.
+// Companions tab, where each summoned creature is tracked with its key stats, hit points and rounds left.
 import { api } from '../api.js';
 import { state, changed } from '../app.js';
 import { esc, $, $$, modal, toast, showCustom, confirmBox, textField, getPath } from '../ui.js';
@@ -23,7 +23,7 @@ function casterLevel(cls) {
   return Math.max(1, ...Object.values(sc).map(x => x.cl || 0));
 }
 
-/** The chooser. Clicking a creature adds it to Buffs & Conditions → Summons and keeps the window open. */
+/** The chooser. Clicking a creature adds it to Companions → Summons and keeps the window open. */
 export async function chooseSummon({ spell = 'Summon Monster I', cls = '' } = {}) {
   let data;
   try { data = await loadData(); } catch (e) { toast('Could not load summon lists: ' + e.message, 'err'); return; }
@@ -41,10 +41,10 @@ export async function chooseSummon({ spell = 'Summon Monster I', cls = '' } = {}
             <select data-f="level">${ROMAN.slice(1).map((r, i) => `<option value="${i + 1}" ${i + 1 === level ? 'selected' : ''}>${r}</option>`).join('')}</select></label>
           <label>Lasts <input type="number" class="num w3" data-f="rounds" value="${rounds}" min="1"> rounds</label>
           <span class="grow"></span><button class="btn primary" data-done>Done</button></div>
-        <p class="small muted">Click a creature to add it to <b>Buffs &amp; Conditions → Summons</b>. ${family === 'Summon Monster' ? 'A * means it takes the celestial or fiendish template. ' : ''}Press “Stats” to read a stat block first.
+        <p class="small muted">Click a creature to add it to <b>Companions → Summons</b>. ${family === 'Summon Monster' ? 'A * means it takes the celestial or fiendish template. ' : ''}Press “Stats” to read a stat block first.
           ${Object.keys(added).length ? `<br>Added: <b>${Object.entries(added).map(([n, k]) => `${esc(n)}${k > 1 ? ' ×' + k : ''}`).join(', ')}</b>` : ''}</p>
         <div class="summon-pane"><div class="summon-lists">${groups.map(g => `<h4>${ORD[g.level]}-level list <span class="muted small">· summons ${g.count}</span></h4>
-          <ul class="summon-list">${g.entries.map(e => `<li><button class="btn small summon-pick" data-pick="${esc(e.creature)}" data-label="${esc(e.name)}" data-tpl="${e.template ? 1 : 0}" title="Add to Buffs &amp; Conditions → Summons">${esc(e.name)}${e.template ? '*' : ''}</button>
+          <ul class="summon-list">${g.entries.map(e => `<li><button class="btn small summon-pick" data-pick="${esc(e.creature)}" data-label="${esc(e.name)}" data-tpl="${e.template ? 1 : 0}" title="Add to Companions → Summons">${esc(e.name)}${e.template ? '*' : ''}</button>
             <button class="btn small ghost summon-stats" data-stats="${esc(e.creature)}" data-label="${esc(e.name)}" data-tpl="${e.template ? 1 : 0}" title="Read the stat block">Stats</button>
             ${e.subtype ? `<span class="muted small">${esc(e.subtype)}</span>` : ''}</li>`).join('')}</ul>`).join('')}</div>
           <div class="summon-preview">${preview ? `<h3>${esc(preview.label)}</h3>${statBlockHtml(data.creatures[preview.key], { template: preview.tpl })}` : '<p class="muted">Press “Stats” beside a creature to read it here.</p>'}</div></div>`;
@@ -69,7 +69,7 @@ export async function chooseSummon({ spell = 'Summon Monster I', cls = '' } = {}
         c.summons.push(newSummon({ key: entry.pick, label: n ? `${label} #${n + 1}` : label, spell: `${family} ${ROMAN[level]}`, tpl: entry.tpl === '1', block: data.creatures[entry.pick], rounds }));
         added[label] = (added[label] || 0) + 1;
         changed();
-        toast(`${label} added to Buffs & Conditions → Summons`);
+        toast(`${label} added to Companions → Summons`);
         draw();
       } else if (st) {
         preview = { key: st.dataset.stats, label: st.dataset.label, tpl: st.dataset.tpl === '1' };
@@ -83,7 +83,7 @@ export async function chooseSummon({ spell = 'Summon Monster I', cls = '' } = {}
 
 const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
 
-/** The Summons section on the Buffs & Conditions tab. */
+/** The Summons section at the top of the Companions tab. */
 /** A hit point reaction waiting for the next draw: {id, kind, amount, frac, from}. */
 let sumFx = null;
 

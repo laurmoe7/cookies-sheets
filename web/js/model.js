@@ -19,7 +19,7 @@ export function newCharacter() {
     portrait: '', // data URL, large picture on the Overview tab
     portraitSrc: '', avatarSrc: '', // the uncropped pictures, kept so they can be recentered
     avatar: '',   // data URL, small picture beside the name in the top bar
-    summons: [], // tracked Summon Monster / Nature's Ally creatures (Buffs & Conditions tab)
+    summons: [], // tracked Summon Monster / Nature's Ally creatures (top of the Companions tab)
     companions: [], // animal companions, eidolons, familiars (see companions.js)
     hp: { current: null, temp: 0, nonlethal: 0, misc: 0 },
     ac: { natural: 0, deflection: 0, dodge: 0, misc: 0 },
