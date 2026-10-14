@@ -93,5 +93,5 @@ Node.js is installed at `C:\Program Files\nodejs`. A shell started before it was
 
 ## Repo
 
-- Git repo on `main`; remote `origin` is the private repo https://github.com/laurmoe7/pathfinder-sheet. Commits use the GitHub noreply email (the real one is blocked on push). A local `backup-before-email-rewrite` branch holds the pre-rewrite history. Commit in small steps with messages that say why.
+- Git repo on `main`; remote `origin` is the public repo https://github.com/laurmoe7/cookies-sheets. Commits use the GitHub noreply email (the real one is blocked on push). A local `backup-before-email-rewrite` branch holds the pre-rewrite history. Commit in small steps with messages that say why.
 - Git-ignored: `dist/`, `build/`, `*.spec`, `data/pf1e.db`, `tools/sources/` and `*.lnk`.
