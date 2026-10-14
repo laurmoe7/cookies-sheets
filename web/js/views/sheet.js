@@ -1057,7 +1057,7 @@ export const LORE_KINDS = ['Place', 'Faction', 'Item', 'Lore'];
 
 /** Story notes: free text, quests, NPCs, places and factions, and a session log (newest first), one inner tab each. */
 const NOTE_TABS = [['general', 'General notes'], ['story', 'Story'], ['quests', 'Quests & goals'], ['npcs', 'People'], ['lore', 'Places & lore'], ['sessions', 'Session log']];
-let notesTab = 'story';
+let notesTab = 'general';
 
 function notes(body, c) {
   const entries = key => (c[key] || []).map((x, i) => ({ x, i }));
@@ -1097,7 +1097,7 @@ function notes(body, c) {
       ${grid('sessions', session, 'Add a session after each game so you can remember what happened. The newest is first.', true)}`,
   };
   const draw = () => {
-    if (!panels[notesTab]) notesTab = 'story';
+    if (!panels[notesTab]) notesTab = 'general';
     const count = k => (Array.isArray(c[k]) ? c[k].length : 0);
     body.innerHTML = `<div class="notes-tab">
       <div class="subtabs" role="tablist">${NOTE_TABS.map(([k, l]) => `<button class="subtab ${k === notesTab ? 'active' : ''}" role="tab" data-note-tab="${k}">${l}${count(k) ? ` <span class="count">${count(k)}</span>` : ''}</button>`).join('')}</div>

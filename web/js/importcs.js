@@ -50,10 +50,15 @@ const CLASS_ABBR = {
   Swash: 'Swashbuckler', Swb: 'Swashbuckler', WP: 'Warpriest', Warp: 'Warpriest',
 };
 
-/** "White Mage Arcanist, lvl 8" / "Fighter 3 / Rogue 2" / "Wiz5" -> [{cls, levels, archetype}] */
+/** "White Mage Arcanist, lvl 8" / "Fighter 3 / Rogue 2" / "Wiz5" / "Fighter (Two-Handed Fighter) 7" -> [{cls, levels, archetype}] */
 export function guessClasses(text, classes) {
-  const t = str(text);
-  if (!t) return [];
+  const whole = str(text);
+  if (!whole) return [];
+  // Archetypes written in brackets after the class ("Fighter (Two-Handed Fighter) 7"). They are blanked out here so the class and number matching below ignores them
+  // (an archetype can contain a class name), and handed back to the class they follow.
+  const brackets = [...whole.matchAll(/\(([^)]*)\)/g)].map(m => ({ start: m.index, end: m.index + m[0].length, text: m[1].trim() })).filter(b => b.text);
+  let t = whole;
+  for (const b of brackets) t = t.slice(0, b.start) + ' '.repeat(b.end - b.start) + t.slice(b.end);
   const known = new Set(classes.map(c => c.name));
   const names = [...classes.map(c => [c.name, c.name]), ...Object.entries(CLASS_ABBR).filter(([, v]) => known.has(v))]
     .sort((a, b) => b[0].length - a[0].length);
@@ -77,8 +82,14 @@ export function guessClasses(text, classes) {
     if (!num && found.length === 1 && nums.length === 1) num = nums[0];
     // Words in front of the class name in the same segment are usually an archetype ("White Mage Arcanist").
     const seg = t.slice(prevEnd, f.start).split(/[\/,;&+]|\band\b/i).pop();
-    const archetype = seg.replace(/\d+(st|nd|rd|th)?(-|\s)*(level)?/ig, '').replace(/\blvl\b|\blevel\b/ig, '').trim().replace(/^[-–:]+|[-–:]+$/g, '').trim();
-    return { cls: f.cls, levels: Math.max(1, Math.min(20, num ? num.n : 1)), archetype };
+    const before = seg.replace(/\d+(st|nd|rd|th)?(-|\s)*(level)?/ig, '').replace(/\blvl\b|\blevel\b/ig, '').trim().replace(/^[-–:]+|[-–:]+$/g, '').trim();
+    // A bracket belongs to the class just before it ("Fighter 7 (Two-Handed Fighter)"), else to the one just after it.
+    const mine = brackets.filter(b => {
+      const prev = [...found].reverse().find(x => x.end <= b.start);
+      if (prev && /^[\s\d\-–:]*$/.test(t.slice(prev.end, b.start))) return prev === f;
+      return !prev && found.find(x => x.start >= b.end) === f;
+    }).map(b => b.text);
+    return { cls: f.cls, levels: Math.max(1, Math.min(20, num ? num.n : 1)), archetype: [before, ...mine].filter(Boolean).join(', ') };
   });
 }
 

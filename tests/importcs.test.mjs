@@ -193,3 +193,13 @@ test('an imported sheet has every field the newer features read: enchantments, m
   assert.ok(old.weapons.every(w => Array.isArray(w.fx) && w.slot === ''));
   assert.ok(old.gear.every(g => g.slot === '' && Array.isArray(g.effects)));
 });
+
+test('archetypes in brackets after the class are read, even when the archetype name contains a class name', () => {
+  const g = t => guessClasses(t, classes).map(r => [r.cls, r.levels, r.archetype]);
+  assert.deepEqual(g('Fighter (Two-Handed Fighter) 7'), [['Fighter', 7, 'Two-Handed Fighter']]);
+  assert.deepEqual(g('Fighter 7 (Two-Handed Fighter)'), [['Fighter', 7, 'Two-Handed Fighter']]);
+  assert.deepEqual(g('Fighter (Two-Handed Fighter) 5 / Rogue (Acrobat) 2'), [['Fighter', 5, 'Two-Handed Fighter'], ['Rogue', 2, 'Acrobat']]);
+  assert.deepEqual(g('Cleric (Crusader, Sacred Servant) 6'), [['Cleric', 6, 'Crusader, Sacred Servant']]);
+  assert.deepEqual(g('Wizard (Evoker) 3, Fighter 2'), [['Wizard', 3, 'Evoker'], ['Fighter', 2, '']]);
+  assert.deepEqual(g('White Mage Arcanist, lvl 8'), [['Arcanist', 8, 'White Mage']], 'the old way still works');
+});
