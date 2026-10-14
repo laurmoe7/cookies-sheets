@@ -18,6 +18,7 @@ export function newCharacter() {
     archetypes: {}, // {Class: [archetype data from features.bakeArchetype]}
     portrait: '', // data URL, large picture on the Overview tab
     portraitSrc: '', avatarSrc: '', // the uncropped pictures, kept so they can be recentered
+    doll: '', dollSrc: '', // the picture in the middle of the Inventory tab's paper doll (blank = use the portrait)
     avatar: '',   // data URL, small picture beside the name in the top bar
     summons: [], // tracked Summon Monster / Nature's Ally creatures (top of the Companions tab)
     companions: [], // animal companions, eidolons, familiars (see companions.js)
