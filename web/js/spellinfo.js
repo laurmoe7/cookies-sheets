@@ -57,5 +57,9 @@ export function spellInfo(entry, cl) {
   const dice = guessSpellDice(summary, cl) || (near ? guessSpellDice(body.slice(near.index, near.index + 200), cl) : '');
   const src = guessSpellDice(summary, cl) ? summary : near ? near[0] : '';
   const kind = !dice ? '' : healing.test(src) ? 'healing' : /damage|deals?|takes?|hit points|\bhp\b/i.test(src) ? 'damage' : '';
-  return { dice, kind, attack, touch, save: parseSave(meta.save), sr: /^yes/i.test(String(meta.sr ?? '').trim()) };
+  const save = parseSave(meta.save);
+  // A spell with a range of touch that harms its target (Inflict Wounds, Shocking Grasp) needs a melee touch attack, even when its text never says so.
+  const harms = kind === 'damage' && !attack && /^touch\b/i.test(String(meta.range ?? '').trim()) && !save?.harmless
+    && /^touch (?:deals|delivers|causes|inflicts)\b/i.test(summary.trim()); // only when the summary itself says the touch deals the damage: guessed dice in the text are too loose
+  return { dice, kind, attack: harms ? 'melee' : attack, touch: harms ? true : touch, save, sr: /^yes/i.test(String(meta.sr ?? '').trim()) };
 }

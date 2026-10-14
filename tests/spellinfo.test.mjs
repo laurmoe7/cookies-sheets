@@ -62,3 +62,15 @@ test('spells that call for an ordinary attack roll get a roll to hit, asides and
   assert.equal(info('<p>The creature is free to make melee attacks against you if you come within reach.</p>').attack, null, 'a creature making attacks is not your attack roll');
   assert.equal(info('<p>This liquid works as a tanglefoot bag, except you do not have to make a successful ranged attack roll to hit.</p>').attack, null, 'a denial');
 });
+
+test('a harming touch spell whose summary says "Touch deals" needs a melee touch attack; a healing one does not', () => {
+  const inflict = spellInfo({ summary: 'Touch deals 1d8 damage +1/level (max +5).', html: '<p>You channel negative energy.</p>', meta: { range: 'touch', save: 'Will half', sr: 'yes' } }, 3);
+  assert.equal(inflict.attack, 'melee'); assert.equal(inflict.touch, true); assert.equal(inflict.dice, '1d8+3', '1d8 + 1 x 3 levels');
+  const cure = spellInfo({ summary: 'Cures 1d8 damage + 1/level (max +5).', html: '', meta: { range: 'touch', save: 'Will half (harmless)', sr: 'yes' } }, 3);
+  assert.equal(cure.attack, null);
+});
+
+test('a flat bonus beside the dice is kept: Magic Missile is 1d4+1', () => {
+  const mm = spellInfo({ summary: '1d4+1 damage; +1 missile per two levels above 1st (max 5).', html: '', meta: { sr: 'yes' } }, 5);
+  assert.equal(mm.dice, '1d4+1'); assert.equal(mm.kind, 'damage'); assert.equal(mm.attack, null);
+});

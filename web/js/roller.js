@@ -230,8 +230,11 @@ function rollWindow(p0, attack0, sp = null) {
       const shown = exprs[0] + (exprs.length > 1 ? ' … and ' + (exprs.length - 1) + ' more' : '');
       const presets = d20 ? presetsFor(attack, sp && { kind: ch.kind }) : [];
       const sending = !!(options().webhook && options().rollSend);
-      body.innerHTML = (sp ? '<p class="small muted">' + esc(sp.facts) + '.</p><div class="roll-bar" style="margin:8px 0">' +
-          sp.choices.map((c, i) => '<button class="rchip ' + (i === pick ? 'on' : '') + '" data-sp-pick="' + i + '" title="' + esc(c.tip || '') + '">' + esc(c.label) + '</button>').join(' ') + '</div>' +
+      body.innerHTML = (sp ? '<p class="small muted">' + esc(sp.facts) + '.</p><div style="margin:8px 0">' +
+          ['Hit', 'Damage', 'Healing', 'Checks'].map(g => {
+            const mine = sp.choices.map((c, i) => [c, i]).filter(([c]) => c.group === g);
+            return mine.length ? '<div class="sp-group-row"><span class="sp-group-lab">' + g + '</span>' + mine.map(([c, i]) => '<button class="rchip ' + (i === pick ? 'on' : '') + '" data-sp-pick="' + i + '" title="' + esc(c.tip || '') + '">' + esc(c.label) + '</button>').join(' ') + '</div>' : '';
+          }).join('') + '</div>' +
           (ch.dice ? '<div class="row" style="margin:8px 0"><input id="spell-dice" class="w12" value="' + esc(diceVal) + '" placeholder="e.g. 5d6" autocomplete="off" aria-label="Spell dice"></div>' : '') : '') +
         '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' + buffNote(p) +
         (d20 ? '<div class="roll-bar" style="margin:8px 0"><button class="rchip ' + (mode === 'adv' ? 'on' : '') + '" data-win-mode="adv">Advantage</button><button class="rchip ' + (mode === 'dis' ? 'on' : '') + '" data-win-mode="dis">Disadvantage</button></div>' : '') +
@@ -410,9 +413,9 @@ async function spellWindow(btn) {
   const what = info.kind === 'healing' ? 'healing' : info.kind === 'damage' ? 'damage' : '';
   const kindOf = t => (t.includes('ranged') ? 'ranged' : t.includes('melee') ? 'melee' : null);
   const choices = [
-    ...chips.map(ch => ({ label: ch.label, tip: ch.tip, kind: kindOf(ch.tip), attack: /touch attack|ranged attack|melee attack/.test(ch.tip),
+    ...chips.map(ch => ({ group: /touch attack|ranged attack|melee attack/.test(ch.tip) ? 'Hit' : 'Checks', label: ch.label, tip: ch.tip, kind: kindOf(ch.tip), attack: /touch attack|ranged attack|melee attack/.test(ch.tip),
       p: { expr: 'd20' + bonusText(ch.n), label: ch.name, parts: ch.parts } })),
-    { label: 'Roll ' + (what || 'dice'), dice: true, label2: what ? `${name} ${what}` : name, tip: 'Roll the dice of the spell (edit them first if the guess is wrong)' },
+    { group: what === 'healing' ? 'Healing' : 'Damage', label: what ? (what === 'healing' ? 'Healing' : 'Damage') + (info.dice ? ' ' + info.dice : '') : 'Roll dice', dice: true, label2: what ? `${name} ${what}` : name, tip: 'Roll the dice of the spell (edit them first if the guess is wrong)' },
   ];
   const first = choices.findIndex(ch => ch.attack);
   rollWindow(null, false, { title: name, facts: facts.join(' · '), choices, cast: spellCast(cls, sp, sc), dice: info.dice, start: first >= 0 && known ? first : (info.dice ? choices.length - 1 : 0) });

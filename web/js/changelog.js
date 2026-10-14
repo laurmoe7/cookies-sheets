@@ -5,6 +5,8 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
+      'A spell\u2019s roll window sorts what you can roll into rows: Hit (an attack roll, when the spell needs one), Damage or Healing with its dice shown, and Checks.',
+      'Touch spells that harm (Inflict Light Wounds) now offer a melee touch attack, and dice such as Magic Missile\u2019s 1d4+1 keep their flat bonus.',
       'The − and + beside each spell level’s slots are gone.',
       'A 🌙 Rest button at the top of the Overview: heals 1 hit point per level, clears nonlethal damage, heals 1 point of each ability damage, refills the class pools and trackers, and resets spell slots.',
       'New daily pools: smite evil and smite good, challenge (cavalier and samurai), wild shape and martial flexibility.',

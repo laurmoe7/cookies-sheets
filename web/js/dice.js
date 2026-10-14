@@ -158,6 +158,8 @@ export function guessSpellDice(text, cl) {
   const rest = t.slice(m.index + m[0].length, m.index + m[0].length + 140);
   const level = Math.max(0, Math.trunc(Number(cl) || 0));
   const plus = PLUS_LEVEL.exec(rest);
+  const flat = !plus && /^\s*\+\s*(\d+)\s*(?:points? of |hit points|damage|hp)/i.exec(rest); // "1d4+1 damage"
+  if (flat) return `${n}d${sides}+${flat[1]}`;
   if (plus) {
     let bonus = (+plus[1]) * Math.floor(level / divisor(plus[2]));
     const cap = /\bmax(?:imum)?\.?\s*\+\s*(\d+)/i.exec(rest);

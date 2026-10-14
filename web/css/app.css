@@ -706,3 +706,7 @@ html[data-motion="off"] .fx-spark { display: none; }
 .wbtn.crit:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 .wbtn:active { transform: scale(.96); }
 .rest-btn { margin-right: 8px; }
+
+/* The spell roll window: what to roll, in rows (Hit, Damage or Healing, Checks) */
+.sp-group-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0; }
+.sp-group-lab { min-width: 62px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
