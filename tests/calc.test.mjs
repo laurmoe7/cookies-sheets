@@ -257,3 +257,29 @@ test('the higher rages and bard songs are bigger than the first ones', () => {
   const str = name => calc(buff(make({ base: { str: 10 }, levels: repeat('Fighter', 2) }), name)).abilities.str.score;
   assert.deepEqual([str('Rage'), str('Greater Rage'), str('Mighty Rage')], [16, 18, 20], 'Str 10 + human 2 = 12, then +4, +6, +8');
 });
+
+test('presets are listed A to Z inside each group, with numbers in order', async () => {
+  const { BUFF_PRESETS, BUFF_GROUPS, presetsIn } = await import('../web/js/data.js');
+  assert.ok(BUFF_PRESETS.every(p => BUFF_GROUPS.includes(p.group)), 'every preset is in a listed group, so none is hidden');
+  assert.equal(presetsIn('Spell').length + presetsIn('Class').length + presetsIn('Feat').length + presetsIn('Condition').length + presetsIn('Combat option').length, BUFF_PRESETS.length);
+  const names = presetsIn('Class').map(p => p.name);
+  assert.deepEqual(names.filter(n => n.startsWith('Inspire Courage')), ['Inspire Courage +1', 'Inspire Courage +2', 'Inspire Courage +3', 'Inspire Courage +4']);
+  for (const g of BUFF_GROUPS) {
+    const n = presetsIn(g).map(p => p.name);
+    assert.deepEqual(n, [...n].sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })), g + ' is in order');
+  }
+});
+
+test('feat, cover and condition presets change the numbers they say', () => {
+  const base = () => make({ base: { con: 10, dex: 10 }, levels: repeat('Fighter', 6), hp: [10, 6, 6, 6, 6, 6] });
+  const d0 = calc(base());
+  assert.equal(calc(buff(base(), 'Dodge')).ac.total - d0.ac.total, 1, '+1 dodge to AC');
+  assert.equal(calc(buff(base(), 'Toughness')).hp.max - d0.hp.max, 6, 'Toughness at 6 Hit Dice is +6 (more than 3)');
+  assert.equal(calc(buff(base(), 'Great Fortitude')).saves.fort.total - d0.saves.fort.total, 2);
+  assert.equal(calc(buff(base(), 'Improved Initiative')).init - d0.init, 4);
+  assert.equal(calc(buff(base(), 'Cover (+4 AC)')).ac.total - d0.ac.total, 4);
+  assert.equal(d0.ac.total - calc(buff(base(), 'Blinded')).ac.total, 2, 'blinded is -2 AC');
+  const one = calc(buff(base(), 'Negative Level (-1)'));
+  assert.equal(d0.saves.will.total - one.saves.will.total, 1, 'one negative level is -1 on saves');
+  assert.equal(d0.melee - one.melee, 1, 'and -1 on attacks');
+});

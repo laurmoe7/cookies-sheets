@@ -3,7 +3,7 @@ import { state, changed, render, go, refreshCalc } from '../app.js';
 import { sign, num, raceInfo, classLevels } from '../calc.js';
 import {
   ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS,
-  BUFF_PRESETS, SCHOOLS, CASTING_STAT_NAMES,
+  BUFF_PRESETS, BUFF_GROUPS, presetsIn, SCHOOLS, CASTING_STAT_NAMES,
 } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom, showEntry, closeDrawer } from '../ui.js';
 import { choosePicture, repositionPicture } from '../cropper.js';
@@ -404,8 +404,7 @@ function addPreset(p) {
 
 function chooseBuffPreset() {
   return modal('Add buff or condition', (body, close) => {
-    const groups = [...new Set(BUFF_PRESETS.map(p => p.group))];
-    body.innerHTML = groups.map(g => `<h4>${esc(g)}</h4><div class="chips">${BUFF_PRESETS.filter(p => p.group === g)
+    body.innerHTML = BUFF_GROUPS.map(g => `<h4>${esc(g)}</h4><div class="chips">${presetsIn(g)
       .map(p => `<button class="chip" data-name="${esc(p.name)}" title="${esc(p.note || '')}">${esc(p.name)}</button>`).join('')}</div>`).join('') +
       '<p class="small muted">Need something else? Use the Buffs & Conditions tab to build a custom modifier.</p>';
     body.onclick = e => { const b = e.target.closest('[data-name]'); if (b) close(BUFF_PRESETS.find(p => p.name === b.dataset.name)); };
@@ -891,7 +890,6 @@ function gear(body, c, d) {
 // BUFFS
 // =====================================================================
 function buffs(body, c, d) {
-  const groups = [...new Set(BUFF_PRESETS.map(p => p.group))];
   body.innerHTML = `<div class="grid two">
   <section class="card">
     <div class="row"><h3 class="grow">Your buffs & conditions</h3><button class="btn small" data-new-mod>＋ Custom modifier</button></div>
@@ -904,7 +902,7 @@ function buffs(body, c, d) {
   </section>
   <section class="card">
     <h3>Presets</h3>
-    ${groups.map(g => `<h4>${esc(g)}</h4><div class="chips">${BUFF_PRESETS.filter(p => p.group === g).map(p => {
+    ${BUFF_GROUPS.map(g => `<h4>${esc(g)}</h4><div class="chips">${presetsIn(g).map(p => {
       const on = c.modifiers.find(m => m.name === p.name && m.active);
       return `<button class="chip ${on ? 'on' : ''}" data-preset="${esc(p.name)}" title="${esc(p.note || '')}">${esc(p.name)}</button>`;
     }).join('')}</div>`).join('')}

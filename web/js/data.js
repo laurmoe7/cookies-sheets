@@ -170,7 +170,36 @@ export const BUFF_PRESETS = [
   { name: 'Exhausted', group: 'Condition', effects: [{ target: 'str', value: -6, type: 'untyped' }, { target: 'dex', value: -6, type: 'untyped' }], note: 'Half speed; can\'t run or charge.' },
   { name: 'Entangled', group: 'Condition', effects: [{ target: 'attack', value: -2, type: 'untyped' }, { target: 'dex', value: -4, type: 'untyped' }], note: 'Half speed, can\'t run or charge. Concentration DC 15 + spell level to cast.' },
   { name: 'Grappled', group: 'Condition', effects: [{ target: 'attack', value: -2, type: 'untyped' }, { target: 'dex', value: -4, type: 'untyped' }], note: 'CMB penalty does not apply to grapple/escape checks. Can\'t move. Concentration DC 10 + grappler CMB + spell level.' },
+  { name: 'Cover (+4 AC)', group: 'Combat option', effects: [{ target: 'ac', value: 4, type: 'circumstance' }, { target: 'ref', value: 2, type: 'circumstance' }], note: "Cover against the attacker: +4 AC against ranged attacks and +2 on Reflex saves against effects from that side." },
+  { name: 'Improved Cover (+8 AC)', group: 'Combat option', effects: [{ target: 'ac', value: 8, type: 'circumstance' }, { target: 'ref', value: 4, type: 'circumstance' }], note: "Improved cover: +8 AC and +4 on Reflex saves, and you take no damage on a successful Reflex save." },
+  { name: 'Arcane Strike', group: 'Combat option', effects: [{ target: 'damage', value: 'min(5,max(1,floor(lvl/5)))', type: 'untyped' }], note: "+1 weapon damage per 5 caster levels (min +1, max +5) and your weapon counts as magic. Uses your character level as the caster level." },
+  { name: 'Dodge', group: 'Feat', effects: [{ target: 'ac', value: 1, type: 'dodge' }], note: "+1 dodge bonus to AC. Turn it on only if you have not already counted it in Misc." },
+  { name: 'Toughness', group: 'Feat', effects: [{ target: 'hp', value: 'max(3,lvl)', type: 'untyped' }], note: "+3 hit points, or +1 per Hit Die if you have more than 3. Turn it on only if you have not already counted it." },
+  { name: 'Great Fortitude', group: 'Feat', effects: [{ target: 'fort', value: 2, type: 'untyped' }] },
+  { name: 'Iron Will', group: 'Feat', effects: [{ target: 'will', value: 2, type: 'untyped' }] },
+  { name: 'Lightning Reflexes', group: 'Feat', effects: [{ target: 'ref', value: 2, type: 'untyped' }] },
+  { name: 'Improved Initiative', group: 'Feat', effects: [{ target: 'init', value: 4, type: 'untyped' }] },
+  { name: 'Longstrider', group: 'Spell', effects: [{ target: 'speed', value: 10, type: 'enhancement' }] },
+  { name: 'Expeditious Retreat', group: 'Spell', effects: [{ target: 'speed', value: 30, type: 'enhancement' }] },
+  { name: 'Bestow Curse (-4)', group: 'Spell', effects: [{ target: 'attack', value: -4, type: 'untyped' }, { target: 'saves', value: -4, type: 'untyped' }, { target: 'checks', value: -4, type: 'untyped' }], note: "The -4 on attack rolls, saves, ability checks and skill checks version of the curse." },
+  { name: 'Rage (spell)', group: 'Spell', effects: [{ target: 'str', value: 2, type: 'morale' }, { target: 'con', value: 2, type: 'morale' }, { target: 'will', value: 1, type: 'morale' }, { target: 'ac', value: -1, type: 'untyped' }], note: "The spell, not the barbarian class feature. No limit on rounds, and no skill restrictions." },
+  { name: "Heroes' Feast", group: 'Spell', effects: [{ target: 'will', value: 1, type: 'morale' }], note: "Also immune to poison and fear, and temporary hit points (1d8 + 1 per two caster levels, max +10)." },
+  { name: 'Inspire Greatness', group: 'Class', effects: [{ target: 'attack', value: 2, type: 'competence' }, { target: 'fort', value: 1, type: 'competence' }], note: "Bard level 9. Also 2 bonus Hit Dice (10 hit points each, worked out by hand)." },
+  { name: 'Favored Enemy +2', group: 'Class', effects: [{ target: 'attack', value: 2, type: 'untyped' }, { target: 'damage', value: 2, type: 'untyped' }], note: "Against that type of creature only. Ranger level 1." },
+  { name: 'Favored Enemy +4', group: 'Class', effects: [{ target: 'attack', value: 4, type: 'untyped' }, { target: 'damage', value: 4, type: 'untyped' }], note: "Against that type of creature only. Ranger level 5." },
+  { name: 'Favored Enemy +6', group: 'Class', effects: [{ target: 'attack', value: 6, type: 'untyped' }, { target: 'damage', value: 6, type: 'untyped' }], note: "Against that type of creature only. Ranger level 10." },
+  { name: 'Blinded', group: 'Condition', effects: [{ target: 'ac', value: -2, type: 'untyped' }], note: "Also loses its Dex bonus to AC, 50% miss chance on attacks, -4 on Str and Dex skill checks and Perception (not worked out here)." },
+  { name: 'Cowering', group: 'Condition', effects: [{ target: 'ac', value: -2, type: 'untyped' }], note: "Also loses its Dex bonus to AC." },
+  { name: 'Stunned', group: 'Condition', effects: [{ target: 'ac', value: -2, type: 'untyped' }], note: "Also loses its Dex bonus to AC, drops what it holds, and cannot act." },
+  { name: 'Pinned', group: 'Condition', effects: [{ target: 'ac', value: -4, type: 'untyped' }], note: "Held in a grapple: -4 AC against others and cannot move. Also loses its Dex bonus to AC." },
+  { name: 'Deafened', group: 'Condition', effects: [{ target: 'init', value: -4, type: 'untyped' }], note: "Also -4 on Perception checks, and a 20% chance to fail casting spells with verbal components." },
+  { name: 'Negative Level (-1)', group: 'Condition', effects: [{ target: 'attack', value: -1, type: 'untyped' }, { target: 'saves', value: -1, type: 'untyped' }, { target: 'skills', value: -1, type: 'untyped' }, { target: 'cmb', value: -1, type: 'untyped' }, { target: 'cmd', value: -1, type: 'untyped' }, { target: 'cl', value: -1, type: 'untyped' }], note: "One negative level: -1 on attacks, saves, skills, CMB, CMD and effective level (and -5 hit points, by hand). For more levels, edit the numbers." },
 ];
+
+/** The preset groups in the order they are shown. */
+export const BUFF_GROUPS = ['Combat option', 'Spell', 'Class', 'Feat', 'Condition'];
+/** The presets of one group, A to Z (numbers in order, so +2 comes before +10). */
+export const presetsIn = group => BUFF_PRESETS.filter(p => p.group === group).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 
 export const CASTING_STAT_NAMES = { int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
 export const SCHOOLS = ['abjuration', 'conjuration', 'divination', 'enchantment', 'evocation', 'illusion', 'necromancy', 'transmutation', 'universal'];

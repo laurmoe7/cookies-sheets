@@ -8,6 +8,7 @@ export const CHANGELOG = [
       'Rolling a spell now looks like rolling a weapon: pick what to roll (to hit, concentration, damage), then Advantage, situational modifiers that fit spells, your own modifier and Roll.',
       'In Options, Look, a padlock button locks the sheet tabs where they are or unlocks them so they can be dragged, with Reset order beside it.',
       'Sound settings no longer have a Bring back button; Restore defaults brings back built-in sounds you switched off.',
+      'Buff presets are listed A to Z in each group, and there are 24 more: feats (Dodge, Toughness, Great Fortitude, Iron Will, Lightning Reflexes, Improved Initiative), cover, Arcane Strike, Longstrider, Expeditious Retreat, Bestow Curse, Rage (spell), Favored Enemy, Inspire Greatness, and the conditions Blinded, Cowering, Stunned, Pinned, Deafened and Negative Level.',
       'More buffs to add: Divine Favor, Good Hope, Protection from Evil, Resistance, Aid, Divine Power, Slow, Crushing Despair, Prayer on enemies, stronger Barkskin and Shield of Faith, Greater and Mighty Rage, Inspire Courage +2 to +4, Inspire Competence.',
       'The Modifier button in the roll bar is bolder, with a gold edge.',
       'New option (Options, Look): drag the sheet tabs to rearrange them. The order is remembered, and one button puts them back.',
