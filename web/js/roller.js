@@ -9,12 +9,12 @@
 // not being proficient or shooting past a range increment), the dice box, and the Discord switch.
 import { rollMessage, rollMany, bonusText, addMods, modsLabel, MOD_PRESETS, presetsFor, sendName, parseDice } from './dice.js';
 import { spellInfo } from './spellinfo.js';
-import { state } from './app.js';
+import { state, changed } from './app.js';
 import { getPath, toast, esc, modal } from './ui.js';
 import { options, setOption, showOptions } from './options.js';
 import { api } from './api.js';
 import { tipText } from './rolltip.js';
-import { sign } from './calc.js';
+import { sign, num } from './calc.js';
 
 const D20 = '<svg class="d20" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 2l8.5 5v10L12 22l-8.5-5V7z"/><path d="M12 2l3.5 8.5H8.5zM3.5 7l5 3.5M20.5 7l-5 3.5M8.5 10.5L12 22l3.5-11.5M3.5 17l5-6.5M20.5 17l-5-6.5"/></svg>';
 let mode = ''; // '', 'adv' or 'dis': applies to the next d20 roll only
@@ -142,6 +142,7 @@ function tipFor(el) {
   return '';
 }
 
+/** Rolls (here, or to Discord when that is on). Resolves true when the roll was made or sent, false when it failed. */
 export async function doRoll(p) {
   const who = state.char?.name || 'Someone';
   const o = options();
@@ -149,22 +150,23 @@ export async function doRoll(p) {
     // Tad rolls: post only the command under the character's name and show nothing here, so the sheet and Discord never disagree.
     // The roll goes out under "Character · what it is for" (a webhook can change its display name per message), so the channel sees what was rolled.
     const sends = (p.items || [p]).map(it => ({ expr: withMode(it.expr), who: sendName(who, withModLabel(it.label, it.expr)) }));
-    try { sends.forEach(x => parseDice(x.expr)); } catch (e) { return toast(e.message, 'err'); }
+    try { sends.forEach(x => parseDice(x.expr)); } catch (e) { toast(e.message, 'err'); return false; }
     afterRoll();
     try {
       for (const x of sends) await api.discord(o.webhook, 'roll ' + x.expr.trim(), x.who);
       toast('Sent to Discord');
-    } catch (e) { toast('Discord: ' + e.message, 'err'); }
-    return;
+      return true;
+    } catch (e) { toast('Discord: ' + e.message, 'err'); return false; }
   }
   let r;
   try {
     r = p.items
       ? rollMany(who, p.items.map(it => ({ ...it, label: withModLabel(it.label, it.expr), expr: withMode(it.expr) })))
       : rollMessage(who, withMode(p.expr), { label: withModLabel(p.label, p.expr) });
-  } catch (e) { return toast(e.message, 'err'); }
+  } catch (e) { toast(e.message, 'err'); return false; }
   afterRoll();
   toast(r.short);
+  return true;
 }
 
 /** Is this roll an attack? Attack rolls get the attack modifiers (proficiency, range increments, flanking...) in the roll window. */
@@ -188,6 +190,7 @@ function askRoll(p, el, shift) {
 function rollWindow(p0, attack0, sp = null) {
   let pick = sp ? sp.start : 0;
   let diceVal = sp?.dice || '';
+  let castOn = !!sp?.cast?.on;
   const cur = () => {
     if (!sp) return { p: p0, attack: attack0 };
     const ch = sp.choices[pick];
@@ -215,6 +218,7 @@ function rollWindow(p0, attack0, sp = null) {
         '<div class="row" style="margin:8px 0"><input id="mod-n" class="w3" type="number" placeholder="±" aria-label="Modifier"><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>' +
         (d20 && mods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b></div>' : '') +
         (d20 ? '<label class="small"><input type="checkbox" id="mod-keep" ' + (keepMods ? 'checked' : '') + '> Keep these modifiers for my next rolls</label>' : '') +
+        (sp?.cast ? '<label class="small" style="display:block;margin:6px 0" title="Rolling counts as casting the spell. Untick it if you already cast it or are only checking a number."><input type="checkbox" id="sp-cast" ' + (castOn ? 'checked' : '') + (sp.cast.left <= 0 ? ' disabled' : '') + '> ' + esc(sp.cast.label) + (sp.cast.left <= 0 ? ' (none left)' : sp.cast.recent ? ' (counted already for the roll you just made)' : sp.cast.left === Infinity ? '' : ' (' + sp.cast.left + ' left)') + '</label>' : '') +
         '<div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn small" id="win-cancel">Cancel</button>' +
         '<button class="rchip go" data-win-go="roll">🎲 Roll</button>' +
         '<button class="rchip dchip ' + (sending ? 'on' : '') + '" id="win-discord" title="Post this roll to your Discord channel, or keep it on the sheet">' + esc(discordLabel()) + '</button></div>';
@@ -226,10 +230,11 @@ function rollWindow(p0, attack0, sp = null) {
       const n = Math.trunc(Number(body.querySelector('#mod-n').value));
       if (n) mods.push({ n, label: body.querySelector('#mod-label').value.trim() || 'modifier' });
     };
-    const go = () => {
+    const go = async () => {
       const { p, ch } = cur();
       if (ch?.dice && !diceVal.trim()) return toast('Type the dice first, such as 5d6', 'err');
-      went = true; close(); syncBar(); doRoll(p);
+      went = true; close(); syncBar();
+      if (await doRoll(p) && sp?.cast && castOn && sp.cast.left > 0) sp.cast.spend(); // only a roll that was made or sent counts as casting
     };
     body.oninput = e => {
       if (e.target.id !== 'spell-dice') return;
@@ -256,7 +261,10 @@ function rollWindow(p0, attack0, sp = null) {
       else return;
       syncBar(); draw();
     };
-    body.onchange = e => { if (e.target.id === 'mod-keep') keepMods = e.target.checked; };
+    body.onchange = e => {
+      if (e.target.id === 'mod-keep') keepMods = e.target.checked;
+      else if (e.target.id === 'sp-cast') castOn = e.target.checked;
+    };
     body.onkeydown = e => {
       if (e.key === 'Enter' && e.target.id === 'spell-dice') { e.preventDefault(); go(); }
       else if (e.key === 'Enter' && e.target.closest('#mod-n,#mod-label')) { e.preventDefault(); add(); syncBar(); draw(); }
@@ -323,6 +331,33 @@ export function fillSpellRolls(root) {
   }).catch(() => {});
 }
 
+let lastSpellCast = { key: '', at: 0 }; // the spell a roll last counted as cast, so its damage roll right after does not use a second slot
+
+/**
+ * What rolling a spell uses up: a prepared copy for prepared casters, a slot for spontaneous and arcanist casters (cantrips use nothing).
+ * {label, left, on, recent, spend()} for the roll window's "Cast it" box.
+ */
+function spellCast(cls, sp, sc) {
+  const c = state.char, book = c.spellbooks[cls], l = Number(sp.level) || 0;
+  if (!book || l < 1) return null;
+  const pre = sc.kind === 'prepared';
+  const ord = ['0th', '1st', '2nd', '3rd'][l] || l + 'th';
+  const left = pre ? num(sp.prepared) : sc.slots[l] == null ? 0 : sc.slots[l] === Infinity ? Infinity : Math.max(0, sc.slots[l] - num((book.used || [])[l]));
+  const key = cls + ':' + (sp.id || sp.name) + ':' + l;
+  const recent = lastSpellCast.key === key && Date.now() - lastSpellCast.at < 90000;
+  return {
+    label: pre ? 'Cast it: use up a prepared copy' : `Cast it: use a ${ord}-level slot`, left, recent, on: left > 0 && !recent,
+    spend() {
+      if (pre) { sp.prepared = Math.max(0, num(sp.prepared) - 1); sp.cast = num(sp.cast) + 1; }
+      else { book.used ||= []; book.used[l] = num(book.used[l]) + 1; }
+      lastSpellCast = { key, at: Date.now() };
+      changed({ rerender: true });
+      document.dispatchEvent(new Event('spell-changed')); // the side panel redraws its counts
+      toast(`${sp.name || 'Spell'} cast` + (left === Infinity ? '' : `. ${left - 1} left`));
+    },
+  };
+}
+
 /**
  * The roll window for one spell. It shows only what the spell has: an attack chip when it needs an attack roll, a caster level check when it
  * can be resisted, its saving throw with your DC, and a dice box guessed from the spell text (editable). Custom spells get the generic chips.
@@ -358,5 +393,5 @@ async function spellWindow(btn) {
     { label: 'Roll ' + (what || 'dice'), dice: true, label2: what ? `${name} ${what}` : name, tip: 'Roll the dice of the spell (edit them first if the guess is wrong)' },
   ];
   const first = choices.findIndex(ch => ch.attack);
-  rollWindow(null, false, { title: name, facts: facts.join(' · '), choices, dice: info.dice, start: first >= 0 && known ? first : (info.dice ? choices.length - 1 : 0) });
+  rollWindow(null, false, { title: name, facts: facts.join(' · '), choices, cast: spellCast(cls, sp, sc), dice: info.dice, start: first >= 0 && known ? first : (info.dice ? choices.length - 1 : 0) });
 }

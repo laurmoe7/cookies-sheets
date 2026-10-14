@@ -652,6 +652,7 @@ document.addEventListener('entry-shown', e => {
   }
 });
 document.addEventListener('drawer-closed', () => { parkedSpell = null; clearActiveSpell(); });
+document.addEventListener('spell-changed', () => renderSpellActions()); // a roll counted as casting the open spell
 
 /** Fills the side panel's action area for the open spell. Called again after every change so the numbers stay right. */
 function renderSpellActions() {

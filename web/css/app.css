@@ -641,7 +641,7 @@ html[data-motion="off"] .fx-spark { display: none; }
 .sp-group { display: inline-flex; align-items: center; gap: 8px; }
 .sp-group-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 .sp-actions .btn { padding: 6px 14px; }
-.sp-cast { font-weight: 700; min-width: 70px; }
+.sp-cast { font-weight: 700; min-width: 70px; justify-content: center; text-align: center; }
 .sp-cast-n { font-size: 11px; color: var(--muted); }
 .stepper { display: inline-flex; align-items: stretch; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); }
 .stepper button { all: unset; box-sizing: border-box; width: 30px; line-height: 30px; text-align: center; cursor: pointer; font-size: 18px; color: var(--ink); user-select: none; }
