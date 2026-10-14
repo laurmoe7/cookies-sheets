@@ -717,7 +717,7 @@ html[data-motion="off"] .fx-spark { display: none; }
 .doll-mid { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .doll-fig { width: 100%; max-width: 220px; aspect-ratio: 3 / 4; border-radius: 10px; border: 1px solid var(--line); background: color-mix(in srgb, var(--accent) 6%, transparent); display: grid; place-items: center; overflow: hidden; }
 .doll-fig img { width: 100%; height: 100%; object-fit: cover; }
-.doll-sil { font-size: 96px; opacity: .35; }
+.doll-sil { width: 45%; height: auto; color: var(--muted); opacity: .35; }
 .doll-stats { display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center; }
 .doll-row { display: flex; gap: 12px; max-width: 720px; margin: 4px auto 8px; }
 .doll-row .doll-slot { flex: 1 1 0; min-width: 0; }
@@ -726,8 +726,10 @@ html[data-motion="off"] .fx-spark { display: none; }
 .doll-slot:hover { border-color: var(--accent); color: var(--accent); }
 .doll-slot.full { border-style: solid; border-color: var(--line); color: inherit; background: color-mix(in srgb, var(--accent) 7%, transparent); }
 .doll-slot.full.magic { border-color: #b8862a; box-shadow: inset 0 0 0 1px rgba(230,187,88,.45), 0 0 6px rgba(230,187,88,.25); }
-.ds-ico { font-size: 22px; line-height: 1; flex: none; filter: grayscale(.6); opacity: .7; }
-.doll-slot.full .ds-ico { filter: none; opacity: 1; }
+.ds-ico { width: 28px; height: 28px; flex: none; display: grid; place-items: center; color: var(--muted); opacity: .75; }
+.ds-ico svg { width: 26px; height: 26px; }
+.doll-slot.full .ds-ico { color: var(--accent); opacity: 1; }
+.doll-slot.full.magic .ds-ico { color: #b8862a; filter: drop-shadow(0 0 3px rgba(230,187,88,.55)); }
 .ds-txt { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
 .ds-lab { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .ds-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -735,3 +737,9 @@ html[data-motion="off"] .fx-spark { display: none; }
 .ds-clash { position: absolute; top: 2px; right: 4px; font-style: normal; font-weight: 700; color: #fff; background: #b3352c; border-radius: 99px; width: 16px; height: 16px; line-height: 16px; text-align: center; font-size: 11px; }
 .doll-now { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; }
 @media (max-width: 900px) { .doll { grid-template-columns: 1fr 1fr; } .doll-mid { grid-column: 1 / -1; order: -1; } }
+
+/* Inventory: a gold diamond marks what is equipped */
+.eq-mark { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: #b8862a; text-shadow: 0 0 4px rgba(230,187,88,.6); font-size: 12px; line-height: 1; }
+td:has(> .eq-mark) { position: relative; padding-left: 26px; }
+.eq-mark.off { text-shadow: none; }
+tr.equipped > td:first-child { box-shadow: inset 3px 0 0 #b8862a; }

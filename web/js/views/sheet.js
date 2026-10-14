@@ -838,10 +838,10 @@ function gear(body, c, d) {
         <td><button class="icon-btn" data-del="armor.${i}">✕</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted">No armor.</p>'}
   </section>
   <section class="card span2">
-    <div class="row"><h3 class="grow">Equipment</h3>
+    <div class="row"><h3 class="grow">Inventory</h3>
       <button class="btn small" data-pick-item>＋ Magic item</button><button class="btn small" data-add="gear">＋ Item</button></div>
     ${c.gear.length ? `<table class="tbl"><thead><tr><th>Item</th><th title="Where it is worn (shown on the paper doll)">Worn in</th><th>Qty</th><th>Wt (each)</th><th>Value</th><th>Notes</th><th></th></tr></thead><tbody>
-      ${c.gear.map((g, i) => `<tr><td class="w12">${g.id ? refId(g.id, g.name)
+      ${c.gear.map((g, i) => `<tr class="${g.slot ? 'equipped' : ''}"><td class="w12">${g.slot ? `<span class="eq-mark" title="Equipped: ${esc(slotName(g.slot))}">◆</span>` : '<span class="eq-mark off"></span>'}${g.id ? refId(g.id, g.name)
           : tf(`gear.${i}.name`, { placeholder: 'Item name', read: { title: g.name || 'Item', titlePath: `gear.${i}.name`, cat: 'Custom item', path: `gear.${i}.notes` } })}</td>
         <td>${sel(`gear.${i}.slot`, [['', '—'], ...SLOTS.filter(x => x.id !== 'armor' && x.id !== 'shield' && x.id !== 'main' && x.id !== 'off').map(x => [x.id, slotName(x.id)])], { rerender: true })}</td>
         <td>${inp(`gear.${i}.qty`, { type: 'num', cls: 'w2' })}</td><td>${inp(`gear.${i}.weight`, { type: 'num', cls: 'w3' })}</td>

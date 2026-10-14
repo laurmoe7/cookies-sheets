@@ -28,14 +28,14 @@ function tile(c, d, id, worn) {
   const it = first && describe(c, d, first);
   const clash = list.length > 1 ? `<i class="ds-clash" title="${list.length} items are set to this slot. Only the first is shown.">!</i>` : '';
   return `<button class="doll-slot ${it ? 'full' : ''} ${it?.magic ? 'magic' : ''}" data-doll="${id}" title="${esc(it ? it.tip + '\nClick to change or take off' : slot.label + ': empty. Click to choose what to wear')}">
-    <span class="ds-ico" aria-hidden="true">${slot.icon}</span>
+    <span class="ds-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${slot.icon}</svg></span>
     <span class="ds-txt"><span class="ds-lab">${esc(slot.label)}</span>${it ? `<b class="ds-name">${esc(it.name)}</b><span class="ds-sub">${esc(it.sub)}</span>` : '<span class="ds-empty">empty</span>'}</span>${clash}</button>`;
 }
 
 /** The card's HTML. `d` is the computed sheet. */
 export function paperDollCard(c, d) {
   const worn = wornBySlot(c), t = id => tile(c, d, id, worn);
-  const fig = c.portrait || c.avatar ? `<img src="${c.portrait || c.avatar}" alt="">` : '<span class="doll-sil" aria-hidden="true">🧍</span>';
+  const fig = c.portrait || c.avatar ? `<img src="${c.portrait || c.avatar}" alt="">` : '<svg class="doll-sil" viewBox="0 0 24 32" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="3.6"/><path d="M12 10.5c-4.2 0-6.5 2.2-6.5 5.5v6h2.2v8.5h3.2v-8h2.2v8h3.2V22h2.2v-6c0-3.3-2.3-5.5-6.5-5.5z"/></svg>';
   const total = Object.values(worn).reduce((n, l) => n + l.length, 0);
   return `<section class="card span2 doll-card">
     <div class="row"><h3 class="grow">Worn equipment</h3><span class="small muted">${total} slot${total === 1 ? '' : 's'} filled of ${SLOTS.length}</span></div>
