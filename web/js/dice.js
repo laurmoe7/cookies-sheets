@@ -140,8 +140,14 @@ export const MOD_PRESETS = [
 export const presetsFor = (attack, spell = null) => MOD_PRESETS.filter(m => (attack || m.for !== 'attack')
   && (!spell || (m.spell !== false && (!spell.kind || !m.kind || m.kind === spell.kind))));
 
-/** Sneak attack dice from class levels: rogues start with 1d6 and gain one every odd level, ninjas start at 2nd. */
-export const sneakDice = (levels = {}) => Math.ceil((levels.Rogue || 0) / 2) + Math.floor((levels.Ninja || 0) / 2);
+/**
+ * Sneak attack dice from class levels (they add up across classes): rogue and ninja have 1d6 at 1st level and one more every odd level,
+ * a slayer has 1d6 at 3rd level and one more every 3 levels.
+ */
+export const sneakDice = (levels = {}) => Math.ceil((levels.Rogue || 0) / 2) + Math.ceil((levels.Ninja || 0) / 2) + Math.floor((levels.Slayer || 0) / 3);
+
+/** An investigator's studied strike: 1d6 at 4th level and one more every 2 levels. */
+export const studiedDice = (levels = {}) => ((levels.Investigator || 0) >= 4 ? Math.floor(levels.Investigator / 2) - 1 : 0);
 
 /**
  * What can add to or change a weapon's damage on the roll window: flat bonuses (`n`), extra dice (`dice`) and Vital Strike (`extraBase`: that many more
@@ -151,15 +157,18 @@ export const sneakDice = (levels = {}) => Math.ceil((levels.Rogue || 0) / 2) + M
 export function damagePresets(levels = {}, bab = 0) {
   const out = [];
   const sneak = sneakDice(levels);
-  if (sneak) out.push({ label: 'sneak attack', dice: sneak + 'd6', tip: 'The target is flat-footed, flanked or denied its Dex bonus. Extra dice are not multiplied on a critical hit.' });
-  if (levels.Paladin) out.push({ label: 'smite evil', n: levels.Paladin, tip: 'Against evil: your paladin level in extra damage (double against evil outsiders, dragons and undead)' });
-  if (levels.Antipaladin) out.push({ label: 'smite good', n: levels.Antipaladin, tip: 'Against good: your antipaladin level in extra damage' });
-  if (levels.Cavalier) out.push({ label: 'challenge', n: levels.Cavalier, tip: 'Against your challenged target: +1 damage per cavalier level' });
-  if (levels.Samurai) out.push({ label: 'challenge', n: levels.Samurai, tip: 'Against your challenged target: +1 damage per samurai level' });
-  for (const n of [2, 4, 6, 8]) out.push({ label: 'favored enemy', n, group: 'favored', tip: 'Against a favored enemy: +2, and +2 more for each time you have picked it' });
-  if (bab >= 6) out.push({ label: 'Vital Strike', extraBase: 1, group: 'vital', tip: 'Standard action attack: roll the weapon\u2019s dice twice' });
-  if (bab >= 11) out.push({ label: 'Improved Vital Strike', extraBase: 2, group: 'vital', tip: 'Roll the weapon\u2019s dice three times' });
-  if (bab >= 16) out.push({ label: 'Greater Vital Strike', extraBase: 3, group: 'vital', tip: 'Roll the weapon\u2019s dice four times' });
+  const studied = studiedDice(levels);
+  // `crit: true`: a plain damage bonus or the weapon's own dice, so a critical hit multiplies it. Sneak attack and studied strike are precision damage: never multiplied.
+  if (sneak) out.push({ label: 'sneak attack', dice: sneak + 'd6', tip: 'The target is flat-footed, flanked or denied its Dex bonus. Precision damage: not multiplied on a critical hit.' });
+  if (studied) out.push({ label: 'studied strike', dice: studied + 'd6', tip: 'You hit your studied target. Precision damage: not multiplied on a critical hit.' });
+  if (levels.Paladin) out.push({ label: 'smite evil', n: levels.Paladin, crit: true, tip: 'Against evil: your paladin level in extra damage (double against evil outsiders, dragons and undead). Multiplied on a critical hit.' });
+  if (levels.Antipaladin) out.push({ label: 'smite good', n: levels.Antipaladin, crit: true, tip: 'Against good: your antipaladin level in extra damage. Multiplied on a critical hit.' });
+  if (levels.Cavalier) out.push({ label: 'challenge', n: levels.Cavalier, crit: true, tip: 'Against your challenged target: +1 damage per cavalier level. Multiplied on a critical hit.' });
+  if (levels.Samurai) out.push({ label: 'challenge', n: levels.Samurai, crit: true, tip: 'Against your challenged target: +1 damage per samurai level. Multiplied on a critical hit.' });
+  for (const n of [2, 4, 6, 8]) out.push({ label: 'favored enemy', n, crit: true, group: 'favored', tip: 'Against a favored enemy: +2, and +2 more for each time you have picked it. Multiplied on a critical hit.' });
+  if (bab >= 6) out.push({ label: 'Vital Strike', extraBase: 1, crit: true, group: 'vital', tip: 'Standard action attack: roll the weapon\u2019s dice twice (all multiplied on a critical hit)' });
+  if (bab >= 11) out.push({ label: 'Improved Vital Strike', extraBase: 2, crit: true, group: 'vital', tip: 'Roll the weapon\u2019s dice three times' });
+  if (bab >= 16) out.push({ label: 'Greater Vital Strike', extraBase: 3, crit: true, group: 'vital', tip: 'Roll the weapon\u2019s dice four times' });
   return out;
 }
 
@@ -171,19 +180,24 @@ export function parseDamageMod(text) {
   return m ? { dice: (m[1] === '-' ? '-' : '') + m[2].toLowerCase() } : null;
 }
 
-/** The damage expression with the chosen modifiers added on the end ("1d8+5" with sneak attack 2d6 and smite 6 gives "1d8+5+2d6+6"). */
-export function addDamageMods(expr, mods, base = '') {
+/**
+ * The damage expression with the chosen modifiers added on the end ("1d8+5" with sneak attack 2d6 and smite 6 gives "1d8+5+2d6+6").
+ * On a critical hit (`mult` is the weapon's multiplier) the ones marked `crit` are multiplied too: smite, challenge, favored enemy and the dice of Vital Strike.
+ * Precision damage (sneak attack) and anything typed in by hand are added as they are.
+ */
+export function addDamageMods(expr, mods, base = '', mult = 1) {
   let out = String(expr);
   for (const m of mods || []) {
+    const k = m.crit ? Math.max(1, mult) : 1;
     if (m.dice) out += (/^-/.test(m.dice) ? '' : '+') + m.dice;
-    else if (m.extraBase) { const d = multiplyDice(base, m.extraBase); if (d) out += '+' + d; }
-    else if (m.n) out += (m.n > 0 ? '+' : '-') + Math.abs(m.n);
+    else if (m.extraBase) { const d = multiplyDice(base, m.extraBase * k); if (d) out += '+' + d; }
+    else if (m.n) out += (m.n * k > 0 ? '+' : '-') + Math.abs(m.n * k);
   }
   return out;
 }
 
 /** "(+2d6 sneak attack, +6 smite evil)" for the roll's label. */
-export const damageLabel = mods => '(' + mods.map(m => (m.dice ? (/^-/.test(m.dice) ? '' : '+') + m.dice : m.extraBase ? 'weapon dice \u00d7' + (m.extraBase + 1) : bonusText(m.n)) + ' ' + m.label).join(', ') + ')';
+export const damageLabel = (mods, mult = 1) => '(' + mods.map(m => (m.dice ? (/^-/.test(m.dice) ? '' : '+') + m.dice : m.extraBase ? 'weapon dice \u00d7' + (m.extraBase * (m.crit ? mult : 1) + 1) : bonusText(m.n * (m.crit ? mult : 1))) + ' ' + m.label).join(', ') + ')';
 
 const DIVISOR = { two: 2, three: 3, four: 4, five: 5 };
 const divisor = w => (w ? DIVISOR[w.toLowerCase()] ?? (+w || 1) : 1);

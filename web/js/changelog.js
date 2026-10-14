@@ -7,7 +7,8 @@ export const CHANGELOG = [
     items: [
       'The Compendium’s result list and entry text sit on the same burnt-edge parchment as the other pages, with a frame line.',
       'The cards on the Characters page are parchment too, each sheet a little different.',
-      'A weapon’s damage roll window has the same chips as the hit roll: switch between a normal and a critical hit, and add what only sometimes applies: sneak attack (from your rogue and ninja levels), smite, challenge, favored enemy and Vital Strike. Type a number or dice (2d6) for anything else.',
+      'A weapon’s damage roll window has the same chips as the hit roll: switch between a normal and a critical hit, and add what only sometimes applies: sneak attack (rogue, ninja and slayer levels), studied strike, smite, challenge, favored enemy and Vital Strike. On a critical hit the plain bonuses and Vital Strike dice are multiplied and precision damage is not. Type a number or dice (2d6) for anything else.',
+      'The Crit button beside a weapon’s damage is gone: pick Critical hit in the damage window instead.',
       'In Notes, General notes now comes before Story, and the tab opens on it.',
       'Importing: an archetype written in brackets, like "Fighter (Two-Handed Fighter) 7", is now read as that class’s archetype instead of being mistaken for a second class.',
       'Characters imported from charactersheet.co.uk come with all the newer fields: their magic items remember which slot they fit and their usual bonuses (counted once worn), and weapons and armor are ready for enchantments.',

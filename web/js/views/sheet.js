@@ -251,7 +251,7 @@ function overview(body, c, d) {
         ${c.weapons.map((w, i) => `<tr>
           <td class="w10">${tf(`weapons.${i}.name`, { placeholder: 'Name (double-click)' })}${weaponFxRow(c, i)}</td>
           <td class="big accent nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="attack">${calc(`weapons.${i}.attackText`)}</button>${d.iteratives.length > 1 ? `<button class="rchip" data-roll-weapon="${i}" data-roll-kind="full">Full</button>` : ''}</td>
-          <td class="big nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="damage">${calc(`weapons.${i}.damageText`)}</button>${d.weapons[i]?.critText ? `<button class="wbtn crit" data-roll-weapon="${i}" data-roll-kind="crit" title="Critical hit damage (${esc(d.weapons[i].crit)})">💥 Crit</button>` : ''}</td>
+          <td class="big nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="damage">${calc(`weapons.${i}.damageText`)}</button></td>
           <td>${inp(`weapons.${i}.crit`, { cls: 'w5', ph: '19-20/x2' })}</td>
           <td>${sel(`weapons.${i}.ability`, [['', 'auto'], ['str', 'Str'], ['dex', 'Dex']])}</td>
           <td>${chk(`weapons.${i}.ranged`)}</td>

@@ -8,6 +8,7 @@
 // The roll bar (in the buff strip) holds Advantage / Disadvantage for the next d20 roll, the Modifier chip (situational + and -, such as
 // not being proficient or shooting past a range increment), the dice box, and the Discord switch.
 import { rollMessage, rollMany, bonusText, addMods, modsLabel, MOD_PRESETS, presetsFor, sendName, parseDice, damagePresets, parseDamageMod, addDamageMods, damageLabel } from './dice.js';
+import { parseCrit } from './weaponfx.js';
 import { spellInfo } from './spellinfo.js';
 import { state, changed } from './app.js';
 import { getPath, toast, esc, modal } from './ui.js';
@@ -135,7 +136,7 @@ function plan(el) {
     if (ds.rollKind === 'damage' || ds.rollKind === 'crit') {
       // the window can switch between a normal and a critical hit and add what only applies sometimes (sneak attack, smite...)
       const normal = { expr: String(dw.damageText).replace(/\s/g, ''), label: `${name} damage` };
-      const crit = dw.critText ? { expr: String(dw.critText).replace(/\s/g, ''), label: `${name} critical damage (${dw.crit})` } : null;
+      const crit = dw.critText ? { expr: String(dw.critText).replace(/\s/g, ''), label: `${name} critical damage (${dw.crit})`, mult: parseCrit(dw.crit)?.mult || 2 } : null;
       const first = ds.rollKind === 'crit' && crit ? crit : normal;
       return { ...first, parts: d.bd?.[`weapons.${i}.damage`], weaponDamage: { normal, crit, base: w.damage, startCrit: first === crit, presets: damagePresets(d.classLevels, d.bab) } };
     }
@@ -221,15 +222,15 @@ function rollWindow(p0, attack0, sp = null) {
   const wd = !sp && p0.weaponDamage; // a weapon's damage roll: critical hit switch and the damage modifiers
   let dmods = [], useCrit = !!wd?.startCrit;
   const damageRoll = () => {
-    const base = useCrit && wd.crit ? wd.crit : wd.normal;
-    return { ...p0, expr: addDamageMods(base.expr, dmods, wd.base), label: base.label + (dmods.length ? ' ' + damageLabel(dmods) : '') };
+    const base = useCrit && wd.crit ? wd.crit : wd.normal, mult = useCrit && wd.crit ? wd.crit.mult : 1;
+    return { ...p0, expr: addDamageMods(base.expr, dmods, wd.base, mult), label: base.label + (dmods.length ? ' ' + damageLabel(dmods, mult) : '') };
   };
   const sameMod = (x, m) => x.label === m.label && x.n === m.n && x.dice === m.dice && x.extraBase === m.extraBase;
   const damageBlock = () => {
     const chip = (m, i) => '<button class="rchip ' + (dmods.some(x => sameMod(x, m)) ? 'on' : '') + '" data-dmg-preset="' + i + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(m.dice ? '+' + m.dice : m.extraBase ? '×' + (m.extraBase + 1) : bonusText(m.n)) + '</button>';
     return (wd.crit ? '<div class="small mod-head plus">Hit</div><div class="roll-bar" style="margin:4px 0 8px"><button class="rchip ' + (useCrit ? '' : 'on') + '" data-dmg-crit="0">Normal hit</button><button class="rchip ' + (useCrit ? 'on' : '') + '" data-dmg-crit="1" title="Rolls the multiplied damage; extra dice from enchantments are added once">Critical hit</button></div>' : '')
       + (wd.presets.length ? '<div class="small mod-head plus">Extra damage</div><div class="roll-bar" style="margin:4px 0 8px">' + wd.presets.map(chip).join(' ') + '</div>' : '')
-      + (dmods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(dmods.map(m => (m.dice ? '+' + m.dice : m.extraBase ? 'weapon dice ×' + (m.extraBase + 1) : bonusText(m.n)) + ' ' + m.label).join(', ')) + '</div>' : '');
+      + (dmods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(dmods.map(m => (m.dice ? '+' + m.dice : m.extraBase ? 'weapon dice \u00d7' + (m.extraBase * (m.crit && useCrit && wd.crit ? wd.crit.mult : 1) + 1) : bonusText(m.n * (m.crit && useCrit && wd.crit ? wd.crit.mult : 1))) + ' ' + m.label).join(', ')) + (useCrit && wd.crit && dmods.some(m => m.crit) ? ' (multiplied by the critical hit)' : '') + '</div>' : '');
   };
   const cur = () => {
     if (wd) return { p: damageRoll(), attack: false };

@@ -141,14 +141,16 @@ test('spell rolls get only the modifiers that apply to spells', async () => {
   assert.ok(names(presetsFor(false, { kind: null })).includes('aid another'));
 });
 
-test('sneak attack dice: rogue 1d6 at 1st and one more every odd level, ninja from 2nd and every even level, and they add up', async () => {
-  const { sneakDice } = await import('../web/js/dice.js');
+test('sneak attack dice follow the class tables: rogue and ninja 1d6 at 1st and one more every odd level, slayer 1d6 at 3rd and one more every 3 levels; investigator studied strike from 4th', async () => {
+  const { sneakDice, studiedDice } = await import('../web/js/dice.js');
   assert.equal(sneakDice({ Rogue: 1 }), 1);
   assert.equal(sneakDice({ Rogue: 5 }), 3, 'ceil(5/2)');
   assert.equal(sneakDice({ Rogue: 6 }), 3);
-  assert.equal(sneakDice({ Ninja: 1 }), 0);
-  assert.equal(sneakDice({ Ninja: 5 }), 2, 'floor(5/2)');
-  assert.equal(sneakDice({ Rogue: 3, Ninja: 4 }), 2 + 2, 'ceil(3/2) + floor(4/2)');
+  assert.equal(sneakDice({ Ninja: 1 }), 1, 'the class table has +1d6 at 1st level');
+  assert.equal(sneakDice({ Ninja: 5 }), 3, 'ceil(5/2)');
+  assert.equal(sneakDice({ Rogue: 3, Ninja: 4 }), 2 + 2, 'ceil(3/2) + ceil(4/2)');
+  assert.deepEqual([2, 3, 5, 6, 9, 18].map(l => sneakDice({ Slayer: l })), [0, 1, 1, 2, 3, 6], 'slayer: +1d6 at 3rd, 6th, 9th ... 18th');
+  assert.deepEqual([3, 4, 5, 6, 8, 20].map(l => studiedDice({ Investigator: l })), [0, 1, 1, 2, 3, 9], 'studied strike: 1d6 at 4th, 2d6 at 6th ... 9d6 at 20th');
   assert.equal(sneakDice({ Fighter: 9 }), 0);
 });
 
@@ -157,6 +159,8 @@ test('the damage window offers what the character can use: class abilities only 
   const labels = (lv, bab) => damagePresets(lv, bab).map(p => p.label + (p.dice ? ' ' + p.dice : p.n ? ' ' + p.n : ''));
   assert.deepEqual(labels({ Fighter: 4 }, 4).filter(l => !/favored/.test(l)), [], 'a fighter has none of these yet');
   assert.ok(labels({ Rogue: 5 }, 3).includes('sneak attack 3d6'));
+  assert.ok(labels({ Slayer: 6 }, 6).includes('sneak attack 2d6'));
+  assert.ok(labels({ Investigator: 6 }, 4).includes('studied strike 2d6'));
   assert.ok(labels({ Paladin: 7 }, 7).includes('smite evil 7'), 'paladin level in damage');
   assert.ok(labels({ Cavalier: 4 }, 4).includes('challenge 4'));
   const vital = bab => damagePresets({}, bab).filter(p => p.extraBase).map(p => p.extraBase);
@@ -184,4 +188,17 @@ test('damage modifiers go on the end of the expression; Vital Strike repeats the
   assert.equal(addDamageMods('1d8+5', [], '1d8'), '1d8+5');
   assert.equal(damageLabel(mods), '(+2d6 sneak attack, +6 smite evil, -1 weakened)');
   assert.doesNotThrow(() => parseDice(addDamageMods('1d8+5+1d6', mods, '1d8')));
+});
+
+test('on a critical hit smite, challenge, favored enemy and Vital Strike dice are multiplied; sneak attack, studied strike and typed bonuses are not', async () => {
+  const { damagePresets, addDamageMods, damageLabel } = await import('../web/js/dice.js');
+  const crit = { label: 'smite evil', n: 7, crit: true }, sneak = { label: 'sneak attack', dice: '3d6' }, typed = { label: 'extra', n: 2 };
+  assert.equal(addDamageMods('1d8+5', [crit, sneak, typed], '1d8', 1), '1d8+5+7+3d6+2', 'a normal hit');
+  assert.equal(addDamageMods('2d8+10', [crit, sneak, typed], '1d8', 2), '2d8+10+14+3d6+2', 'x2: smite 7 becomes 14');
+  assert.equal(addDamageMods('3d8+15', [crit], '1d8', 3), '3d8+15+21', 'x3: 7 becomes 21');
+  assert.equal(addDamageMods('2d8+10', [{ label: 'Vital Strike', extraBase: 1, crit: true }], '1d8', 2), '2d8+10+2d8', 'the extra weapon dice are doubled too');
+  assert.equal(addDamageMods('2d8+10', [{ label: 'Improved Vital Strike', extraBase: 2, crit: true }], '1d8', 2), '2d8+10+4d8', 'two extra copies, doubled');
+  assert.equal(damageLabel([crit, sneak], 2), '(+14 smite evil, +3d6 sneak attack)');
+  const flagged = damagePresets({ Paladin: 7, Rogue: 5 }, 11).map(p => [p.label, !!p.crit]);
+  assert.deepEqual(flagged.filter(([l]) => /smite|sneak|Vital/.test(l)), [['sneak attack', false], ['smite evil', true], ['Vital Strike', true], ['Improved Vital Strike', true]]);
 });
