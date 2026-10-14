@@ -2,7 +2,7 @@
 import { state, changed } from '../app.js';
 import { classResources, currentOf } from '../resources.js';
 import { segsHtml } from '../bars.js';
-import { esc, textField, getPath, toast } from '../ui.js';
+import { esc, textField, getPath, toast, confirmBox } from '../ui.js';
 import { fullRest } from '../rest.js';
 
 const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
@@ -42,8 +42,12 @@ function custom(t, i) {
 
 /** The Rest button at the top of the Overview. */
 export function wireRest(el, c) {
-  el.querySelector('[data-full-rest]')?.addEventListener('click', () => {
-    const said = fullRest(c, { maxHp: state.derived.hp.max, level: state.derived.level });
+  el.querySelector('[data-full-rest]')?.addEventListener('click', async () => {
+    const now = { maxHp: state.derived.hp.max, level: state.derived.level };
+    const preview = fullRest(structuredClone(c), now); // what a rest would do, without doing it
+    if (!preview.length) return toast('Nothing needs resting for');
+    if (!await confirmBox('Take a night’s rest? This will: ' + preview.join('; ') + '.', '🌙 Rest')) return;
+    const said = fullRest(c, now);
     toast(said.length ? 'Rested: ' + said.join(', ') : 'Rested. Nothing needed restoring');
     changed({ rerender: true });
   });
