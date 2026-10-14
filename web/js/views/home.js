@@ -2,7 +2,7 @@ import { api } from '../api.js';
 import { state, openCharacter, createCharacter, go } from '../app.js';
 import { esc, $, confirmBox, toast } from '../ui.js';
 import { isCsCharacter } from '../importcs.js';
-import { openCsImport } from './csimport.js';
+import { openCsImport, openGsImport } from './csimport.js';
 
 export async function renderHome(main) {
   main.innerHTML = `<div class="page narrow">
@@ -13,6 +13,7 @@ export async function renderHome(main) {
         <button class="btn primary" id="new-char">＋ New character</button>
         <button class="btn" id="open-folder">Open save folder</button>
         <button class="btn" id="cs-import-btn" title="Bring a character over from charactersheet.co.uk">Import from charactersheet.co.uk</button>
+        <button class="btn" id="gs-import-btn" title="Bring a character over from a Google Sheets character sheet">Import from Google Sheet</button>
         <label class="btn">Import .json<input type="file" id="import" accept=".json" hidden></label>
       </div>
     </div>
@@ -23,6 +24,7 @@ export async function renderHome(main) {
   $('#new-char').onclick = createCharacter;
   $('#open-folder').onclick = () => api.openFolder();
   $('#cs-import-btn').onclick = () => openCsImport();
+  $('#gs-import-btn').onclick = () => openGsImport();
   $('#import').onchange = async e => {
     const f = e.target.files[0];
     if (!f) return;

@@ -294,6 +294,20 @@ class HttpApi(unittest.TestCase):
         self.assertEqual(self.headers('/api/characters'), 200)  # no browser headers at all (tests, curl)
 
 
+class GoogleSheetLinks(unittest.TestCase):
+    def test_link_and_tab(self):
+        sid = '1DkPwfR5IdcJ0Bk9NhUnBA7iXTUF-aQl4kqaCRj50Tps'
+        self.assertEqual(app.parse_sheet_ref(f'https://docs.google.com/spreadsheets/d/{sid}/edit?gid=0#gid=0'), (sid, '0'))
+        self.assertEqual(app.parse_sheet_ref(f'https://docs.google.com/spreadsheets/d/{sid}/edit#gid=77'), (sid, '77'))
+        self.assertEqual(app.parse_sheet_ref(sid), (sid, '0'))
+        self.assertIsNone(app.parse_sheet_ref('https://example.com/evil'))
+        self.assertIsNone(app.parse_sheet_ref(''))
+
+    def test_bad_link_is_an_error_not_a_request(self):
+        with self.assertRaises(ValueError):
+            app.fetch_gsheet('not a link')
+
+
 if __name__ == '__main__':
     unittest.main()
 

@@ -52,6 +52,7 @@ export const api = {
   updateCheck: () => req('GET', 'update-check'),
   updateApply: () => req('POST', 'update-apply'),
   openFolder: () => req('POST', 'open-folder'),
+  gsFetch: ref => req('GET', 'gs-fetch?' + qs({ id: ref })),
   csFetch: ref => req('GET', 'cs-fetch?' + qs({ id: ref })),
   sounds: () => req('GET', 'sounds'),
   async addSound(name, file, label = '') {

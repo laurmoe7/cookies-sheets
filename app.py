@@ -510,6 +510,41 @@ def post_discord(body):
     return {'ok': True}
 
 
+GS_ID = re.compile(r'/spreadsheets/d/([A-Za-z0-9_-]{20,})')
+MAX_SHEET = 5 * 1024 * 1024
+
+
+def parse_sheet_ref(ref):
+    """A Google Sheets address or bare id -> (id, gid), or None."""
+    ref = str(ref or '').strip()
+    m = GS_ID.search(ref) or re.fullmatch(r'([A-Za-z0-9_-]{30,})', ref)
+    if not m:
+        return None
+    g = re.search(r'[#?&]gid=(\d+)', ref)
+    return m.group(1), (g.group(1) if g else '0')
+
+
+def fetch_gsheet(ref):
+    """Download one tab of a Google Sheet as CSV. The sheet must be shared as "Anyone with the link"."""
+    import urllib.request
+    parsed = parse_sheet_ref(ref)
+    if not parsed:
+        raise ValueError('That does not look like a Google Sheets link.')
+    sid, gid = parsed
+    req = urllib.request.Request(f'https://docs.google.com/spreadsheets/d/{sid}/export?format=csv&gid={gid}', headers={'User-Agent': APP_NAME})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            data = r.read(MAX_SHEET + 1)
+    except Exception as e:
+        raise ValueError(f'Could not download the sheet ({e}). Check that sharing is set to "Anyone with the link" (Viewer), or use File > Download > CSV and choose that file.')
+    if len(data) > MAX_SHEET:
+        raise ValueError('That sheet is too big to be a character sheet.')
+    text = data.decode('utf-8', errors='replace')
+    if text.lstrip()[:15].lower().startswith(('<!doctype', '<html')):
+        raise ValueError('Google asked for a sign-in, so the sheet is private. Set sharing to "Anyone with the link" (Viewer), or use File > Download > CSV and choose that file.')
+    return {'csv': text}
+
+
 def resolve_names(body):
     """Match free-text names to compendium entries.
 
@@ -644,6 +679,8 @@ class Handler(SimpleHTTPRequestHandler):
                 self._json(updater.check(app_version()))
             elif route == ('POST', 'update-apply'):
                 self._json(updater.apply(app_version()))
+            elif route == ('GET', 'gs-fetch'):
+                self._json(fetch_gsheet(p.get('id', '')))
             elif route == ('GET', 'sounds'):
                 self._json(list_sounds())
             elif route == ('POST', 'sound'):

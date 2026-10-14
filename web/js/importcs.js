@@ -237,7 +237,7 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
     });
   }
   if (rows.length) c.favoredClass = rows[0].cls;
-  keepNote('Class/level on charactersheet.co.uk', src.level);
+  keepNote(`Class/level on ${src._source || CS_SOURCE}`, src.level);
 
   // -- defenses / AC --
   c.ac.natural = n0(src.ac?.naturalArmor);
@@ -264,7 +264,7 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
   if (!items.some(i => /shield|buckler/i.test(`${i.name} ${i.type}`)) && n0(src.ac?.shieldBonus)) {
     c.armor.push({ name: 'Shield bonus (imported)', type: 'shield', category: 'light', bonus: n0(src.ac.shieldBonus), enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true, mw: false, material: '', fx: [] });
   }
-  if (c.armor.some(a => a.maxDex === '' && !/imported/.test(a.name))) notes.push('Armor max Dex bonus isn’t stored on charactersheet.co.uk. Fill it in on the Inventory tab.');
+  if (c.armor.some(a => a.maxDex === '' && !/imported/.test(a.name))) notes.push(`Armor max Dex bonus isn’t stored on ${src._source || CS_SOURCE}. Fill it in on the Inventory tab.`);
   c.defenses = { dr: str(src.damageReduction), sr: str(src.spellResistance), resist: str(src.resistances), immune: str(src.immunities) };
 
   // -- saves, initiative, combat misc --
@@ -395,8 +395,8 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
   if (got.feats < found.feats + found.traits) notes.push(`Some feats or traits had no name and were skipped (${got.feats} of ${found.feats + found.traits} imported).`);
 
   // -- notes --
-  c.notes = [str(src.notes), extra.length ? `— Imported from ${CS_SOURCE} —\n${extra.join('\n')}` : ''].filter(Boolean).join('\n\n');
-  c.importedFrom = { source: CS_SOURCE, id: str(src._id), date: new Date().toISOString() };
+  c.notes = [str(src.notes), extra.length ? `— Imported from ${src._source || CS_SOURCE} —\n${extra.join('\n')}` : ''].filter(Boolean).join('\n\n');
+  c.importedFrom = { source: src._source || CS_SOURCE, id: str(src._id), date: new Date().toISOString() };
 
   // -- second pass: HP and weapons need the computed numbers --
   reconcile(c, src, classesByName);

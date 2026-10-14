@@ -3,6 +3,7 @@
 import { api } from '../api.js';
 import { state, openCharacter } from '../app.js';
 import { isCsCharacter, guessClasses, resolveAll, buildCharacter, compareSheets, CS_SOURCE } from '../importcs.js';
+import { parseSheetRef, parseCsv, googleSheetToCs, isGoogleSheetCharacter, GS_SOURCE } from '../importgs.js';
 import { esc, $, modal, toast } from '../ui.js';
 
 export function openCsImport(preloaded = null) {
@@ -36,6 +37,42 @@ export function openCsImport(preloaded = null) {
         if (!isCsCharacter(data)) throw new Error(`That file isn’t a ${CS_SOURCE} character.`);
         await preview(body, close, data);
       } catch (x) { err(x.message); }
+    };
+  }, { wide: true });
+}
+
+/** "Import from Google Sheet": paste the sheet's link, or choose its downloaded .csv. Then the same review window as charactersheet.co.uk. */
+export function openGsImport() {
+  return modal(`Import from ${GS_SOURCE}`, (body, close) => {
+    body.innerHTML = `
+      <p>Paste the link to your character sheet in <b>Google Sheets</b> (the "Pathfinder character sheet" template). Its sharing must be <b>Anyone with the link</b> (Viewer).
+        If it has several tabs, open the character tab first so the link ends in its <code class="small">gid</code>.</p>
+      <div class="row"><input id="gs-url" class="grow" style="flex:1;min-width:260px" placeholder="https://docs.google.com/spreadsheets/d/..." spellcheck="false">
+        <button class="btn primary" id="gs-fetch">Fetch</button></div>
+      <p class="muted small">Sheet is private? In Google Sheets choose <b>File, Download, Comma-separated values (.csv)</b> and pick that file here:</p>
+      <div class="row"><label class="btn">Choose downloaded .csv<input type="file" id="gs-file" accept=".csv,text/csv" hidden></label></div>
+      <p id="gs-err" class="bad small"></p>`;
+    const err = m => { $('#gs-err', body).textContent = m || ''; };
+    const run = async csv => {
+      const rows = parseCsv(csv);
+      if (!isGoogleSheetCharacter(rows)) throw new Error('That does not look like the Pathfinder character sheet template, so it cannot be read. Is this the right tab?');
+      await preview(body, close, googleSheetToCs(rows));
+    };
+    const go = async () => {
+      const v = $('#gs-url', body).value.trim();
+      if (!parseSheetRef(v)) return err('Paste a Google Sheets link first.');
+      err('');
+      $('#gs-fetch', body).disabled = true;
+      $('#gs-fetch', body).textContent = 'Fetching…';
+      try { await run((await api.gsFetch(v)).csv); }
+      catch (e) { err(e.message); $('#gs-fetch', body).disabled = false; $('#gs-fetch', body).textContent = 'Fetch'; }
+    };
+    $('#gs-fetch', body).onclick = go;
+    $('#gs-url', body).onkeydown = e => { if (e.key === 'Enter') go(); };
+    $('#gs-file', body).onchange = async e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      try { await run(await f.text()); } catch (x) { err(x.message); }
     };
   }, { wide: true });
 }
