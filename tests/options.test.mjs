@@ -52,6 +52,6 @@ test('the tab order: saved keys first, unknown ones dropped, new tabs keep their
   assert.equal(DEFAULTS.tabDrag, false, 'dragging is off until switched on');
   assert.deepEqual(sanitize({ tabOrder: 'nonsense', tabDrag: 1 }).tabOrder, []);
   assert.equal(sanitize({ tabDrag: 1 }).tabDrag, true);
-  assert.deepEqual([DEFAULTS.tabLock, sanitize({ tabLock: 1 }).tabLock, sanitize({ tabLock: 'x' }).tabLock], [false, true, true], 'the lock is a plain on/off option, unlocked at first');
+  assert.equal('tabLock' in sanitize({ tabLock: true }), false, 'the old separate lock is gone: dragging off means locked');
   assert.deepEqual(sanitize({ tabOrder: ['a', 5, 'a', 'b'] }).tabOrder, ['a', 'b'], 'only text, no repeats');
 });

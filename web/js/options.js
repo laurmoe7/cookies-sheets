@@ -18,7 +18,7 @@ export const TEXT_SIZES = [[90, 'Small'], [100, 'Normal'], [112, 'Large'], [125,
 
 export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
 
-export const DEFAULTS = { theme: 'tome', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: true, pageSound: true, volume: 100, soundOff: {}, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false, webhook: '', rollSend: true, rollAsk: true, tabDrag: false, tabLock: false, tabOrder: [] };
+export const DEFAULTS = { theme: 'tome', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: true, pageSound: true, volume: 100, soundOff: {}, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false, webhook: '', rollSend: true, rollAsk: true, tabDrag: false, tabOrder: [] };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
@@ -30,7 +30,8 @@ export function sanitize(raw) {
   o.pageTurn = o.pageTurn !== 'off' && o.pageTurn !== false; // used to be Full / Light / Off
   if (!['quiet', 'normal', 'chatty'].includes(o.cookieTalk)) o.cookieTalk = DEFAULTS.cookieTalk;
   if (!['full', 'bleep'].includes(o.cookieSwear)) o.cookieSwear = DEFAULTS.cookieSwear;
-  for (const k of ['compact', 'motion', 'pageSound', 'cookieSound', 'tabDrag', 'tabLock']) o[k] = !!o[k];
+  for (const k of ['compact', 'motion', 'pageSound', 'cookieSound', 'tabDrag']) o[k] = !!o[k];
+  delete o.tabLock; // the lock was folded into tabDrag (off = locked)
   o.tabOrder = Array.isArray(o.tabOrder) ? [...new Set(o.tabOrder.filter(k => typeof k === 'string' && k.length < 30))].slice(0, 30) : [];
   // One volume for every sound. Saves from before the slider had a "Sound effects" checkbox: unchecked becomes volume 0.
   const v = Math.round(Number(o.volume));
@@ -135,9 +136,7 @@ function optionRows(tab, o, customSounds) {
       <div class="opt-row" ${tome ? 'style="opacity:.45"' : ''}><b>Accent color <span class="muted small">(Classic dark only)</span></b><div class="swatches">${Object.entries(ACCENTS).map(([k, a]) => `<button class="swatch ${o.accent === k ? 'on' : ''}" data-opt="accent" data-v="${k}" title="${a.name}" style="background:${a.dark || '#e0605a'}" ${tome ? 'disabled' : ''}></button>`).join('')}</div></div>
       <div class="opt-row"><b>Text size</b>${seg('textSize', o.textSize, TEXT_SIZES)}</div>
       ${check('compact', 'Compact layout', o.compact)}
-      ${check('tabDrag', 'Drag the sheet tabs to rearrange them', o.tabDrag)}
-      ${o.tabDrag ? check('tabLock', 'Lock the tabs in place (no dragging until unlocked)', o.tabLock) : ''}
-      ${o.tabOrder.length ? '<div class="opt-row"><b>Tab order</b><button class="btn small ghost" data-tab-reset>Put the tabs back in the usual order</button></div>' : ''}
+      <label class="opt-row"><b>Drag the sheet tabs to rearrange them</b><span class="opt-inline">${o.tabOrder.length ? '<button class="btn small ghost" data-tab-reset title="Put the tabs back in their usual order">Reset order</button>' : ''}<input type="checkbox" data-opt="tabDrag" ${o.tabDrag ? 'checked' : ''}></span></label>
       ${check('motion', 'Animations', o.motion)}`;
   }
   if (tab === 'sound') {

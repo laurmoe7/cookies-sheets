@@ -683,7 +683,8 @@ html[data-motion="off"] .fx-spark { display: none; }
 /* The padlock at the end of the tab bar (shown when dragging tabs is switched on). */
 .tab-lock { align-self: center; font: inherit; font-size: 15px; cursor: pointer; background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 2px 8px; opacity: .75; }
 .tab-lock:hover { opacity: 1; border-color: var(--line); }
-.tab-lock.locked { opacity: 1; }
+.tab-lock.locked { opacity: .55; }
+.opt-inline { display: inline-flex; align-items: center; gap: 12px; }
 /* Dragging the sheet tabs (Options → Look). The marker is an inset shadow because the Dusty tome ribbons are clipped to their shape. */
 .tab[draggable="true"] { cursor: grab; }
 .tab.dragging { opacity: .45; }
