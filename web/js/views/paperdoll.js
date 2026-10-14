@@ -39,13 +39,15 @@ function tile(c, d, id, worn) {
 export function paperDollCard(c, d) {
   const worn = wornBySlot(c), t = id => tile(c, d, id, worn);
   const pic = c.doll || c.portrait || c.avatar;
-  const fig = pic ? `<img src="${pic}" alt="">` : '<svg class="doll-sil" viewBox="0 0 24 32" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="3.6"/><path d="M12 10.5c-4.2 0-6.5 2.2-6.5 5.5v6h2.2v8.5h3.2v-8h2.2v8h3.2V22h2.2v-6c0-3.3-2.3-5.5-6.5-5.5z"/></svg>';
+  const fig = pic
+    ? `<div class="doll-fig"><img src="${pic}" alt=""><div class="portrait-tools"><button class="icon-btn" data-doll-img title="${c.doll ? 'Change picture' : 'Choose a picture of its own (your portrait is shown until you do)'}">✎</button>${c.doll ? '<button class="icon-btn" data-doll-edit title="Recenter or resize">⤢</button><button class="icon-btn" data-doll-clear title="Remove picture (your portrait is shown instead)">✕</button>' : ''}</div></div>`
+    : '<button class="doll-fig empty" data-doll-img title="Add a picture for the paper doll">＋ Add a picture</button>';
   const total = Object.values(worn).reduce((n, l) => n + l.length, 0);
   return `<section class="card span2 doll-card">
     <div class="row"><h3 class="grow">Equipment</h3><span class="small muted">${total} slot${total === 1 ? '' : 's'} filled of ${SLOTS.length}</span></div>
     <div class="doll">
       <div class="doll-col">${LAYOUT.left.map(t).join('')}</div>
-      <div class="doll-mid"><button class="doll-fig" data-doll-pic title="Click to change the picture, recenter it or remove it">${fig}<span class="doll-fig-hint">✎ Picture</span></button>
+      <div class="doll-mid">${fig}
         <div class="doll-stats small"><span title="Armor Class">AC <b>${d.ac.total}</b></span><span title="Touch AC">touch <b>${d.ac.touch}</b></span><span title="Flat-footed AC">flat <b>${d.ac.flat}</b></span><span title="Armor check penalty">ACP <b>${d.acp}</b></span>${d.asf ? `<span title="Arcane spell failure">ASF <b>${d.asf}%</b></span>` : ''}</div></div>
       <div class="doll-col">${LAYOUT.right.map(t).join('')}</div>
     </div>
@@ -57,8 +59,8 @@ export function paperDollCard(c, d) {
 /** Clicking a slot: see what is there and what could go there. */
 export function wirePaperDoll(body) {
   body.addEventListener('click', e => {
-    const pic = e.target.closest('[data-doll-pic]');
-    if (pic) { e.preventDefault(); editPicture(); return; }
+    const pic = e.target.closest('[data-doll-img],[data-doll-edit],[data-doll-clear]');
+    if (pic) { e.preventDefault(); pictureAction(pic.dataset); return; }
     const t = e.target.closest('[data-doll]');
     if (t) { e.preventDefault(); openSlot(t.dataset.doll); }
   });
@@ -91,22 +93,10 @@ function openSlot(id) {
 
 const PIC = { w: 3, h: 4, out: 800 };
 
-/** The figure in the middle: choose a picture of its own (the portrait is used until you do), recenter it, or go back to the portrait. */
-function editPicture() {
+/** The picture tools, the same three as on the portrait: change it, recenter or resize it, remove it (the portrait shows instead). */
+async function pictureAction(ds) {
   const c = state.char;
-  const choose = async () => { const r = await choosePicture(PIC); if (r) { c.doll = r.image; c.dollSrc = r.src; changed({ rerender: true }); } };
-  if (!c.doll && !c.portrait && !c.avatar) return choose();
-  modal('Paper doll picture', (body, close) => {
-    body.innerHTML = `<div class="row" style="gap:16px;align-items:center"><img src="${c.doll || c.portrait || c.avatar}" alt="" style="width:96px;height:128px;object-fit:cover;border-radius:8px">
-      <div class="icon-actions"><button class="btn" data-a="change">Choose a picture</button>${c.doll ? '<button class="btn" data-a="edit">Recenter or resize</button><button class="btn danger" data-a="clear">Use my portrait instead</button>' : ''}</div></div>
-      ${c.doll ? '' : '<p class="small muted">It shows your portrait until you choose a picture of its own, for example a full-length figure.</p>'}`;
-    body.onclick = async e => {
-      const a = e.target.closest('[data-a]')?.dataset.a;
-      if (!a) return;
-      close();
-      if (a === 'change') await choose();
-      else if (a === 'edit') { const r = await repositionPicture(c.dollSrc || c.doll, PIC); if (r) { c.doll = r.image; changed({ rerender: true }); } }
-      else { c.doll = ''; c.dollSrc = ''; changed({ rerender: true }); }
-    };
-  });
+  if ('dollImg' in ds) { const r = await choosePicture(PIC); if (r) { c.doll = r.image; c.dollSrc = r.src; changed({ rerender: true }); } }
+  else if ('dollEdit' in ds) { const r = await repositionPicture(c.dollSrc || c.doll, PIC); if (r) { c.doll = r.image; changed({ rerender: true }); } }
+  else { c.doll = ''; c.dollSrc = ''; changed({ rerender: true }); }
 }

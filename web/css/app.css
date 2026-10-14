@@ -752,8 +752,8 @@ html[data-motion="off"] .fx-spark { display: none; }
 .item-fx { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
 
 .inv-chips .sp-chip .sp-n, .inv-chips .sp-chip.ready .sp-n, .inv-chips .sp-chip.idle .sp-n { font-weight: 400; }
-
-button.doll-fig { font: inherit; color: inherit; cursor: pointer; padding: 0; position: relative; }
-button.doll-fig:hover { border-color: var(--accent); }
-.doll-fig-hint { position: absolute; right: 6px; bottom: 6px; font-size: 11px; padding: 1px 8px; border-radius: 99px; background: rgba(0,0,0,.55); color: #fff; opacity: 0; transition: opacity .12s; }
-button.doll-fig:hover .doll-fig-hint, button.doll-fig:focus-visible .doll-fig-hint { opacity: 1; }
+.doll-fig { position: relative; }
+.doll-fig img { position: absolute; inset: 0; object-position: center top; }
+.doll-fig:hover .portrait-tools { opacity: 1; }
+button.doll-fig.empty { font: inherit; cursor: pointer; border: 2px dashed var(--line); background: transparent; color: var(--muted); }
+button.doll-fig.empty:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
