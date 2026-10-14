@@ -5,7 +5,6 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
-      'In the Inventory, the buttons are now ＋ Item (pick one from the compendium) and ＋ Custom item (a blank one of your own).',
       'Weapons and Armor & Shields each have a ＋ Magic item button: pick one from the compendium (Flame Tongue, Elven Chain, Armor of the Shadow Lord...) and its base weapon or armor, enhancement, special abilities and material are filled in from the description. Check the numbers: they are read from the text.',
       'The picture in the middle of the paper doll has the same tools as the portrait on the Overview: hover it to change the picture, recenter or resize it, or remove it. Until you give it a picture of its own it shows your portrait.',
       'Inventory items can carry bonuses that count while they are worn: a cloak of resistance adds to your saves, a ring of protection to AC, a headband of intelligence to Int, and your own items can have any bonus you set. Open an item and choose Add bonuses, or Use the usual for the ones the app knows.',
