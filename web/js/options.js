@@ -117,7 +117,7 @@ function soundCategory(k, label, o, customSounds) {
     const mine = s.kind === 'custom';
     const act = mine ? `<button class="icon-btn" data-sfx-remove="${k}" data-ref="${esc(s.ref)}" title="Remove this sound">✕</button>`
       : s.enabled ? `<button class="icon-btn" data-sfx-off="${k}" data-ref="${esc(s.ref)}" title="Switch this built-in sound off">✕</button>`
-        : `<button class="btn small ghost" data-sfx-on="${k}" data-ref="${esc(s.ref)}">Bring back</button>`;
+        : '<span class="muted small" title="Switched off. Restore defaults brings it back.">off</span>';
     return `<div class="sfx-item ${s.enabled ? '' : 'off'}"><button class="btn small ghost" data-play="${k}" data-kind="${s.kind}" data-ref="${esc(s.ref)}" title="Play">▶</button>
       <span class="sfx-name">${esc(s.label)}${mine ? ' <span class="muted small">(yours)</span>' : ''}</span>${act}</div>`;
   }).join('');
@@ -136,7 +136,7 @@ function optionRows(tab, o, customSounds) {
       <div class="opt-row" ${tome ? 'style="opacity:.45"' : ''}><b>Accent color <span class="muted small">(Classic dark only)</span></b><div class="swatches">${Object.entries(ACCENTS).map(([k, a]) => `<button class="swatch ${o.accent === k ? 'on' : ''}" data-opt="accent" data-v="${k}" title="${a.name}" style="background:${a.dark || '#e0605a'}" ${tome ? 'disabled' : ''}></button>`).join('')}</div></div>
       <div class="opt-row"><b>Text size</b>${seg('textSize', o.textSize, TEXT_SIZES)}</div>
       ${check('compact', 'Compact layout', o.compact)}
-      <label class="opt-row"><b>Drag the sheet tabs to rearrange them</b><span class="opt-inline">${o.tabOrder.length ? '<button class="btn small ghost" data-tab-reset title="Put the tabs back in their usual order">Reset order</button>' : ''}<input type="checkbox" data-opt="tabDrag" ${o.tabDrag ? 'checked' : ''}></span></label>
+      <div class="opt-row"><b>Sheet tabs</b><span class="opt-inline"><button class="btn small ${o.tabDrag ? '' : 'ghost'}" data-tab-lock title="${o.tabDrag ? 'The tabs can be dragged into a new order. Click to lock them where they are.' : 'The tabs are locked in place. Click to unlock them so they can be dragged.'}">${o.tabDrag ? '🔓 Drag to rearrange' : '🔒 Locked'}</button>${o.tabOrder.length ? '<button class="btn small ghost" data-tab-reset title="Put the tabs back in their usual order">Reset order</button>' : ''}</span></div>
       ${check('motion', 'Animations', o.motion)}`;
   }
   if (tab === 'sound') {
@@ -170,6 +170,7 @@ export function showOptions() {
     const set = (k, v) => { current = sanitize({ ...current, [k]: v }); save(); applyOptions(); draw(); document.dispatchEvent(new Event('options-changed')); };
     const refreshSounds = async () => { customSounds = await loadCustomSounds(); };
     body.onclick = async e => {
+      if (e.target.closest('[data-tab-lock]')) return set('tabDrag', !current.tabDrag);
       if (e.target.closest('[data-tab-reset]')) return set('tabOrder', []);
       const tab = e.target.closest('[data-tab]');
       if (tab) { optTab = tab.dataset.tab; return draw(); }
@@ -180,9 +181,8 @@ export function showOptions() {
       const pick = e.target.closest('[data-pick]');
       if (pick) { pickFor = pick.dataset.pick; return body.querySelector('#sfx-file').click(); }
       const off = (k, f) => { const list = current.soundOff[k] || []; set('soundOff', { ...current.soundOff, [k]: f(list) }); };
-      const sOff = e.target.closest('[data-sfx-off]'), sOn = e.target.closest('[data-sfx-on]');
+      const sOff = e.target.closest('[data-sfx-off]');
       if (sOff) return off(sOff.dataset.sfxOff, l => [...l, sOff.dataset.ref]);
-      if (sOn) return off(sOn.dataset.sfxOn, l => l.filter(x => x !== sOn.dataset.ref));
       const del = e.target.closest('[data-sfx-remove]'), restore = e.target.closest('[data-sfx-restore]');
       if (del || restore) {
         const k = restore?.dataset.sfxRestore;

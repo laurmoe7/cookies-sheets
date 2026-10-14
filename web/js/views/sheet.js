@@ -104,13 +104,11 @@ export function renderSheet(main) {
     main.dataset.tabs = tabsKey();
     main.innerHTML = `<div class="page">
       <div class="tabs" role="tablist">${orderedTabs().map(([k, l]) => `<button class="tab" data-tab="${k}">${icon(k)}${l}</button>`).join('')}
-        <div class="grow"></div><button class="tab-lock ${options().tabDrag ? '' : 'locked'}" data-tab-lock title="${options().tabDrag ? 'Drag the tabs to rearrange them. Click to lock them where they are.' : 'The tabs are locked in place. Click to unlock them so they can be dragged.'}">${options().tabDrag ? '🔓' : '🔒'}</button><span id="tabs-extra"></span>
+        <div class="grow"></div><span id="tabs-extra"></span>
       </div>
       <div id="tab-body"></div></div>`;
     $$('.tab', main).forEach(b => (b.onclick = () => { if (state.sheetTab !== b.dataset.tab) { const snap = snapshotPage($('#tab-body')); const order = orderedTabs().map(t => t[0]), back = order.indexOf(b.dataset.tab) < order.indexOf(state.sheetTab); state.turn = snap && { snap, back }; state.sheetTab = b.dataset.tab; render(); petView('tab-' + b.dataset.tab); } }));
     if (options().tabDrag) wireTabDrag(main);
-    const lock = $('[data-tab-lock]', main);
-    if (lock) lock.onclick = () => { setOption('tabDrag', !options().tabDrag); changed({ rerender: true }); };
   }
   $$('.tab', main).forEach(b => b.classList.toggle('active', b.dataset.tab === state.sheetTab));
   $('#tabs-extra', main).innerHTML = d.level === 0 ? '<button class="btn primary" data-goto-levelup>Choose 1st level class →</button>' : '';
