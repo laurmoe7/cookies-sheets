@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
+      'The Rest button in the Spells tab is gone; the \ud83c\udf19 Rest button at the top of the Overview does the same and more, and asks first.',
       'A spell\u2019s roll window sorts what you can roll into rows: Hit (an attack roll, when the spell needs one), Damage or Healing with its dice shown, and Checks.',
       'Touch spells that harm (Inflict Light Wounds) now offer a melee touch attack, and dice such as Magic Missile\u2019s 1d4+1 keep their flat bonus.',
       'The − and + beside each spell level’s slots are gone.',
