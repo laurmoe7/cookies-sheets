@@ -93,6 +93,18 @@ export function guessClasses(text, classes) {
   });
 }
 
+/** Some sheets keep an item's, trait's or feat's name in `type` and leave `name` empty (the site's type picker doubles as the name).
+ * Gives those entries a `name`, so nothing is skipped as nameless. Safe to run twice. */
+export function normalizeCs(src) {
+  for (const list of ['gear', 'feats', 'traits', 'specialAbilities']) {
+    if (!Array.isArray(src[list])) continue;
+    for (const x of src[list]) {
+      if (x && typeof x === 'object' && !str(x.name) && str(x.type)) { x.name = x.type; delete x.type; }
+    }
+  }
+  return src;
+}
+
 // ---- name resolution against the compendium ----
 
 const ROUTE = { Feat: 'feats', Trait: 'traits' };
@@ -120,6 +132,7 @@ function nameVariants(raw) {
 
 /** Looks up every feat, trait, ability, spell and item name in one request. */
 export async function resolveAll(src) {
+  normalizeCs(src);
   const jobs = [];
   const push = (key, name, cats) => { const v = nameVariants(name); jobs.push({ key, name, ...v, cats }); };
   for (const [list, key] of [['feats', 'feats'], ['traits', 'traits'], ['specialAbilities', 'specials']]) {
@@ -175,6 +188,7 @@ const matchSize = s => SIZE_NAMES.find(z => z.toLowerCase() === str(s).toLowerCa
  * edited by the user). Returns {char, notes} where notes lists what was carried over as text.
  */
 export function buildCharacter(src, classRows, resolved, classesByName, archetypeData = {}) {
+  normalizeCs(src);
   const c = newCharacter();
   const notes = [];          // human-readable lines for the import report
   const extra = [];          // text appended to the character's Notes
@@ -374,6 +388,11 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
   }
   keepNote('Spell notes', src.spellsConditionalModifiers);
   keepNote('Spell specialty / notes', src.spellsSpeciality);
+
+  const found = { gear: (src.gear || []).length, feats: (src.feats || []).length, traits: (src.traits || []).length };
+  const got = { gear: c.gear.length, feats: c.feats.length + c.traits.length + c.specials.length };
+  if (got.gear < found.gear) notes.push(`The sheet lists ${found.gear} gear items but only ${got.gear} had a name, so the rest were skipped. Add them on the Inventory tab.`);
+  if (got.feats < found.feats + found.traits) notes.push(`Some feats or traits had no name and were skipped (${got.feats} of ${found.feats + found.traits} imported).`);
 
   // -- notes --
   c.notes = [str(src.notes), extra.length ? `— Imported from ${CS_SOURCE} —\n${extra.join('\n')}` : ''].filter(Boolean).join('\n\n');

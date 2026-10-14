@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
+      'Importing from charactersheet.co.uk: sheets that keep an item’s or trait’s name in its “type” box (so the name box is empty) used to lose every such gear item and trait. They come across now, and the import window tells you if anything was skipped for having no name.',
       'Updating without downloading: the app can look for a new version when it starts (Options, Look turns that on, or checks now) and, with your say-so, downloads it, swaps the files and reopens. Your characters and options are not touched.',
       'Inventory: an “Ignore encumbrance” tick beside the Carrying Capacity title. The weight is still added up, but it no longer caps Dex, adds a check penalty or slows you down.',
       'Safer imports: a character file from someone else can no longer smuggle code in through its pictures, and the app refuses oversized or malformed requests.',

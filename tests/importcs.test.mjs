@@ -203,3 +203,17 @@ test('archetypes in brackets after the class are read, even when the archetype n
   assert.deepEqual(g('Wizard (Evoker) 3, Fighter 2'), [['Wizard', 3, 'Evoker'], ['Fighter', 2, '']]);
   assert.deepEqual(g('White Mage Arcanist, lvl 8'), [['Arcanist', 8, 'White Mage']], 'the old way still works');
 });
+
+// ---------- a sheet that keeps names in `type` (a friend's import brought in one item of 41) ----------
+
+test('entries that keep their name in "type" are imported, not skipped as nameless', () => {
+  const src = { name: 'Typed', level: 'Wizard 1', abilities: { str: '10', dex: '10', con: '10', int: '10', wis: '10', cha: '10' },
+    gear: [{ type: 'Umbrella', notes: 'Folds.' }, { type: 'Ration', quantity: '589' }, { type: 'Tent medium', location: 'Pack' }],
+    traits: [{ type: 'Survivor', notes: 'x' }], feats: [{ name: 'Toughness' }] };
+  const { char } = build(src);
+  assert.deepEqual(char.gear.map(g => g.name), ['Umbrella', 'Ration', 'Tent medium'], 'all three items, named from type');
+  assert.equal(char.gear[1].qty, 589);
+  assert.ok(!char.gear[0].notes.includes('Umbrella'), 'the name is not repeated in the notes');
+  assert.equal(char.traits[0].name, 'Survivor');
+  assert.equal(char.feats[0].name, 'Toughness');
+});
