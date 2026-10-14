@@ -156,7 +156,7 @@ export function debounce(fn, ms = 200) {
 }
 
 /** Generic searchable picker for compendium entries. Resolves with the chosen entry summary. */
-export function pickEntry(title, cat, { extraFilter, renderRow } = {}) {
+export function pickEntry(title, cat, { extraFilter, renderRow, search } = {}) {
   return modal(title, (body, close) => {
     body.innerHTML = `<input class="search" placeholder="Search ${esc(cat || 'compendium')}…">
       <div class="picker"><div class="picker-list"></div><div class="picker-preview entry-body"><p class="muted">Select an entry to preview it.</p></div></div>`;
@@ -164,7 +164,7 @@ export function pickEntry(title, cat, { extraFilter, renderRow } = {}) {
     let rows = [], seq = 0;
     const run = debounce(async () => {
       const my = ++seq;
-      let res = await api.search(input.value, cat, 150);
+      let res = await (search ? search(input.value) : api.search(input.value, cat, 150));
       if (my !== seq) return; // a newer search is in flight
       rows = extraFilter ? res.filter(extraFilter) : res;
       list.innerHTML = rows.map((r, i) => `<div class="pick-row" data-i="${i}">

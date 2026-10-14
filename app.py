@@ -108,6 +108,36 @@ def search(q='', cat='', limit=60, offset=0):
     return [dict(r) for r in rows]
 
 
+WEAPON_WORDS = ('dagger|sword|rapier|scimitar|falchion|sabre|katana|axe|hammer|mace|morningstar|flail|club|quarterstaff|spear|trident|halberd|glaive|lance|scythe|'
+                'sickle|kukri|bow|crossbow|sling|dart|javelin|shuriken|gauntlet|blade|knife')
+WEAPON_RX = re.compile(r"\+\d+\s+[a-z ,'-]{0,60}?(?:%s)s?\b" % WEAPON_WORDS, re.I)
+WEAPON_NAME_RX = re.compile(r'(?:%s)s?\b' % WEAPON_WORDS, re.I)
+ARMOR_NAME_RX = re.compile(r'armor|plate|mail|shield|buckler|leather|\bhide\b|breastplate|aegis|bulwark', re.I)
+
+
+def magic_gear(kind, q='', limit=150):
+    """Magic items that are weapons ('weapon') or armor and shields ('armor') for the "+ Magic item" pickers.
+    The compendium tags armor and shields (sub) but not weapons, so those are the items with no slot whose text names a +N weapon."""
+    q = (q or '').strip().lower()
+    cols = 'id, cat, sub, name, source, summary'
+    if kind == 'weapon':
+        rows = db().execute(f"select {cols}, html from entries where cat='Magic Item' and html like '%<dt>Slot</dt><dd>none%'").fetchall()
+
+        def keep(r):
+            if re.match(r'rod\b', r['name'], re.I):
+                return False
+            text = re.sub(r'<[^>]+>', ' ', (r['html'] or '').split('</dl>')[-1])[:500]
+            return bool(WEAPON_RX.search(text) or WEAPON_NAME_RX.search(r['name']))
+    else:
+        rows = db().execute(f"select {cols}, html from entries where cat='Magic Item' and (sub in ('armor','shield','') or sub is null)").fetchall()
+
+        def keep(r):
+            return r['sub'] in ('armor', 'shield') or bool(ARMOR_NAME_RX.search(r['name']))
+    out = [{k: r[k] for k in r.keys() if k != 'html'} for r in rows if keep(r) and q in r['name'].lower()]
+    out.sort(key=lambda r: r['name'].lower())
+    return out[:limit]
+
+
 def get_entry(id=None, name=None, cat=None):
     if id:
         r = db().execute('select * from entries where id=?', (int(id),)).fetchone()
@@ -550,6 +580,8 @@ class Handler(SimpleHTTPRequestHandler):
             if route == ('GET', 'classes'):
                 with open(os.path.join(DATA, 'classes.json'), encoding='utf-8') as f:
                     self._json(json.load(f))
+            elif route == ('GET', 'magic-gear'):
+                self._json(magic_gear(p.get('kind', ''), p.get('q', '')))
             elif route == ('GET', 'search'):
                 self._json(search(p.get('q', ''), p.get('cat', ''), int(p.get('limit', 60)), int(p.get('offset', 0))))
             elif route == ('GET', 'entries'):

@@ -17,6 +17,7 @@ const entryCache = new Map();
 
 export const api = {
   classes: () => req('GET', 'classes'),
+  magicGear: (kind, q = '') => req('GET', 'magic-gear?' + qs({ kind, q })),
   search: (q, cat = '', limit = 60, offset = 0) => req('GET', 'search?' + qs({ q, cat, limit, offset })),
   /** One compendium entry. The request is cached (not just the answer), so callers asking at the same time share one fetch. */
   entry(id) {

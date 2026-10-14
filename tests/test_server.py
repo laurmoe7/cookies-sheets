@@ -420,3 +420,20 @@ class EntriesBatch(unittest.TestCase):
         finally:
             srv.shutdown()
             srv.server_close()
+
+
+@NEEDS_DB
+class MagicGearPickers(unittest.TestCase):
+    def test_weapons_are_found_by_what_their_text_names(self):
+        names = [r['name'] for r in app.magic_gear('weapon')]
+        for n in ('Flame Tongue', 'Frost Brand', 'Holy Avenger'):
+            self.assertIn(n, names)
+        self.assertFalse([n for n in names if n.lower().startswith('rod ')], 'rods are not weapons')
+        self.assertEqual([r['name'] for r in app.magic_gear('weapon', 'flame tongue')], ['Flame Tongue'])
+
+    def test_armor_picker_lists_armor_and_shields_not_rings(self):
+        names = [r['name'] for r in app.magic_gear('armor')]
+        for n in ('Elven Chain', 'Mithral Shirt', 'Darkwood Shield', 'Armor Of Insults'):
+            self.assertIn(n, names)
+        self.assertNotIn('Ring of Protection +1', names)
+        self.assertTrue(all('html' not in r for r in app.magic_gear('armor')), 'the page text is not sent')
