@@ -1,6 +1,8 @@
 // Dice rolling in the notation of the Tad Discord bot ("roll 2d6+5", "roll adv d20+5", "roll 3xd20"), and its reply format.
 // Pure (no DOM): `rng` is a function returning a float in [0, 1), so tests can fix the dice.
 
+import { multiplyDice } from './weaponfx.js';
+
 export const MAX_REPEAT = 20, MAX_DICE = 100, MAX_SIDES = 1000;
 export const CRIT = '💥', FAIL = '💀';
 
@@ -137,6 +139,51 @@ export const MOD_PRESETS = [
  */
 export const presetsFor = (attack, spell = null) => MOD_PRESETS.filter(m => (attack || m.for !== 'attack')
   && (!spell || (m.spell !== false && (!spell.kind || !m.kind || m.kind === spell.kind))));
+
+/** Sneak attack dice from class levels: rogues start with 1d6 and gain one every odd level, ninjas start at 2nd. */
+export const sneakDice = (levels = {}) => Math.ceil((levels.Rogue || 0) / 2) + Math.floor((levels.Ninja || 0) / 2);
+
+/**
+ * What can add to or change a weapon's damage on the roll window: flat bonuses (`n`), extra dice (`dice`) and Vital Strike (`extraBase`: that many more
+ * copies of the weapon's own dice). Ones with the same `group` replace each other. Class based ones appear only for characters that have the class.
+ * Things that last or are always on (Power Attack, rage, bless, enchantments) are not here: they are buffs and weapon enchantments and apply by themselves.
+ */
+export function damagePresets(levels = {}, bab = 0) {
+  const out = [];
+  const sneak = sneakDice(levels);
+  if (sneak) out.push({ label: 'sneak attack', dice: sneak + 'd6', tip: 'The target is flat-footed, flanked or denied its Dex bonus. Extra dice are not multiplied on a critical hit.' });
+  if (levels.Paladin) out.push({ label: 'smite evil', n: levels.Paladin, tip: 'Against evil: your paladin level in extra damage (double against evil outsiders, dragons and undead)' });
+  if (levels.Antipaladin) out.push({ label: 'smite good', n: levels.Antipaladin, tip: 'Against good: your antipaladin level in extra damage' });
+  if (levels.Cavalier) out.push({ label: 'challenge', n: levels.Cavalier, tip: 'Against your challenged target: +1 damage per cavalier level' });
+  if (levels.Samurai) out.push({ label: 'challenge', n: levels.Samurai, tip: 'Against your challenged target: +1 damage per samurai level' });
+  for (const n of [2, 4, 6, 8]) out.push({ label: 'favored enemy', n, group: 'favored', tip: 'Against a favored enemy: +2, and +2 more for each time you have picked it' });
+  if (bab >= 6) out.push({ label: 'Vital Strike', extraBase: 1, group: 'vital', tip: 'Standard action attack: roll the weapon\u2019s dice twice' });
+  if (bab >= 11) out.push({ label: 'Improved Vital Strike', extraBase: 2, group: 'vital', tip: 'Roll the weapon\u2019s dice three times' });
+  if (bab >= 16) out.push({ label: 'Greater Vital Strike', extraBase: 3, group: 'vital', tip: 'Roll the weapon\u2019s dice four times' });
+  return out;
+}
+
+/** What someone typed in the damage box: "4", "-2", "2d6", "+1d8" -> {n} or {dice}; null when it is neither. */
+export function parseDamageMod(text) {
+  const t = String(text ?? '').trim().replace(/\s+/g, '');
+  if (/^[+-]?\d+$/.test(t)) return { n: parseInt(t, 10) };
+  const m = /^([+-]?)(\d*d\d+)$/i.exec(t);
+  return m ? { dice: (m[1] === '-' ? '-' : '') + m[2].toLowerCase() } : null;
+}
+
+/** The damage expression with the chosen modifiers added on the end ("1d8+5" with sneak attack 2d6 and smite 6 gives "1d8+5+2d6+6"). */
+export function addDamageMods(expr, mods, base = '') {
+  let out = String(expr);
+  for (const m of mods || []) {
+    if (m.dice) out += (/^-/.test(m.dice) ? '' : '+') + m.dice;
+    else if (m.extraBase) { const d = multiplyDice(base, m.extraBase); if (d) out += '+' + d; }
+    else if (m.n) out += (m.n > 0 ? '+' : '-') + Math.abs(m.n);
+  }
+  return out;
+}
+
+/** "(+2d6 sneak attack, +6 smite evil)" for the roll's label. */
+export const damageLabel = mods => '(' + mods.map(m => (m.dice ? (/^-/.test(m.dice) ? '' : '+') + m.dice : m.extraBase ? 'weapon dice \u00d7' + (m.extraBase + 1) : bonusText(m.n)) + ' ' + m.label).join(', ') + ')';
 
 const DIVISOR = { two: 2, three: 3, four: 4, five: 5 };
 const divisor = w => (w ? DIVISOR[w.toLowerCase()] ?? (+w || 1) : 1);

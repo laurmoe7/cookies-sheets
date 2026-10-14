@@ -7,7 +7,7 @@
 //   data-roll-weapon="2" data-roll-kind="attack|damage|full"   a weapon row
 // The roll bar (in the buff strip) holds Advantage / Disadvantage for the next d20 roll, the Modifier chip (situational + and -, such as
 // not being proficient or shooting past a range increment), the dice box, and the Discord switch.
-import { rollMessage, rollMany, bonusText, addMods, modsLabel, MOD_PRESETS, presetsFor, sendName, parseDice } from './dice.js';
+import { rollMessage, rollMany, bonusText, addMods, modsLabel, MOD_PRESETS, presetsFor, sendName, parseDice, damagePresets, parseDamageMod, addDamageMods, damageLabel } from './dice.js';
 import { spellInfo } from './spellinfo.js';
 import { state, changed } from './app.js';
 import { getPath, toast, esc, modal } from './ui.js';
@@ -132,8 +132,13 @@ function plan(el) {
     const i = +ds.rollWeapon, w = c.weapons[i], dw = d.weapons[i];
     if (!w || !dw) return null;
     const name = w.name || 'Weapon';
-    if (ds.rollKind === 'damage') return { expr: String(dw.damageText).replace(/\s/g, ''), label: `${name} damage`, parts: d.bd?.[`weapons.${i}.damage`] };
-    if (ds.rollKind === 'crit') return { expr: String(dw.critText).replace(/\s/g, ''), label: `${name} critical damage (${dw.crit})`, parts: d.bd?.[`weapons.${i}.damage`] };
+    if (ds.rollKind === 'damage' || ds.rollKind === 'crit') {
+      // the window can switch between a normal and a critical hit and add what only applies sometimes (sneak attack, smite...)
+      const normal = { expr: String(dw.damageText).replace(/\s/g, ''), label: `${name} damage` };
+      const crit = dw.critText ? { expr: String(dw.critText).replace(/\s/g, ''), label: `${name} critical damage (${dw.crit})` } : null;
+      const first = ds.rollKind === 'crit' && crit ? crit : normal;
+      return { ...first, parts: d.bd?.[`weapons.${i}.damage`], weaponDamage: { normal, crit, base: w.damage, startCrit: first === crit, presets: damagePresets(d.classLevels, d.bab) } };
+    }
     if (ds.rollKind === 'full') return { items: dw.attacks.map((n, k) => ({ expr: 'd20' + bonusText(n), label: `${name} attack ${k + 1}/${dw.attacks.length}${threat(dw)}` })), parts: d.bd?.[`weapons.${i}.attack`] };
     return { expr: 'd20' + bonusText(dw.attack), label: `${name} attack${threat(dw)}`, parts: d.bd?.[`weapons.${i}.attack`] };
   }
@@ -213,7 +218,21 @@ function rollWindow(p0, attack0, sp = null) {
   let pick = sp ? sp.start : 0;
   let diceVal = sp?.dice || '';
   let castOn = !!sp?.cast?.on;
+  const wd = !sp && p0.weaponDamage; // a weapon's damage roll: critical hit switch and the damage modifiers
+  let dmods = [], useCrit = !!wd?.startCrit;
+  const damageRoll = () => {
+    const base = useCrit && wd.crit ? wd.crit : wd.normal;
+    return { ...p0, expr: addDamageMods(base.expr, dmods, wd.base), label: base.label + (dmods.length ? ' ' + damageLabel(dmods) : '') };
+  };
+  const sameMod = (x, m) => x.label === m.label && x.n === m.n && x.dice === m.dice && x.extraBase === m.extraBase;
+  const damageBlock = () => {
+    const chip = (m, i) => '<button class="rchip ' + (dmods.some(x => sameMod(x, m)) ? 'on' : '') + '" data-dmg-preset="' + i + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(m.dice ? '+' + m.dice : m.extraBase ? '×' + (m.extraBase + 1) : bonusText(m.n)) + '</button>';
+    return (wd.crit ? '<div class="small mod-head plus">Hit</div><div class="roll-bar" style="margin:4px 0 8px"><button class="rchip ' + (useCrit ? '' : 'on') + '" data-dmg-crit="0">Normal hit</button><button class="rchip ' + (useCrit ? 'on' : '') + '" data-dmg-crit="1" title="Rolls the multiplied damage; extra dice from enchantments are added once">Critical hit</button></div>' : '')
+      + (wd.presets.length ? '<div class="small mod-head plus">Extra damage</div><div class="roll-bar" style="margin:4px 0 8px">' + wd.presets.map(chip).join(' ') + '</div>' : '')
+      + (dmods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(dmods.map(m => (m.dice ? '+' + m.dice : m.extraBase ? 'weapon dice ×' + (m.extraBase + 1) : bonusText(m.n)) + ' ' + m.label).join(', ')) + '</div>' : '');
+  };
   const cur = () => {
+    if (wd) return { p: damageRoll(), attack: false };
     if (!sp) return { p: p0, attack: attack0 };
     const ch = sp.choices[pick];
     return ch.dice ? { p: { expr: diceVal.trim() || '0', label: ch.label2 }, attack: false, ch } : { p: ch.p, attack: ch.attack, ch };
@@ -236,11 +255,11 @@ function rollWindow(p0, attack0, sp = null) {
             return mine.length ? '<div class="sp-group-row"><span class="sp-group-lab">' + g + '</span>' + mine.map(([c, i]) => '<button class="rchip ' + (i === pick ? 'on' : '') + '" data-sp-pick="' + i + '" title="' + esc(c.tip || '') + '">' + esc(c.label) + '</button>').join(' ') + '</div>' : '';
           }).join('') + '</div>' +
           (ch.dice ? '<div class="row" style="margin:8px 0"><input id="spell-dice" class="w12" value="' + esc(diceVal) + '" placeholder="e.g. 5d6" autocomplete="off" aria-label="Spell dice"></div>' : '') : '') +
-        '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' + buffNote(p) +
+        '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' + buffNote(p) + (wd ? damageBlock() : '') +
         (d20 ? '<div class="roll-bar" style="margin:8px 0"><button class="rchip ' + (mode === 'adv' ? 'on' : '') + '" data-win-mode="adv">Advantage</button><button class="rchip ' + (mode === 'dis' ? 'on' : '') + '" data-win-mode="dis">Disadvantage</button></div>' : '') +
         (presets.length ? presetGroups(presets) : '') +
         (d20 ? '<p class="small muted" style="margin:0">Charging, fighting defensively, shaken, power attack and other conditions that last or change your AC are on the Buffs &amp; Conditions tab and apply by themselves.</p>' : '') +
-        '<div class="row" style="margin:8px 0"><input id="mod-n" class="w3" type="number" placeholder="±" aria-label="Modifier"><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>' +
+        '<div class="row" style="margin:8px 0"><input id="mod-n" class="' + (wd ? 'w5' : 'w3') + '" type="' + (wd ? 'text' : 'number') + '" placeholder="' + (wd ? '2d6 or ±' : '±') + '" aria-label="Modifier" ' + (wd ? 'title="A number, or dice such as 2d6 for precision or other extra damage"' : '') + '><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>' +
         (d20 && mods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b></div>' : '') +
         (d20 ? '<label class="small"><input type="checkbox" id="mod-keep" ' + (keepMods ? 'checked' : '') + '> Keep these modifiers for my next rolls</label>' : '') +
         (sp?.cast ? '<label class="small" style="display:block;margin:6px 0" title="Rolling counts as casting the spell. Untick it if you already cast it or are only checking a number."><input type="checkbox" id="sp-cast" ' + (castOn ? 'checked' : '') + (sp.cast.left <= 0 ? ' disabled' : '') + '> ' + esc(sp.cast.label) + (sp.cast.left <= 0 ? ' (none left)' : sp.cast.recent ? ' (counted already for the roll you just made)' : sp.cast.left === Infinity ? '' : ' (' + sp.cast.left + ' left)') + '</label>' : '') +
@@ -252,6 +271,11 @@ function rollWindow(p0, attack0, sp = null) {
     };
     draw();
     const add = () => {
+      if (wd) {
+        const m = parseDamageMod(body.querySelector('#mod-n').value);
+        if (m) dmods.push({ ...m, label: body.querySelector('#mod-label').value.trim() || 'extra' });
+        return;
+      }
       const n = Math.trunc(Number(body.querySelector('#mod-n').value));
       if (n) mods.push({ n, label: body.querySelector('#mod-label').value.trim() || 'modifier' });
     };
@@ -271,6 +295,14 @@ function rollWindow(p0, attack0, sp = null) {
       const pr = e.target.closest('[data-mod-preset]'), md = e.target.closest('[data-win-mode]'), sk = e.target.closest('[data-sp-pick]');
       if (e.target.closest('[data-win-go]')) return go();
       if (sk) { pick = +sk.dataset.spPick; return draw(); }
+      const dc = e.target.closest('[data-dmg-crit]'), dp = e.target.closest('[data-dmg-preset]');
+      if (dc) { useCrit = dc.dataset.dmgCrit === '1'; return draw(); }
+      if (dp) {
+        const m = wd.presets[+dp.dataset.dmgPreset], had = dmods.some(x => x.label === m.label && x.n === m.n && x.dice === m.dice && x.extraBase === m.extraBase);
+        dmods = dmods.filter(x => !(x.label === m.label && x.group === m.group) && !(m.group && x.group === m.group));
+        if (!had) dmods.push({ ...m });
+        return draw();
+      }
       if (e.target.closest('#win-discord')) {
         if (!options().webhook) return showOptions();
         setOption('rollSend', !options().rollSend);

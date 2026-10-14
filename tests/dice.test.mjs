@@ -140,3 +140,48 @@ test('spell rolls get only the modifiers that apply to spells', async () => {
   assert.ok(!names(presetsFor(false, { kind: null })).includes('dazzled'), 'a concentration check is not an attack');
   assert.ok(names(presetsFor(false, { kind: null })).includes('aid another'));
 });
+
+test('sneak attack dice: rogue 1d6 at 1st and one more every odd level, ninja from 2nd and every even level, and they add up', async () => {
+  const { sneakDice } = await import('../web/js/dice.js');
+  assert.equal(sneakDice({ Rogue: 1 }), 1);
+  assert.equal(sneakDice({ Rogue: 5 }), 3, 'ceil(5/2)');
+  assert.equal(sneakDice({ Rogue: 6 }), 3);
+  assert.equal(sneakDice({ Ninja: 1 }), 0);
+  assert.equal(sneakDice({ Ninja: 5 }), 2, 'floor(5/2)');
+  assert.equal(sneakDice({ Rogue: 3, Ninja: 4 }), 2 + 2, 'ceil(3/2) + floor(4/2)');
+  assert.equal(sneakDice({ Fighter: 9 }), 0);
+});
+
+test('the damage window offers what the character can use: class abilities only with the class, Vital Strike by BAB', async () => {
+  const { damagePresets } = await import('../web/js/dice.js');
+  const labels = (lv, bab) => damagePresets(lv, bab).map(p => p.label + (p.dice ? ' ' + p.dice : p.n ? ' ' + p.n : ''));
+  assert.deepEqual(labels({ Fighter: 4 }, 4).filter(l => !/favored/.test(l)), [], 'a fighter has none of these yet');
+  assert.ok(labels({ Rogue: 5 }, 3).includes('sneak attack 3d6'));
+  assert.ok(labels({ Paladin: 7 }, 7).includes('smite evil 7'), 'paladin level in damage');
+  assert.ok(labels({ Cavalier: 4 }, 4).includes('challenge 4'));
+  const vital = bab => damagePresets({}, bab).filter(p => p.extraBase).map(p => p.extraBase);
+  assert.deepEqual([vital(5), vital(6), vital(11), vital(16)], [[], [1], [1, 2], [1, 2, 3]]);
+  assert.equal(damagePresets({}, 0).filter(p => p.group === 'favored').length, 4, '+2, +4, +6, +8');
+});
+
+test('typed damage modifiers: a number or dice, nothing else', async () => {
+  const { parseDamageMod } = await import('../web/js/dice.js');
+  assert.deepEqual(parseDamageMod('4'), { n: 4 });
+  assert.deepEqual(parseDamageMod('-2'), { n: -2 });
+  assert.deepEqual(parseDamageMod(' 2d6 '), { dice: '2d6' });
+  assert.deepEqual(parseDamageMod('+1D8'), { dice: '1d8' });
+  assert.deepEqual(parseDamageMod('-1d4'), { dice: '-1d4' });
+  assert.equal(parseDamageMod('lots'), null);
+  assert.equal(parseDamageMod(''), null);
+});
+
+test('damage modifiers go on the end of the expression; Vital Strike repeats the weapon dice; the result still rolls', async () => {
+  const { addDamageMods, damageLabel, parseDice } = await import('../web/js/dice.js');
+  const mods = [{ label: 'sneak attack', dice: '2d6' }, { label: 'smite evil', n: 6 }, { label: 'weakened', n: -1 }];
+  assert.equal(addDamageMods('1d8+5', mods, '1d8'), '1d8+5+2d6+6-1');
+  assert.equal(addDamageMods('1d8+5', [{ label: 'Vital Strike', extraBase: 1 }], '1d8'), '1d8+5+1d8');
+  assert.equal(addDamageMods('2d6+4', [{ label: 'Improved Vital Strike', extraBase: 2 }], '2d6'), '2d6+4+4d6', 'two more copies of 2d6');
+  assert.equal(addDamageMods('1d8+5', [], '1d8'), '1d8+5');
+  assert.equal(damageLabel(mods), '(+2d6 sneak attack, +6 smite evil, -1 weakened)');
+  assert.doesNotThrow(() => parseDice(addDamageMods('1d8+5+1d6', mods, '1d8')));
+});
