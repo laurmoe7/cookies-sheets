@@ -182,6 +182,10 @@ html[data-theme] .btn.primary.discord-btn:hover, .btn.discord-btn:hover { backgr
 .mod-head.plus { color: var(--good); }
 .mod-head.minus { color: var(--bad); }
 .rw-expr { margin: 0; font-size: 1.05em; }
+.rw-buffs { margin: 8px 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.rw-buff { border: 1px solid var(--line); border-radius: 99px; padding: 1px 10px; font-size: 12px; background: var(--accent-soft); }
+.rw-buff.pos { border-color: #4f7a2e; }
+.rw-buff.neg { border-color: #a8372c; }
 .rchip.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
 .buff-strip { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 12px; }
 .saves td, .saves th { text-align: center; }
@@ -653,9 +657,6 @@ html[data-motion="off"] .fx-spark { display: none; }
 .sp-custom { display: grid; gap: 6px; padding-bottom: 8px; flex: 1 1 100%; min-width: 0; }
 .sp-custom input, .sp-custom textarea { width: 100%; box-sizing: border-box; font-size: 1.05em; padding: 9px 12px; }
 .sp-custom textarea { min-height: 280px; resize: vertical; line-height: 1.45; }
-/* the Roll button in a spell's side panel has a red outline, like Delete spell */
-#drawer [data-spell-roll] { border: 1.5px solid #b3352c; color: #a82a22; background: transparent; }
-#drawer [data-spell-roll]:hover { background: rgba(179, 53, 44, .15); border-color: #c43b31; color: #8f1f18; }
 /* spell slots as circles: filled = available, ringed = used, dashed = not filled */
 .slot-pips { display: inline-flex; flex-wrap: wrap; gap: 3px; align-items: center; vertical-align: middle; }
 .spip { display: block; width: 11px; height: 11px; border-radius: 50%; box-sizing: border-box; border: 1.5px solid var(--accent); }
@@ -672,7 +673,8 @@ html[data-motion="off"] .fx-spark { display: none; }
 
 /* The tab bar stays at the top of the page while the tab scrolls under it. */
 .page > .tabs { position: sticky; top: 0; z-index: 20; background: var(--bg); }
-/* The Summon button in the spell panel stands out from the other buttons. */
-.sp-actions .btn[data-summon] { background: linear-gradient(180deg, #e6bb58, #b8862a); border-color: #7a560f; color: #2a1904; font-style: normal; font-weight: 700;
+/* Gold buttons: Summon and every Roll button (with its dice) stand out from the plain ones. The html[data-theme] copies beat the themes' own .btn rules. */
+.sp-actions .btn[data-summon], .btn[data-spell-roll], .btn[data-roll], .rchip.go, html[data-theme] .sp-actions .btn[data-summon], html[data-theme] .btn[data-spell-roll], html[data-theme] .btn[data-roll], html[data-theme] .rchip.go { background: linear-gradient(180deg, #e6bb58, #b8862a); border-color: #7a560f; color: #2a1904; font-style: normal; font-weight: 700;
   box-shadow: 0 0 0 2px rgba(230,187,88,.38), 0 2px 8px rgba(0,0,0,.4); text-shadow: 0 1px 0 rgba(255,240,200,.45); }
-.sp-actions .btn[data-summon]:hover { background: linear-gradient(180deg, #f0c968, #c4902e); border-color: #7a560f; }
+.sp-actions .btn[data-summon]:hover, .btn[data-spell-roll]:hover, .btn[data-roll]:hover, .rchip.go:hover, html[data-theme] .sp-actions .btn[data-summon]:hover, html[data-theme] .btn[data-spell-roll]:hover, html[data-theme] .btn[data-roll]:hover, html[data-theme] .rchip.go:hover { background: linear-gradient(180deg, #f0c968, #c4902e); border-color: #7a560f; color: #2a1904; }
+.rchip.go { padding: 3px 14px; }

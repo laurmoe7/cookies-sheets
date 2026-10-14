@@ -6,7 +6,9 @@ export const CHANGELOG = [
     version: 'Earlier saves', date: '2026-10-14',
     items: [
       'Rolling a spell now looks like rolling a weapon: pick what to roll (to hit, concentration, damage), then Advantage, situational modifiers that fit spells, your own modifier and Roll.',
-      'The sheet tabs now stay at the top while you scroll, and are in a new order: Overview, Buffs & Conditions, Skills, Gear, Feats & Abilities, Spells.',
+      'Roll windows list the buffs and conditions that are part of the number, by name, such as "Heroism (morale) +2".',
+      'Roll buttons and the Summon button are gold, with their emoji.',
+      'The sheet tabs now stay at the top while you scroll, and are in a new order: Overview, Buffs & Conditions, Skills, Gear, Spells, Companions, Feats & Abilities.',
       'The Summon… button in a spell’s panel is gold, so it is easy to find.',
       'Rolling a spell counts as casting it: a successful roll (or one sent to Discord) uses a slot or prepared copy, once per casting, and you can untick it in the roll window.',
       'The slots-left − and + now sit beside the slot circles in each spell level heading, no longer in the spell side panel.',

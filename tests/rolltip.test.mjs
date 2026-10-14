@@ -17,3 +17,13 @@ test('a part list that does not cover the total shows the rest as other bonuses;
   assert.equal(tipText('Perception', 7, [{ label: 'Ranks', value: 4 }, { label: 'Wis modifier', value: 1 }], 'Click to roll d20+7'), 'Perception +7\n+4  Ranks\n+1  Wis modifier\n+2  Other bonuses\nClick to roll d20+7');
   assert.equal(tipText('Initiative', 3, undefined, 'Click to roll d20+3'), 'Initiative +3\nClick to roll d20+3');
 });
+
+test('the buffs that count in a number are marked, so the roll window can name them', async () => {
+  const { stackParts } = await import('../web/js/calc.js');
+  const parts = stackParts([
+    { source: 'Bless', value: 1, type: 'morale' }, { source: 'Heroism', value: 2, type: 'morale' },
+    { source: 'Sickened', value: -2, type: 'untyped' }, { source: 'Dodge A', value: 1, type: 'dodge' }, { source: 'Dodge B', value: 1, type: 'dodge' },
+  ]);
+  assert.deepEqual(parts.map(p => [p.label, p.value, p.buff]), [['Heroism (morale)', 2, true], ['Sickened', -2, true], ['Dodge A (dodge)', 1, true], ['Dodge B (dodge)', 1, true]],
+    'only the best morale bonus counts (Heroism, not Bless); dodge bonuses stack; every part is marked as a buff');
+});

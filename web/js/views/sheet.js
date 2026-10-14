@@ -34,8 +34,8 @@ const ICONS = {
 const icon = k => `<svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
 
 const TABS = [
-  ['overview', 'Overview'], ['buffs', 'Buffs & Conditions'], ['skills', 'Skills'], ['gear', 'Gear'], ['feats', 'Feats & Abilities'],
-  ['spells', 'Spells'], ['companions', 'Companions'], ['bio', 'Biography'], ['notes', 'Notes'],
+  ['overview', 'Overview'], ['buffs', 'Buffs & Conditions'], ['skills', 'Skills'], ['gear', 'Gear'], ['spells', 'Spells'],
+  ['companions', 'Companions'], ['feats', 'Feats & Abilities'], ['bio', 'Biography'], ['notes', 'Notes'],
 ];
 
 /** Read-first text bound to a character path: click to read in full, double-click to edit. */
@@ -667,7 +667,7 @@ function renderSpellActions() {
   sd.el.innerHTML = `<div class="sp-actions">
       <div class="sp-group">
         ${s.id ? `<span data-spell-slot="${sd.i}" data-spell-id="${s.id}"></span>` : `<button class="btn" data-spell-roll="${sd.i}" title="Roll an attack, concentration or the damage for this spell">🎲 Roll</button>`}
-        ${summonSpell(s.name) ? `<button class="btn" data-summon="${esc(s.name)}" data-summon-cls="${esc(sd.cls)}" title="Choose a creature; it is added to Companions → Summons">Summon…</button>` : ''}
+        ${summonSpell(s.name) ? `<button class="btn" data-summon="${esc(s.name)}" data-summon-cls="${esc(sd.cls)}" title="Choose a creature; it is added to Companions → Summons">✨ Summon…</button>` : ''}
       </div>
       ${prepared ? `<div class="sp-group" title="Prepared and not cast yet. Casting uses one; Rest gives them back.">
         <span class="sp-group-label">Prepared</span>

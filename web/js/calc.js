@@ -66,10 +66,10 @@ export function stackParts(list) {
   const out = [];
   for (const [type, items] of Object.entries(groups)) {
     const label = m => (m.source || 'Bonus') + (type === 'untyped' ? '' : ' (' + type + ')');
-    if (STACKING_TYPES.has(type)) { for (const m of items) out.push({ label: label(m), value: m.value }); continue; }
+    if (STACKING_TYPES.has(type)) { for (const m of items) out.push({ label: label(m), value: m.value, buff: true }); continue; }
     const pos = items.filter(m => m.value > 0);
-    if (pos.length) { const best = pos.reduce((a, b) => (b.value > a.value ? b : a)); out.push({ label: label(best), value: best.value }); }
-    for (const m of items.filter(m => m.value < 0)) out.push({ label: label(m), value: m.value });
+    if (pos.length) { const best = pos.reduce((a, b) => (b.value > a.value ? b : a)); out.push({ label: label(best), value: best.value, buff: true }); }
+    for (const m of items.filter(m => m.value < 0)) out.push({ label: label(m), value: m.value, buff: true });
   }
   return out;
 }

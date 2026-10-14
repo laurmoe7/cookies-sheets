@@ -63,6 +63,15 @@ const presetGroups = list => [['Bonuses', 'plus', list.filter(m => m.n > 0)], ['
 
 const afterRoll = () => { mode = ''; if (!keepMods) mods = []; syncBar(); };
 
+/** The buffs and conditions that change this roll, by name, so it is clear what the number includes. {label, value, buff} parts come from calc.js. */
+function buffNote(p) {
+  const buffs = (p.parts || []).filter(x => x.buff && x.value);
+  const any = (state.char?.modifiers || []).some(m => m.active);
+  if (!buffs.length) return any ? '<p class="small muted rw-buffs">No active buff or condition changes this roll.</p>' : '';
+  return '<div class="rw-buffs"><span class="small">Active buffs in this roll:</span> ' +
+    buffs.map(b => '<span class="rw-buff ' + (b.value < 0 ? 'neg' : 'pos') + '">' + esc(b.label) + ' <b>' + esc(bonusText(b.value)) + '</b></span>').join(' ') + '</div>';
+}
+
 /** The Modifier window: preset situational modifiers (toggle them), your own number, and whether they stay after the next roll. */
 function modsWindow() {
   modal('Roll modifier', (body, close) => {
@@ -112,13 +121,13 @@ function plan(el) {
     const i = +ds.rollWeapon, w = c.weapons[i], dw = d.weapons[i];
     if (!w || !dw) return null;
     const name = w.name || 'Weapon';
-    if (ds.rollKind === 'damage') return { expr: String(dw.damageText).replace(/\s/g, ''), label: `${name} damage` };
-    if (ds.rollKind === 'full') return { items: dw.attacks.map((n, k) => ({ expr: 'd20' + bonusText(n), label: `${name} attack ${k + 1}/${dw.attacks.length}` })) };
-    return { expr: 'd20' + bonusText(dw.attack), label: `${name} attack` };
+    if (ds.rollKind === 'damage') return { expr: String(dw.damageText).replace(/\s/g, ''), label: `${name} damage`, parts: d.bd?.[`weapons.${i}.damage`] };
+    if (ds.rollKind === 'full') return { items: dw.attacks.map((n, k) => ({ expr: 'd20' + bonusText(n), label: `${name} attack ${k + 1}/${dw.attacks.length}` })), parts: d.bd?.[`weapons.${i}.attack`] };
+    return { expr: 'd20' + bonusText(dw.attack), label: `${name} attack`, parts: d.bd?.[`weapons.${i}.attack`] };
   }
   const v = getPath(d, ds.roll);
   if (typeof v !== 'number') return null;
-  return { expr: 'd20' + bonusText(v), label: ds.rollLabel || '' };
+  return { expr: 'd20' + bonusText(v), label: ds.rollLabel || '', parts: d.bd?.[ds.roll] };
 }
 
 /** The hover text for a roll button, built from the current numbers (so it is right after a buff or a misc bonus changes). */
@@ -211,7 +220,7 @@ function rollWindow(p0, attack0, sp = null) {
       body.innerHTML = (sp ? '<p class="small muted">' + esc(sp.facts) + '.</p><div class="roll-bar" style="margin:8px 0">' +
           sp.choices.map((c, i) => '<button class="rchip ' + (i === pick ? 'on' : '') + '" data-sp-pick="' + i + '" title="' + esc(c.tip || '') + '">' + esc(c.label) + '</button>').join(' ') + '</div>' +
           (ch.dice ? '<div class="row" style="margin:8px 0"><input id="spell-dice" class="w12" value="' + esc(diceVal) + '" placeholder="e.g. 5d6" autocomplete="off" aria-label="Spell dice"></div>' : '') : '') +
-        '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' +
+        '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' + buffNote(p) +
         (d20 ? '<div class="roll-bar" style="margin:8px 0"><button class="rchip ' + (mode === 'adv' ? 'on' : '') + '" data-win-mode="adv">Advantage</button><button class="rchip ' + (mode === 'dis' ? 'on' : '') + '" data-win-mode="dis">Disadvantage</button></div>' : '') +
         (presets.length ? presetGroups(presets) : '') +
         (d20 ? '<p class="small muted" style="margin:0">Charging, fighting defensively, shaken, power attack and other conditions that last or change your AC are on the Buffs &amp; Conditions tab and apply by themselves.</p>' : '') +
@@ -374,13 +383,13 @@ async function spellWindow(btn) {
   const info = spellInfo(entry, sc.cl);
   const known = !!(entry && sp.id); // custom spells have no data, so offer every chip
   const dc = sc.dcs[sp.level];
-  const chip = (label, n, kind) => ({ label: label + ' ' + (bonusText(n) || '+0'), n, tip: 'Roll d20 ' + kind, name: name + ' ' + kind });
+  const chip = (label, n, kind, path) => ({ label: label + ' ' + (bonusText(n) || '+0'), n, tip: 'Roll d20 ' + kind, name: name + ' ' + kind, parts: d.bd?.[path] });
   const chips = [
-    ...(!known || info.attack === 'ranged' ? [chip('To hit: ranged ' + (info.touch === false ? 'attack' : 'touch'), d.ranged, 'ranged ' + (info.touch === false ? 'attack' : 'touch attack'))] : []),
-    ...(!known || info.attack === 'melee' ? [chip('To hit: melee ' + (info.touch === false ? 'attack' : 'touch'), d.melee, 'melee ' + (info.touch === false ? 'attack' : 'touch attack'))] : []),
-    chip('Concentration', sc.concentration, 'concentration check'),
-    chip('Cast defensively (DC ' + (15 + 2 * (Number(sp.level) || 0)) + ')', sc.concentration, 'cast defensively, DC ' + (15 + 2 * (Number(sp.level) || 0))),
-    ...(!known || info.sr ? [chip('Caster level check', sc.cl, 'caster level check' + (info.sr ? ' to beat spell resistance' : ''))] : []),
+    ...(!known || info.attack === 'ranged' ? [chip('To hit: ranged ' + (info.touch === false ? 'attack' : 'touch'), d.ranged, 'ranged ' + (info.touch === false ? 'attack' : 'touch attack'), 'ranged')] : []),
+    ...(!known || info.attack === 'melee' ? [chip('To hit: melee ' + (info.touch === false ? 'attack' : 'touch'), d.melee, 'melee ' + (info.touch === false ? 'attack' : 'touch attack'), 'melee')] : []),
+    chip('Concentration', sc.concentration, 'concentration check', `spellcasting.${cls}.concentration`),
+    chip('Cast defensively (DC ' + (15 + 2 * (Number(sp.level) || 0)) + ')', sc.concentration, 'cast defensively, DC ' + (15 + 2 * (Number(sp.level) || 0)), `spellcasting.${cls}.concentration`),
+    ...(!known || info.sr ? [chip('Caster level check', sc.cl, 'caster level check' + (info.sr ? ' to beat spell resistance' : ''), `spellcasting.${cls}.cl`)] : []),
   ];
   const facts = [`${cls} caster level ${sc.cl}`,
     info.save ? `${info.save.label}${dc != null && info.save.type ? `, DC ${dc}` : ''}` : known ? 'no saving throw' : (dc != null ? `save DC ${dc}` : ''),
@@ -389,7 +398,7 @@ async function spellWindow(btn) {
   const kindOf = t => (t.includes('ranged') ? 'ranged' : t.includes('melee') ? 'melee' : null);
   const choices = [
     ...chips.map(ch => ({ label: ch.label, tip: ch.tip, kind: kindOf(ch.tip), attack: /touch attack|ranged attack|melee attack/.test(ch.tip),
-      p: { expr: 'd20' + bonusText(ch.n), label: ch.name } })),
+      p: { expr: 'd20' + bonusText(ch.n), label: ch.name, parts: ch.parts } })),
     { label: 'Roll ' + (what || 'dice'), dice: true, label2: what ? `${name} ${what}` : name, tip: 'Roll the dice of the spell (edit them first if the guess is wrong)' },
   ];
   const first = choices.findIndex(ch => ch.attack);
