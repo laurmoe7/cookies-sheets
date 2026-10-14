@@ -729,7 +729,7 @@ function renderItemActions() {
     <label><span>Qty</span>${inp(p('qty'), { type: 'num', cls: 'w3', rerender: true })}</label>
     <label><span>Weight (each)</span>${inp(p('weight'), { type: 'num', cls: 'w3' })}</label>
     <label><span>Value</span>${inp(p('value'), { cls: 'w6' })}</label>
-    <div class="wide item-fx"><span class="small muted">Bonuses</span>
+    <div class="wide item-fx">
       <div>${fx.length ? esc(effectsText(fx)) : '<span class="muted">none</span>'}${fx.length && !g.slot ? ' <span class="small bad">not worn yet, so they do not count</span>' : ''}</div>
       <div class="row" style="gap:6px;margin-top:4px"><button class="btn small" data-item-fx>✦ ${fx.length ? 'Edit' : 'Add'} bonuses</button>${!fx.length && sug.length ? `<button class="btn small" data-item-fx-auto title="Fill in what this kind of item normally gives">Use the usual: ${esc(effectsText(sug))}</button>` : ''}</div></div>
     ${g.id ? '' : `<label class="wide"><span>Your notes</span><textarea class="item-notes-big" data-bind="${p('notes')}" rows="10" placeholder="Describe the item, what it does, where you got it...">${esc(g.notes || '')}</textarea></label>`}
