@@ -171,8 +171,8 @@ html[data-theme="tome"] #nav button.active { background: #8a3326; color: #f6ead0
 html[data-theme="tome"] #topbar { background: var(--leather), #2c1f14; border-bottom: 2px solid #0e0905; }
 
 /* parchment pages: light in the middle, burnt toward the edges, each with its own crumples */
-html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-color: var(--panel); border: 1px solid #1f160c; box-shadow: var(--shadow); }
-html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer {
+html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer, html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-detail { background-color: var(--panel); border: 1px solid #1f160c; box-shadow: var(--shadow); }
+html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer, html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-detail {
   --ink: #261a0b; --muted: #3f2f18; --accent: #7a2415; --accent-soft: #c9b48a; --gold: #6b4f10; --good: #3b5714; --warn: #80520a; --bad: #8a2616;
   --line: #5a4a2c; --panel: #9a8b68; --panel-2: #8d7f5d; --input: #3a2c19; color: var(--ink); }
 /* the inner frame line is a pseudo-element: as an outline it made every hover or scroll step repaint the whole card (3x the raster work) */
@@ -180,7 +180,7 @@ html[data-theme="tome"] .card { position: relative; padding: 17px 19px; }
 html[data-theme="tome"] .card::before { content: ""; position: absolute; inset: 4px; border: 1px solid #2c1f10; pointer-events: none; }
 html[data-theme="tome"] .card .card::before { display: none; }
 @PAPERS@
-html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-image: @SHEET@; }
+html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer, html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-detail { background-image: @SHEET@; }
 html[data-theme="tome"] .card .card { clip-path: none; background-image: none; box-shadow: none; background-color: #0000001f; }
 html[data-theme="tome"] .stat, html[data-theme="tome"] .summon-card, html[data-theme="tome"] .mod { background-color: #00000026; border-color: #5a4a30; }
 html[data-theme="tome"] input, html[data-theme="tome"] select, html[data-theme="tome"] textarea { background: var(--input); border-color: #5a4a30; color: #f0e3c0; font-family: inherit; }
