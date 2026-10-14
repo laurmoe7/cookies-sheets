@@ -6,6 +6,7 @@ export const CHANGELOG = [
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
       'The Compendium’s result list and entry text sit on the same burnt-edge parchment as the other pages, with a frame line.',
+      'The cards on the Characters page are parchment too, each sheet a little different.',
       'The torn edges on some pages are redrawn to look like real tears: uneven bites and flaps instead of tiny saw teeth.',
       'Weapons and Armor & Shields each have a ＋ Magic item button: pick one from the compendium (Flame Tongue, Elven Chain, Armor of the Shadow Lord...) and its base weapon or armor, enhancement, special abilities and material are filled in from the description. Check the numbers: they are read from the text.',
       'The picture in the middle of the paper doll has the same tools as the portrait on the Overview: hover it to change the picture, recenter or resize it, or remove it. Until you give it a picture of its own it shows your portrait.',

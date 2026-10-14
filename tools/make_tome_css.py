@@ -214,6 +214,9 @@ def paper_rules():
                 layers.append(f"{burn(corner, seed, size)} no-repeat {pos} / {size}px {size}px")
         base = f"radial-gradient(ellipse at {p['at']}, {EDGE}), var(--grain) 0 0 / 220px 220px, {paper(p['seed'], p['az'], p['freq'], p['scale'])}"
         sel += {1: ', html[data-theme="tome"] .comp-list', 4: ', html[data-theme="tome"] .comp-pane'}.get(i, '')  # the Compendium's two panes are pages of their own
+        # the Characters page's cards are small, so they get the paper and the burnt edge but no big burn marks or tears
+        csel = f'html[data-theme="tome"] .char-card:nth-of-type({n}n+{i})' if i < n else f'html[data-theme="tome"] .char-card:nth-of-type({n}n)'
+        out.append(f"{csel} {{ background: {base}; box-shadow: {p['burn'].replace('44px', '22px').replace('40px', '20px')}, var(--shadow); }}")
         out.append(f"{sel} {{ background: {', '.join(layers + [base])}; {extras}box-shadow: {p['burn']}, var(--shadow); }}")
     return '\n'.join(out)
 
@@ -264,8 +267,8 @@ html[data-theme="tome"] #nav button.active { background: #8a3326; color: #f6ead0
 html[data-theme="tome"] #topbar { background: var(--leather), #2c1f14; border-bottom: 2px solid #0e0905; }
 
 /* parchment pages: light in the middle, burnt toward the edges, each with its own crumples */
-html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer, html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-pane { background-color: var(--panel); border: 1px solid #1f160c; box-shadow: var(--shadow); }
-html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer, html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-pane {
+html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer, html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-pane, html[data-theme="tome"] .char-card { background-color: var(--panel); border: 1px solid #1f160c; box-shadow: var(--shadow); }
+html[data-theme="tome"] .card, html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer, html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-pane, html[data-theme="tome"] .char-card {
   --ink: #261a0b; --muted: #3f2f18; --accent: #7a2415; --accent-soft: #c9b48a; --gold: #6b4f10; --good: #3b5714; --warn: #80520a; --bad: #8a2616;
   --line: #5a4a2c; --panel: #9a8b68; --panel-2: #8d7f5d; --input: #3a2c19; color: var(--ink); }
 /* the inner frame line is a pseudo-element: as an outline it made every hover or scroll step repaint the whole card (3x the raster work) */
@@ -275,6 +278,9 @@ html[data-theme="tome"] .card .card::before { display: none; }
 html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-pane { position: relative; }
 html[data-theme="tome"] .comp-list::before, html[data-theme="tome"] .comp-pane::before { content: ""; position: absolute; inset: 4px; border: 1px solid #2c1f10; pointer-events: none; z-index: 1; }
 @PAPERS@
+html[data-theme="tome"] .char-card { clip-path: none; position: relative; }
+html[data-theme="tome"] .char-card h3 { color: var(--ink); }
+html[data-theme="tome"] .char-card:hover, html[data-theme="tome"] .char-card.current { border-color: #7a2415; }
 html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-image: @SHEET@; }
 html[data-theme="tome"] .card .card { clip-path: none; background-image: none; box-shadow: none; background-color: #0000001f; }
 html[data-theme="tome"] .stat, html[data-theme="tome"] .summon-card, html[data-theme="tome"] .mod { background-color: #00000026; border-color: #5a4a30; }
