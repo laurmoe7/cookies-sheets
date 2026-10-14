@@ -102,7 +102,7 @@ export const modsLabel = mods => '(' + mods.map(m => bonusText(m.n) + ' ' + m.la
 
 /**
  * Situational, one-roll modifiers offered in the roll window (flanking, prone, dazzled and the like). Things that last or change your AC or damage
- * (charging, fighting defensively, shaken, sickened, power attack...) are presets on the Buffs & Conditions tab instead and apply by themselves.
+ * (fighting defensively, shaken, sickened, power attack...) are presets on the Buffs & Conditions tab instead and apply by themselves.
  * Range increments are one group: only one applies. "for: 'attack'" ones are only offered on attack rolls.
  */
 export const MOD_PRESETS = [
@@ -111,6 +111,7 @@ export const MOD_PRESETS = [
   { label: '3rd range increment', spell: false, n: -4, group: 'range', for: 'attack' },
   { label: '4th range increment', spell: false, n: -6, group: 'range', for: 'attack' },
   { label: '5th range increment', spell: false, n: -8, group: 'range', for: 'attack' },
+  { label: 'charging', kind: 'melee', n: 2, for: 'attack', tip: 'The attack at the end of a charge: +2 (your -2 AC for the charge is on the Buffs & Conditions tab)' },
   { label: 'flanking', kind: 'melee', n: 2, for: 'attack', tip: 'You and an ally threaten the target from opposite sides: +2 to melee attacks' },
   { label: 'you are prone', kind: 'melee', n: -4, for: 'attack', tip: 'Making a melee attack while prone: -4' },
   { label: 'dazzled', n: -1, for: 'attack', tip: '-1 on attacks (and sight-based Perception)' },

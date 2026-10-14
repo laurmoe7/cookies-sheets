@@ -30,6 +30,12 @@ const discordLabel = () => {
   return !o.webhook ? 'Set up Discord' : o.rollSend ? 'Sending to Discord' : 'Local only';
 };
 
+/** The classes of the Discord switch, the same in the roll bar and in the roll window: blue while sending, plain "Local only" (red on hover) when off. */
+const discordClass = () => {
+  const o = options();
+  return 'rchip dchip ' + (o.webhook && o.rollSend ? 'on' : o.webhook ? 'local' : '');
+};
+
 /** The roll bar, drawn into the sheet's buff strip. */
 export function rollBar() {
   const o = options();
@@ -38,7 +44,7 @@ export function rollBar() {
     <button class="rchip ${mods.length || mode ? 'on' : ''}" id="roll-mods" title="Add a situational modifier to your d20 rolls: not proficient, a range increment, flanking, or your own number">${esc(modsChip())}</button>
     <input id="dice-box" class="w8" placeholder="2d6+3" title="Dice box: Tad notation such as 2d6+3, adv d20+5 or 3xd20. Press Roll or Enter." autocomplete="off" aria-label="Dice box">
     <button class="rchip go" id="dice-go" title="Roll the dice box (or press Enter)">🎲 Roll</button>
-    <button class="rchip ${o.webhook && o.rollSend ? 'on' : ''}" id="roll-discord" title="Post rolls to your Discord channel">${esc(discordLabel())}</button>
+    <button class="${discordClass()}" id="roll-discord" title="Post rolls to your Discord channel, or keep them on the sheet">${esc(discordLabel())}</button>
   </span>`;
 }
 
@@ -50,16 +56,26 @@ function syncBar() {
   if (mb) { mb.textContent = modsChip(); mb.classList.toggle('on', mods.length > 0 || !!mode); }
   document.querySelectorAll('[data-rmode]').forEach(b => b.classList.toggle('on', b.dataset.rmode === mode));
   const d = document.getElementById('roll-discord');
-  if (d) { d.textContent = discordLabel(); d.classList.toggle('on', !!(options().webhook && options().rollSend)); }
+  if (d) { d.textContent = discordLabel(); d.className = discordClass(); }
 }
 
 const withMode = expr => { expr = addMods(expr, modsTotal()); return mode && /^d20/.test(expr) ? mode + ' ' + expr : expr; };
 const withModLabel = (label, expr) => (mods.length && /^d20/.test(expr) ? [label, modsLabel(mods)].filter(Boolean).join(' ') : label);
-/** Preset chips in two rows: bonuses, then penalties. */
+let penaltiesOpen = false; // the Penalties row starts folded away to save room; a click on its heading shows it
+/** Preset chips in two rows: bonuses, then penalties (folded until their heading is clicked). */
 const presetGroups = list => [['Bonuses', 'plus', list.filter(m => m.n > 0)], ['Penalties', 'minus', list.filter(m => m.n < 0)]]
   .filter(([, , l]) => l.length)
-  .map(([head, cls, l]) => '<div class="small mod-head ' + cls + '">' + head + '</div><div class="roll-bar" style="margin:4px 0 8px">' +
-    l.map(m => '<button class="rchip ' + (mods.some(x => x.label === m.label) ? 'on' : '') + '" data-mod-preset="' + MOD_PRESETS.indexOf(m) + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(bonusText(m.n)) + '</button>').join(' ') + '</div>').join('');
+  .map(([head, cls, l]) => {
+    if (cls === 'minus') {
+      const on = l.filter(m => mods.some(x => x.label === m.label)).length;
+      const toggle = '<button class="mod-head minus mod-fold" data-pen-toggle aria-expanded="' + penaltiesOpen + '" title="' + (penaltiesOpen ? 'Hide the penalties' : 'Show the penalties') + '">' +
+        (penaltiesOpen ? '▾' : '▸') + ' Penalties' + (on ? ' <span class="muted">(' + on + ' on)</span>' : '') + '</button>';
+      if (!penaltiesOpen) return toggle;
+      head = toggle;
+    } else head = '<div class="small mod-head ' + cls + '">' + head + '</div>';
+    return head + '<div class="roll-bar" style="margin:4px 0 8px">' +
+    l.map(m => '<button class="rchip ' + (mods.some(x => x.label === m.label) ? 'on' : '') + '" data-mod-preset="' + MOD_PRESETS.indexOf(m) + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(bonusText(m.n)) + '</button>').join(' ') + '</div>';
+  }).join('');
 
 const afterRoll = () => { mode = ''; if (!keepMods) mods = []; syncBar(); };
 
@@ -76,6 +92,7 @@ function buffNote(p) {
 
 /** The Modifier window: preset situational modifiers (toggle them), your own number, and whether they stay after the next roll. */
 function modsWindow() {
+  penaltiesOpen = false;
   modal('Roll modifier', (body, close) => {
     const draw = () => {
       body.innerHTML = `<p class="small muted">Added to your d20 rolls (attacks, saves, skills, checks) ${keepMods ? 'until you clear it' : 'for the next roll only'}.</p>
@@ -102,7 +119,8 @@ function modsWindow() {
         const m = MOD_PRESETS[+p.dataset.modPreset], had = mods.some(x => x.label === m.label);
         mods = mods.filter(x => x.label !== m.label && !(m.group && x.group === m.group)); // one range increment at a time
         if (!had) mods.push({ ...m });
-      } else if (e.target.closest('#mod-add')) add();
+      } else if (e.target.closest('[data-pen-toggle]')) penaltiesOpen = !penaltiesOpen;
+      else if (e.target.closest('#mod-add')) add();
       else if (e.target.closest('#mod-clear')) { mods = []; mode = ''; }
       else if (e.target.closest('#mod-done')) { syncBar(); return close(); }
       else return;
@@ -209,6 +227,7 @@ function rollWindow(p0, attack0, sp = null) {
   };
   const title = sp ? sp.title : p0.items ? p0.items[0].label.replace(/ attack \d+\/\d+$/, '') + ' full attack' : (p0.label || 'Roll');
   const snap = { mods: mods.map(m => ({ ...m })), mode };
+  penaltiesOpen = false;
   let went = false;
   modal(title, (body, close) => {
     const draw = () => {
@@ -232,7 +251,7 @@ function rollWindow(p0, attack0, sp = null) {
         (sp?.cast ? '<label class="small" style="display:block;margin:6px 0" title="Rolling counts as casting the spell. Untick it if you already cast it or are only checking a number."><input type="checkbox" id="sp-cast" ' + (castOn ? 'checked' : '') + (sp.cast.left <= 0 ? ' disabled' : '') + '> ' + esc(sp.cast.label) + (sp.cast.left <= 0 ? ' (none left)' : sp.cast.recent ? ' (counted already for the roll you just made)' : sp.cast.left === Infinity ? '' : ' (' + sp.cast.left + ' left)') + '</label>' : '') +
         '<div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn small" id="win-cancel">Cancel</button>' +
         '<button class="rchip go" data-win-go="roll">🎲 Roll</button>' +
-        '<button class="rchip dchip ' + (sending ? 'on' : '') + '" id="win-discord" title="Post this roll to your Discord channel, or keep it on the sheet">' + esc(discordLabel()) + '</button></div>';
+        '<button class="' + discordClass() + '" id="win-discord" title="Post this roll to your Discord channel, or keep it on the sheet">' + esc(discordLabel()) + '</button></div>';
       if (ch?.dice) { const di = body.querySelector('#spell-dice'); di.focus(); di.setSelectionRange(di.value.length, di.value.length); }
       else body.querySelector('[data-win-go]')?.focus();
     };
@@ -268,6 +287,7 @@ function rollWindow(p0, attack0, sp = null) {
         mods = mods.filter(x => x.label !== m.label && !(m.group && x.group === m.group));
         if (!had) mods.push({ ...m });
       } else if (md) mode = mode === md.dataset.winMode ? '' : md.dataset.winMode;
+      else if (e.target.closest('[data-pen-toggle]')) penaltiesOpen = !penaltiesOpen;
       else if (e.target.closest('#mod-add')) add();
       else return;
       syncBar(); draw();

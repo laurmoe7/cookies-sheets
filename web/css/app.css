@@ -174,8 +174,12 @@ input.sub { margin-left: 6px; font-size: 12px; padding: 2px 5px; }
 .rchip { font: inherit; font-size: 12px; cursor: pointer; padding: 1px 9px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--muted); }
 .rchip:hover { border-color: var(--accent); color: var(--accent); }
 .rchip.go { border-color: var(--accent); color: var(--accent); font-weight: 600; }
-#roll-discord.on, .dchip.on { background: #5865f2; border-color: #5865f2; color: #fff; }
-#roll-discord.on:hover, .dchip.on:hover { background: #4752c4; border-color: #4752c4; color: #fff; }
+/* The Discord switch (roll bar and roll window): blue while sending; plain when local only, and red when you point at it, since a click would change it. */
+.rchip.dchip.on { background: #5865f2; border-color: #5865f2; color: #fff; }
+.rchip.dchip.on:hover { background: #4752c4; border-color: #4752c4; color: #fff; }
+.rchip.dchip.local:hover { background: rgba(179, 53, 44, .16); border-color: #b3352c; color: #b3352c; }
+.mod-fold { font: inherit; background: none; border: 0; padding: 2px 0; cursor: pointer; margin-top: 6px; }
+.mod-fold:hover { text-decoration: underline; }
 html[data-theme] .btn.primary.discord-btn, .btn.discord-btn { background: #5865f2; border-color: #5865f2; color: #fff; }
 html[data-theme] .btn.primary.discord-btn:hover, .btn.discord-btn:hover { background: #4752c4; border-color: #4752c4; }
 .mod-head { margin-top: 4px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; font-size: 11px; }

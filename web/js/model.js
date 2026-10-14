@@ -70,6 +70,7 @@ export function migrate(c) {
   // Buffs saved before these effects existed: Haste's extra attack, and Power Attack's x1.5 two-handed damage.
   for (const m of c.modifiers || []) {
     if (m.name === 'Haste' && !(m.effects || []).some(e => e.target === 'extraAttack')) (m.effects ||= []).push({ target: 'extraAttack', value: 1, type: 'untyped' });
+    if (m.name === 'Charging') m.effects = (m.effects || []).filter(e => !(e.target === 'melee' && e.value === 2)); // the +2 to hit moved to the roll window
     if (m.name === 'Power Attack') for (const e of m.effects || []) if (e.target === 'meleeDamage' && e.scale === undefined) e.scale = true;
   }
   c.version = Math.max(c.version || 1, MODEL_VERSION);
