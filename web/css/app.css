@@ -386,6 +386,7 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .skills-tbl th:first-child, .skills-tbl td:first-child { text-align: center; width: 36px; }
 .skills-tbl td.skill-note { width: 40%; }
 .skills-tbl td.skill-note input { width: 100%; min-width: 120px; }
+.skills-tbl td.skill-note input:placeholder-shown:not(:focus) { opacity: .4; } /* an empty note fades back, a written one stands out */
 .cs-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); vertical-align: middle; }
 /* Overview: Offense with the Notes card filling the space under it */
 .stack { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
