@@ -12,6 +12,10 @@ HOW TO RUN
 This app isn't from a big publisher, so Windows may warn you the first time.
 Click "More info", then "Run anyway".
 
+UPDATING
+The app tells you when a new version is out. Click "Update now" and it downloads, installs and restarts by itself.
+(Options, Look has "Check for updates now", and a switch to stop the check at start-up.)
+
 WHERE ARE MY CHARACTERS?
 Characters save automatically to:  Documents\Pathfinder Characters
 Use the Export button on the Characters page to share a character file,

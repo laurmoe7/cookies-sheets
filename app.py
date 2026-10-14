@@ -17,6 +17,7 @@ import threading
 import time
 import traceback
 import uuid
+import updater
 import webbrowser
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -535,6 +536,13 @@ def resolve_names(body):
     return out
 
 
+def app_version():
+    """The version the page shows, read from the one place it is written (web/js/version.js)."""
+    with open(os.path.join(WEB, 'js', 'version.js'), encoding='utf-8') as f:
+        m = re.search(r"VERSION\s*=\s*'([^']*)'", f.read())
+    return m.group(1) if m else '0'
+
+
 # ---------------- HTTP ----------------
 
 class Handler(SimpleHTTPRequestHandler):
@@ -632,6 +640,10 @@ class Handler(SimpleHTTPRequestHandler):
                 self._json(open_folder())
             elif route == ('GET', 'cs-fetch'):
                 self._json(fetch_charactersheet(p.get('id', '')))
+            elif route == ('GET', 'update-check'):
+                self._json(updater.check(app_version()))
+            elif route == ('POST', 'update-apply'):
+                self._json(updater.apply(app_version()))
             elif route == ('GET', 'sounds'):
                 self._json(list_sounds())
             elif route == ('POST', 'sound'):

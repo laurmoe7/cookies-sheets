@@ -4,6 +4,7 @@ import { modal, esc, toast, confirmBox } from './ui.js';
 import { api } from './api.js';
 import { SOUND_CATS, soundItems, isCustomized, refreshSounds as loadCustomSounds, previewSound } from './sfx.js';
 import { VERSION } from './version.js';
+import { checkForUpdate } from './update.js';
 import { CHANGELOG } from './changelog.js';
 
 export const ACCENTS = {
@@ -18,7 +19,7 @@ export const TEXT_SIZES = [[90, 'Small'], [100, 'Normal'], [112, 'Large'], [125,
 
 export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
 
-export const DEFAULTS = { theme: 'tome', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: true, pageSound: true, volume: 100, soundOff: {}, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false, webhook: '', rollSend: true, rollAsk: true, tabDrag: false, tabOrder: [] };
+export const DEFAULTS = { theme: 'tome', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: true, pageSound: true, volume: 100, soundOff: {}, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false, webhook: '', rollSend: true, rollAsk: true, tabDrag: false, tabOrder: [], updateCheck: true };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
@@ -30,7 +31,7 @@ export function sanitize(raw) {
   o.pageTurn = o.pageTurn !== 'off' && o.pageTurn !== false; // used to be Full / Light / Off
   if (!['quiet', 'normal', 'chatty'].includes(o.cookieTalk)) o.cookieTalk = DEFAULTS.cookieTalk;
   if (!['full', 'bleep'].includes(o.cookieSwear)) o.cookieSwear = DEFAULTS.cookieSwear;
-  for (const k of ['compact', 'motion', 'pageSound', 'cookieSound', 'tabDrag']) o[k] = !!o[k];
+  for (const k of ['compact', 'motion', 'pageSound', 'cookieSound', 'tabDrag', 'updateCheck']) o[k] = !!o[k];
   delete o.tabLock; // the lock was folded into tabDrag (off = locked)
   o.tabOrder = Array.isArray(o.tabOrder) ? [...new Set(o.tabOrder.filter(k => typeof k === 'string' && k.length < 30))].slice(0, 30) : [];
   // One volume for every sound. Saves from before the slider had a "Sound effects" checkbox: unchecked becomes volume 0.
@@ -137,7 +138,9 @@ function optionRows(tab, o, customSounds) {
       <div class="opt-row"><b>Text size</b>${seg('textSize', o.textSize, TEXT_SIZES)}</div>
       ${check('compact', 'Compact layout', o.compact)}
       <div class="opt-row"><b>Sheet tabs</b><span class="opt-inline"><button class="btn small ${o.tabDrag ? '' : 'ghost'}" data-tab-lock title="${o.tabDrag ? 'The tabs can be dragged into a new order. Click to lock them where they are.' : 'The tabs are locked in place. Click to unlock them so they can be dragged.'}">${o.tabDrag ? '🔓 Drag to rearrange' : '🔒 Locked'}</button>${o.tabOrder.length ? '<button class="btn small ghost" data-tab-reset title="Put the tabs back in their usual order">Reset order</button>' : ''}</span></div>
-      ${check('motion', 'Animations', o.motion)}`;
+      ${check('motion', 'Animations', o.motion)}
+      ${check('updateCheck', 'Look for a new version when the app starts', o.updateCheck)}
+      <div class="opt-row"><b>Updates</b><button class="btn small" data-update-now>Check for updates now</button></div>`;
   }
   if (tab === 'sound') {
     return `<div class="opt-row"><b>Volume</b><span class="vol"><input type="range" min="0" max="100" step="5" data-opt="volume" value="${o.volume}" aria-label="Volume"> <b id="vol-out">${o.volume}%</b></span></div>
@@ -195,6 +198,7 @@ export function showOptions() {
         } catch (err) { toast(err.message, 'err'); }
         await refreshSounds(); return draw();
       }
+      if (e.target.closest('[data-update-now]')) { e.target.closest('.modal-back')?.querySelector('[data-close]')?.click(); return checkForUpdate(); }
       if (e.target.closest('[data-changelog]')) return showChangelog();
       if (e.target.closest('[data-ogl]')) return showLicense();
       if (e.target.closest('[data-dev]')) { e.target.closest('.modal-back')?.querySelector('[data-close]')?.click(); devTools.showAnimLab(); }
