@@ -559,14 +559,14 @@ const ORD = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th']
 function spells(body, c, d) {
   const casters = Object.entries(d.spellcasting);
   if (!casters.length) {
-    body.innerHTML = `<section class="card"><h3>Spells</h3><p class="muted">None of your classes cast spells (yet). Paladins and rangers start casting at 4th level.</p>
-      <p>Looking something up? Try the ${'<a href="#" data-goto="compendium">Compendium</a>'} or ${'<a href="#" data-goto="rules">Quick Rules</a>'}.</p></section>` + slaCard(c, d);
+    body.innerHTML = slaCard(c, d) + `<section class="card"><h3>Spells</h3><p class="muted">None of your classes cast spells (yet), but you can still keep spells here: add any compendium spell or your own under <b>Spell-likes &amp; other spells</b> above. Paladins and rangers start casting at 4th level.</p>
+      <p>Looking something up? Try the ${'<a href="#" data-goto="compendium">Compendium</a>'} or ${'<a href="#" data-goto="rules">Quick Rules</a>'}.</p></section>`;
     $$('[data-goto]', body).forEach(a => (a.onclick = e => { e.preventDefault(); go(a.dataset.goto); }));
     wireSla(body, c);
     if (spellDrawer?.el?.isConnected) renderSpellActions();
     return;
   }
-  body.innerHTML = casters.map(([cls, sc]) => {
+  body.innerHTML = slaCard(c, d) + casters.map(([cls, sc]) => {
     const book = (c.spellbooks[cls] ||= { spells: [], used: Array(10).fill(0), extraSlot: false });
     book.used ||= Array(10).fill(0);
     const prepared = sc.kind === 'prepared' || sc.kind === 'arcanist';
@@ -617,7 +617,7 @@ function spells(body, c, d) {
         </div>`;
       }).join('')}
     </section>`;
-  }).join('') + slaCard(c, d);
+  }).join('');
   wireSla(body, c);
   wireCommon(body);
   wireResources(body, c);
@@ -683,9 +683,9 @@ function slaCard(c, d) {
     return `<button class="sp-chip ${isActive(SLA, i) ? 'on' : ''} ${x.unlimited || x.left ? 'ready' : 'idle'}" data-sp-select="${i}" data-level="${x.level}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(SLA, i)}"><span class="sp-n">${esc(s.name || 'New ability')}</span><span class="sp-s">${x.level ? ORD[x.level] : '0'}</span>${pips}</button>`;
   };
   return `<section class="card spellbook sla-card" data-cls="${SLA}">
-    <div class="sb-head"><div class="sb-title"><h3>Spell-like abilities</h3><span class="muted small">no slots · uses per day · Rest refills them</span></div>
-      <div class="sb-tools"><button class="btn small ghost" data-sla-add>＋ Add</button><button class="btn small ghost" data-sla-custom title="An ability that is not in the compendium">＋ Custom</button></div></div>
-    ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>` : '<p class="muted small sl-none">None. Racial and monster abilities that work like a spell (Dimension Door 1/day, Light at will) go here.</p>'}
+    <div class="sb-head"><div class="sb-title"><h3>Spell-likes &amp; other spells</h3><span class="muted small">any spell, no class needed · uses per day (or at will) · Rest refills them</span></div>
+      <div class="sb-tools"><button class="btn small ghost" data-sla-add title="Pick a spell from the compendium">＋ Add spell</button><button class="btn small ghost" data-sla-custom title="A spell or ability that is not in the compendium">＋ Custom</button></div></div>
+    ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>` : '<p class="muted small sl-none">None yet. For spells that are not on a class list: racial and monster spell-likes (Dimension Door 1/day), item spells, or a spell you were given. Set how many times a day, or leave it blank for at will.</p>'}
   </section>`;
 }
 
@@ -702,7 +702,7 @@ function wireSla(body, c) {
       changed({ rerender: true });
       return openSpell(SLA, c.spellLikes.length - 1, null); // open it in the side panel so it can be named
     }
-    const r = await pickEntry('Add spell-like ability', 'Spell');
+    const r = await pickEntry('Add a spell', 'Spell');
     if (!r) return;
     let level = 1, summary = '';
     try { // a spell's level for the save DC: the lowest level any class gets it at
