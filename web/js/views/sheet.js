@@ -567,8 +567,7 @@ function spells(body, c, d) {
         <tr><th>${spont ? 'Per day' : 'Slots'}</th>${levels.map(l => `<td><b>${fmtSlots(sc.slots[l])}</b></td>`).join('')}</tr>
         ${sc.known.some(k => k != null) ? `<tr><th>Known</th>${levels.map(l => `<td>${knownCount(book, l)} / ${sc.known[l] ?? '—'}</td>`).join('')}</tr>` : ''}
         ${sc.kind === 'arcanist' ? `<tr><th>Prepared</th>${levels.map(l => `<td>${preparedCount(book, l)} / ${sc.prepared[l] ?? '—'}</td>`).join('')}</tr>` : ''}
-        ${spont ? `<tr><th>Used</th>${levels.map(l => l === 0 && sc.slots[0] === Infinity ? '<td class="dim">at will</td>' : `<td>${inp(`spellbooks.${cls}.used.${l}`, { type: 'num', cls: 'w2', rerender: true })}</td>`).join('')}</tr>
-        <tr><th title="Slots you can still cast with today">Left</th>${levels.map(l => (l === 0 && sc.slots[0] === Infinity) || sc.slots[l] == null ? '<td class="dim">—</td>' : `<td><div class="step-row"><button class="icon-btn step" data-slot-adj="${l}" data-d="-1" title="Spend a slot (one fewer left)">−</button><b class="${slotsLeft(book, sc, l) <= 0 ? 'bad' : ''}">${slotsLeft(book, sc, l)}</b><button class="icon-btn step" data-slot-adj="${l}" data-d="1" title="Get a slot back (one more left)">＋</button></div>${spontPips(book, sc, l)}</td>`).join('')}</tr>` : ''}
+        ${spont ? `<tr><th title="Slots you can still cast with today">Left</th>${levels.map(l => (l === 0 && sc.slots[0] === Infinity) || sc.slots[l] == null ? '<td class="dim">—</td>' : `<td><div class="step-row"><button class="icon-btn step" data-slot-adj="${l}" data-d="-1" title="Spend a slot (one fewer left)">−</button><b class="${slotsLeft(book, sc, l) <= 0 ? 'bad' : ''}">${slotsLeft(book, sc, l)}</b><button class="icon-btn step" data-slot-adj="${l}" data-d="1" title="Get a slot back (one more left)">＋</button></div>${spontPips(book, sc, l)}</td>`).join('')}</tr>` : ''}
         <tr><th>Save DC</th>${levels.map(l => `<td>${sc.dcs[l]}</td>`).join('')}</tr>
         <tr><th title="Concentration DC to cast defensively: 15 + 2 × spell level">${ref('Casting Defensively', 'Rules', 'Defensive DC')}</th>${levels.map(l => `<td title="Need ${15 + 2 * l - sc.concentration} or higher on d20">${15 + 2 * l}<span class="dim small"> (${Math.max(1, Math.min(20, 15 + 2 * l - sc.concentration))}+)</span></td>`).join('')}</tr>
       </tbody></table>
@@ -603,8 +602,14 @@ function spells(body, c, d) {
     const cls = sbEl.dataset.cls;
     const book = c.spellbooks[cls];
     const sc = d.spellcasting[cls];
-    const t = e.target.closest('[data-sp-select],[data-add-spell],[data-custom-spell],[data-cast],[data-cast-spont],[data-prep]');
+    const t = e.target.closest('[data-slot-adj],[data-sp-select],[data-add-spell],[data-custom-spell],[data-cast],[data-cast-spont],[data-prep]');
     if (!t) return;
+    if (t.dataset.slotAdj !== undefined) {
+      const l = +t.dataset.slotAdj;
+      book.used[l] = Math.min(sc.slots[l], Math.max(0, num(book.used[l]) - +t.dataset.d)); // + = a slot back, - = one spent
+      changed({ rerender: true });
+      return;
+    }
     if (t.dataset.spSelect !== undefined) {
       openSpell(cls, +t.dataset.spSelect, t);
       return;
