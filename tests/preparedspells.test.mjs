@@ -29,3 +29,8 @@ test('a new character and a current save are left alone', () => {
   migrate(c);
   assert.equal(c.spellbooks.Wizard.spells[0].prepared, 2);
 });
+
+test('a save from a newer build keeps its version number', () => {
+  const c = migrate({ ...newCharacter(), version: MODEL_VERSION + 3 });
+  assert.equal(c.version, MODEL_VERSION + 3, 'an older build must not stamp it with its own number');
+});

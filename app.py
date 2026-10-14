@@ -28,6 +28,9 @@ WEB = os.path.join(BASE, 'web')
 DATA = os.path.join(BASE, 'data')
 CHAR_DIR = os.environ.get('PF_CHAR_DIR') or os.path.join(os.path.expanduser('~'), 'Documents', 'Pathfinder Characters')
 TRASH_DIR = os.path.join(CHAR_DIR, '.deleted')
+HISTORY_DIR = os.path.join(CHAR_DIR, '.history')
+HISTORY_EVERY = 300   # seconds: a save is only copied to .history when the newest copy is older than this
+HISTORY_KEEP = 5      # copies kept per character
 
 
 def log_error(text):
@@ -195,6 +198,36 @@ def list_characters():
     return sorted(out, key=lambda c: -c['updated'])
 
 
+HISTORY_FILE = re.compile(r'^([A-Za-z0-9_-]+)-([0-9]+)[.]json$')  # <id>-<saved at>.json
+
+
+def _history_of(cid):
+    """The history files of one character as [(saved at, file name)], newest first."""
+    if not os.path.isdir(HISTORY_DIR):
+        return []
+    out = []
+    for fn in os.listdir(HISTORY_DIR):
+        m = HISTORY_FILE.match(fn)
+        if m and m.group(1) == cid:
+            out.append((int(m.group(2)), fn))
+    return sorted(out, reverse=True)
+
+
+def _snapshot(cid, path, force=False):
+    """Copies the file now on disk into .history before it is overwritten, so a bad save can be undone. Saving is frequent
+    (every edit), so unless forced this only happens when the newest copy is older than HISTORY_EVERY."""
+    if not os.path.exists(path):
+        return
+    now = int(time.time())
+    have = _history_of(cid)
+    if not force and have and now - have[0][0] < HISTORY_EVERY:
+        return
+    os.makedirs(HISTORY_DIR, exist_ok=True)
+    shutil.copy2(path, os.path.join(HISTORY_DIR, f'{cid}-{now}.json'))
+    for _, fn in _history_of(cid)[HISTORY_KEEP:]:
+        os.remove(os.path.join(HISTORY_DIR, fn))
+
+
 def save_character(c):
     os.makedirs(CHAR_DIR, exist_ok=True)
     if not c.get('id'):
@@ -204,8 +237,45 @@ def save_character(c):
     tmp = path + '.tmp'
     with open(tmp, 'w', encoding='utf-8') as f:
         json.dump(c, f, indent=1)
+    try:
+        _snapshot(c['id'], path)
+    except OSError:
+        pass  # a failed backup must never stop the save
     os.replace(tmp, path)
     return {'id': c['id'], 'updated': c['updated']}
+
+
+def list_history():
+    """Earlier saves of the characters still in the folder: [{file, id, name, saved}], newest first."""
+    out = []
+    if not os.path.isdir(HISTORY_DIR):
+        return out
+    for fn in os.listdir(HISTORY_DIR):
+        m = HISTORY_FILE.match(fn)
+        if not m or not os.path.exists(os.path.join(CHAR_DIR, m.group(1) + '.json')):
+            continue
+        try:
+            with open(os.path.join(HISTORY_DIR, fn), encoding='utf-8') as f:
+                c = json.load(f)
+        except Exception:
+            continue
+        out.append(dict(file=fn, id=m.group(1), name=c.get('name') or 'Unnamed', race=c.get('race', ''), summary=_summary(c),
+                        saved=int(m.group(2))))
+    return sorted(out, key=lambda c: -c['saved'])
+
+
+def revert_character(fn):
+    """Puts an earlier save back. The save it replaces is copied to .history first, so going back can itself be undone."""
+    m = HISTORY_FILE.match(fn or '')
+    if not m:
+        raise ValueError('bad file')
+    src = os.path.join(HISTORY_DIR, fn)
+    with open(src, encoding='utf-8') as f:
+        c = json.load(f)
+    c['id'] = m.group(1)
+    _snapshot(c['id'], _char_path(c['id']), force=True)
+    os.remove(src)
+    return save_character(c)
 
 
 def load_character(cid):
@@ -512,6 +582,10 @@ class Handler(SimpleHTTPRequestHandler):
                 self._json(delete_character(p.get('id')))
             elif route == ('GET', 'deleted'):
                 self._json(list_deleted())
+            elif route == ('GET', 'history'):
+                self._json(list_history())
+            elif route == ('POST', 'character/revert'):
+                self._json(revert_character(p.get('file', '')))
             elif route == ('POST', 'character/restore'):
                 self._json(restore_character(p.get('file', '')))
             elif route == ('POST', 'character/purge'):

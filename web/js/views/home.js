@@ -18,6 +18,7 @@ export async function renderHome(main) {
     </div>
     <div id="char-list" class="char-list"><p class="muted">Loading…</p></div>
     <div id="char-bin"></div>
+    <div id="char-history"></div>
   </div>`;
   $('#new-char').onclick = createCharacter;
   $('#open-folder').onclick = () => api.openFolder();
@@ -35,8 +36,9 @@ export async function renderHome(main) {
       openCharacter(r.id);
     } catch (err) { toast('Import failed: ' + err.message, 'err'); }
   };
-  const [list, gone] = await Promise.all([api.characters(), api.deleted().catch(() => [])]);
+  const [list, gone, older] = await Promise.all([api.characters(), api.deleted().catch(() => []), api.history().catch(() => [])]);
   renderBin($('#char-bin'), gone);
+  renderHistory($('#char-history'), older);
   const el = $('#char-list');
   if (!list.length) {
     el.innerHTML = `<div class="empty"><p>No characters yet.</p><p class="muted">Click <b>New character</b> to roll one up. The level-up wizard walks you through 1st level.</p></div>`;
@@ -71,6 +73,33 @@ export async function renderHome(main) {
     }
     const card = e.target.closest('.char-card');
     if (card) openCharacter(card.dataset.id);
+  };
+}
+
+let historyOpen = false; // same, for the earlier-saves list
+
+/** Earlier saves of each character (the .history folder): going back replaces the current save, which is itself kept. */
+function renderHistory(box, older) {
+  if (!box) return;
+  if (!older.length) { box.innerHTML = ''; return; }
+  box.innerHTML = `<details class="bin" ${historyOpen ? 'open' : ''}><summary class="muted">Earlier saves (${older.length})</summary>
+    <div class="muted small">Copies made automatically as you edit, in case a change went wrong. Going back keeps the save it replaces.</div>
+    ${older.map(c => `<div class="char-card gone">
+      <div class="grow"><h3>${esc(c.name)}</h3>
+      <div class="muted">${esc(c.race)} · ${esc(c.summary)}</div>
+      <div class="muted small">Saved ${new Date(c.saved * 1000).toLocaleString()}</div></div>
+      <button class="btn small" data-revert="${esc(c.file)}">Go back to this</button></div>`).join('')}
+  </details>`;
+  $('details', box).ontoggle = e => { historyOpen = e.target.open; };
+  box.onclick = async e => {
+    const b = e.target.closest('[data-revert]');
+    if (!b || !await confirmBox('Go back to this earlier save? The current one is kept in the list, so you can undo this.', 'Go back')) return;
+    try {
+      const r = await api.revertCharacter(b.dataset.revert);
+      if (state.char?.id === r.id) state.char = null;
+      toast('Went back', 'good');
+      openCharacter(r.id);
+    } catch (err) { toast(err.message, 'err'); }
   };
 }
 

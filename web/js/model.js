@@ -66,6 +66,7 @@ export function migrate(c) {
       for (const s of book.spells || []) s.prepared = Math.max(0, (parseFloat(s.prepared) || 0) - (parseFloat(s.cast) || 0));
     }
   }
-  c.version = MODEL_VERSION;
+  // A save made by a newer build keeps its number, so an older build opening it does not stamp it as its own and re-run steps later.
+  c.version = Math.max(c.version || 1, MODEL_VERSION);
   return c;
 }

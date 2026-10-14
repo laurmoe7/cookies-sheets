@@ -210,6 +210,33 @@ class HttpApi(unittest.TestCase):
         self.assertEqual(self.call('/api/character/purge?file=nope.json', method='POST')[0], 500)
         self.assertEqual(self.call('/api/character/purge?file=abc-1.json', method='POST')[0], 404, 'well-formed name, no such file')
 
+    def test_overwrites_keep_history_and_can_be_reverted(self):
+        r = self.call('/api/character', {'name': 'v1'})[1]
+        cid = r['id']
+        hist = lambda: [h for h in self.call('/api/history')[1] if h['id'] == cid]
+        self.assertEqual(hist(), [], 'a first save overwrites nothing')
+        self.call('/api/character', {'id': cid, 'name': 'v2'})
+        self.assertEqual([h['name'] for h in hist()], ['v1'], 'the second save keeps what it replaced')
+        self.call('/api/character', {'id': cid, 'name': 'v3'})
+        self.assertEqual(len(hist()), 1, 'saves within five minutes of the last copy do not pile up')
+        # age the copy, so the next save is allowed to make another one
+        old = os.path.join(app.HISTORY_DIR, hist()[0]['file'])
+        os.rename(old, os.path.join(app.HISTORY_DIR, f'{cid}-1000.json'))
+        self.call('/api/character', {'id': cid, 'name': 'v4'})
+        self.assertEqual(sorted(h['name'] for h in hist()), ['v1', 'v3'])
+        back = next(h for h in hist() if h['name'] == 'v1')
+        self.assertEqual(self.call(f'/api/character/revert?file={back["file"]}', method='POST')[0], 200)
+        self.assertEqual(self.call(f'/api/character?id={cid}')[1]['name'], 'v1')
+        self.assertIn('v4', [h['name'] for h in hist()], 'going back keeps the save it replaced')
+        self.assertEqual(self.call('/api/character/revert?file=nope.json', method='POST')[0], 500)
+
+    def test_history_is_pruned(self):
+        cid = app.save_character({'name': 'p'})['id']
+        for i in range(app.HISTORY_KEEP + 3):
+            app._snapshot(cid, app._char_path(cid), force=True)
+            os.rename(os.path.join(app.HISTORY_DIR, app._history_of(cid)[0][1]), os.path.join(app.HISTORY_DIR, f'{cid}-{100 + i}.json'))
+        self.assertEqual(len(app._history_of(cid)), app.HISTORY_KEEP)
+
     def test_cache_headers(self):
         with urllib.request.urlopen(self.base + '/css/app.css', timeout=10) as r:
             self.assertEqual(r.headers['Cache-Control'], 'no-cache', 'UI files may be kept and revalidated')
