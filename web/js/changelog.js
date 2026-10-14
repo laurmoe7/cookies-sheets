@@ -5,6 +5,8 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
+      'The Gear tab opens with a paper doll: slots for head, headband, eyes, neck, shoulders, chest, body, armor, belt, wrists, hands, two rings, feet, shield and both hands, each showing what is worn there. Click a slot to wear something or take it off.',
+      'Magic items added from the compendium remember which slot they fit, so the right ones are offered first. Carried items have a Worn in box.',
       'Armor and shields have a ✦ Enchant button too: masterwork, mithral, adamantine and darkwood, and special abilities such as shadow, slick, fortification, spell resistance and energy resistance. Check penalty, Dex cap, spell failure, weight, speed and Stealth change by themselves.',
       'What your armor gives (damage reduction, spell resistance, resistances, fortification) is listed under the Defenses on the Overview.',
       'The slot table has one row for spontaneous casters: − and + beside the count, with the slot circles under it. The separate Used row is gone.',

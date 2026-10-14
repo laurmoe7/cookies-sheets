@@ -21,6 +21,8 @@ import { view as petView } from '../pet/pet.js';
 import { renderResources, resourceBlock, wire as wireResources, wireRest } from './resources.js';
 import { weaponFxRow, wireWeaponFx } from './weaponfx.js';
 import { armorFxChip, wireArmorFx } from './armorfx.js';
+import { paperDollCard, wirePaperDoll } from './paperdoll.js';
+import { SLOTS, slotName, hintFromSub } from '../paperdoll.js';
 
 const ICONS = {
   overview: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
@@ -365,9 +367,9 @@ function wireCommon(body) {
     e.preventDefault();
     if (t.dataset.add) {
       const blank = {
-        weapons: { name: '', ability: '', ranged: false, enh: 0, misc: 0, damage: '1d8', dmgMult: '', dmgMisc: 0, crit: '×2', range: '', type: '', weight: 0, mw: false, material: '', improvedCritical: false, fx: [] },
+        weapons: { name: '', ability: '', ranged: false, enh: 0, misc: 0, damage: '1d8', dmgMult: '', dmgMisc: 0, crit: '×2', range: '', type: '', weight: 0, mw: false, material: '', improvedCritical: false, fx: [], slot: '' },
         armor: { name: '', type: 'armor', category: 'light', bonus: 0, enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true, mw: false, material: '', fx: [] },
-        gear: { name: '', qty: 1, weight: 0, value: '', notes: '' },
+        gear: { name: '', qty: 1, weight: 0, value: '', notes: '', slot: '', hint: '' },
         specials: { name: '', notes: '' },
         'money.custom': { name: '', amount: 0 },
         sessions: { date: new Date().toISOString().slice(0, 10), name: '', notes: '' },
@@ -822,6 +824,7 @@ export function pickSpell(cls, sc, level) {
 function gear(body, c, d) {
   const enc = d.encumbrance;
   body.innerHTML = `<div class="grid two">
+  ${paperDollCard(c, d)}
   <section class="card span2">
     <div class="row"><h3 class="grow">Armor & Shields</h3><button class="btn small" data-add="armor">＋ Add armor/shield</button></div>
     ${c.armor.length ? `<table class="tbl"><thead><tr><th>Worn</th><th>Name</th><th>Type</th><th>Category</th><th title="Armor/shield bonus">Bonus</th><th title="Enhancement">Enh</th>
@@ -837,9 +840,10 @@ function gear(body, c, d) {
   <section class="card span2">
     <div class="row"><h3 class="grow">Equipment</h3>
       <button class="btn small" data-pick-item>＋ Magic item</button><button class="btn small" data-add="gear">＋ Item</button></div>
-    ${c.gear.length ? `<table class="tbl"><thead><tr><th>Item</th><th>Qty</th><th>Wt (each)</th><th>Value</th><th>Notes</th><th></th></tr></thead><tbody>
+    ${c.gear.length ? `<table class="tbl"><thead><tr><th>Item</th><th title="Where it is worn (shown on the paper doll)">Worn in</th><th>Qty</th><th>Wt (each)</th><th>Value</th><th>Notes</th><th></th></tr></thead><tbody>
       ${c.gear.map((g, i) => `<tr><td class="w12">${g.id ? refId(g.id, g.name)
           : tf(`gear.${i}.name`, { placeholder: 'Item name', read: { title: g.name || 'Item', titlePath: `gear.${i}.name`, cat: 'Custom item', path: `gear.${i}.notes` } })}</td>
+        <td>${sel(`gear.${i}.slot`, [['', '—'], ...SLOTS.filter(x => x.id !== 'armor' && x.id !== 'shield' && x.id !== 'main' && x.id !== 'off').map(x => [x.id, slotName(x.id)])], { rerender: true })}</td>
         <td>${inp(`gear.${i}.qty`, { type: 'num', cls: 'w2' })}</td><td>${inp(`gear.${i}.weight`, { type: 'num', cls: 'w3' })}</td>
         <td>${inp(`gear.${i}.value`, { cls: 'w5' })}</td>
         <td class="grow-cell">${tf(`gear.${i}.notes`, { multiline: true, placeholder: 'Add notes', read: { title: g.name || 'Item', titlePath: `gear.${i}.name`, cat: g.id ? 'Your notes' : 'Custom item' } })}</td>
@@ -868,6 +872,7 @@ function gear(body, c, d) {
   </section></div>`;
   wireCommon(body);
   wireArmorFx(body);
+  wirePaperDoll(body);
   const upd = () => { $('#money-total').textContent = (num(c.money.pp) * 10 + num(c.money.gp) + num(c.money.sp) / 10 + num(c.money.cp) / 100).toLocaleString(); };
   upd();
   document.addEventListener('recalc', upd);
@@ -878,7 +883,7 @@ function gear(body, c, d) {
     const en = await api.entry(r.id);
     const w = parseFloat((en.html.match(/<dt>Weight<\/dt><dd>([\d.]+)/) || [])[1]) || 0;
     const price = (en.html.match(/<dt>Price<\/dt><dd>([^<]+)/) || [])[1] || '';
-    c.gear.push({ id: r.id, name: r.name, qty: 1, weight: w, value: price, notes: '' });
+    c.gear.push({ id: r.id, name: r.name, qty: 1, weight: w, value: price, notes: '', slot: '', hint: hintFromSub(r.sub) });
     changed({ rerender: true });
   };
 }
