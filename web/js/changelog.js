@@ -5,7 +5,8 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
-      'A 🌙 Rest button on the Overview: heals 1 hit point per level, clears nonlethal damage, heals 1 point of each ability damage, refills the class pools and trackers, and resets spell slots.',
+      'The − and + beside each spell level’s slots are gone.',
+      'A 🌙 Rest button at the top of the Overview: heals 1 hit point per level, clears nonlethal damage, heals 1 point of each ability damage, refills the class pools and trackers, and resets spell slots.',
       'New daily pools: smite evil and smite good, challenge (cavalier and samurai), wild shape and martial flexibility.',
       'Each weapon has a ✦ Enchant button: enhancement, masterwork, a special material (adamantine, cold iron, silver, mithral, darkwood) and 30 special abilities such as flaming, keen, speed and holy.',
       'Elemental dice are added to the damage roll, holy, bane and similar abilities get a switch under the weapon, and keen or Improved Critical widens the threat range.',

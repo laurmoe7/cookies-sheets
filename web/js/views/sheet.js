@@ -18,7 +18,7 @@ import { hpSegments, segsHtml } from '../bars.js';
 import { playSfx } from '../sfx.js';
 import { hpFx } from '../healfx.js';
 import { view as petView } from '../pet/pet.js';
-import { renderResources, resourceBlock, wire as wireResources } from './resources.js';
+import { renderResources, resourceBlock, wire as wireResources, wireRest } from './resources.js';
 import { weaponFxRow, wireWeaponFx } from './weaponfx.js';
 
 const ICONS = {
@@ -136,6 +136,7 @@ function overview(body, c, d) {
     ${activeMods.length ? activeMods.map((m, i) => `<span class="chip on" data-toggle-mod="${c.modifiers.indexOf(m)}" title="Click to turn off">${esc(m.name)} ✕</span>`).join('') : '<span class="muted small">no buffs or conditions</span>'}
     <button class="btn small ghost" data-quick-buff>＋ Buff / condition</button>
     <span class="grow"></span>
+    <button class="btn small rest-btn" data-full-rest title="A night's rest: heal 1 HP per level, clear nonlethal damage, heal 1 point of each ability damage, refill the class pools and spell slots, and prepare the spells you cast again">🌙 Rest</button>
     ${rollBar()}
   </div>
   <div class="grid overview-grid">
@@ -244,7 +245,7 @@ function overview(body, c, d) {
         ${c.weapons.map((w, i) => `<tr>
           <td class="w10">${tf(`weapons.${i}.name`, { placeholder: 'Name (double-click)' })}${weaponFxRow(c, i)}</td>
           <td class="big accent nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="attack">${calc(`weapons.${i}.attackText`)}</button>${d.iteratives.length > 1 ? `<button class="rchip" data-roll-weapon="${i}" data-roll-kind="full">Full</button>` : ''}</td>
-          <td class="big nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="damage">${calc(`weapons.${i}.damageText`)}</button>${d.weapons[i]?.critText ? `<button class="rchip" data-roll-weapon="${i}" data-roll-kind="crit" title="Critical hit damage (${esc(d.weapons[i].crit)})">Crit</button>` : ''}</td>
+          <td class="big nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="damage">${calc(`weapons.${i}.damageText`)}</button>${d.weapons[i]?.critText ? `<button class="wbtn crit" data-roll-weapon="${i}" data-roll-kind="crit" title="Critical hit damage (${esc(d.weapons[i].crit)})">💥 Crit</button>` : ''}</td>
           <td>${inp(`weapons.${i}.crit`, { cls: 'w5', ph: '19-20/x2' })}</td>
           <td>${sel(`weapons.${i}.ability`, [['', 'auto'], ['str', 'Str'], ['dex', 'Dex']])}</td>
           <td>${chk(`weapons.${i}.ranged`)}</td>
@@ -265,6 +266,7 @@ function overview(body, c, d) {
   </div>`;
   wireCommon(body);
   wireWeaponFx(body, c);
+  wireRest(body, c);
   wireImages(body, c);
   renderResources($('#res-card', body), c);
 
@@ -578,15 +580,13 @@ function spells(body, c, d) {
         const count = sc.kind === 'prepared' && sc.slots[l] != null && sc.slots[l] !== Infinity ? `<span class="sl-count ${over ? 'bad' : ''}" title="Spells prepared today against your slots for this level">Prepared ${preparedCount(book, l)} of ${sc.slots[l]}</span>`
           : spont && l > 0 && sc.slots[l] != null && sc.slots[l] !== Infinity ? `<span class="sl-count ${slotsLeft(book, sc, l) <= 0 ? 'bad' : ''}" title="Slots left today: casting any spell of this level uses one">${slotsLeft(book, sc, l)} of ${sc.slots[l]} slots left</span>` : '';
         const heading = sc.kind === 'prepared' ? preparedPips(book, sc, l) : spont && l > 0 ? spontPips(book, sc, l) : '';
-        const slotStep = spont && l > 0 && sc.slots[l] != null && sc.slots[l] !== Infinity
-          ? `<span class="stepper sl-step" title="Slots left at ${ORD[l]} level today. Use − and + to correct the count."><button data-slot-adj="${l}" data-d="-1" title="Spend a slot (one fewer left)" aria-label="One fewer slot left">−</button><button data-slot-adj="${l}" data-d="1" title="Get a slot back (one more left)" aria-label="One more slot left">＋</button></span>` : '';
         const chip = s => {
           const left = num(s.prepared), spent = num(s.cast);
           const pips = prepared && l > 0 ? `<span class="pips" title="${left} prepared${spent ? `, ${spent} cast` : ''}">${'<i class="pip"></i>'.repeat(Math.min(left, 9))}${'<i class="pip used"></i>'.repeat(Math.min(spent, 9))}</span>` : '';
           return `<button class="sp-chip ${isActive(cls, s.i) ? 'on' : ''} ${prepared && l > 0 ? (left || spent ? 'ready' : 'idle') : ''}" data-sp-select="${s.i}" data-level="${l}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(cls, s.i)}"><span class="sp-n">${esc(s.name || 'New spell')}</span>${s.school ? `<span class="sp-s">${esc(s.school)}</span>` : ''}${pips}</button>`;
         };
         return `<div class="spell-level">
-          <div class="sl-head"><h4>${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>${count}${heading}${slotStep}<span class="grow"></span>
+          <div class="sl-head"><h4>${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>${count}${heading}<span class="grow"></span>
             <button class="btn small ghost" data-add-spell="${l}">＋ Add</button>
             <button class="btn small ghost" data-custom-spell="${l}" title="A spell that isn't in the compendium">＋ Custom</button></div>
           ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>`
@@ -604,14 +604,8 @@ function spells(body, c, d) {
     const cls = sbEl.dataset.cls;
     const book = c.spellbooks[cls];
     const sc = d.spellcasting[cls];
-    const t = e.target.closest('[data-slot-adj],[data-sp-select],[data-add-spell],[data-custom-spell],[data-cast],[data-cast-spont],[data-rest],[data-prep]');
+    const t = e.target.closest('[data-sp-select],[data-add-spell],[data-custom-spell],[data-cast],[data-cast-spont],[data-rest],[data-prep]');
     if (!t) return;
-    if (t.dataset.slotAdj !== undefined) {
-      const l = +t.dataset.slotAdj;
-      book.used[l] = Math.min(sc.slots[l], Math.max(0, num(book.used[l]) - +t.dataset.d)); // + = a slot back, - = one spent
-      changed({ rerender: true });
-      return;
-    }
     if (t.dataset.spSelect !== undefined) {
       openSpell(cls, +t.dataset.spSelect, t);
       return;

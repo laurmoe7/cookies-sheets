@@ -672,8 +672,6 @@ html[data-motion="off"] .fx-spark { display: none; }
 .icon-btn.step { border: 1px solid var(--line); border-radius: 6px; width: 20px; height: 20px; padding: 0; line-height: 1; font-size: 14px; color: var(--ink); }
 .icon-btn.step:hover { border-color: var(--accent); color: var(--accent); }
 .slot-tbl td .slot-pips { display: flex; justify-content: center; margin-top: 3px; }
-.sl-step { margin-left: 4px; }
-.sl-step button { width: 26px; height: 22px; font-size: 14px; }
 
 /* The tab bar stays at the top of the page while the tab scrolls under it. */
 .page > .tabs { position: sticky; top: 0; z-index: 20; background: var(--bg); }
@@ -697,3 +695,14 @@ html[data-motion="off"] .fx-spark { display: none; }
 .wfx-sw { display: inline-flex; gap: 3px; align-items: center; cursor: pointer; }
 .wfx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 12px; }
 .wfx-ab { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+
+/* Weapon row buttons: Enchant (gold once the weapon has something), Crit (like the roll buttons), and the Rest button at the top */
+.wbtn { font: inherit; font-size: 12px; line-height: 1.5; cursor: pointer; padding: 1px 10px; border-radius: 7px; white-space: nowrap; transition: background .12s, color .12s, border-color .12s; }
+.wbtn.fx { background: transparent; color: var(--muted); border: 1px dashed color-mix(in srgb, var(--muted) 60%, transparent); }
+.wbtn.fx:hover { color: var(--accent); border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.wbtn.fx.set, html[data-theme] .wbtn.fx.set { background: linear-gradient(180deg, #e6bb58, #b8862a); border: 1px solid #7a560f; color: #2a1904; font-weight: 700; text-shadow: 0 1px 0 rgba(255,240,200,.45); box-shadow: 0 1px 4px rgba(0,0,0,.35); }
+.wbtn.fx.set:hover { background: linear-gradient(180deg, #f0c968, #c4902e); }
+.wbtn.crit { margin-left: 6px; font-weight: 700; color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent); background: color-mix(in srgb, var(--accent) 11%, transparent); }
+.wbtn.crit:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.wbtn:active { transform: scale(.96); }
+.rest-btn { margin-right: 8px; }

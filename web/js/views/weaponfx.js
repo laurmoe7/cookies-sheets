@@ -8,7 +8,7 @@ export function weaponFxRow(c, i) {
   const w = c.weapons[i], fx = weaponFx(w);
   const sw = fx.conds.map(x => `<label class="small wfx-sw" title="Switch on while the target is right for ${esc(x.name)} (${esc(x.label)})"><input type="checkbox" data-wfx-on="${i}:${esc(x.id)}" ${x.on ? 'checked' : ''}> ${esc(x.label)}</label>`).join(' ');
   const warn = fx.warn ? ` <span class="bad small" title="${esc(fx.warn)}">⚠</span>` : '';
-  return `<div class="wfx"><button class="rchip ${fx.summary ? 'go' : ''}" data-wfx="${i}" title="Enchantments, special material and masterwork">✦ ${esc(fx.summary || 'Enchant')}</button>${warn} ${sw}</div>`;
+  return `<div class="wfx"><button class="wbtn fx ${fx.summary ? 'set' : ''}" data-wfx="${i}" title="Enchantments, special material and masterwork">✦ ${esc(fx.summary || 'Enchant')}</button>${warn} ${sw}</div>`;
 }
 
 /** Clicks inside the weapons table: open the window, flip a conditional switch. */
