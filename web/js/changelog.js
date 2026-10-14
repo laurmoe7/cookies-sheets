@@ -5,7 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
-      'Updating without downloading: the app looks for a new version when it starts (Options, Look turns that off, or checks now) and, with your say-so, downloads it, swaps the files and reopens. Your characters and options are not touched.',
+      'Updating without downloading: the app can look for a new version when it starts (Options, Look turns that on, or checks now) and, with your say-so, downloads it, swaps the files and reopens. Your characters and options are not touched.',
       'Inventory: an “Ignore encumbrance” tick beside the Carrying Capacity title. The weight is still added up, but it no longer caps Dex, adds a check penalty or slows you down.',
       'Safer imports: a character file from someone else can no longer smuggle code in through its pictures, and the app refuses oversized or malformed requests.',
       'The Compendium’s result list and entry text sit on the same burnt-edge parchment as the other pages, with a frame line.',

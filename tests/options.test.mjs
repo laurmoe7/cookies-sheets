@@ -56,7 +56,7 @@ test('the tab order: saved keys first, unknown ones dropped, new tabs keep their
   assert.deepEqual(sanitize({ tabOrder: ['a', 5, 'a', 'b'] }).tabOrder, ['a', 'b'], 'only text, no repeats');
 });
 
-test('the start-up update check is on by default and can be switched off', () => {
-  assert.equal(sanitize(null).updateCheck, true);
-  assert.equal(sanitize({ updateCheck: false }).updateCheck, false);
+test('the start-up update check is off by default and can be switched on', () => {
+  assert.equal(sanitize(null).updateCheck, false);
+  assert.equal(sanitize({ updateCheck: true }).updateCheck, true);
 });
