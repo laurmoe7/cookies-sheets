@@ -1,4 +1,4 @@
-// The armor enchantment window and the chip under an armor or shield's name (Gear tab, Armor & Shields).
+// The armor enchantment window and the chip under an armor or shield's name (Inventory tab, Armor & Shields).
 import { state, changed } from '../app.js';
 import { materialsFor, abilitiesFor, MATERIAL_BY_ID, armorFx } from '../armorfx.js';
 import { esc, modal } from '../ui.js';

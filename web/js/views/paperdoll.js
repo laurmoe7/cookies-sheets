@@ -1,4 +1,4 @@
-// The paper doll card at the top of the Gear tab: slots around a figure, each showing what is worn there.
+// The paper doll card at the top of the Inventory tab: slots around a figure, each showing what is worn there.
 import { state, changed } from '../app.js';
 import { SLOTS, SLOT_BY_ID, LAYOUT, slotName, wornBySlot, candidates, wear, takeOff } from '../paperdoll.js';
 import { armorFx } from '../armorfx.js';
