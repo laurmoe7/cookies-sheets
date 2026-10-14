@@ -5,6 +5,8 @@ export const CHANGELOG = [
   {
     version: 'Earlier saves', date: '2026-10-14',
     items: [
+      'Spell roll windows have the custom modifier box too (a number and a reason), with Keep for my next rolls.',
+      'Nicer icons in the left menu for Characters, Level Up and Quick Rules.',
       'Summons now sit at the top of the Companions tab instead of Buffs & Conditions.',
       'Pressing Back in the side panel after opening a creature from a spell brings the buttons of that spell (Summon, Prepared, Cast) back.',
       'The Characters page keeps earlier saves of each character, so you can go back after a bad edit.',

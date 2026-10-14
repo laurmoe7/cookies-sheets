@@ -45,7 +45,10 @@ export function rollBar() {
 const modsTotal = () => mods.reduce((t, m) => t + m.n, 0);
 const modsChip = () => ['Modifier', mods.length ? bonusText(modsTotal()) || '+0' : '', mode === 'adv' ? 'Adv' : mode === 'dis' ? 'Disadv' : ''].filter(Boolean).join(' ');
 
+let spellModsDraw = null; // redraws the modifier area of the open spell roll window (a roll clears the modifiers, so it must follow)
+
 function syncBar() {
+  spellModsDraw?.();
   const mb = document.getElementById('roll-mods');
   if (mb) { mb.textContent = modsChip(); mb.classList.toggle('on', mods.length > 0 || !!mode); }
   document.querySelectorAll('[data-rmode]').forEach(b => b.classList.toggle('on', b.dataset.rmode === mode));
@@ -324,14 +327,37 @@ async function spellWindow(btn) {
     body.innerHTML = `<p class="small muted">${esc(facts.join(' · '))}.</p>
       <div class="roll-bar" style="margin:8px 0">${chips.join(' ')}</div>
       <div class="row"><input id="spell-dice" class="w12" value="${esc(info.dice)}" placeholder="e.g. 5d6" autocomplete="off" aria-label="Spell dice">
-        <button class="btn" id="spell-go">Roll ${esc(what || name)}</button></div>`;
+        <button class="btn" id="spell-go">Roll ${esc(what || name)}</button></div>
+      <p class="small muted" style="margin:10px 0 0">Modifiers are added to the d20 rolls above (to hit, concentration, caster level). For the damage, type the bonus into the dice box, such as 5d6+2.</p>
+      <div id="sw-mods"></div>`;
+    const drawMods = () => {
+      const box = body.querySelector('#sw-mods');
+      if (!box) return;
+      box.innerHTML = '<div class="row" style="margin:8px 0"><input id="mod-n" class="w3" type="number" placeholder="±" aria-label="Modifier"><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>' +
+        (mods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b> <button class="btn small ghost" id="mod-clear">Clear</button></div>' : '') +
+        '<label class="small"><input type="checkbox" id="mod-keep" ' + (keepMods ? 'checked' : '') + '> Keep these modifiers for my next rolls</label>';
+    };
+    spellModsDraw = drawMods;
+    drawMods();
+    const addMod = () => {
+      const n = Math.trunc(Number(body.querySelector('#mod-n').value));
+      if (n) mods.push({ n, label: body.querySelector('#mod-label').value.trim() || 'modifier' });
+      syncBar();
+    };
     const go = () => { const v = body.querySelector('#spell-dice').value.trim(); if (v) doRoll({ expr: v, label: what ? `${name} ${what}` : name }); };
     body.onclick = e => {
       const a = e.target.closest('[data-w-add]');
       if (a) askRoll({ expr: 'd20' + bonusText(a.dataset.wAdd), label: a.dataset.wLabel }, null, e.shiftKey);
       else if (e.target.closest('#spell-go')) go();
+      else if (e.target.closest('#mod-add')) addMod();
+      else if (e.target.closest('#mod-clear')) { mods = []; syncBar(); }
     };
-    body.onkeydown = e => { if (e.key === 'Enter' && e.target.id === 'spell-dice') go(); };
+    body.onchange = e => { if (e.target.id === 'mod-keep') keepMods = e.target.checked; };
+    body.onkeydown = e => {
+      if (e.key !== 'Enter') return;
+      if (e.target.id === 'spell-dice') go();
+      else if (e.target.closest('#mod-n,#mod-label')) { e.preventDefault(); addMod(); }
+    };
     setTimeout(() => body.querySelector('#spell-dice')?.focus(), 0);
-  });
+  }).then(() => { spellModsDraw = null; });
 }
