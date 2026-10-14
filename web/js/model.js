@@ -67,6 +67,11 @@ export function migrate(c) {
     }
   }
   // A save made by a newer build keeps its number, so an older build opening it does not stamp it as its own and re-run steps later.
+  // Buffs saved before these effects existed: Haste's extra attack, and Power Attack's x1.5 two-handed damage.
+  for (const m of c.modifiers || []) {
+    if (m.name === 'Haste' && !(m.effects || []).some(e => e.target === 'extraAttack')) (m.effects ||= []).push({ target: 'extraAttack', value: 1, type: 'untyped' });
+    if (m.name === 'Power Attack') for (const e of m.effects || []) if (e.target === 'meleeDamage' && e.scale === undefined) e.scale = true;
+  }
   c.version = Math.max(c.version || 1, MODEL_VERSION);
   return c;
 }

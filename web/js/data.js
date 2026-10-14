@@ -109,7 +109,7 @@ export const CMD_AC_TYPES = new Set(['circumstance', 'deflection', 'dodge', 'ins
 export const MOD_TARGETS = {
   str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma',
   attack: 'Attack rolls (all)', melee: 'Melee attack', ranged: 'Ranged attack', damage: 'Damage (all)',
-  meleeDamage: 'Melee damage', rangedDamage: 'Ranged damage',
+  extraAttack: 'Extra attack on a full attack (Haste)', meleeDamage: 'Melee damage', rangedDamage: 'Ranged damage',
   ac: 'Armor Class', saves: 'All saves', fort: 'Fortitude', ref: 'Reflex', will: 'Will',
   skills: 'All skills', checks: 'Ability & skill checks', init: 'Initiative', cmb: 'CMB', cmd: 'CMD',
   speed: 'Speed (ft.)', hp: 'Max HP', cl: 'Caster level', concentration: 'Concentration',
@@ -125,7 +125,7 @@ export const BUFF_PRESETS = [
   { name: 'Charging', group: 'Combat option', effects: [{ target: 'melee', value: 2, type: 'untyped' }, { target: 'ac', value: -2, type: 'untyped' }] },
   { name: 'Bless', group: 'Spell', effects: [{ target: 'attack', value: 1, type: 'morale' }], note: '+1 morale on saves vs fear.' },
   { name: 'Prayer (ally)', group: 'Spell', effects: [{ target: 'attack', value: 1, type: 'luck' }, { target: 'damage', value: 1, type: 'luck' }, { target: 'saves', value: 1, type: 'luck' }, { target: 'skills', value: 1, type: 'luck' }] },
-  { name: 'Haste', group: 'Spell', effects: [{ target: 'attack', value: 1, type: 'untyped' }, { target: 'ac', value: 1, type: 'dodge' }, { target: 'ref', value: 1, type: 'dodge' }, { target: 'speed', value: 30, type: 'enhancement' }], note: 'One extra attack at highest bonus on a full attack.' },
+  { name: 'Haste', group: 'Spell', effects: [{ target: 'attack', value: 1, type: 'untyped' }, { target: 'ac', value: 1, type: 'dodge' }, { target: 'ref', value: 1, type: 'dodge' }, { target: 'speed', value: 30, type: 'enhancement' }, { target: 'extraAttack', value: 1, type: 'untyped' }], note: 'One extra attack at the highest bonus on a full attack (added to the Full attack automatically).' },
   { name: 'Heroism', group: 'Spell', effects: [{ target: 'attack', value: 2, type: 'morale' }, { target: 'saves', value: 2, type: 'morale' }, { target: 'skills', value: 2, type: 'morale' }] },
   { name: 'Greater Heroism', group: 'Spell', effects: [{ target: 'attack', value: 4, type: 'morale' }, { target: 'saves', value: 4, type: 'morale' }, { target: 'skills', value: 4, type: 'morale' }], note: 'Immune to fear; temp HP = caster level (max 20).' },
   { name: 'Shield of Faith (+2)', group: 'Spell', effects: [{ target: 'ac', value: 2, type: 'deflection' }] },

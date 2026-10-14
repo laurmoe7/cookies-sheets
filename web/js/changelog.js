@@ -6,6 +6,8 @@ export const CHANGELOG = [
     version: 'Earlier saves', date: '2026-10-14',
     items: [
       'Rolling a spell now looks like rolling a weapon: pick what to roll (to hit, concentration, damage), then Advantage, situational modifiers that fit spells, your own modifier and Roll.',
+      'Haste now adds its extra attack to the full attack, and a Haste or Power Attack saved earlier is brought up to date.',
+      'The damage roll window names Power Attack, and the two-handed change to it, instead of saying no buff applies.',
       'Roll windows list the buffs and conditions that are part of the number, by name, such as "Heroism (morale) +2".',
       'Roll buttons and the Summon button are gold, with their emoji.',
       'The sheet tabs now stay at the top while you scroll, and are in a new order: Overview, Buffs & Conditions, Skills, Gear, Spells, Companions, Feats & Abilities.',

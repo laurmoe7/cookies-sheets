@@ -235,6 +235,8 @@ export function compute(c, classesByName) {
   const meleeDmgScaled = stack(listOf('damage', 'meleeDamage').filter(m => m.scale));
   const rangedDmg = stack(listOf('damage', 'rangedDamage'));
   d.iteratives = [bab];
+  d.extraAttacks = Math.min(1, Math.max(0, stack(listOf('extraAttack')).total)); // Haste: one more attack at the best bonus; it does not stack with itself
+  if (d.extraAttacks) d.iteratives.push(bab);
   for (let b = bab - 5; b > 0; b -= 5) d.iteratives.push(b);
   d.melee = bab + M('str') + sz.ac + meleeSt.total;
   d.ranged = bab + M('dex') + sz.ac + rangedSt.total;
@@ -260,7 +262,8 @@ export function compute(c, classesByName) {
     const dmgBonus = strDmg + num(w.enh) + num(w.dmgMisc) + (ranged ? rangedDmg.total : meleeDmg.total) + scaled;
     const atkBuffs = stackParts(listOf('attack', ranged ? 'ranged' : 'melee'));
     bd[`weapons.${d.weapons.length}.attack`] = parts({ label: 'Base attack bonus', value: bab }, { label: ABIL_SHORT[abil] + ' modifier', value: M(abil) }, { label: `Size (${size})`, value: sz.ac }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Misc (attack)', value: num(w.misc) }, atkBuffs);
-    bd[`weapons.${d.weapons.length}.damage`] = parts({ label: mult === 1 ? 'Str modifier' : mult === 0 ? 'Str modifier (not added)' : `Str modifier (${mult === 1.5 ? 'x1.5, two-handed' : mult === 0.5 ? 'x0.5, off-hand' : 'x' + mult})`, value: strDmg }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Misc (damage)', value: num(w.dmgMisc) }, stackParts((ranged ? listOf('damage', 'rangedDamage') : listOf('damage', 'meleeDamage')).filter(m => !m.scale)), { label: 'Power Attack-style bonuses', value: scaled });
+    bd[`weapons.${d.weapons.length}.damage`] = parts({ label: mult === 1 ? 'Str modifier' : mult === 0 ? 'Str modifier (not added)' : `Str modifier (${mult === 1.5 ? 'x1.5, two-handed' : mult === 0.5 ? 'x0.5, off-hand' : 'x' + mult})`, value: strDmg }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Misc (damage)', value: num(w.dmgMisc) }, stackParts((ranged ? listOf('damage', 'rangedDamage') : listOf('damage', 'meleeDamage')).filter(m => !m.scale)), ranged ? [] : stackParts(listOf('damage', 'meleeDamage').filter(m => m.scale)), // Power Attack by name, then what two hands or the off hand change
+      { label: mult === 1.5 ? 'Two-handed (x1.5 on those)' : 'Off-hand (x0.5 on those)', value: scaled - meleeDmgScaled.total });
     d.weapons.push({
       attack: attacks[0], attacks,
       attackText: attacks.map(sign).join('/'),

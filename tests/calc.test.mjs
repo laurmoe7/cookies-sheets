@@ -96,7 +96,7 @@ test('Haste: dodge AC is lost when flat-footed but kept vs touch', () => {
   const d = calc(buff(fighter(), 'Haste'));
   assert.deepEqual([d.ac.total, d.ac.touch, d.ac.flat], [17, 13, 14]);
   assert.equal(d.saves.ref.total, 4);
-  assert.equal(d.weapons[0].attackText, '+8');
+  assert.equal(d.weapons[0].attackText, '+8/+8', 'BAB 4 + Str 3 + Haste 1 = +8, and Haste gives one more attack at the best bonus');
   assert.equal(d.speed, 60);
 });
 
@@ -200,4 +200,33 @@ test('ability damage lowers the modifier, drain lowers the score', () => {
   c.abilities.str.damage = 0;
   c.abilities.str.drain = 2;
   assert.equal(calc(c).abilities.str.score, 8);
+});
+
+test('Haste adds one attack at the best bonus before the iteratives, and only one', () => {
+  const high = make({ base: { str: 10 }, levels: repeat('Fighter', 8), weapons: [structuredClone(longsword)] });
+  assert.equal(calc(high).weapons[0].attackText, '+9/+4', 'BAB 8 + Str 1 (human +2) = +9, +4');
+  const hasted = calc(buff(structuredClone(high), 'Haste'));
+  assert.equal(hasted.weapons[0].attackText, '+10/+10/+5', 'Haste +1 to hit: +10, the extra +10, then +5');
+  const twice = buff(buff(structuredClone(high), 'Haste'), 'Haste');
+  assert.equal(calc(twice).weapons[0].attacks.length, 3, 'two Hastes do not give two extra attacks');
+});
+
+test('a Haste saved before it had its extra attack gets it back when loaded', async () => {
+  const { migrate } = await import('../web/js/model.js');
+  const c = make({ levels: repeat('Fighter', 6) });
+  c.modifiers.push({ name: 'Haste', active: true, note: '', effects: [{ target: 'attack', value: 1, type: 'untyped' }] });
+  c.modifiers.push({ name: 'Power Attack', active: true, note: '', effects: [{ target: 'melee', value: '-(1+floor(bab/4))', type: 'untyped' }, { target: 'meleeDamage', value: '2*(1+floor(bab/4))', type: 'untyped' }] });
+  migrate(c);
+  assert.ok(c.modifiers[0].effects.some(e => e.target === 'extraAttack'));
+  assert.equal(c.modifiers[1].effects[1].scale, true, 'its damage scales two-handed again');
+});
+
+test('the damage breakdown names Power Attack and the two-handed change', () => {
+  const c = buff(make({ base: { str: 10 }, levels: repeat('Fighter', 8), weapons: [{ ...structuredClone(longsword), dmgMult: 1.5 }] }), 'Power Attack');
+  const d = calc(c), parts = d.bd['weapons.0.damage'];
+  // BAB 8: Power Attack +2 x (1 + 2) = +6, x1.5 two-handed = +9; Str 12 is +1 x1.5 = +1 (floor)
+  assert.equal(parts.find(p => p.label === 'Power Attack').value, 6);
+  assert.ok(parts.find(p => p.label === 'Power Attack').buff, 'marked as a buff so the roll window lists it');
+  assert.equal(parts.find(p => /Two-handed/.test(p.label)).value, 3, '6 x 1.5 = 9, so +3 more');
+  assert.equal(parts.reduce((n, p) => n + p.value, 0), d.weapons[0].dmgBonus, 'the parts add up to the damage bonus');
 });
