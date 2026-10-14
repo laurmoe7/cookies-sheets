@@ -310,3 +310,13 @@ test('spell-like abilities: caster level is the character level, the DC uses Cha
   assert.deepEqual([dm.cl, dm.mod, dm.dc, dm.unlimited, dm.left], [9, 1, 10 + 0 + 1, true, Infinity], 'Int 12 is +1; at will never runs out; the CL 9 override wins');
   assert.equal(d.bd['spellLikes.0.cl'].reduce((n, p) => n + p.value, 0), 5);
 });
+
+test('old saves get an empty note on every skill, and a typed note is kept', async () => {
+  const { migrate } = await import('../web/js/model.js');
+  const c = make();
+  for (const s of c.skills) delete s.notes;
+  c.skills[0].notes = '+2 vs. traps';
+  const m = migrate(c);
+  assert.equal(m.skills[0].notes, '+2 vs. traps');
+  assert.ok(m.skills.slice(1).every(s => s.notes === ''));
+});

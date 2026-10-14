@@ -451,7 +451,7 @@ function skills(body, c, d) {
       ${d.acp ? `<span class="pill bad">Armor check penalty ${d.acp}</span>` : ''}
       <label class="small"><input type="checkbox" id="only-trained"> Hide untrained-only skills with 0 ranks</label>
     </div>
-    <table class="tbl skills-tbl"><thead><tr><th title="Class skill">CS</th><th>Skill</th><th>Ability</th><th>Total</th><th>Ranks</th><th>Misc</th><th></th></tr></thead>
+    <table class="tbl skills-tbl"><thead><tr><th title="Class skill">CS</th><th>Skill</th><th>Ability</th><th>Total</th><th>Ranks</th><th>Misc</th><th>Notes</th><th></th></tr></thead>
     <tbody>${c.skills.map((s, i) => {
       const key = s.sub ? `${s.name} (${s.sub})` : s.name;
       const sd = d.skills[key] || {};
@@ -465,6 +465,7 @@ function skills(body, c, d) {
         <td class="big accent">${sd.untrainedBlocked ? '<span class="dim" title="Trained only">—</span>' : roll('skills.' + key + '.total', s.name + (s.sub ? ` (${s.sub})` : ''), `<span data-calc="skills.${esc(key)}.total" data-fmt="sign"></span>`)}</td>
         <td>${inp(`skills.${i}.ranks`, { type: 'num', cls: 'w3' + (sd.overMax ? ' bad' : ''), rerender: true })}</td>
         <td>${inp(`skills.${i}.misc`, { type: 'num', cls: 'w3', title: 'Racial, trait, item, feat bonuses' })}</td>
+        <td class="skill-note">${inp(`skills.${i}.notes`, { cls: 'grow', ph: 'Notes', title: 'Anything to remember about this skill (+2 vs. traps, only in dim light...)' })}</td>
         <td>${multi ? `<button class="icon-btn" data-dup-skill="${i}" title="Add another ${s.name}">＋</button>` : ''}
             ${multi && c.skills.filter(x => x.name === s.name).length > 1 ? `<button class="icon-btn" data-del="skills.${i}" title="Remove">✕</button>` : ''}</td></tr>`;
     }).join('')}</tbody></table>
@@ -476,7 +477,7 @@ function skills(body, c, d) {
     const b = e.target.closest('[data-dup-skill]');
     if (!b) return;
     const i = +b.dataset.dupSkill;
-    c.skills.splice(i + 1, 0, { name: c.skills[i].name, sub: '', ranks: 0, misc: 0, classSkill: false });
+    c.skills.splice(i + 1, 0, { name: c.skills[i].name, sub: '', ranks: 0, misc: 0, classSkill: false, notes: '' });
     changed({ rerender: true });
   });
 }

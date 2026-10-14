@@ -29,7 +29,7 @@ export function newCharacter() {
     defenses: { dr: '', sr: '', resist: '', immune: '' },
     armor: [],
     weapons: [],
-    skills: SKILLS.map(s => ({ name: s.name, sub: '', ranks: 0, misc: 0, classSkill: false })),
+    skills: SKILLS.map(s => ({ name: s.name, sub: '', ranks: 0, misc: 0, classSkill: false, notes: '' })),
     feats: [], traits: [], specials: [],
     modifiers: [],
     gear: [], money: { pp: 0, gp: 0, sp: 0, cp: 0, custom: [] }, // custom: [{name, amount}] other currencies
@@ -65,6 +65,7 @@ export function migrate(c) {
   for (const w of c.weapons || []) { w.mw ??= false; w.material ??= ''; w.improvedCritical ??= false; w.fx ||= []; w.slot ??= ''; }
   for (const a of c.armor || []) { a.mw ??= false; a.material ??= ''; a.fx ||= []; }
   for (const g of c.gear || []) { g.slot ??= ''; g.hint ??= ''; g.effects ||= []; }
+  for (const s of c.skills || []) s.notes ??= ''; // a note on each skill (Skills tab)
   c.money = { ...base.money, ...(c.money || {}) };
   if (!Array.isArray(c.money.custom)) c.money.custom = [];
   // Version 1 kept the day's total in "prepared" and counted casts separately; now "prepared" is what is left, so take the casts off once.
