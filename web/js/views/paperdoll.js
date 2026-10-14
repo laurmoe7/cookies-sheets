@@ -42,9 +42,8 @@ export function paperDollCard(c, d) {
   const fig = pic
     ? `<div class="doll-fig"><img src="${pic}" alt=""><div class="portrait-tools"><button class="icon-btn" data-doll-img title="${c.doll ? 'Change picture' : 'Choose a picture of its own (your portrait is shown until you do)'}">✎</button><button class="icon-btn" data-doll-edit title="Recenter or resize${c.doll ? '' : ' (this makes a picture of its own from your portrait)'}">⤢</button>${c.doll ? '<button class="icon-btn" data-doll-clear title="Remove this picture (your portrait is shown instead)">✕</button>' : ''}</div></div>`
     : '<button class="doll-fig empty" data-doll-img title="Add a picture for the paper doll">＋ Add a picture</button>';
-  const total = Object.values(worn).reduce((n, l) => n + l.length, 0);
   return `<section class="card span2 doll-card">
-    <div class="row"><h3 class="grow">Equipment</h3><span class="small muted">${total} slot${total === 1 ? '' : 's'} filled of ${SLOTS.length}</span></div>
+    <div class="row"><h3 class="grow">Equipment</h3></div>
     <div class="doll">
       <div class="doll-col">${LAYOUT.left.map(t).join('')}</div>
       <div class="doll-mid">${fig}
@@ -52,7 +51,6 @@ export function paperDollCard(c, d) {
       <div class="doll-col">${LAYOUT.right.map(t).join('')}</div>
     </div>
     <div class="doll-row">${LAYOUT.bottom.map(t).join('')}</div>
-    <p class="small muted">Click a slot to wear something there. Armor and shields use their Worn tick below, weapons and carried items are picked here. A magic item added from the compendium shows up under the slot it fits.</p>
   </section>`;
 }
 
