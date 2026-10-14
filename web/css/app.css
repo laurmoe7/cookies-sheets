@@ -667,3 +667,5 @@ html[data-motion="off"] .fx-spark { display: none; }
 .icon-btn.step { border: 1px solid var(--line); border-radius: 6px; width: 20px; height: 20px; padding: 0; line-height: 1; font-size: 14px; color: var(--ink); }
 .icon-btn.step:hover { border-color: var(--accent); color: var(--accent); }
 .slot-tbl td .slot-pips { display: flex; justify-content: center; margin-top: 3px; }
+.sl-step { margin-left: 4px; }
+.sl-step button { width: 26px; height: 22px; font-size: 14px; }

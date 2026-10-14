@@ -542,13 +542,15 @@ function spells(body, c, d) {
         const count = sc.kind === 'prepared' && sc.slots[l] != null && sc.slots[l] !== Infinity ? `<span class="sl-count ${over ? 'bad' : ''}" title="Spells prepared today against your slots for this level">Prepared ${preparedCount(book, l)} of ${sc.slots[l]}</span>`
           : spont && l > 0 && sc.slots[l] != null && sc.slots[l] !== Infinity ? `<span class="sl-count ${slotsLeft(book, sc, l) <= 0 ? 'bad' : ''}" title="Slots left today: casting any spell of this level uses one">${slotsLeft(book, sc, l)} of ${sc.slots[l]} slots left</span>` : '';
         const heading = sc.kind === 'prepared' ? preparedPips(book, sc, l) : spont && l > 0 ? spontPips(book, sc, l) : '';
+        const slotStep = spont && l > 0 && sc.slots[l] != null && sc.slots[l] !== Infinity
+          ? `<span class="stepper sl-step" title="Slots left at ${ORD[l]} level today. Use − and + to correct the count."><button data-slot-adj="${l}" data-d="-1" title="Spend a slot (one fewer left)" aria-label="One fewer slot left">−</button><button data-slot-adj="${l}" data-d="1" title="Get a slot back (one more left)" aria-label="One more slot left">＋</button></span>` : '';
         const chip = s => {
           const left = num(s.prepared), spent = num(s.cast);
           const pips = prepared && l > 0 ? `<span class="pips" title="${left} prepared${spent ? `, ${spent} cast` : ''}">${'<i class="pip"></i>'.repeat(Math.min(left, 9))}${'<i class="pip used"></i>'.repeat(Math.min(spent, 9))}</span>` : '';
           return `<button class="sp-chip ${isActive(cls, s.i) ? 'on' : ''} ${prepared && l > 0 ? (left || spent ? 'ready' : 'idle') : ''}" data-sp-select="${s.i}" data-level="${l}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(cls, s.i)}"><span class="sp-n">${esc(s.name || 'New spell')}</span>${s.school ? `<span class="sp-s">${esc(s.school)}</span>` : ''}${pips}</button>`;
         };
         return `<div class="spell-level">
-          <div class="sl-head"><h4>${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>${count}${heading}<span class="grow"></span>
+          <div class="sl-head"><h4>${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>${count}${heading}${slotStep}<span class="grow"></span>
             <button class="btn small ghost" data-add-spell="${l}">＋ Add</button>
             <button class="btn small ghost" data-custom-spell="${l}" title="A spell that isn't in the compendium">＋ Custom</button></div>
           ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>`
@@ -661,7 +663,6 @@ function renderSpellActions() {
   const l = s.level, prepared = sc.kind === 'prepared' || sc.kind === 'arcanist', spont = sc.kind === 'spontaneous' || sc.kind === 'arcanist';
   const left = num(s.prepared);
   sd.el.dataset.cls = sd.cls; // the roll window finds the caster class from here
-  const slotsHere = spont && l > 0 && sc.slots[l] != null && sc.slots[l] !== Infinity;
   sd.el.innerHTML = `<div class="sp-actions">
       <div class="sp-group">
         ${s.id ? `<span data-spell-slot="${sd.i}" data-spell-id="${s.id}"></span>` : `<button class="btn" data-spell-roll="${sd.i}" title="Roll an attack, concentration or the damage for this spell">🎲 Roll</button>`}
@@ -677,11 +678,6 @@ function renderSpellActions() {
       </div>` : ''}
       ${l > 0 && spont ? `<div class="sp-group">
         <button class="btn primary sp-cast" data-sa="cast-spont" ${slotsLeft(book, sc, l) <= 0 ? 'disabled' : ''} title="${slotsLeft(book, sc, l) <= 0 ? 'No slots left at this level' : 'Cast it: uses one ' + ORD[l] + '-level slot. Prepared spells can be cast again while you have slots.'}">Cast</button>
-      </div>` : ''}
-      ${slotsHere ? `<div class="sp-group" title="Slots left at ${ORD[l]} level today. Use − and + to correct the count.">
-        <span class="sp-group-label">${ORD[l]}-level slots left</span>
-        <span class="stepper"><button data-sa="slot" data-d="-1" title="Spend a slot (one fewer left)" aria-label="One fewer slot left">−</button><span class="val ${slotsLeft(book, sc, l) <= 0 ? 'bad' : ''}">${slotsLeft(book, sc, l)}</span><button data-sa="slot" data-d="1" title="Get a slot back (one more left)" aria-label="One more slot left">＋</button></span>
-        ${spontPips(book, sc, l)}
       </div>` : ''}
     </div>
     ${s.id ? '' : `<div class="sp-custom"><label class="small muted">Name</label><input class="grow" data-sa-name value="${esc(s.name || '')}" placeholder="Spell name"><label class="small muted">Description</label><textarea rows="5" data-sa-notes placeholder="What it does">${esc(s.notes || '')}</textarea></div>`}`;

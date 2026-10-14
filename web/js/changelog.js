@@ -6,6 +6,7 @@ export const CHANGELOG = [
     version: 'Earlier saves', date: '2026-10-14',
     items: [
       'Rolling a spell now looks like rolling a weapon: pick what to roll (to hit, concentration, damage), then Advantage, situational modifiers that fit spells, your own modifier and Roll.',
+      'The slots-left − and + now sit beside the slot circles in each spell level heading, no longer in the spell side panel.',
       'Nicer icons in the left menu for Characters, Level Up and Quick Rules.',
       'Summons now sit at the top of the Companions tab instead of Buffs & Conditions.',
       'Pressing Back in the side panel after opening a creature from a spell brings the buttons of that spell (Summon, Prepared, Cast) back.',
