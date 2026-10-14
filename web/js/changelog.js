@@ -5,6 +5,8 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
+      'Armor and shields have a ✦ Enchant button too: masterwork, mithral, adamantine and darkwood, and special abilities such as shadow, slick, fortification, spell resistance and energy resistance. Check penalty, Dex cap, spell failure, weight, speed and Stealth change by themselves.',
+      'What your armor gives (damage reduction, spell resistance, resistances, fortification) is listed under the Defenses on the Overview.',
       'The slot table has one row for spontaneous casters: − and + beside the count, with the slot circles under it. The separate Used row is gone.',
       'The Rest button in the Spells tab is gone; the \ud83c\udf19 Rest button at the top of the Overview does the same and more, and asks first.',
       'A spell\u2019s roll window sorts what you can roll into rows: Hit (an attack roll, when the spell needs one), Damage or Healing with its dice shown, and Checks.',

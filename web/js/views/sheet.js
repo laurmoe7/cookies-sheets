@@ -20,6 +20,7 @@ import { hpFx } from '../healfx.js';
 import { view as petView } from '../pet/pet.js';
 import { renderResources, resourceBlock, wire as wireResources, wireRest } from './resources.js';
 import { weaponFxRow, wireWeaponFx } from './weaponfx.js';
+import { armorFxChip, wireArmorFx } from './armorfx.js';
 
 const ICONS = {
   overview: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
@@ -209,6 +210,7 @@ function overview(body, c, d) {
         <label>DR ${inp('defenses.dr', { cls: 'w8' })}</label><label>SR ${inp('defenses.sr', { cls: 'w4' })}</label>
         <label>Resist ${inp('defenses.resist', { cls: 'w8' })}</label><label>Immune ${inp('defenses.immune', { cls: 'w8' })}</label>
       </div>
+      ${d.armorFx?.text ? `<div class="small muted" title="From the armor and shield you wear (Gear tab, Enchant)">From your armor: ${esc(d.armorFx.text)}</div>` : ''}
     </section>
 
     <div class="stack">
@@ -364,7 +366,7 @@ function wireCommon(body) {
     if (t.dataset.add) {
       const blank = {
         weapons: { name: '', ability: '', ranged: false, enh: 0, misc: 0, damage: '1d8', dmgMult: '', dmgMisc: 0, crit: '×2', range: '', type: '', weight: 0, mw: false, material: '', improvedCritical: false, fx: [] },
-        armor: { name: '', type: 'armor', category: 'light', bonus: 0, enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true },
+        armor: { name: '', type: 'armor', category: 'light', bonus: 0, enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true, mw: false, material: '', fx: [] },
         gear: { name: '', qty: 1, weight: 0, value: '', notes: '' },
         specials: { name: '', notes: '' },
         'money.custom': { name: '', amount: 0 },
@@ -824,10 +826,10 @@ function gear(body, c, d) {
     <div class="row"><h3 class="grow">Armor & Shields</h3><button class="btn small" data-add="armor">＋ Add armor/shield</button></div>
     ${c.armor.length ? `<table class="tbl"><thead><tr><th>Worn</th><th>Name</th><th>Type</th><th>Category</th><th title="Armor/shield bonus">Bonus</th><th title="Enhancement">Enh</th>
       <th title="Max Dex bonus (blank = none)">Max Dex</th><th title="Armor check penalty">ACP</th><th title="Arcane spell failure %">ASF %</th><th>Weight</th><th></th></tr></thead><tbody>
-      ${c.armor.map((a, i) => `<tr><td>${chk(`armor.${i}.equipped`)}</td><td class="w10">${tf(`armor.${i}.name`, { placeholder: 'Name' })}</td>
-        <td>${sel(`armor.${i}.type`, [['armor', 'Armor'], ['shield', 'Shield']])}</td>
+      ${c.armor.map((a, i) => `<tr><td>${chk(`armor.${i}.equipped`)}</td><td class="w10">${tf(`armor.${i}.name`, { placeholder: 'Name' })}${armorFxChip(c, i)}</td>
+        <td>${sel(`armor.${i}.type`, [['armor', 'Armor'], ['shield', 'Shield']], { rerender: true })}</td>
         <td>${sel(`armor.${i}.category`, [['light', 'Light'], ['medium', 'Medium'], ['heavy', 'Heavy']])}</td>
-        <td>${inp(`armor.${i}.bonus`, { type: 'num', cls: 'w2' })}</td><td>${inp(`armor.${i}.enh`, { type: 'num', cls: 'w2' })}</td>
+        <td>${inp(`armor.${i}.bonus`, { type: 'num', cls: 'w2' })}</td><td>${inp(`armor.${i}.enh`, { type: 'num', cls: 'w2', rerender: true })}</td>
         <td>${inp(`armor.${i}.maxDex`, { type: 'num', cls: 'w2' })}</td><td>${inp(`armor.${i}.acp`, { type: 'num', cls: 'w2' })}</td>
         <td>${inp(`armor.${i}.asf`, { type: 'num', cls: 'w2' })}</td><td>${inp(`armor.${i}.weight`, { type: 'num', cls: 'w3' })}</td>
         <td><button class="icon-btn" data-del="armor.${i}">✕</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted">No armor.</p>'}
@@ -865,6 +867,7 @@ function gear(body, c, d) {
     ${enc.load === 'medium' ? '· max Dex +3, ACP −3, reduced speed' : enc.load === 'heavy' ? '· max Dex +1, ACP −6, reduced speed, run ×3' : enc.load === 'overloaded' ? '· can only move 5 ft. per round' : ''}</p>
   </section></div>`;
   wireCommon(body);
+  wireArmorFx(body);
   const upd = () => { $('#money-total').textContent = (num(c.money.pp) * 10 + num(c.money.gp) + num(c.money.sp) / 10 + num(c.money.cp) / 100).toLocaleString(); };
   upd();
   document.addEventListener('recalc', upd);

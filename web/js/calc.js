@@ -5,6 +5,7 @@ import {
 import { skillKey } from './model.js';
 import { archetypesOf } from './features.js';
 import { weaponFx, parseCrit, doubleThreat, critLabel, multiplyDice } from './weaponfx.js';
+import { armorFx, wornFx } from './armorfx.js';
 
 export const mod = score => Math.floor((score - 10) / 2);
 export const sign = n => (n == null || isNaN(n) ? '—' : (n >= 0 ? '+' : '') + n);
@@ -171,7 +172,7 @@ export function compute(c, classesByName) {
   // ---- encumbrance ----
   let weight = 0;
   for (const g of c.gear) weight += num(g.weight) * (g.qty === '' || g.qty == null ? 1 : num(g.qty));
-  for (const a of c.armor) weight += num(a.weight);
+  for (const a of c.armor) weight += num(a.weight) * armorFx(a).weightMult;
   for (const w of c.weapons) weight += num(w.weight) * weaponFx(w).weightMult;
   weight += (num(c.money.pp) + num(c.money.gp) + num(c.money.sp) + num(c.money.cp)) / 50;
   const cap = carryingCapacity(d.abilities.str.score, size);
@@ -188,11 +189,14 @@ export function compute(c, classesByName) {
     if (!a.equipped) continue;
     const isShield = a.type === 'shield';
     acList.push({ value: num(a.bonus) + num(a.enh), type: isShield ? 'shield' : 'armor', source: a.name });
-    armorAcp -= Math.abs(num(a.acp));
-    if (a.maxDex !== '' && a.maxDex != null && !isNaN(parseInt(a.maxDex))) maxDex = Math.min(maxDex, parseInt(a.maxDex));
-    asf += num(a.asf);
-    if (!isShield && (a.category === 'medium' || a.category === 'heavy')) armorSlow = true;
+    const fx = armorFx(a); // masterwork, mithral and the like change the penalty, the Dex cap and the spell failure
+    armorAcp -= Math.max(0, Math.abs(num(a.acp)) + fx.acpDelta);
+    if (a.maxDex !== '' && a.maxDex != null && !isNaN(parseInt(a.maxDex))) maxDex = Math.min(maxDex, parseInt(a.maxDex) + fx.maxDexDelta);
+    asf += num(a.asf) > 0 ? Math.max(0, num(a.asf) + fx.asfDelta) : 0;
+    const cat = fx.lighter ? { heavy: 'medium', medium: 'light' }[a.category] || a.category : a.category; // mithral counts as one category lighter for speed
+    if (!isShield && (cat === 'medium' || cat === 'heavy')) armorSlow = true;
   }
+  d.armorFx = wornFx(c.armor);
   acList.push({ value: num(c.ac.natural), type: 'natural armor' }, { value: num(c.ac.deflection), type: 'deflection' },
     { value: num(c.ac.dodge), type: 'dodge' }, { value: num(c.ac.misc), type: 'untyped' });
   const acp = Math.min(armorAcp, loadAcp);
@@ -308,11 +312,12 @@ export function compute(c, classesByName) {
     const isClass = s.classSkill || csSet.has(s.name) || csSet.has(s.name.replace(/ \(.*/, ''));
     const ranks = num(s.ranks);
     spent += ranks;
-    let total = ranks + M(def.ability) + (isClass && ranks > 0 ? 3 : 0) + num(s.misc) + skillSt.total;
+    const armorSkill = d.armorFx.skills[s.name] || 0; // shadow, slick, silent moves: a competence bonus from what you wear
+    let total = ranks + M(def.ability) + (isClass && ranks > 0 ? 3 : 0) + num(s.misc) + skillSt.total + armorSkill;
     if (def.acp) total += acp;
     if (s.name === 'Stealth') total += sz.stealth;
     if (s.name === 'Fly') total += sz.fly;
-    bd[`skills.${key}.total`] = parts({ label: 'Ranks', value: ranks }, { label: ABIL_SHORT[def.ability] + ' modifier', value: M(def.ability) }, { label: 'Class skill', value: isClass && ranks > 0 ? 3 : 0 }, { label: 'Misc', value: num(s.misc) }, stackParts(listOf('skills', 'checks')), { label: 'Armor check penalty', value: def.acp ? acp : 0 }, { label: `Size (${size})`, value: s.name === 'Stealth' ? sz.stealth : s.name === 'Fly' ? sz.fly : 0 });
+    bd[`skills.${key}.total`] = parts({ label: 'Ranks', value: ranks }, { label: ABIL_SHORT[def.ability] + ' modifier', value: M(def.ability) }, { label: 'Class skill', value: isClass && ranks > 0 ? 3 : 0 }, { label: 'Misc', value: num(s.misc) }, stackParts(listOf('skills', 'checks')), { label: 'Armor (competence)', value: armorSkill }, { label: 'Armor check penalty', value: def.acp ? acp : 0 }, { label: `Size (${size})`, value: s.name === 'Stealth' ? sz.stealth : s.name === 'Fly' ? sz.fly : 0 });
     d.skills[key] = { total, isClass, ability: def.ability, trained: def.trained, untrainedBlocked: def.trained && ranks === 0, acp: def.acp, overMax: ranks > lvl };
   }
   d.skillPoints = { available, spent, maxRanks: lvl };

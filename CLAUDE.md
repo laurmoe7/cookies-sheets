@@ -18,6 +18,7 @@ Windows desktop app for Pathfinder 1st Edition characters: live character sheet,
   - `js/importcs.js`: charactersheet.co.uk to our model (pure functions, no DOM).
   - `js/features.js`: class features with **archetypes applied**. An archetype chosen for a class is stored on the character (`c.archetypes[cls] = [bakeArchetype(...)]`), so saves don't depend on the database. Its class-skill changes and diminished spellcasting apply in `calc.js`.
   - `js/weaponfx.js`: weapon enchantments and special materials (pure, tested). A weapon stores `mw`, `material`, `improvedCritical` and `fx: [{id, on}]`; `compute()` folds them into `d.weapons[i]` (`damageText` with the extra dice, `crit`, `critText`). `views/weaponfx.js` is the ✦ Enchant window.
+  - `js/armorfx.js`: the same for armor and shields (pure, tested): `mw`, `material`, `fx: [{id}]` on each `c.armor` item; `compute()` applies them to the check penalty, Dex cap, spell failure, weight, speed and Stealth/Escape Artist, and returns `d.armorFx` (DR, SR, resistances, fortification). `views/armorfx.js` is its window.
   - `js/rest.js`: the Rest button's rules (HP per level, ability damage, pools, slots).
   - `js/spellrules.js`: how many spells a class learns per level (spells-known table, spellbook classes, or none).
   - `js/companions.js`: animal companion and eidolon stat blocks from `data/companions.json`. The UI is `views/companions.js` (the sheet's Companions tab).
