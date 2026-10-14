@@ -55,22 +55,24 @@ LEATHER = uri(
     "<rect width='100%' height='100%' filter='url(#k)' opacity='.16'/><rect width='100%' height='100%' filter='url(#p)' opacity='.16'/>"
     "<rect width='100%' height='100%' filter='url(#f)' opacity='.3'/></svg>", 'leather', 'webp')
 
-def burn(corner, seed, size=170):
+def burn(corner, seed, size=170, faint=False):
     """A scorched corner: charred, ragged, with a brown scorch rim. Drawn once at a fixed size and tucked into a corner of a page."""
     cx, cy = {'tl': (0, 0), 'tr': (1, 0), 'bl': (0, 1), 'br': (1, 1)}[corner]
+    k = .5 if faint else 1  # faint stains are lighter and softer still
+    blur = 4.2 if faint else 2.8
     return uri(
         f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}'><defs>"
-        f"<radialGradient id='g' cx='{cx}' cy='{cy}' r='1' gradientUnits='objectBoundingBox'><stop offset='.05' stop-color='#000' stop-opacity='.9'/><stop offset='.5' stop-color='#000' stop-opacity='0'/></radialGradient>"
+        f"<radialGradient id='g' cx='{cx}' cy='{cy}' r='1' gradientUnits='objectBoundingBox'><stop offset='.05' stop-color='#000' stop-opacity='{.8 * k:.2f}'/><stop offset='.55' stop-color='#000' stop-opacity='0'/></radialGradient>"
         "<filter id='b' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>"
         f"<feTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='4' seed='{seed}' result='n'/>"
         "<feColorMatrix in='n' type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1 0 0 0 0' result='na'/>"
         "<feComposite in='SourceGraphic' in2='na' operator='arithmetic' k1='0' k2='1.6' k3='-.8' k4='0' result='m'/>"
         "<feComponentTransfer in='m' result='char'><feFuncA type='linear' slope='4' intercept='-.55'/></feComponentTransfer>"
         "<feComponentTransfer in='m' result='rim'><feFuncA type='linear' slope='3' intercept='-.05'/></feComponentTransfer>"
-        "<feFlood flood-color='#6a3a14' flood-opacity='.42' result='f1'/><feComposite in='f1' in2='rim' operator='in' result='r1'/>"
-        "<feFlood flood-color='#2a1608' flood-opacity='.6' result='f2'/><feComposite in='f2' in2='char' operator='in' result='c1'/>"
-        "<feMerge result='all'><feMergeNode in='r1'/><feMergeNode in='c1'/></feMerge><feGaussianBlur in='all' stdDeviation='1.1'/></filter></defs>"
-        "<rect width='100%' height='100%' fill='url(#g)' filter='url(#b)'/></svg>", f'burn-{corner}{seed}')
+        f"<feFlood flood-color='#6a3a14' flood-opacity='{.34 * k:.2f}' result='f1'/><feComposite in='f1' in2='rim' operator='in' result='r1'/>"
+        f"<feFlood flood-color='#2a1608' flood-opacity='{.48 * k:.2f}' result='f2'/><feComposite in='f2' in2='char' operator='in' result='c1'/>"
+        f"<feMerge result='all'><feMergeNode in='r1'/><feMergeNode in='c1'/></feMerge><feGaussianBlur in='all' stdDeviation='{blur}'/></filter></defs>"
+        "<rect width='100%' height='100%' fill='url(#g)' filter='url(#b)'/></svg>", f"burn-{'f' if faint else ''}{corner}{seed}")
 
 
 def brass(size=48):
@@ -96,6 +98,35 @@ PAPERS = [
     dict(at='58% 34%', seed=66, az=200, freq='.012', scale=1.1, burn='inset 10px 6px 40px -6px rgba(25,12,4,.45)', marks=[('bl', 19, 110)]),
     dict(at='36% 48%', seed=81, az=330, freq='.013', scale=1.4, burn='inset -8px -10px 42px -6px rgba(25,12,4,.5)', marks=[('tl', 31, 90)]),
 ]
+
+
+# Extra faint stains, tucked into corners at different sizes; each page gets a few of them.
+FAINT = [('tr', 41, 150), ('bl', 43, 170), ('br', 47, 140), ('tl', 53, 160), ('tr', 59, 120), ('bl', 61, 150), ('br', 67, 180), ('tl', 71, 130)]
+VARIANTS = 12  # a tab never shows the same page twice until it has more than this many cards
+
+
+def _flip_at(at):
+    x, y = (float(v.rstrip('%')) for v in at.split())
+    return f"{100 - x:.0f}% {100 - y:.0f}%"
+
+
+def _flip_burn(burn_css):
+    return re.sub(r"inset (-?\d+)(px)? (-?\d+)(px)?", lambda m: f"inset {-int(m.group(1))}{m.group(2) or ''} {-int(m.group(3))}{m.group(4) or ''}", burn_css)
+
+
+def variant(k):
+    """Page number k of VARIANTS: the first six are the papers as they are, the rest the same sheets turned over (other light, other crumples, other marks)."""
+    p = dict(PAPERS[k % len(PAPERS)])
+    p['pos'] = ''
+    if k >= len(PAPERS):
+        p['at'] = _flip_at(p['at'])
+        p['burn'] = _flip_burn(p['burn'])
+        p['pos'] = f" {-97 - 41 * k}px {-211 + 29 * k}px"
+        flip = {'tl': 'br', 'br': 'tl', 'tr': 'bl', 'bl': 'tr'}
+        p['marks'] = [(flip[c], sd + 100, size) for c, sd, size in p['marks']]
+    p['faint'] = [FAINT[(k * 3) % len(FAINT)], FAINT[(k * 3 + 2) % len(FAINT)], FAINT[(k * 5 + 1) % len(FAINT)]]
+    p['edge'] = p['seed'] + 7 * k
+    return p
 
 
 # Old paper is never cut straight: every edge has a slight roughness and a few chips, with the corners knocked off a little.
@@ -161,6 +192,9 @@ def rough_polygon(seed, nx=54, ny=30):
     return 'polygon(' + ', '.join(corners[0] + top + corners[1] + right + corners[2] + bottom + corners[3] + left) + ')'
 
 
+POS = {'tl': 'top left', 'tr': 'top right', 'bl': 'bottom left', 'br': 'bottom right'}
+
+
 def paper_rules():
     out = []
     n = len(PAPERS)
@@ -178,6 +212,13 @@ def paper_rules():
         if comp:
             out.append(f"html[data-theme=\"tome\"] .{comp} {{ background: {base}; box-shadow: {p['burn']}, var(--shadow); }}")
         out.append(f"{nth('card', i)} {{ background: {', '.join(layers + [base])}; clip-path: {rough_polygon(p['seed'])}; box-shadow: {p['burn']}, var(--shadow); }}")
+    # The numbered pages: the app gives each card on a tab its own number in order (data-paper), so no two pages on a tab look alike
+    for k in range(VARIANTS):
+        v = variant(k)
+        marks = [f"{burn(c, sd, size)} no-repeat {POS[c]} / {size}px {size}px" for c, sd, size in v['marks']]
+        faint = [f"{burn(c, sd, size, faint=True)} no-repeat {POS[c]} / {size}px {size}px" for c, sd, size in v['faint']]
+        base = f"radial-gradient(ellipse at {v['at']}, {EDGE}), var(--grain) 0 0 / 220px 220px, {paper(v['seed'], v['az'], v['freq'], v['scale'])}{v['pos']}"
+        out.append(f"html[data-theme=\"tome\"] .card[data-paper=\"{k}\"] {{ background: {', '.join(marks + faint + [base])}; clip-path: {rough_polygon(v['edge'])}; box-shadow: {v['burn']}, var(--shadow); }}")
     return '\n'.join(out)
 
 

@@ -146,8 +146,27 @@ function onInput(e) {
   changed({ rerender: 'rerender' in el.dataset && e.type === 'change' });
 }
 
+/**
+ * Numbers the cards of the page in order (data-paper). The Dusty tome theme puts a different sheet of paper under each number (12 of them),
+ * so a tab never shows the same page twice, wherever the cards sit in the layout. Cards inside cards are left alone.
+ */
+function initPapers() {
+  const main = $('#main');
+  const run = () => {
+    let i = 0;
+    for (const c of main.querySelectorAll('.card')) {
+      if (c.parentElement.closest('.card, .pt-clone')) { c.removeAttribute('data-paper'); continue; }
+      const v = String(i++ % 12);
+      if (c.dataset.paper !== v) c.dataset.paper = v;
+    }
+  };
+  new MutationObserver(run).observe(main, { childList: true, subtree: true }); // setting an attribute is not a child change, so this does not loop
+  run();
+}
+
 async function init() {
   initOptions();
+  initPapers();
   mountPet($('#cookie-slot'));
   document.addEventListener('input', onInput);
   initTooltips();

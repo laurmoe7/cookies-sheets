@@ -7,6 +7,8 @@ export const CHANGELOG = [
     items: [
       'The Compendium’s result list and entry text sit on the same burnt-edge parchment as the other pages, with a frame line.',
       'The cards on the Characters page are parchment too, each sheet a little different.',
+      'The scorch stains on the pages blend into the paper more, and each page has a few extra faint stains.',
+      'No two pages on a tab look alike any more: the cards on a tab each get their own sheet (12 different ones), wherever they sit.',
       'Every parchment page now has a worn, chipped edge like old paper, each one different. The chips are shallower than the page’s margin, so they never touch text or buttons.',
       'The cards on the Characters page have the same thin dark frame line as the other pages.',
       'Weapons and Armor & Shields each have a ＋ Magic item button: pick one from the compendium (Flame Tongue, Elven Chain, Armor of the Shadow Lord...) and its base weapon or armor, enhancement, special abilities and material are filled in from the description. Check the numbers: they are read from the text.',
