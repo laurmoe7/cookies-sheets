@@ -41,7 +41,7 @@ export function rollBar() {
   const o = options();
   return `<span class="roll-bar">
     <span class="roll-hint" title="Highlighted numbers are buttons: click one to roll it. Hover one to see where its bonuses come from." aria-label="Click a highlighted number to roll">${D20}</span>
-    <button class="rchip ${mods.length || mode ? 'on' : ''}" id="roll-mods" title="Add a situational modifier to your d20 rolls: not proficient, a range increment, flanking, or your own number">${esc(modsChip())}</button>
+    <button class="btn small ghost ${mods.length || mode ? 'on' : ''}" id="roll-mods" title="Add a situational modifier to your d20 rolls: not proficient, a range increment, flanking, or your own number">${esc(modsChip())}</button>
     <input id="dice-box" class="w8" placeholder="2d6+3" title="Dice box: Tad notation such as 2d6+3, adv d20+5 or 3xd20. Press Roll or Enter." autocomplete="off" aria-label="Dice box">
     <button class="rchip go" id="dice-go" title="Roll the dice box (or press Enter)">🎲 Roll</button>
     <button class="${discordClass()}" id="roll-discord" title="Post rolls to your Discord channel, or keep them on the sheet">${esc(discordLabel())}</button>
@@ -49,7 +49,7 @@ export function rollBar() {
 }
 
 const modsTotal = () => mods.reduce((t, m) => t + m.n, 0);
-const modsChip = () => ['Modifier', mods.length ? bonusText(modsTotal()) || '+0' : '', mode === 'adv' ? 'Adv' : mode === 'dis' ? 'Disadv' : ''].filter(Boolean).join(' ');
+const modsChip = () => ['＋ Modifier', mods.length ? bonusText(modsTotal()) || '+0' : '', mode === 'adv' ? 'Adv' : mode === 'dis' ? 'Disadv' : ''].filter(Boolean).join(' ');
 
 function syncBar() {
   const mb = document.getElementById('roll-mods');

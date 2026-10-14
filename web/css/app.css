@@ -689,9 +689,5 @@ html[data-motion="off"] .fx-spark { display: none; }
 .tab.dragging { opacity: .45; }
 .tab.drop-before { box-shadow: inset 5px 0 0 #f0c86e; }
 .tab.drop-after { box-shadow: inset -5px 0 0 #f0c86e; }
-
-/* The Modifier chip in the roll bar: bolder, with a gold edge, so it is easy to spot (gold-filled is kept for Roll). */
-#roll-mods { font-weight: 700; font-size: 13px; padding: 3px 14px; color: #3a2606; background: rgba(230, 187, 88, .32); border: 1.5px solid #b8862a;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, .3); }
-#roll-mods:hover { background: rgba(230, 187, 88, .55); border-color: #8a6414; color: #2a1904; }
-#roll-mods.on { background: linear-gradient(180deg, #e6bb58, #b8862a); border-color: #7a560f; color: #2a1904; }
+/* The ＋ Modifier button in the roll bar is a plain small button, like ＋ Buff / condition; it turns gold while a modifier is set so it is clear something is applied. */
+#roll-mods.on, html[data-theme] #roll-mods.on { background: linear-gradient(180deg, #e6bb58, #b8862a); border-color: #7a560f; color: #2a1904; font-style: normal; font-weight: 700; }
