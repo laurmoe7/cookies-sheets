@@ -669,3 +669,10 @@ html[data-motion="off"] .fx-spark { display: none; }
 .slot-tbl td .slot-pips { display: flex; justify-content: center; margin-top: 3px; }
 .sl-step { margin-left: 4px; }
 .sl-step button { width: 26px; height: 22px; font-size: 14px; }
+
+/* The tab bar stays at the top of the page while the tab scrolls under it. */
+.page > .tabs { position: sticky; top: 0; z-index: 20; background: var(--bg); }
+/* The Summon button in the spell panel stands out from the other buttons. */
+.sp-actions .btn[data-summon] { background: linear-gradient(180deg, #e6bb58, #b8862a); border-color: #7a560f; color: #2a1904; font-style: normal; font-weight: 700;
+  box-shadow: 0 0 0 2px rgba(230,187,88,.38), 0 2px 8px rgba(0,0,0,.4); text-shadow: 0 1px 0 rgba(255,240,200,.45); }
+.sp-actions .btn[data-summon]:hover { background: linear-gradient(180deg, #f0c968, #c4902e); border-color: #7a560f; }

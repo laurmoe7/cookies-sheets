@@ -69,6 +69,7 @@ html[data-theme="tome"] .portrait-frame, html[data-theme="tome"] .pic-frame, htm
 
 /* satin bookmark ribbons as tabs: smooth, with soft lengthwise highlights and gold piping along both edges, and a V-cut tail */
 html[data-theme="tome"] .tabs { border-bottom: 2px solid #6a5535; padding-left: 8px; gap: 4px; }
+html[data-theme="tome"] .page > .tabs { background: #2b1d12; box-shadow: 0 6px 10px -4px rgba(0,0,0,.55); }
 html[data-theme="tome"] .tab { position: relative; border-radius: 0; margin-top: 16px; padding: 19px 11px 9px; color: #f6ecce; text-shadow: 0 1px 1px rgba(30,16,4,.7);
   clip-path: polygon(0 0, 50% 14px, 100% 0, 100% 100%, 0 100%);
   background-color: #7b6741;

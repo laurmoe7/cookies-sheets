@@ -34,8 +34,8 @@ const ICONS = {
 const icon = k => `<svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
 
 const TABS = [
-  ['overview', 'Overview'], ['skills', 'Skills'], ['feats', 'Feats & Abilities'], ['spells', 'Spells'],
-  ['gear', 'Gear'], ['companions', 'Companions'], ['buffs', 'Buffs & Conditions'], ['bio', 'Biography'], ['notes', 'Notes'],
+  ['overview', 'Overview'], ['buffs', 'Buffs & Conditions'], ['skills', 'Skills'], ['gear', 'Gear'], ['feats', 'Feats & Abilities'],
+  ['spells', 'Spells'], ['companions', 'Companions'], ['bio', 'Biography'], ['notes', 'Notes'],
 ];
 
 /** Read-first text bound to a character path: click to read in full, double-click to edit. */
