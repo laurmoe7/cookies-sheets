@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
+      'Click the picture in the middle of the paper doll to give it its own picture (a full-length figure, say), recenter it, or go back to your portrait.',
       'Inventory items can carry bonuses that count while they are worn: a cloak of resistance adds to your saves, a ring of protection to AC, a headband of intelligence to Int, and your own items can have any bonus you set. Open an item and choose Add bonuses, or Use the usual for the ones the app knows.',
       'The paper doll uses drawn fantasy icons (helm, circlet, amulet, cloak, gauntlet, sword and so on) instead of emoji.',
       'The Gear tab is now called Inventory, and its item list is chips: items are chips like the spells, bold with a dot when equipped. Click one to see it in the side panel, with its worn slot, quantity, weight, value, notes and a Remove button. Your notes sit at the bottom for items from the compendium, and the box is bigger for your own items.',
