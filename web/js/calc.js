@@ -6,6 +6,7 @@ import { skillKey } from './model.js';
 import { archetypesOf } from './features.js';
 import { weaponFx, parseCrit, doubleThreat, critLabel, multiplyDice } from './weaponfx.js';
 import { armorFx, wornFx } from './armorfx.js';
+import { wornEffects } from './itemfx.js';
 
 export const mod = score => Math.floor((score - 10) / 2);
 export const sign = n => (n == null || isNaN(n) ? '—' : (n >= 0 ? '+' : '') + n);
@@ -149,6 +150,7 @@ export function compute(c, classesByName) {
     if (!m.active) continue;
     for (const e of m.effects || []) add(e.target, e.value, e.type || 'untyped', m.name, !!e.scale);
   }
+  for (const g of c.gear || []) for (const e of wornEffects(g)) add(e.target, e.value, e.type || 'untyped', g.name || 'Item', !!e.scale); // worn magic items
   const listOf = (...targets) => targets.flatMap(t => mods[t] || []);
 
   // ---- ability scores ----

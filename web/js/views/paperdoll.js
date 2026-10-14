@@ -2,6 +2,7 @@
 import { state, changed } from '../app.js';
 import { SLOTS, SLOT_BY_ID, LAYOUT, slotName, wornBySlot, candidates, wear, takeOff } from '../paperdoll.js';
 import { armorFx } from '../armorfx.js';
+import { effectsText } from '../itemfx.js';
 import { esc, modal, showEntry } from '../ui.js';
 
 const sign = n => (n >= 0 ? '+' : '') + n;
@@ -20,7 +21,8 @@ function describe(c, d, o) {
   }
   const g = c.gear[o.i];
   const note = String(g.notes || '').replace(/\s+/g, ' ').trim();
-  return { name: g.name || 'Item', sub: note.slice(0, 40) || g.value || '', magic: !!g.id, tip: `${g.name || 'Item'}${g.value ? ' (' + g.value + ')' : ''}${note ? '\n' + note : ''}` };
+  const fx = effectsText(g.effects);
+  return { name: g.name || 'Item', sub: fx || note.slice(0, 40) || g.value || '', magic: !!g.id || !!fx, tip: `${g.name || 'Item'}${g.value ? ' (' + g.value + ')' : ''}${fx ? '\n' + fx : ''}${note ? '\n' + note : ''}` };
 }
 
 function tile(c, d, id, worn) {

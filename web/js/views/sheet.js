@@ -22,6 +22,7 @@ import { renderResources, resourceBlock, wire as wireResources, wireRest } from 
 import { weaponFxRow, wireWeaponFx } from './weaponfx.js';
 import { armorFxChip, wireArmorFx } from './armorfx.js';
 import { paperDollCard, wirePaperDoll } from './paperdoll.js';
+import { suggestEffects, effectsText } from '../itemfx.js';
 import { SLOTS, slotName, hintFromSub } from '../paperdoll.js';
 
 const ICONS = {
@@ -369,7 +370,7 @@ function wireCommon(body) {
       const blank = {
         weapons: { name: '', ability: '', ranged: false, enh: 0, misc: 0, damage: '1d8', dmgMult: '', dmgMisc: 0, crit: '×2', range: '', type: '', weight: 0, mw: false, material: '', improvedCritical: false, fx: [], slot: '' },
         armor: { name: '', type: 'armor', category: 'light', bonus: 0, enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true, mw: false, material: '', fx: [] },
-        gear: { name: '', qty: 1, weight: 0, value: '', notes: '', slot: '', hint: '' },
+        gear: { name: '', qty: 1, weight: 0, value: '', notes: '', slot: '', hint: '', effects: [] },
         specials: { name: '', notes: '' },
         'money.custom': { name: '', amount: 0 },
         sessions: { date: new Date().toISOString().slice(0, 10), name: '', notes: '' },
@@ -704,12 +705,16 @@ function renderItemActions() {
   const c = state.char, g = c.gear[it.i];
   if (!g) { it.el.innerHTML = ''; return; }
   const p = k => `gear.${it.i}.${k}`;
+  const fx = g.effects || [], sug = suggestEffects(g.name);
   it.el.innerHTML = `<div class="item-actions">
     ${g.id ? '' : `<label class="wide"><span>Name</span><input data-item-name value="${esc(g.name || '')}" placeholder="Item name"></label>`}
     <label><span>Worn in</span>${sel(p('slot'), WEARABLE(), { rerender: true })}</label>
     <label><span>Qty</span>${inp(p('qty'), { type: 'num', cls: 'w3', rerender: true })}</label>
     <label><span>Weight (each)</span>${inp(p('weight'), { type: 'num', cls: 'w3' })}</label>
     <label><span>Value</span>${inp(p('value'), { cls: 'w6' })}</label>
+    <div class="wide item-fx"><span class="small muted">Bonuses (they count while it is worn)</span>
+      <div>${fx.length ? esc(effectsText(fx)) : '<span class="muted">none</span>'}${fx.length && !g.slot ? ' <span class="small bad">not worn yet, so they do not count</span>' : ''}</div>
+      <div class="row" style="gap:6px;margin-top:4px"><button class="btn small" data-item-fx>✦ ${fx.length ? 'Edit' : 'Add'} bonuses</button>${!fx.length && sug.length ? `<button class="btn small" data-item-fx-auto title="Fill in what this kind of item normally gives">Use the usual: ${esc(effectsText(sug))}</button>` : ''}</div></div>
     ${g.id ? '' : `<label class="wide"><span>Your notes</span><textarea class="item-notes-big" data-bind="${p('notes')}" rows="10" placeholder="Describe the item, what it does, where you got it...">${esc(g.notes || '')}</textarea></label>`}
     <div class="wide row end"><button class="btn small danger" data-item-del>Remove from inventory</button></div></div>`;
   // A compendium item already has its text, so your own notes go at the bottom of the page
@@ -723,6 +728,12 @@ function renderItemActions() {
     changed({ rerender: true });
   };
   it.el.onclick = async e => {
+    if (e.target.closest('[data-item-fx]')) {
+      const m = await editModifier({ name: g.name || 'Item', note: '', active: true, effects: structuredClone(g.effects || []).concat(g.effects?.length ? [] : [{ target: 'ac', value: 1, type: 'untyped' }]) });
+      if (m) { g.effects = m.effects; changed({ rerender: true }); renderItemActions(); }
+      return;
+    }
+    if (e.target.closest('[data-item-fx-auto]')) { g.effects = suggestEffects(g.name); changed({ rerender: true }); renderItemActions(); return; }
     if (!e.target.closest('[data-item-del]')) return;
     if (!await confirmBox(`Remove “${g.name || 'this item'}” from your inventory?`, 'Remove')) return;
     c.gear.splice(it.i, 1);
@@ -901,8 +912,9 @@ function gear(body, c, d) {
       <button class="btn small" data-pick-item>＋ Magic item</button><button class="btn small" data-add="gear">＋ Item</button></div>
     ${c.gear.length ? `<div class="sp-chips inv-chips">${c.gear.map((g, i) => {
       const worn = !!g.slot, qty = num(g.qty) > 1 ? `<span class="sp-s">×${esc(g.qty)}</span>` : '';
+      const fxMark = (g.effects || []).length ? `<span class="sp-s" title="${esc(effectsText(g.effects))}${worn ? '' : ' (counts once worn)'}">✦</span>` : '';
       const where = worn ? `<span class="sp-s">${esc(slotName(g.slot))}</span><span class="pips"><i class="pip"></i></span>` : '';
-      return `<button class="sp-chip ${isItemActive(i) ? 'on' : ''} ${worn ? 'ready' : g.hint ? 'idle' : ''}" data-item="${i}" title="${worn ? 'Equipped: ' + esc(slotName(g.slot)) + '. ' : ''}Click for details"><span class="sp-n">${esc(g.name || 'New item')}</span>${qty}${where}</button>`;
+      return `<button class="sp-chip ${isItemActive(i) ? 'on' : ''} ${worn ? 'ready' : g.hint ? 'idle' : ''}" data-item="${i}" title="${worn ? 'Equipped: ' + esc(slotName(g.slot)) + '. ' : ''}Click for details"><span class="sp-n">${esc(g.name || 'New item')}</span>${qty}${fxMark}${where}</button>`;
     }).join('')}</div>` : '<p class="muted">Nothing carried.</p>'}
   </section>
   <section class="card">
@@ -940,7 +952,7 @@ function gear(body, c, d) {
     const en = await api.entry(r.id);
     const w = parseFloat((en.html.match(/<dt>Weight<\/dt><dd>([\d.]+)/) || [])[1]) || 0;
     const price = (en.html.match(/<dt>Price<\/dt><dd>([^<]+)/) || [])[1] || '';
-    c.gear.push({ id: r.id, name: r.name, qty: 1, weight: w, value: price, notes: '', slot: '', hint: hintFromSub(r.sub) });
+    c.gear.push({ id: r.id, name: r.name, qty: 1, weight: w, value: price, notes: '', slot: '', hint: hintFromSub(r.sub), effects: suggestEffects(r.name) });
     changed({ rerender: true });
     openItem(c.gear.length - 1);
   };
