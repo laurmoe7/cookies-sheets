@@ -2,6 +2,8 @@
 // Their sheet stores hand-entered totals; this app derives numbers from class levels, so the importer
 // rebuilds level records from the "Class / Level" text and reports where the two sheets disagree.
 import { api } from './api.js';
+import { hintFromSub } from './paperdoll.js';
+import { suggestEffects } from './itemfx.js';
 import { compute, sign } from './calc.js';
 import { ABILITIES, SKILL_BY_NAME, MULTI_SKILLS, RACES, SIZES } from './data.js';
 import { newCharacter, skillKey } from './model.js';
@@ -225,19 +227,19 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
       name: str(it.name) || (shield ? 'Shield' : 'Armor'), type: shield ? 'shield' : 'armor',
       category: /heavy/.test(label) ? 'heavy' : /medium/.test(label) ? 'medium' : 'light',
       bonus: n0(it.bonus), enh: 0, maxDex: '', acp: -Math.abs(n0(it.armorCheckPenalty)), asf: n0(String(it.spellFailure ?? '').replace('%', '')),
-      weight: n0(it.weight), equipped: true,
+      weight: n0(it.weight), equipped: true, mw: false, material: '', fx: [],
     });
     if (str(it.properties)) extra.push(`${str(it.name) || 'Armor'}: ${str(it.properties)}`);
   }
   // Armor/shield bonus typed straight into the AC box with no item behind it (e.g. mage armor).
   if (!items.some(i => !/shield|buckler/i.test(`${i.name} ${i.type}`)) && n0(src.ac?.armorBonus)) {
-    c.armor.push({ name: 'Armor bonus (imported)', type: 'armor', category: 'light', bonus: n0(src.ac.armorBonus), enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true });
+    c.armor.push({ name: 'Armor bonus (imported)', type: 'armor', category: 'light', bonus: n0(src.ac.armorBonus), enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true, mw: false, material: '', fx: [] });
     notes.push(`An armor bonus of ${sign(n0(src.ac.armorBonus))} had no armor item behind it, so an “Armor bonus (imported)” entry was added. If it comes from a spell like mage armor, you may prefer to remove it and use a buff instead.`);
   }
   if (!items.some(i => /shield|buckler/i.test(`${i.name} ${i.type}`)) && n0(src.ac?.shieldBonus)) {
-    c.armor.push({ name: 'Shield bonus (imported)', type: 'shield', category: 'light', bonus: n0(src.ac.shieldBonus), enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true });
+    c.armor.push({ name: 'Shield bonus (imported)', type: 'shield', category: 'light', bonus: n0(src.ac.shieldBonus), enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true, mw: false, material: '', fx: [] });
   }
-  if (c.armor.some(a => a.maxDex === '' && !/imported/.test(a.name))) notes.push('Armor max Dex bonus isn’t stored on charactersheet.co.uk. Fill it in on the Gear tab.');
+  if (c.armor.some(a => a.maxDex === '' && !/imported/.test(a.name))) notes.push('Armor max Dex bonus isn’t stored on charactersheet.co.uk. Fill it in on the Inventory tab.');
   c.defenses = { dr: str(src.damageReduction), sr: str(src.spellResistance), resist: str(src.resistances), immune: str(src.immunities) };
 
   // -- saves, initiative, combat misc --
@@ -314,7 +316,7 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
       const dice = (str(w.damage).match(/^\s*(\d+d\d+(?:\s*[+]\s*\d+d\d+)*)/i) || [])[1] || '';
       c.weapons.push({
         name: str(w.weapon), ability: '', ranged, enh: 0, misc: 0, damage: dice.replace(/\s+/g, '') || str(w.damage),
-        dmgMult: '', dmgMisc: 0, crit: str(w.critical), range: '', type: str(w.type), weight: 0,
+        dmgMult: '', dmgMisc: 0, crit: str(w.critical), range: '', type: str(w.type), weight: 0, mw: false, material: '', improvedCritical: false, fx: [], slot: '',
         _src: { attack: leadNum(w.attackBonus), damage: str(w.damage), dice },
       });
       const wn = [str(w.notes), str(w.ammunition) && `ammunition: ${str(w.ammunition)}`].filter(Boolean).join('; ');
@@ -333,6 +335,8 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
       ...(hit ? { id: hit.id } : {}), name: str(g.name), qty,
       weight: qty > 1 ? Math.round((wt / qty) * 100) / 100 : wt, value: '',
       notes: [str(g.location), str(g.type), hit && note.length > 200 ? '' : note].filter(Boolean).join(' · '),
+      // worn items are set on the Inventory tab's paper doll; the item remembers which slot it fits and what bonuses it usually gives (they count once worn)
+      slot: '', hint: hintFromSub(hit?.sub), effects: suggestEffects(str(g.name)),
     });
   });
   for (const k of ['pp', 'gp', 'sp', 'cp']) c.money[k] = Number(String(src.money?.[k] ?? '').replace(/[^\d.]/g, '')) || 0;

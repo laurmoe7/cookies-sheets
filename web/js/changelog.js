@@ -7,6 +7,8 @@ export const CHANGELOG = [
     items: [
       'The Compendium’s result list and entry text sit on the same burnt-edge parchment as the other pages, with a frame line.',
       'The cards on the Characters page are parchment too, each sheet a little different.',
+      'In Notes, General notes now comes before Story.',
+      'Characters imported from charactersheet.co.uk come with all the newer fields: their magic items remember which slot they fit and their usual bonuses (counted once worn), and weapons and armor are ready for enchantments.',
       'The scorch stains on the pages blend into the paper more, and each page has a few extra faint stains.',
       'No two pages on a tab look alike any more: the cards on a tab each get their own sheet (12 different ones), wherever they sit.',
       'Every parchment page now has a worn, chipped edge like old paper, each one different. The chips are shallower than the page’s margin, so they never touch text or buttons.',

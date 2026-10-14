@@ -59,6 +59,10 @@ export function migrate(c) {
   for (const [cls, v] of Object.entries(c.archetypes || {})) {
     if (typeof v === 'string') c.archetypes[cls] = v.split(',').map(n => ({ name: n.trim() })).filter(x => x.name);
   }
+  // Weapons, armor and gear saved before enchantments, materials and the paper doll lack their fields; code reads them as "none", this makes them explicit.
+  for (const w of c.weapons || []) { w.mw ??= false; w.material ??= ''; w.improvedCritical ??= false; w.fx ||= []; w.slot ??= ''; }
+  for (const a of c.armor || []) { a.mw ??= false; a.material ??= ''; a.fx ||= []; }
+  for (const g of c.gear || []) { g.slot ??= ''; g.hint ??= ''; g.effects ||= []; }
   c.money = { ...base.money, ...(c.money || {}) };
   if (!Array.isArray(c.money.custom)) c.money.custom = [];
   // Version 1 kept the day's total in "prepared" and counted casts separately; now "prepared" is what is left, so take the casts off once.

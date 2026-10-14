@@ -1056,7 +1056,7 @@ export const ATTITUDES = [['ally', 'Ally'], ['friendly', 'Friendly'], ['neutral'
 export const LORE_KINDS = ['Place', 'Faction', 'Item', 'Lore'];
 
 /** Story notes: free text, quests, NPCs, places and factions, and a session log (newest first), one inner tab each. */
-const NOTE_TABS = [['story', 'Story'], ['general', 'General notes'], ['quests', 'Quests & goals'], ['npcs', 'People'], ['lore', 'Places & lore'], ['sessions', 'Session log']];
+const NOTE_TABS = [['general', 'General notes'], ['story', 'Story'], ['quests', 'Quests & goals'], ['npcs', 'People'], ['lore', 'Places & lore'], ['sessions', 'Session log']];
 let notesTab = 'story';
 
 function notes(body, c) {

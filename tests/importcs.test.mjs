@@ -157,3 +157,39 @@ test('unknown race becomes a custom race; no class means level 0', () => {
   assert.equal(char.customRace.name, 'Lizardfolk');
   assert.equal(char.levelUps.length, 0);
 });
+
+test('an imported sheet has every field the newer features read: enchantments, materials, slots and item bonuses', async () => {
+  const { migrate } = await import('../web/js/model.js');
+  const { wornBySlot, candidates } = await import('../web/js/paperdoll.js');
+  const { armorFx, wornFx } = await import('../web/js/armorfx.js');
+  const src = fixture('cs_fumu.json');
+  // pretend two items were matched to compendium entries, as the real import does with its lookups
+  const names = (src.gear || []).map(g => g?.name).filter(Boolean);
+  const resolved = Object.fromEntries(names.map((n, i) => [`gear.${i}`, { hit: { id: 100 + i, name: n, cat: 'Magic Item', sub: /^ring/i.test(n) ? 'ring' : /^cloak/i.test(n) ? 'shoulders' : '' } }]));
+  const { char: c } = (() => { const r = buildCharacter(src, guessClasses(src.level, classes), resolved, classesByName); return r.char ? r : { char: r }; })();
+  for (const w of c.weapons) assert.deepEqual([w.mw, w.material, w.improvedCritical, w.fx, w.slot], [false, '', false, [], ''], w.name);
+  for (const a of c.armor) assert.deepEqual([a.mw, a.material, a.fx], [false, '', []], a.name);
+  for (const g of c.gear) { assert.equal(g.slot, '', g.name); assert.equal(typeof g.hint, 'string'); assert.ok(Array.isArray(g.effects)); }
+  // nothing is worn yet, so an item's usual bonuses (a cloak of resistance...) do not change the imported numbers until it is put on
+  const before = calc(c);
+  const cloak = c.gear.find(g => /cloak of resistance/i.test(g.name));
+  assert.ok(cloak, 'the fixture has a cloak of resistance');
+  {
+    assert.ok(cloak.effects.length, 'the cloak’s usual bonus is filled in');
+    assert.equal(cloak.hint, 'shoulders');
+    cloak.slot = 'shoulders';
+    assert.equal(calc(c).saves.fort.total - before.saves.fort.total, +/\+(\d)/.exec(cloak.name)[1], 'wearing it adds its bonus to the save');
+    cloak.slot = '';
+  }
+  assert.deepEqual(wornBySlot(c).armor?.map(x => x.name) ?? [], c.armor.filter(a => a.equipped && a.type === 'armor').map(a => a.name), 'worn armor shows in the Armor slot');
+  assert.ok(c.armor.every(a => typeof armorFx(a).summary === 'string'));
+  assert.equal(typeof wornFx(c.armor).text, 'string');
+  assert.ok(candidates(c, 'main').good.length === c.weapons.length, 'every imported weapon can go in a hand');
+  // an older save without the fields is brought up to date the same way
+  const old = structuredClone(c);
+  for (const w of old.weapons) { delete w.mw; delete w.fx; delete w.material; delete w.slot; delete w.improvedCritical; }
+  for (const g of old.gear) { delete g.slot; delete g.hint; delete g.effects; }
+  migrate(old);
+  assert.ok(old.weapons.every(w => Array.isArray(w.fx) && w.slot === ''));
+  assert.ok(old.gear.every(g => g.slot === '' && Array.isArray(g.effects)));
+});
