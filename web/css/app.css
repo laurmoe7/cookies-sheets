@@ -750,3 +750,5 @@ html[data-motion="off"] .fx-spark { display: none; }
 .item-foot { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; user-select: text; }
 .item-foot textarea { width: 100%; box-sizing: border-box; min-height: 90px; resize: vertical; }
 .item-fx { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+
+.inv-chips .sp-chip .sp-n, .inv-chips .sp-chip.ready .sp-n, .inv-chips .sp-chip.idle .sp-n { font-weight: 400; }
