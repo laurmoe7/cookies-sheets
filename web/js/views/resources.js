@@ -2,7 +2,8 @@
 import { state, changed } from '../app.js';
 import { classResources, currentOf } from '../resources.js';
 import { segsHtml } from '../bars.js';
-import { esc, textField, getPath } from '../ui.js';
+import { esc, textField, getPath, toast } from '../ui.js';
+import { fullRest } from '../rest.js';
 
 const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
 
@@ -45,7 +46,8 @@ export function renderResources(el, c) {
   const pools = poolsFor(c);
   el.innerHTML = `<div class="row"><h3 class="grow" style="margin:0">Class resources &amp; trackers</h3>
       <button class="btn small" data-tr-new>＋ Tracker</button>
-      <button class="btn small ghost" data-res-rest title="Refill every pool for a new day">New day</button></div>
+      <button class="btn small ghost" data-res-rest title="Refill every pool below for a new day">New day</button>
+      <button class="btn small" data-full-rest title="A night's rest: heal 1 HP per level, clear nonlethal damage, heal 1 point of each ability damage, refill the pools below and the spell slots, and prepare the spells you cast again">🌙 Rest</button></div>
     ${pools.map(r => counter(r, currentOf(r, c.resources))).join('')}
     ${c.trackers.map(custom).join('')}
     ${pools.length || c.trackers.length ? '' : '<p class="muted small">Nothing to track yet. Classes such as arcanist, barbarian, bard, magus and monk show their pools here; “＋ Tracker” adds your own counter for anything else.</p>'}`;
@@ -61,12 +63,17 @@ export function resourceBlock(c, id) {
 /** Delegated click handling for any element holding counters. */
 export function wire(el, c) {
   el.addEventListener('click', e => {
-    const t = e.target.closest('[data-res-d],[data-res-reset],[data-res-rest],[data-tr-new],[data-tr-d],[data-tr-reset],[data-tr-del]');
+    const t = e.target.closest('[data-res-d],[data-res-reset],[data-res-rest],[data-full-rest],[data-tr-new],[data-tr-d],[data-tr-reset],[data-tr-del]');
     if (!t) return;
     e.preventDefault();
     c.resources ||= {};
     c.trackers ||= [];
     if (t.dataset.trNew !== undefined) { c.trackers.push({ name: '', max: 3, cur: 3 }); return changed({ rerender: true }); }
+    if (t.dataset.fullRest !== undefined) {
+      const said = fullRest(c, { maxHp: state.derived.hp.max, level: state.derived.level });
+      toast(said.length ? 'Rested: ' + said.join(', ') : 'Rested. Nothing needed restoring');
+      return changed({ rerender: true });
+    }
     if (t.dataset.resRest !== undefined) {
       c.resources = {};
       for (const tr of c.trackers) tr.cur = tr.max;

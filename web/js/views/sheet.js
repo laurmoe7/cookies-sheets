@@ -19,6 +19,7 @@ import { playSfx } from '../sfx.js';
 import { hpFx } from '../healfx.js';
 import { view as petView } from '../pet/pet.js';
 import { renderResources, resourceBlock, wire as wireResources } from './resources.js';
+import { weaponFxRow, wireWeaponFx } from './weaponfx.js';
 
 const ICONS = {
   overview: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
@@ -241,13 +242,13 @@ function overview(body, c, d) {
         <th title="Misc attack bonus (masterwork +1, Weapon Focus, etc.)">Atk+</th><th>Dice</th><th title="Strength to damage">Str dmg</th><th title="Misc damage">Dmg+</th>
         <th>Range</th><th>Type</th><th></th></tr></thead><tbody>
         ${c.weapons.map((w, i) => `<tr>
-          <td class="w10">${tf(`weapons.${i}.name`, { placeholder: 'Name (double-click)' })}</td>
+          <td class="w10">${tf(`weapons.${i}.name`, { placeholder: 'Name (double-click)' })}${weaponFxRow(c, i)}</td>
           <td class="big accent nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="attack">${calc(`weapons.${i}.attackText`)}</button>${d.iteratives.length > 1 ? `<button class="rchip" data-roll-weapon="${i}" data-roll-kind="full">Full</button>` : ''}</td>
-          <td class="big nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="damage">${calc(`weapons.${i}.damageText`)}</button></td>
+          <td class="big nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="damage">${calc(`weapons.${i}.damageText`)}</button>${d.weapons[i]?.critText ? `<button class="rchip" data-roll-weapon="${i}" data-roll-kind="crit" title="Critical hit damage (${esc(d.weapons[i].crit)})">Crit</button>` : ''}</td>
           <td>${inp(`weapons.${i}.crit`, { cls: 'w5', ph: '19-20/x2' })}</td>
           <td>${sel(`weapons.${i}.ability`, [['', 'auto'], ['str', 'Str'], ['dex', 'Dex']])}</td>
           <td>${chk(`weapons.${i}.ranged`)}</td>
-          <td>${inp(`weapons.${i}.enh`, { type: 'num', cls: 'w2' })}</td>
+          <td>${inp(`weapons.${i}.enh`, { type: 'num', cls: 'w2', rerender: true })}</td>
           <td>${inp(`weapons.${i}.misc`, { type: 'num', cls: 'w2' })}</td>
           <td>${inp(`weapons.${i}.damage`, { cls: 'w4', ph: '1d8' })}</td>
           <td>${sel(`weapons.${i}.dmgMult`, [['', 'auto'], ['1', '×1'], ['1.5', '×1½ (2H)'], ['0.5', '×½ (off)'], ['0', 'none']])}</td>
@@ -263,6 +264,7 @@ function overview(body, c, d) {
 
   </div>`;
   wireCommon(body);
+  wireWeaponFx(body, c);
   wireImages(body, c);
   renderResources($('#res-card', body), c);
 
@@ -359,7 +361,7 @@ function wireCommon(body) {
     e.preventDefault();
     if (t.dataset.add) {
       const blank = {
-        weapons: { name: '', ability: '', ranged: false, enh: 0, misc: 0, damage: '1d8', dmgMult: '', dmgMisc: 0, crit: '×2', range: '', type: '', weight: 0 },
+        weapons: { name: '', ability: '', ranged: false, enh: 0, misc: 0, damage: '1d8', dmgMult: '', dmgMisc: 0, crit: '×2', range: '', type: '', weight: 0, mw: false, material: '', improvedCritical: false, fx: [] },
         armor: { name: '', type: 'armor', category: 'light', bonus: 0, enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true },
         gear: { name: '', qty: 1, weight: 0, value: '', notes: '' },
         specials: { name: '', notes: '' },

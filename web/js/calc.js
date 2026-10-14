@@ -4,6 +4,7 @@ import {
 } from './data.js';
 import { skillKey } from './model.js';
 import { archetypesOf } from './features.js';
+import { weaponFx, parseCrit, doubleThreat, critLabel, multiplyDice } from './weaponfx.js';
 
 export const mod = score => Math.floor((score - 10) / 2);
 export const sign = n => (n == null || isNaN(n) ? '—' : (n >= 0 ? '+' : '') + n);
@@ -171,7 +172,7 @@ export function compute(c, classesByName) {
   let weight = 0;
   for (const g of c.gear) weight += num(g.weight) * (g.qty === '' || g.qty == null ? 1 : num(g.qty));
   for (const a of c.armor) weight += num(a.weight);
-  for (const w of c.weapons) weight += num(w.weight);
+  for (const w of c.weapons) weight += num(w.weight) * weaponFx(w).weightMult;
   weight += (num(c.money.pp) + num(c.money.gp) + num(c.money.sp) + num(c.money.cp)) / 50;
   const cap = carryingCapacity(d.abilities.str.score, size);
   let load = 'light';
@@ -258,22 +259,36 @@ export function compute(c, classesByName) {
   for (const w of c.weapons) {
     const ranged = !!w.ranged;
     const abil = w.ability || (ranged ? 'dex' : 'str');
-    const atkBase = bab + M(abil) + sz.ac + num(w.enh) + num(w.misc) + (ranged ? rangedSt.total : meleeSt.total);
-    const attacks = d.iteratives.map(i => atkBase - bab + i);
+    const fx = weaponFx(w);
+    const condAtk = fx.conds.filter(x => x.on).reduce((n, x) => n + x.atk, 0), condDmg = fx.conds.filter(x => x.on).reduce((n, x) => n + x.dmg, 0);
+    const atkBase = bab + M(abil) + sz.ac + num(w.enh) + fx.atkMasterwork + condAtk + num(w.misc) + (ranged ? rangedSt.total : meleeSt.total);
+    const iters = fx.speed && !d.extraAttacks ? [d.iteratives[0], ...d.iteratives] : d.iteratives; // a speed weapon: one more attack at the best bonus (Haste does not stack with it)
+    const attacks = iters.map(i => atkBase - bab + i);
     const mult = w.dmgMult === undefined || w.dmgMult === '' ? (ranged ? 0 : 1) : num(w.dmgMult);
     const strM = M('str');
     const strDmg = strM < 0 && mult > 0 ? strM : Math.floor(strM * mult);
     const scaled = ranged ? 0 : Math.floor(meleeDmgScaled.total * (mult === 1.5 ? 1.5 : mult === 0.5 ? 0.5 : 1));
-    const dmgBonus = strDmg + num(w.enh) + num(w.dmgMisc) + (ranged ? rangedDmg.total : meleeDmg.total) + scaled;
+    const dmgBonus = strDmg + num(w.enh) + condDmg + fx.dmgPenalty + num(w.dmgMisc) + (ranged ? rangedDmg.total : meleeDmg.total) + scaled;
     const atkBuffs = stackParts(listOf('attack', ranged ? 'ranged' : 'melee'));
-    bd[`weapons.${d.weapons.length}.attack`] = parts({ label: 'Base attack bonus', value: bab }, { label: ABIL_SHORT[abil] + ' modifier', value: M(abil) }, { label: `Size (${size})`, value: sz.ac }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Misc (attack)', value: num(w.misc) }, atkBuffs);
-    bd[`weapons.${d.weapons.length}.damage`] = parts({ label: mult === 1 ? 'Str modifier' : mult === 0 ? 'Str modifier (not added)' : `Str modifier (${mult === 1.5 ? 'x1.5, two-handed' : mult === 0.5 ? 'x0.5, off-hand' : 'x' + mult})`, value: strDmg }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Misc (damage)', value: num(w.dmgMisc) }, stackParts((ranged ? listOf('damage', 'rangedDamage') : listOf('damage', 'meleeDamage')).filter(m => !m.scale)), ranged ? [] : stackParts(listOf('damage', 'meleeDamage').filter(m => m.scale)), // Power Attack by name, then what two hands or the off hand change
+    bd[`weapons.${d.weapons.length}.attack`] = parts({ label: 'Base attack bonus', value: bab }, { label: ABIL_SHORT[abil] + ' modifier', value: M(abil) }, { label: `Size (${size})`, value: sz.ac }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Masterwork', value: fx.atkMasterwork }, { label: 'Bane (enhancement against its type)', value: condAtk }, { label: 'Misc (attack)', value: num(w.misc) }, atkBuffs);
+    bd[`weapons.${d.weapons.length}.damage`] = parts({ label: mult === 1 ? 'Str modifier' : mult === 0 ? 'Str modifier (not added)' : `Str modifier (${mult === 1.5 ? 'x1.5, two-handed' : mult === 0.5 ? 'x0.5, off-hand' : 'x' + mult})`, value: strDmg }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Bane (enhancement against its type)', value: condDmg }, { label: 'Material (alchemical silver)', value: fx.dmgPenalty }, { label: 'Misc (damage)', value: num(w.dmgMisc) }, stackParts((ranged ? listOf('damage', 'rangedDamage') : listOf('damage', 'meleeDamage')).filter(m => !m.scale)), ranged ? [] : stackParts(listOf('damage', 'meleeDamage').filter(m => m.scale)), // Power Attack by name, then what two hands or the off hand change
       { label: mult === 1.5 ? 'Two-handed (x1.5 on those)' : 'Off-hand (x0.5 on those)', value: scaled - meleeDmgScaled.total });
+    // Critical hits: the threat range (doubled by keen or Improved Critical) and the multiplier come from the Crit box.
+    const cr = parseCrit(w.crit);
+    const crit = cr && { min: fx.keen ? doubleThreat(cr.min) : cr.min, mult: cr.mult };
+    const dmgFlat = n => (n ? (n > 0 ? '+' : '') + n : '');
+    const extraText = fx.extras.map(x => '+' + x.dice).join('');
+    const critBase = crit && multiplyDice(w.damage, crit.mult);
+    const critExtras = crit ? fx.critExtras(crit.mult) : [];
     d.weapons.push({
       attack: attacks[0], attacks,
       attackText: attacks.map(sign).join('/'),
-      damageText: `${w.damage || '—'}${dmgBonus ? (dmgBonus > 0 ? '+' : '') + dmgBonus : ''}`,
-      dmgBonus,
+      damageText: `${w.damage || '—'}${dmgFlat(dmgBonus)}${extraText}`,
+      dmgBonus, extras: fx.extras, fxSummary: fx.summary, fxWarn: fx.warn,
+      crit: crit ? critLabel(crit) : '', critMin: crit ? crit.min : 20,
+      // Dice and bonuses are multiplied on a critical hit; extra dice from enchantments (flaming, bane...) are not, and bursts add their own.
+      critText: crit && critBase ? `${critBase}${dmgFlat(dmgBonus * crit.mult)}${extraText}${critExtras.map(x => '+' + x.dice).join('')}` : '',
+      critExtras,
     });
   }
 

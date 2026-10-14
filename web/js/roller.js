@@ -119,6 +119,9 @@ function modsWindow() {
   });
 }
 
+/** " (threatens on 17-20)" for a weapon whose threat range is wider than a natural 20. */
+const threat = dw => (dw.critMin < 20 ? ` (threatens on ${dw.critMin}-20)` : '');
+
 function plan(el) {
   const d = state.derived, c = state.char;
   if (!d || !c) return null;
@@ -130,8 +133,9 @@ function plan(el) {
     if (!w || !dw) return null;
     const name = w.name || 'Weapon';
     if (ds.rollKind === 'damage') return { expr: String(dw.damageText).replace(/\s/g, ''), label: `${name} damage`, parts: d.bd?.[`weapons.${i}.damage`] };
-    if (ds.rollKind === 'full') return { items: dw.attacks.map((n, k) => ({ expr: 'd20' + bonusText(n), label: `${name} attack ${k + 1}/${dw.attacks.length}` })), parts: d.bd?.[`weapons.${i}.attack`] };
-    return { expr: 'd20' + bonusText(dw.attack), label: `${name} attack`, parts: d.bd?.[`weapons.${i}.attack`] };
+    if (ds.rollKind === 'crit') return { expr: String(dw.critText).replace(/\s/g, ''), label: `${name} critical damage (${dw.crit})`, parts: d.bd?.[`weapons.${i}.damage`] };
+    if (ds.rollKind === 'full') return { items: dw.attacks.map((n, k) => ({ expr: 'd20' + bonusText(n), label: `${name} attack ${k + 1}/${dw.attacks.length}${threat(dw)}` })), parts: d.bd?.[`weapons.${i}.attack`] };
+    return { expr: 'd20' + bonusText(dw.attack), label: `${name} attack${threat(dw)}`, parts: d.bd?.[`weapons.${i}.attack`] };
   }
   const v = getPath(d, ds.roll);
   if (typeof v !== 'number') return null;
@@ -148,6 +152,7 @@ function tipFor(el) {
     if (!w || !dw) return '';
     const name = w.name || 'Weapon';
     if (ds.rollKind === 'damage') return tipText(`${name} damage bonus`, dw.dmgBonus, d.bd?.[`weapons.${i}.damage`], `Click to roll ${dw.damageText}`);
+    if (ds.rollKind === 'crit') return `Critical hit (${dw.crit}): ${dw.critText}\nEnchantment dice are not multiplied; bursts add their own.\nClick to roll it once a threat is confirmed`;
     if (ds.rollKind === 'full') return `Full attack: ${dw.attacks.map(sign).join(' / ')}\nClick to roll every attack (each later attack is 5 lower)`;
     return tipText(`${name} attack`, dw.attack, d.bd?.[`weapons.${i}.attack`], `Click to roll d20${sign(dw.attack)}${dw.attacks.length > 1 ? ' (first attack)' : ''}`);
   }
@@ -189,7 +194,7 @@ export async function doRoll(p) {
 /** Is this roll an attack? Attack rolls get the attack modifiers (proficiency, range increments, flanking...) in the roll window. */
 const isAttack = (p, el) => {
   const ds = el?.dataset || {};
-  if (ds.rollWeapon !== undefined) return ds.rollKind !== 'damage';
+  if (ds.rollWeapon !== undefined) return ds.rollKind !== 'damage' && ds.rollKind !== 'crit';
   if (['melee', 'ranged', 'cmb'].includes(ds.roll)) return true;
   return /attack|touch/i.test(p.label || p.items?.[0]?.label || '');
 };

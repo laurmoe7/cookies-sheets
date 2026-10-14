@@ -34,6 +34,14 @@ export function classResources(levels, mods) {
   if (L('Alchemist')) add('Alchemist', 'bombs', 'Bombs', L('Alchemist') + mods.int, 'Alchemist level + Int modifier per day.', { entry: 'Bomb' });
   if (L('Inquisitor')) add('Inquisitor', 'judgment', 'Judgments', 1 + Math.floor(L('Inquisitor') / 3), '1 + 1 per 3 inquisitor levels, uses per day.', { entry: 'Judgment' });
   if (L('Warpriest') >= 2) add('Warpriest', 'fervor', 'Fervor', Math.floor(L('Warpriest') / 2) + mods.wis, '½ warpriest level + Wis modifier uses per day.', { entry: 'Fervor' });
+  // "1 per day, +1 at 4th and every 3 levels after": 1 + floor((level - 1) / 3)
+  const perThree = l => 1 + Math.floor((l - 1) / 3);
+  if (L('Paladin')) add('Paladin', 'smite-evil', 'Smite evil', perThree(L('Paladin')), '1 per day, +1 at 4th level and every 3 levels after.', { entry: 'Smite Evil' });
+  if (L('Antipaladin')) add('Antipaladin', 'smite-good', 'Smite good', perThree(L('Antipaladin')), '1 per day, +1 at 4th level and every 3 levels after.', { entry: 'Smite Good' });
+  if (L('Cavalier')) add('Cavalier', 'challenge', 'Challenge', perThree(L('Cavalier')), '1 per day, +1 at 4th level and every 3 levels after.', { entry: 'Challenge' });
+  if (L('Samurai')) add('Samurai', 'challenge-samurai', 'Challenge', perThree(L('Samurai')), '1 per day, +1 at 4th level and every 3 levels after.', { entry: 'Challenge' });
+  if (L('Brawler')) add('Brawler', 'martial-flexibility', 'Martial flexibility', atLeast1(Math.floor(L('Brawler') / 2)), '½ brawler level (minimum 1) times per day.', { entry: 'Martial Flexibility' });
+  if (L('Druid') >= 4) add('Druid', 'wild-shape', 'Wild shape', Math.min(8, Math.floor(L('Druid') / 2) - 1), '1 per day at 4th level, +1 at every even level after, up to 8 (at will at 20th).', { entry: 'Wild Shape' });
   return out.map(r => ({ ...r, max: Math.max(0, r.max), start: Math.max(0, Math.min(r.start, r.max)) }));
 }
 

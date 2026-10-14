@@ -3,6 +3,16 @@
 
 export const CHANGELOG = [
   {
+    version: 'Rest and weapon enchantments', date: '2026-10-14',
+    items: [
+      'A 🌙 Rest button on the Overview: heals 1 hit point per level, clears nonlethal damage, heals 1 point of each ability damage, refills the class pools and trackers, and resets spell slots.',
+      'New daily pools: smite evil and smite good, challenge (cavalier and samurai), wild shape and martial flexibility.',
+      'Each weapon has a ✦ Enchant button: enhancement, masterwork, a special material (adamantine, cold iron, silver, mithral, darkwood) and 30 special abilities such as flaming, keen, speed and holy.',
+      'Elemental dice are added to the damage roll, holy, bane and similar abilities get a switch under the weapon, and keen or Improved Critical widens the threat range.',
+      'A Crit button next to a weapon’s damage rolls the critical hit damage, with the multiplier and burst dice worked out.',
+    ],
+  },
+  {
     version: 'Earlier saves', date: '2026-10-14',
     items: [
       'Rolling a spell now looks like rolling a weapon: pick what to roll (to hit, concentration, damage), then Advantage, situational modifiers that fit spells, your own modifier and Roll.',
@@ -51,7 +61,7 @@ export const CHANGELOG = [
       'Spell roll windows have a Cast defensively roll (concentration against DC 15 + twice the spell level), and the spell page Roll button has a dice.',
       'Spell roll windows have a Roll to hit button for spells that need an attack roll, including ones that use a normal attack (Magic Stone, Stone Discus), and the dice-guess note is gone.',
       'In the roll window, Roll comes first and Sending to Discord second. New modifiers: target prone, firing into melee, improvised weapon, unseen attacker, strong wind, favorable or unfavorable conditions and more. Flanking, prone and dazzled moved from the Buffs menu to the roll window.',
-      'The Biography tab has a box for your character\u2019s bio. In Notes, Story and General notes are now separate tabs.',
+      'The Biography tab has a box for your character\’s bio. In Notes, Story and General notes are now separate tabs.',
       'Clicking a number to roll now opens a roll window: add modifiers (not proficient, range increments, flanking and more), then roll here or send to Discord. Hold Shift to roll straight away, or turn it off in Options.',
       'The Sending to Discord button is Discord blue.',
       'The dice box has a Roll button next to it.',

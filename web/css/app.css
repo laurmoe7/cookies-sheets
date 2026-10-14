@@ -691,3 +691,9 @@ html[data-motion="off"] .fx-spark { display: none; }
 .tab.drop-after { box-shadow: inset -5px 0 0 #f0c86e; }
 /* The ＋ Modifier button in the roll bar is a plain small button, like ＋ Buff / condition; it turns gold while a modifier is set so it is clear something is applied. */
 #roll-mods.on, html[data-theme] #roll-mods.on { background: linear-gradient(180deg, #e6bb58, #b8862a); border-color: #7a560f; color: #2a1904; font-style: normal; font-weight: 700; }
+
+/* Weapon enchantments: the chip and switches under a weapon name, and the window */
+.wfx { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; margin-top: 3px; }
+.wfx-sw { display: inline-flex; gap: 3px; align-items: center; cursor: pointer; }
+.wfx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 12px; }
+.wfx-ab { display: flex; gap: 6px; align-items: center; cursor: pointer; }
