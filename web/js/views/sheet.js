@@ -945,16 +945,16 @@ function gear(body, c, d) {
     <button class="btn small" data-add="money.custom">＋ Currency</button>
   </section>
   <section class="card">
-    <h3>${ref('Carrying Capacity', 'Rules', 'Encumbrance')}</h3>
+    <div class="row"><h3 class="grow">${ref('Carrying Capacity', 'Rules', 'Encumbrance')}</h3>
+      <label class="small"><input type="checkbox" data-bind="noEncumbrance" ${c.noEncumbrance ? 'checked' : ''} data-rerender> Ignore encumbrance</label></div>
     <div class="stat-row">
       <div class="stat"><div class="label">Carried</div><span class="big">${calc('encumbrance.weight')}</span> lb</div>
       <div class="stat"><div class="label">Light</div>≤ ${calc('encumbrance.light')}</div>
       <div class="stat"><div class="label">Medium</div>≤ ${calc('encumbrance.medium')}</div>
       <div class="stat"><div class="label">Heavy</div>≤ ${calc('encumbrance.heavy')}</div>
     </div>
-    <p><label class="small"><input type="checkbox" data-bind="noEncumbrance" ${c.noEncumbrance ? 'checked' : ''} data-rerender> Ignore encumbrance (no penalties from weight)</label></p>
-    <p>Load: <b class="${enc.load === 'light' ? 'good' : 'bad'}">${enc.off ? 'ignored' : calc('encumbrance.load')}</b>
-    ${enc.load === 'medium' ? '· max Dex +3, ACP −3, reduced speed' : enc.load === 'heavy' ? '· max Dex +1, ACP −6, reduced speed, run ×3' : enc.load === 'overloaded' ? '· can only move 5 ft. per round' : ''}</p>
+    ${enc.off ? '' : `<p>Load: <b class="${enc.load === 'light' ? 'good' : 'bad'}">${calc('encumbrance.load')}</b>
+    ${enc.load === 'medium' ? '· max Dex +3, ACP −3, reduced speed' : enc.load === 'heavy' ? '· max Dex +1, ACP −6, reduced speed, run ×3' : enc.load === 'overloaded' ? '· can only move 5 ft. per round' : ''}</p>`}
   </section></div>`;
   wireCommon(body);
   wireArmorFx(body);
