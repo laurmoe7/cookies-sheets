@@ -68,13 +68,18 @@ export function stackParts(list) {
     const label = m => (m.source || 'Bonus') + (type === 'untyped' ? '' : ' (' + type + ')');
     if (STACKING_TYPES.has(type)) { for (const m of items) out.push({ label: label(m), value: m.value, buff: true }); continue; }
     const pos = items.filter(m => m.value > 0);
-    if (pos.length) { const best = pos.reduce((a, b) => (b.value > a.value ? b : a)); out.push({ label: label(best), value: best.value, buff: true }); }
+    if (pos.length) {
+      const best = pos.reduce((a, b) => (b.value > a.value ? b : a));
+      out.push({ label: label(best), value: best.value, buff: true });
+      // Active but not counted (same type, a better one wins): listed with value 0 so the parts still add up, and `was` for the roll window to show greyed.
+      for (const m of pos) if (m !== best) out.push({ label: label(m), value: 0, was: m.value, buff: true, ignored: true });
+    }
     for (const m of items.filter(m => m.value < 0)) out.push({ label: label(m), value: m.value, buff: true });
   }
   return out;
 }
 /** Flattens parts (single entries and lists) and drops the zeros. */
-const parts = (...xs) => xs.flat().filter(p => p && p.value);
+const parts = (...xs) => xs.flat().filter(p => p && (p.value || p.ignored));
 const ABIL_SHORT = { str: 'Str', dex: 'Dex', con: 'Con', int: 'Int', wis: 'Wis', cha: 'Cha' };
 
 const SPEED_REDUCED = { 5: 5, 10: 5, 15: 10, 20: 15, 25: 20, 30: 20, 35: 25, 40: 30, 45: 30, 50: 35, 60: 40, 70: 50, 80: 55, 90: 60, 100: 70, 110: 75, 120: 80 };

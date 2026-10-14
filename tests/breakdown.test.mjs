@@ -38,13 +38,14 @@ test('buffs show up by name and type, as the source of a + or -', () => {
   assert.ok(d.bd['saves.ref.total'].some(p => p.label.startsWith('Haste')), 'Haste adds a dodge bonus to Reflex');
 });
 
-test('bonuses that do not stack are left out of the list, the one that counts is kept', () => {
+test('bonuses that do not stack add nothing; the one that counts is kept, the other is listed as ignored', () => {
   const parts = stackParts([
     { value: 2, type: 'morale', source: 'Bless' }, { value: 3, type: 'morale', source: 'Heroism' },
     { value: 1, type: 'dodge', source: 'Haste' }, { value: 1, type: 'dodge', source: 'Dodge feat' },
     { value: -2, type: 'morale', source: 'Shaken' },
   ]);
-  assert.deepEqual(parts.map(p => [p.label, p.value]), [['Heroism (morale)', 3], ['Shaken (morale)', -2], ['Haste (dodge)', 1], ['Dodge feat (dodge)', 1]], 'morale: highest bonus + the penalty; dodge stacks');
+  assert.deepEqual(parts.filter(p => !p.ignored).map(p => [p.label, p.value]), [['Heroism (morale)', 3], ['Shaken (morale)', -2], ['Haste (dodge)', 1], ['Dodge feat (dodge)', 1]], 'morale: highest bonus + the penalty; dodge stacks');
+  assert.deepEqual(parts.filter(p => p.ignored).map(p => [p.label, p.value, p.was]), [['Bless (morale)', 0, 2]], 'Bless is listed, worth 0, remembering its +2');
 });
 
 test('spell numbers have a breakdown too', () => {

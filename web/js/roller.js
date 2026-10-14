@@ -66,10 +66,12 @@ const afterRoll = () => { mode = ''; if (!keepMods) mods = []; syncBar(); };
 /** The buffs and conditions that change this roll, by name, so it is clear what the number includes. {label, value, buff} parts come from calc.js. */
 function buffNote(p) {
   const buffs = (p.parts || []).filter(x => x.buff && x.value);
+  const ignored = (p.parts || []).filter(x => x.ignored);
   const any = (state.char?.modifiers || []).some(m => m.active);
-  if (!buffs.length) return any ? '<p class="small muted rw-buffs">No active buff or condition changes this roll.</p>' : '';
-  return '<div class="rw-buffs"><span class="small">Active buffs in this roll:</span> ' +
-    buffs.map(b => '<span class="rw-buff ' + (b.value < 0 ? 'neg' : 'pos') + '">' + esc(b.label) + ' <b>' + esc(bonusText(b.value)) + '</b></span>').join(' ') + '</div>';
+  if (!buffs.length && !ignored.length) return any ? '<p class="small muted rw-buffs">No active buff or condition changes this roll.</p>' : '';
+  return '<div class="rw-buffs"><span class="small">' + (buffs.length ? 'Active buffs in this roll:' : 'Active, but not counted:') + '</span> ' +
+    buffs.map(b => '<span class="rw-buff ' + (b.value < 0 ? 'neg' : 'pos') + '">' + esc(b.label) + ' <b>' + esc(bonusText(b.value)) + '</b></span>').join(' ') +
+    ignored.map(b => '<span class="rw-buff off" title="Bonuses of the same type do not add up: only the highest one counts">' + esc(b.label) + ' ' + esc(bonusText(b.was)) + ' <i>(does not stack)</i></span>').join(' ') + '</div>';
 }
 
 /** The Modifier window: preset situational modifiers (toggle them), your own number, and whether they stay after the next roll. */

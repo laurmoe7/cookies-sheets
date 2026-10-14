@@ -24,6 +24,9 @@ test('the buffs that count in a number are marked, so the roll window can name t
     { source: 'Bless', value: 1, type: 'morale' }, { source: 'Heroism', value: 2, type: 'morale' },
     { source: 'Sickened', value: -2, type: 'untyped' }, { source: 'Dodge A', value: 1, type: 'dodge' }, { source: 'Dodge B', value: 1, type: 'dodge' },
   ]);
-  assert.deepEqual(parts.map(p => [p.label, p.value, p.buff]), [['Heroism (morale)', 2, true], ['Sickened', -2, true], ['Dodge A (dodge)', 1, true], ['Dodge B (dodge)', 1, true]],
+  assert.deepEqual(parts.map(p => [p.label, p.value, p.buff]), [['Heroism (morale)', 2, true], ['Bless (morale)', 0, true], ['Sickened', -2, true], ['Dodge A (dodge)', 1, true], ['Dodge B (dodge)', 1, true]],
     'only the best morale bonus counts (Heroism, not Bless); dodge bonuses stack; every part is marked as a buff');
+  const bless = parts.find(p => p.label === 'Bless (morale)');
+  assert.deepEqual([bless.ignored, bless.was], [true, 1], 'Bless is kept as a zero-value part that remembers its +1, so the window can show it greyed');
+  assert.equal(parts.reduce((n, p) => n + p.value, 0), 2 - 2 + 1 + 1, 'the ignored part adds nothing to the total');
 });
