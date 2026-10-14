@@ -164,7 +164,7 @@ function overview(body, c, d) {
       </div>
       <p class="small muted" id="hp-status"></p>
       </div>
-      ${c.portrait ? `<div class="portrait-frame"><img src="${c.portrait}" alt="Character portrait">
+      ${c.portrait ? `<div class="portrait-frame"><img src="${esc(c.portrait)}" alt="Character portrait">
         <div class="portrait-tools"><button class="icon-btn" data-img="portrait" title="Change portrait">✎</button><button class="icon-btn" data-img-edit="portrait" title="Recenter or resize">⤢</button><button class="icon-btn" data-img-clear="portrait" title="Remove portrait">✕</button></div></div>` : `<button class="portrait-frame empty" data-img="portrait" title="Add a portrait of your character">＋ Add a portrait</button>`}
     </section>
 

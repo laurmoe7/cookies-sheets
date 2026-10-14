@@ -414,6 +414,7 @@ SOUND_NAMES = ('levelUp', 'heal', 'fullHeal', 'hit')
 SOUND_TYPES = {'audio/mpeg': '.mp3', 'audio/mp3': '.mp3', 'audio/ogg': '.ogg', 'audio/wav': '.wav', 'audio/x-wav': '.wav', 'audio/wave': '.wav',
                'audio/mp4': '.m4a', 'audio/x-m4a': '.m4a', 'audio/aac': '.aac', 'audio/webm': '.webm', 'audio/flac': '.flac'}
 MAX_SOUND = 6 * 1024 * 1024
+MAX_BODY = 64 * 1024 * 1024  # a character with several pictures is a few MB
 MAX_PER_SOUND = 8
 SOUND_ID = re.compile(r'^[0-9a-f]{8}$')
 
@@ -566,9 +567,14 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _body(self):
+    def _length(self, limit, what='That request'):
         n = int(self.headers.get('Content-Length') or 0)
-        return json.loads(self.rfile.read(n) or b'null')
+        if n < 0 or n > limit:  # a negative length would make read() wait for the connection to close
+            raise ValueError(f'{what} is too big.')
+        return n
+
+    def _body(self):
+        return json.loads(self.rfile.read(self._length(MAX_BODY)) or b'null')
 
     def _route(self, method):
         u = urlparse(self.path)
@@ -629,9 +635,7 @@ class Handler(SimpleHTTPRequestHandler):
             elif route == ('GET', 'sounds'):
                 self._json(list_sounds())
             elif route == ('POST', 'sound'):
-                n = int(self.headers.get('Content-Length') or 0)
-                if n > MAX_SOUND:
-                    raise ValueError('That file is too big (the limit is 6 MB). Use a short sound effect.')
+                n = self._length(MAX_SOUND, 'That file (the limit is 6 MB; use a short sound effect)')
                 self._json(save_sound(p.get('name', ''), self.rfile.read(n), self.headers.get('Content-Type'), p.get('label', '')))
             elif route == ('POST', 'sound/delete'):
                 self._json(delete_sound(p.get('name', ''), p.get('id', '')))
@@ -681,6 +685,12 @@ class Handler(SimpleHTTPRequestHandler):
             self._refuse()
         elif not self._route('GET'):
             super().do_GET()
+
+    def do_HEAD(self):
+        if not self._allowed():
+            self._refuse()
+        else:
+            super().do_HEAD()
 
     def do_POST(self):
         if not self._allowed():

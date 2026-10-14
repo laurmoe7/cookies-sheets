@@ -1,7 +1,7 @@
 import { api } from './api.js';
 import { compute, sign } from './calc.js';
 import { newCharacter, migrate } from './model.js';
-import { $, $$, getPath, setPath, toast, showEntry, closeDrawer, initDrawerDismiss, debounce, modal, initTextFields, initTooltips } from './ui.js';
+import { esc, $, $$, getPath, setPath, toast, showEntry, closeDrawer, initDrawerDismiss, debounce, modal, initTextFields, initTooltips } from './ui.js';
 import { initSheetSearch } from './sheetsearch.js';
 import { initOptions, showOptions, showChangelog } from './options.js';
 import { choosePicture, repositionPicture } from './cropper.js';
@@ -121,7 +121,7 @@ function editIcon() {
   const choose = async () => { const r = await choosePicture(opts); if (r) { c.avatar = r.image; c.avatarSrc = r.src; changed({ rerender: true }); } };
   if (!c.avatar) return choose();
   modal('Character icon', (body, close) => {
-    body.innerHTML = `<div class="row" style="gap:16px;align-items:center"><img class="avatar-lg" src="${c.avatar}" alt="" style="width:96px;height:96px">
+    body.innerHTML = `<div class="row" style="gap:16px;align-items:center"><img class="avatar-lg" src="${esc(c.avatar)}" alt="" style="width:96px;height:96px">
       <div class="icon-actions"><button class="btn" data-a="change">Choose another picture</button><button class="btn" data-a="edit">Recenter or resize</button><button class="btn danger" data-a="clear">Remove</button></div></div>`;
     body.onclick = async e => {
       const a = e.target.closest('[data-a]')?.dataset.a;
@@ -203,4 +203,4 @@ async function init() {
   go('home');
 }
 
-init().catch(e => { $('#main').innerHTML = `<div class="pad"><h2>Failed to start</h2><pre>${e.stack || e}</pre></div>`; });
+init().catch(e => { $('#main').innerHTML = `<div class="pad"><h2>Failed to start</h2><pre>${esc(e.stack || e)}</pre></div>`; });

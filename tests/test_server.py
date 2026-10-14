@@ -280,6 +280,10 @@ class HttpApi(unittest.TestCase):
         self.assertEqual(self.headers('/api/characters', Host=f'evil.example:{port}'), 403)  # DNS rebinding
         self.assertEqual(self.headers('/', Host=f'evil.example:{port}'), 403)  # the page itself too
         self.assertEqual(self.headers('/api/characters', Host='127.0.0.1:1'), 403)  # right name, wrong port
+        self.assertEqual(self.headers('/', 'HEAD', Host=f'evil.example:{port}'), 403)  # HEAD is checked like GET
+
+    def test_oversized_and_negative_bodies_are_refused(self):
+        self.assertEqual(self.headers('/api/character', 'POST', **{'Content-Length': '-1'}), 500)  # would otherwise wait for the socket to close
 
     def test_own_page_is_allowed(self):
         port = self.srv.server_address[1]

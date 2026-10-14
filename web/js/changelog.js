@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
+      'Safer imports: a character file from someone else can no longer smuggle code in through its pictures, and the app refuses oversized or malformed requests.',
       'The Compendium’s result list and entry text sit on the same burnt-edge parchment as the other pages, with a frame line.',
       'The cards on the Characters page are parchment too, each sheet a little different.',
       'A weapon’s damage roll window has the same chips as the hit roll: switch between a normal and a critical hit, and add what only sometimes applies: sneak attack (rogue, ninja and slayer levels), studied strike, smite, challenge, favored enemy and Vital Strike. On a critical hit the plain bonuses and Vital Strike dice are multiplied and precision damage is not. Type a number or dice (2d6) for anything else.',

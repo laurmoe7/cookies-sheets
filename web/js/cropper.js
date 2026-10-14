@@ -117,6 +117,6 @@ export async function picAction(t, obj, opts, key = 'image') {
 /** Picture block for a card. size 'lg' is a wide frame like the character portrait; 'sm' a small square. */
 export function picFrame(image, size = 'sm', hint = 'Add a picture') {
   if (!image) return `<button class="pic-add ${size}" data-pic title="${esc(hint)}">${size === 'lg' ? '＋ Add a picture' : '＋'}</button>`;
-  return `<div class="pic-frame ${size}"><img src="${image}" alt="">
+  return `<div class="pic-frame ${size}"><img src="${esc(image)}" alt="">
     <span class="pic-tools"><button class="icon-btn" data-pic title="Choose another picture">✎</button><button class="icon-btn" data-pic-edit title="Recenter or resize">⤢</button><button class="icon-btn" data-pic-clear title="Remove picture">✕</button></span></div>`;
 }

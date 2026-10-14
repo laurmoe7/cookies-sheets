@@ -161,7 +161,7 @@ function topPanels(comp, s, p) {
     : cur < 0 ? `<b class="bad">Dying</b>. <b>Dead at −${con} HP</b>, ${cur + con} more damage.`
       : cur === 0 ? `<b class="warn">Disabled</b>. Dying below 0, dead at −${con} HP.` : '';
   const portrait = comp.image
-    ? `<div class="portrait-frame"><img src="${comp.image}" alt="">
+    ? `<div class="portrait-frame"><img src="${esc(comp.image)}" alt="">
         <div class="portrait-tools"><button class="icon-btn" data-pic title="Change picture">✎</button><button class="icon-btn" data-pic-edit title="Recenter or resize">⤢</button><button class="icon-btn" data-pic-clear title="Remove picture">✕</button></div></div>`
     : '<button class="portrait-frame empty" data-pic title="Add a picture">＋ Add a picture</button>';
   const M = a => (s.mods[a] == null ? '—' : sign(s.mods[a]));

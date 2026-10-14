@@ -40,7 +40,7 @@ export function paperDollCard(c, d) {
   const worn = wornBySlot(c), t = id => tile(c, d, id, worn);
   const pic = c.doll || c.portrait || c.avatar;
   const fig = pic
-    ? `<div class="doll-fig"><img src="${pic}" alt=""><div class="portrait-tools"><button class="icon-btn" data-doll-img title="${c.doll ? 'Change picture' : 'Choose a picture of its own (your portrait is shown until you do)'}">✎</button><button class="icon-btn" data-doll-edit title="Recenter or resize${c.doll ? '' : ' (this makes a picture of its own from your portrait)'}">⤢</button>${c.doll ? '<button class="icon-btn" data-doll-clear title="Remove this picture (your portrait is shown instead)">✕</button>' : ''}</div></div>`
+    ? `<div class="doll-fig"><img src="${esc(pic)}" alt=""><div class="portrait-tools"><button class="icon-btn" data-doll-img title="${c.doll ? 'Change picture' : 'Choose a picture of its own (your portrait is shown until you do)'}">✎</button><button class="icon-btn" data-doll-edit title="Recenter or resize${c.doll ? '' : ' (this makes a picture of its own from your portrait)'}">⤢</button>${c.doll ? '<button class="icon-btn" data-doll-clear title="Remove this picture (your portrait is shown instead)">✕</button>' : ''}</div></div>`
     : '<button class="doll-fig empty" data-doll-img title="Add a picture for the paper doll">＋ Add a picture</button>';
   return `<section class="card span2 doll-card">
     <div class="row"><h3 class="grow">Equipment</h3></div>
