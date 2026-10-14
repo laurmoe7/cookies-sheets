@@ -6,6 +6,8 @@ export const CHANGELOG = [
     version: 'Earlier saves', date: '2026-10-14',
     items: [
       'Rolling a spell now looks like rolling a weapon: pick what to roll (to hit, concentration, damage), then Advantage, situational modifiers that fit spells, your own modifier and Roll.',
+      'A padlock at the end of the tab bar locks the tabs where they are (and unlocks them to drag again).',
+      'More buffs to add: Divine Favor, Good Hope, Protection from Evil, Resistance, Aid, Divine Power, Slow, Crushing Despair, Prayer on enemies, stronger Barkskin and Shield of Faith, Greater and Mighty Rage, Inspire Courage +2 to +4, Inspire Competence.',
       'The Modifier button in the roll bar is bolder, with a gold edge.',
       'New option (Options, Look): drag the sheet tabs to rearrange them. The order is remembered, and one button puts them back.',
       'A buff that is on but does not count because a better one of the same type is on shows greyed in the roll window, marked "does not stack".',

@@ -230,3 +230,30 @@ test('the damage breakdown names Power Attack and the two-handed change', () => 
   assert.equal(parts.find(p => /Two-handed/.test(p.label)).value, 3, '6 x 1.5 = 9, so +3 more');
   assert.equal(parts.reduce((n, p) => n + p.value, 0), d.weapons[0].dmgBonus, 'the parts add up to the damage bonus');
 });
+
+test('every buff preset uses a real target and bonus type, and has a unique name', async () => {
+  const { BUFF_PRESETS, BONUS_TYPES, MOD_TARGETS } = await import('../web/js/data.js');
+  const names = BUFF_PRESETS.map(p => p.name);
+  assert.equal(new Set(names).size, names.length, 'a name picks the preset, so names cannot repeat');
+  for (const p of BUFF_PRESETS) for (const e of p.effects) {
+    assert.ok(MOD_TARGETS[e.target], `${p.name}: unknown target ${e.target}`);
+    assert.ok(BONUS_TYPES.includes(e.type), `${p.name}: unknown bonus type ${e.type}`);
+  }
+});
+
+test('Divine Favor is +1 luck per 3 levels, min 1 and max 3, and luck does not stack with Prayer', () => {
+  const luck = (lv, ...buffs) => {
+    const c = make({ base: { str: 10 }, levels: repeat('Fighter', lv), weapons: [structuredClone(longsword)] });
+    for (const b of buffs) buff(c, b);
+    return calc(c).bd['weapons.0.attack'].filter(p => /luck/.test(p.label) && !p.ignored).reduce((n, p) => n + p.value, 0);
+  };
+  assert.equal(luck(1, 'Divine Favor'), 1, 'floor(1/3) = 0, raised to the minimum +1');
+  assert.equal(luck(6, 'Divine Favor'), 2, 'floor(6/3) = 2');
+  assert.equal(luck(12, 'Divine Favor'), 3, 'floor(12/3) = 4, capped at +3');
+  assert.equal(luck(6, 'Divine Favor', 'Prayer (ally)'), 2, 'both are luck bonuses: only the +2 counts');
+});
+
+test('the higher rages and bard songs are bigger than the first ones', () => {
+  const str = name => calc(buff(make({ base: { str: 10 }, levels: repeat('Fighter', 2) }), name)).abilities.str.score;
+  assert.deepEqual([str('Rage'), str('Greater Rage'), str('Mighty Rage')], [16, 18, 20], 'Str 10 + human 2 = 12, then +4, +6, +8');
+});

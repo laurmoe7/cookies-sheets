@@ -40,7 +40,7 @@ const TABS = [
 
 /** The tabs in the order the player chose (Options → Look → drag the tabs). */
 const orderedTabs = () => orderKeys(TABS.map(t => t[0]), options().tabOrder).map(k => TABS.find(t => t[0] === k));
-const tabsKey = () => orderedTabs().map(t => t[0]).join() + (options().tabDrag ? '+drag' : '');
+const tabsKey = () => orderedTabs().map(t => t[0]).join() + (options().tabDrag ? (options().tabLock ? '+locked' : '+drag') : '');
 
 /** Dragging a tab onto another puts it before or after it, depending on which half it is dropped on. Saved in the options. */
 function wireTabDrag(main) {
@@ -104,11 +104,13 @@ export function renderSheet(main) {
     main.dataset.tabs = tabsKey();
     main.innerHTML = `<div class="page">
       <div class="tabs" role="tablist">${orderedTabs().map(([k, l]) => `<button class="tab" data-tab="${k}">${icon(k)}${l}</button>`).join('')}
-        <div class="grow"></div><span id="tabs-extra"></span>
+        <div class="grow"></div>${options().tabDrag ? `<button class="tab-lock ${options().tabLock ? 'locked' : ''}" data-tab-lock title="${options().tabLock ? 'The tabs are locked in place. Click to unlock them so they can be dragged.' : 'Drag the tabs to rearrange them. Click to lock them where they are.'}">${options().tabLock ? '🔒' : '🔓'}</button>` : ''}<span id="tabs-extra"></span>
       </div>
       <div id="tab-body"></div></div>`;
     $$('.tab', main).forEach(b => (b.onclick = () => { if (state.sheetTab !== b.dataset.tab) { const snap = snapshotPage($('#tab-body')); const order = orderedTabs().map(t => t[0]), back = order.indexOf(b.dataset.tab) < order.indexOf(state.sheetTab); state.turn = snap && { snap, back }; state.sheetTab = b.dataset.tab; render(); petView('tab-' + b.dataset.tab); } }));
-    if (options().tabDrag) wireTabDrag(main);
+    if (options().tabDrag && !options().tabLock) wireTabDrag(main);
+    const lock = $('[data-tab-lock]', main);
+    if (lock) lock.onclick = () => { setOption('tabLock', !options().tabLock); changed({ rerender: true }); };
   }
   $$('.tab', main).forEach(b => b.classList.toggle('active', b.dataset.tab === state.sheetTab));
   $('#tabs-extra', main).innerHTML = d.level === 0 ? '<button class="btn primary" data-goto-levelup>Choose 1st level class →</button>' : '';

@@ -680,6 +680,10 @@ html[data-motion="off"] .fx-spark { display: none; }
 .sp-actions .btn[data-summon]:hover, .btn[data-spell-roll]:hover, .btn[data-roll]:hover, .rchip.go:hover, html[data-theme] .sp-actions .btn[data-summon]:hover, html[data-theme] .btn[data-spell-roll]:hover, html[data-theme] .btn[data-roll]:hover, html[data-theme] .rchip.go:hover { background: linear-gradient(180deg, #f0c968, #c4902e); border-color: #7a560f; color: #2a1904; }
 .rchip.go { padding: 3px 14px; }
 
+/* The padlock at the end of the tab bar (shown when dragging tabs is switched on). */
+.tab-lock { align-self: center; font: inherit; font-size: 15px; cursor: pointer; background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 2px 8px; opacity: .75; }
+.tab-lock:hover { opacity: 1; border-color: var(--line); }
+.tab-lock.locked { opacity: 1; }
 /* Dragging the sheet tabs (Options → Look). The marker is an inset shadow because the Dusty tome ribbons are clipped to their shape. */
 .tab[draggable="true"] { cursor: grab; }
 .tab.dragging { opacity: .45; }
