@@ -926,7 +926,7 @@ function gear(body, c, d) {
   </section>
   <section class="card span2">
     <div class="row"><h3 class="grow">Inventory</h3>
-      <button class="btn small" data-pick-item>＋ Magic item</button><button class="btn small" data-add="gear">＋ Item</button></div>
+      <button class="btn small" data-pick-item>＋ Item</button><button class="btn small" data-add="gear">＋ Custom item</button></div>
     ${c.gear.length ? `<div class="sp-chips inv-chips">${c.gear.map((g, i) => {
       const worn = !!g.slot, qty = num(g.qty) > 1 ? `<span class="sp-s">×${esc(g.qty)}</span>` : '';
       const fxMark = (g.effects || []).length ? `<span class="sp-s" title="${esc(effectsText(g.effects))}${worn ? '' : ' (counts once worn)'}">✦</span>` : '';
@@ -965,7 +965,7 @@ function gear(body, c, d) {
   document.addEventListener('recalc', upd);
   onLeave(() => document.removeEventListener('recalc', upd));
   $('[data-pick-item]', body).onclick = async () => {
-    const r = await pickEntry('Add magic item', 'Magic Item');
+    const r = await pickEntry('Add an item', 'Magic Item');
     if (!r) return;
     const en = await api.entry(r.id);
     const w = parseFloat((en.html.match(/<dt>Weight<\/dt><dd>([\d.]+)/) || [])[1]) || 0;
