@@ -193,6 +193,16 @@ test('medium load caps Dex, adds check penalty and slows speed', () => {
   assert.equal(d.speed, 20);
 });
 
+test('ignoring encumbrance removes the Dex cap, check penalty and speed loss, but still counts the weight', () => {
+  const d = calc(make({ raceChoice: 'dex', base: { str: 10, dex: 16 }, levels: ['Rogue'], noEncumbrance: true,
+    gear: [{ name: 'Rocks', qty: 1, weight: 40, notes: '' }] }));
+  assert.equal(d.encumbrance.weight, 40, 'the 40 lb are still added up');
+  assert.equal(d.encumbrance.load, 'light');
+  assert.equal(d.ac.total, 10 + 4, 'Dex 4 is not capped');
+  assert.equal(d.acp, 0);
+  assert.equal(d.speed, 30);
+});
+
 test('ability damage lowers the modifier, drain lowers the score', () => {
   const c = make({ raceChoice: 'dex', base: { str: 10 } });
   c.abilities.str.damage = 4;

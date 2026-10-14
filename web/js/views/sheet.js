@@ -952,7 +952,8 @@ function gear(body, c, d) {
       <div class="stat"><div class="label">Medium</div>≤ ${calc('encumbrance.medium')}</div>
       <div class="stat"><div class="label">Heavy</div>≤ ${calc('encumbrance.heavy')}</div>
     </div>
-    <p>Load: <b class="${enc.load === 'light' ? 'good' : 'bad'}">${calc('encumbrance.load')}</b>
+    <p><label class="small"><input type="checkbox" data-bind="noEncumbrance" ${c.noEncumbrance ? 'checked' : ''} data-rerender> Ignore encumbrance (no penalties from weight)</label></p>
+    <p>Load: <b class="${enc.load === 'light' ? 'good' : 'bad'}">${enc.off ? 'ignored' : calc('encumbrance.load')}</b>
     ${enc.load === 'medium' ? '· max Dex +3, ACP −3, reduced speed' : enc.load === 'heavy' ? '· max Dex +1, ACP −6, reduced speed, run ×3' : enc.load === 'overloaded' ? '· can only move 5 ft. per round' : ''}</p>
   </section></div>`;
   wireCommon(body);

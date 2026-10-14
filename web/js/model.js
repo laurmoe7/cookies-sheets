@@ -39,6 +39,7 @@ export function newCharacter() {
     bio: '', // the character's biography (Biography tab)
     story: '', // the plot so far (Notes tab, Story)
     notes: '', // general notes (Notes tab)
+    noEncumbrance: false, // true: carried weight is still added up, but the load never slows or penalizes the character
     sessions: [], // {date, name, notes}: the session log on the Notes tab
     npcs: [], // {name, role, attitude, where, notes}
     quests: [], // {name, done, notes}

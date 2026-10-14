@@ -179,8 +179,9 @@ export function compute(c, classesByName) {
   weight += (num(c.money.pp) + num(c.money.gp) + num(c.money.sp) + num(c.money.cp)) / 50;
   const cap = carryingCapacity(d.abilities.str.score, size);
   let load = 'light';
-  if (weight > cap.heavy) load = 'overloaded'; else if (weight > cap.medium) load = 'heavy'; else if (weight > cap.light) load = 'medium';
-  d.encumbrance = { weight: Math.round(weight * 10) / 10, ...cap, load };
+  if (c.noEncumbrance) load = 'light';
+  else if (weight > cap.heavy) load = 'overloaded'; else if (weight > cap.medium) load = 'heavy'; else if (weight > cap.light) load = 'medium';
+  d.encumbrance = { weight: Math.round(weight * 10) / 10, ...cap, load, off: !!c.noEncumbrance };
   const loadMaxDex = load === 'medium' ? 3 : load === 'heavy' || load === 'overloaded' ? 1 : Infinity;
   const loadAcp = load === 'medium' ? -3 : load === 'heavy' || load === 'overloaded' ? -6 : 0;
 

@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
+      'Inventory: an “Ignore encumbrance” tick under Carrying Capacity. The weight is still added up, but it no longer caps Dex, adds a check penalty or slows you down.',
       'Safer imports: a character file from someone else can no longer smuggle code in through its pictures, and the app refuses oversized or malformed requests.',
       'The Compendium’s result list and entry text sit on the same burnt-edge parchment as the other pages, with a frame line.',
       'The cards on the Characters page are parchment too, each sheet a little different.',
