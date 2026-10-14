@@ -710,8 +710,12 @@ function renderItemActions() {
     <label><span>Qty</span>${inp(p('qty'), { type: 'num', cls: 'w3', rerender: true })}</label>
     <label><span>Weight (each)</span>${inp(p('weight'), { type: 'num', cls: 'w3' })}</label>
     <label><span>Value</span>${inp(p('value'), { cls: 'w6' })}</label>
-    <label class="wide"><span>Your notes</span><textarea data-bind="${p('notes')}" rows="3" placeholder="Anything to remember about it">${esc(g.notes || '')}</textarea></label>
+    ${g.id ? '' : `<label class="wide"><span>Your notes</span><textarea class="item-notes-big" data-bind="${p('notes')}" rows="10" placeholder="Describe the item, what it does, where you got it...">${esc(g.notes || '')}</textarea></label>`}
     <div class="wide row end"><button class="btn small danger" data-item-del>Remove from inventory</button></div></div>`;
+  // A compendium item already has its text, so your own notes go at the bottom of the page
+  const body = it.el.parentElement?.querySelector('.entry-body');
+  body?.querySelector('.item-foot')?.remove();
+  if (g.id && body) body.insertAdjacentHTML('beforeend', `<div class="item-foot"><label class="small muted">Your notes</label><textarea data-bind="${p('notes')}" rows="5" placeholder="Anything to remember about it">${esc(g.notes || '')}</textarea></div>`);
   it.el.onchange = e => {
     if (!e.target.matches('[data-item-name]')) return;
     g.name = e.target.value;

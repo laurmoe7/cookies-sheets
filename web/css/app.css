@@ -745,3 +745,7 @@ html[data-motion="off"] .fx-spark { display: none; }
 .item-actions label.wide, .item-actions .wide { flex: 1 1 100%; }
 .item-actions textarea, .item-actions input:not([type="number"]) { width: 100%; box-sizing: border-box; }
 .item-actions .row.end { justify-content: flex-end; }
+
+.item-notes-big { min-height: 200px; resize: vertical; }
+.item-foot { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; user-select: text; }
+.item-foot textarea { width: 100%; box-sizing: border-box; min-height: 90px; resize: vertical; }
