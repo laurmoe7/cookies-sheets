@@ -294,7 +294,7 @@ function rollWindow(p0, attack0, sp = null) {
       if (e.key === 'Enter' && e.target.id === 'spell-dice') { e.preventDefault(); go(); }
       else if (e.key === 'Enter' && e.target.closest('#mod-n,#mod-label')) { e.preventDefault(); add(); syncBar(); draw(); }
     };
-  }).then(() => { if (!went) { mods = snap.mods; mode = snap.mode; syncBar(); } });
+  }, { top: true }).then(() => { if (!went) { mods = snap.mods; mode = snap.mode; syncBar(); } });
 }
 
 export function initRoller() {
