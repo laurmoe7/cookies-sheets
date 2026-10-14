@@ -91,22 +91,26 @@ EDGE = 'rgba(255,238,196,.16) 0%, rgba(0,0,0,0) 40%, rgba(24,12,3,.5) 100%'
 PAPERS = [
     dict(at='50% 38%', seed=11, az=225, freq='.011', scale=1.2, burn='inset 0 0 40px 2px rgba(25,12,4,.5)', marks=[]),
     dict(at='34% 54%', seed=23, az=300, freq='.014', scale=1.5, burn='inset 14px -8px 44px -6px rgba(25,12,4,.5)', marks=[('br', 7, 130)]),
-    dict(at='64% 42%', seed=37, az=140, freq='.009', scale=1.0, burn='inset -14px 10px 44px -8px rgba(25,12,4,.45)', marks=['tear']),
+    dict(at='64% 42%', seed=37, az=140, freq='.009', scale=1.0, burn='inset -14px 10px 44px -8px rgba(25,12,4,.45)', marks=[]),
     dict(at='42% 60%', seed=52, az=20, freq='.016', scale=1.3, burn='inset 0 12px 40px -4px rgba(25,12,4,.45), inset 0 -8px 28px -8px rgba(25,12,4,.3)', marks=[]),
     dict(at='58% 34%', seed=66, az=200, freq='.012', scale=1.1, burn='inset 10px 6px 40px -6px rgba(25,12,4,.45)', marks=[('bl', 19, 110)]),
-    dict(at='36% 48%', seed=81, az=330, freq='.013', scale=1.4, burn='inset -8px -10px 42px -6px rgba(25,12,4,.5)', marks=['corner', ('tl', 31, 90)]),
+    dict(at='36% 48%', seed=81, az=330, freq='.013', scale=1.4, burn='inset -8px -10px 42px -6px rgba(25,12,4,.5)', marks=[('tl', 31, 90)]),
 ]
 
 
-# Ragged tears are clip-paths on the page itself, so the leather shows through the gap.
-# They are generated: a smooth wandering depth (two scales of noise, an uneven step along the edge, now and then a bite) so the edge looks torn, not sawn.
+# Old paper is never cut straight: every edge has a slight roughness and a few chips, with the corners knocked off a little.
+# The outline is a clip-path on the page, so the leather shows through the nicks. Nothing goes deeper than MAX_NICK px, which is less than the page's padding,
+# so text and buttons are never touched.
 import math
 import random
+
+MAX_NICK = 8.0
 
 
 def _wander(rng, n=6):
     """Smooth random curve on 0..1 (cosine-interpolated control points)."""
     c = [rng.uniform(.25, 1) for _ in range(n + 1)]
+
     def f(t):
         x = min(max(t, 0), 1) * n
         i = min(int(x), n - 1)
@@ -115,109 +119,65 @@ def _wander(rng, n=6):
     return f
 
 
-def _depths(rng, depth, lo=.012, hi=.034):
-    """[(t, px)] along one torn stretch: depth rises from 0, wanders, and falls back to 0."""
-    f, g = _wander(rng, 4), _wander(rng, 12)
-    bites = [(rng.uniform(.15, .85), rng.uniform(.03, .08), rng.uniform(.5, 1.0)) for _ in range(rng.randint(2, 3))]
-    out, t = [(0.0, 0.0)], rng.uniform(lo, hi)
-    while t < 1:
-        env = math.sin(math.pi * t) ** .6
-        d = depth * env * (.1 + .6 * f(t) + .3 * g(t)) + rng.uniform(-1.8, 1.8) * env
-        for c, w, k in bites:
-            if abs(t - c) < w:
-                d += depth * k * (1 - abs(t - c) / w) * .55
-        out.append((t, max(d, 0)))
-        t += rng.uniform(lo, hi)
-    out.append((1.0, 0.0))
-    return out
+def _edge_depths(rng, n):
+    """Depth in px of the nicks at n+1 points along one edge: a faint wobble, plus a few blocky chips with steep sides and uneven floors."""
+    low = _wander(rng, 6)
+    depth = [2.2 * low(i / n) + rng.uniform(0, 1.6) for i in range(n + 1)]
+    for _ in range(rng.choice([1, 2, 2, 3, 4])):
+        centre, width, deep = rng.uniform(.06, .94), rng.uniform(.012, .045), rng.uniform(3.5, MAX_NICK - .5)
+        skew = rng.uniform(.25, .75)
+        for i in range(n + 1):
+            u = (i / n - (centre - width * skew)) / width
+            if 0 < u < 1:
+                wall = min(u / skew, (1 - u) / (1 - skew)) if skew < 1 else u
+                depth[i] = max(depth[i], deep * min(1.0, wall * 5) * rng.uniform(.82, 1.0))
+    return [min(d, MAX_NICK) for d in depth]
 
 
-def _pt(x, y):
-    return f"{x} {y}"
-
-
-def _px(base, d, sign=-1):
-    """'100%' minus d px, or d px from 0."""
-    return f"calc({base} - {d:.1f}px)" if sign < 0 else f"{d:.1f}px"
-
-
-def tear_polygon(seed, tears=(), chunks=()):
-    """A page outline with ragged stretches. tears: (edge, start, end, depth_px) with edge top/right/bottom/left and start/end as fractions along it
-    (top and bottom run left to right, left and right top to bottom). chunks: (corner, size_px) for a torn-off corner (tr, br, bl, tl)."""
+def rough_polygon(seed, nx=54, ny=30):
+    """The outline of a page of old paper (a clip-path polygon) with a rough edge all round."""
     rng = random.Random(seed)
-    torn = {}
-    for edge, a, b, depth in tears:
-        torn.setdefault(edge, []).append((a, b, _depths(rng, depth)))
 
-    def edge_points(edge, reverse=False):
-        """Outline points of one edge, in the clockwise direction of travel."""
-        segs = sorted(torn.get(edge, []), key=lambda s: s[0])
-        pts = []
-        for a, b, ds in segs:
-            for t, d in ds:
-                u = a + (b - a) * t
-                if edge == 'top':
-                    pts.append((u, _pt(f"{u * 100:.2f}%", f"{d:.1f}px")))
-                elif edge == 'right':
-                    pts.append((u, _pt(_px('100%', d), f"{u * 100:.2f}%")))
-                elif edge == 'bottom':
-                    pts.append((u, _pt(f"{u * 100:.2f}%", _px('100%', d))))
-                else:
-                    pts.append((u, _pt(f"{d:.1f}px", f"{u * 100:.2f}%")))
-        pts.sort(key=lambda x: x[0])
-        out = [p for _, p in pts]
+    def pts(n, mk, reverse=False):
+        d = _edge_depths(rng, n)
+        ts = [min(max(i / n + rng.uniform(-.3, .3) / n, 0), 1) for i in range(n + 1)]
+        ts = [0.0] + sorted(ts[1:-1]) + [1.0]
+        out = [mk(ts[i], d[i]) for i in range(1, n)]
         return out[::-1] if reverse else out
 
-    def chunk(corner, size):
-        """Points of a torn-off corner, an irregular diagonal, in clockwise order."""
-        n = rng.randint(9, 12)
-        along = [(i / n + (rng.uniform(-.025, .025) if 0 < i < n else 0), rng.uniform(-.14, .14) * size) for i in range(n + 1)]
-        res = []
-        for s, j in along:
-            k = size * s
-            wob = j if 0 < s < 1 else 0
-            if corner == 'tr':
-                res.append(_pt(f"calc(100% - {size * (1 - s) + wob:.1f}px)", f"{k - wob * .5:.1f}px"))
-            elif corner == 'br':
-                res.append(_pt(f"calc(100% - {k + wob:.1f}px)", f"calc(100% - {size * (1 - s) + wob * .5:.1f}px)"))
-            elif corner == 'bl':
-                res.append(_pt(f"{size * (1 - s) + wob:.1f}px", f"calc(100% - {k + wob * .5:.1f}px)"))
-            else:
-                res.append(_pt(f"{k + wob:.1f}px", f"{size * (1 - s) + wob * .5:.1f}px"))
-        return res
-
-    ch = dict(chunks)
-    corner = lambda name, vertex: chunk(name, ch[name]) if name in ch else [vertex]
-    pts = (corner('tl', '0 0') + edge_points('top') + corner('tr', '100% 0') + edge_points('right')
-           + corner('br', '100% 100%') + edge_points('bottom', True) + corner('bl', '0 100%') + edge_points('left', True))
-    return 'polygon(' + ', '.join(pts) + ')'
-
-
-TEAR_EDGE = tear_polygon(31, tears=[('right', .14, .42, 26), ('bottom', .0, .12, 14)], chunks=[('bl', 26)])
-TEAR_CORNER = tear_polygon(47, chunks=[('tr', 54)])
+    pc = lambda t: f"{t * 100:.2f}%"
+    cut = lambda: rng.uniform(2.5, 8.5)
+    top = pts(nx, lambda t, d: f"{pc(t)} {d:.1f}px")
+    right = pts(ny, lambda t, d: f"calc(100% - {d:.1f}px) {pc(t)}")
+    bottom = pts(nx, lambda t, d: f"{pc(t)} calc(100% - {d:.1f}px)", True)
+    left = pts(ny, lambda t, d: f"{d:.1f}px {pc(t)}", True)
+    a, b, c, e, f, g, h, k = (cut() for _ in range(8))
+    corners = (
+        [f"0 {a:.1f}px", f"{b:.1f}px 0"],
+        [f"calc(100% - {c:.1f}px) 0", f"100% {e:.1f}px"],
+        [f"100% calc(100% - {f:.1f}px)", f"calc(100% - {g:.1f}px) 100%"],
+        [f"{h:.1f}px 100%", f"0 calc(100% - {k:.1f}px)"],
+    )
+    return 'polygon(' + ', '.join(corners[0] + top + corners[1] + right + corners[2] + bottom + corners[3] + left) + ')'
 
 
 def paper_rules():
     out = []
     n = len(PAPERS)
+    nth = lambda cls, i: f'html[data-theme="tome"] .{cls}:nth-of-type({n}n+{i})' if i < n else f'html[data-theme="tome"] .{cls}:nth-of-type({n}n)'
     for i, p in enumerate(PAPERS, 1):
-        sel = f'html[data-theme="tome"] .card:nth-of-type({n}n+{i})' if i < n else f'html[data-theme="tome"] .card:nth-of-type({n}n)'
-        layers, extras = [], ''
-        for m in p['marks']:
-            if m == 'tear':
-                extras = f"clip-path: {TEAR_EDGE}; "
-            elif m == 'corner':
-                extras = f"clip-path: {TEAR_CORNER}; "
-            else:
-                corner, seed, size = m
-                pos = {'tl': 'top left', 'tr': 'top right', 'bl': 'bottom left', 'br': 'bottom right'}[corner]
-                layers.append(f"{burn(corner, seed, size)} no-repeat {pos} / {size}px {size}px")
+        layers = []
+        for corner, seed, size in p['marks']:
+            pos = {'tl': 'top left', 'tr': 'top right', 'bl': 'bottom left', 'br': 'bottom right'}[corner]
+            layers.append(f"{burn(corner, seed, size)} no-repeat {pos} / {size}px {size}px")
         base = f"radial-gradient(ellipse at {p['at']}, {EDGE}), var(--grain) 0 0 / 220px 220px, {paper(p['seed'], p['az'], p['freq'], p['scale'])}"
-        sel += {1: ', html[data-theme="tome"] .comp-list', 4: ', html[data-theme="tome"] .comp-pane'}.get(i, '')  # the Compendium's two panes are pages of their own
-        # the Characters page's cards are small, so they get the paper and the burnt edge but no big burn marks or tears
-        csel = f'html[data-theme="tome"] .char-card:nth-of-type({n}n+{i})' if i < n else f'html[data-theme="tome"] .char-card:nth-of-type({n}n)'
-        out.append(f"{csel} {{ background: {base}; box-shadow: {p['burn'].replace('44px', '22px').replace('40px', '20px')}, var(--shadow); }}")
-        out.append(f"{sel} {{ background: {', '.join(layers + [base])}; {extras}box-shadow: {p['burn']}, var(--shadow); }}")
+        # the Characters page's cards are small, so they get the paper and the burnt edge but no big burn marks and no rough outline
+        out.append(f"{nth('char-card', i)} {{ background: {base}; box-shadow: {p['burn'].replace('44px', '22px').replace('40px', '20px')}, var(--shadow); }}")
+        # the Compendium's two panes are pages of their own, but their rows run to the edge, so they are not cut
+        comp = {1: 'comp-list', 4: 'comp-pane'}.get(i)
+        if comp:
+            out.append(f"html[data-theme=\"tome\"] .{comp} {{ background: {base}; box-shadow: {p['burn']}, var(--shadow); }}")
+        out.append(f"{nth('card', i)} {{ background: {', '.join(layers + [base])}; clip-path: {rough_polygon(p['seed'])}; box-shadow: {p['burn']}, var(--shadow); }}")
     return '\n'.join(out)
 
 
@@ -279,6 +239,7 @@ html[data-theme="tome"] .comp-list, html[data-theme="tome"] .comp-pane { positio
 html[data-theme="tome"] .comp-list::before, html[data-theme="tome"] .comp-pane::before { content: ""; position: absolute; inset: 4px; border: 1px solid #2c1f10; pointer-events: none; z-index: 1; }
 @PAPERS@
 html[data-theme="tome"] .char-card { clip-path: none; position: relative; }
+html[data-theme="tome"] .char-card::before { content: ""; position: absolute; inset: 4px; border: 1px solid #2c1f10; border-radius: 3px; pointer-events: none; }
 html[data-theme="tome"] .char-card h3 { color: var(--ink); }
 html[data-theme="tome"] .char-card:hover, html[data-theme="tome"] .char-card.current { border-color: #7a2415; }
 html[data-theme="tome"] .modal, html[data-theme="tome"] #drawer { background-image: @SHEET@; }

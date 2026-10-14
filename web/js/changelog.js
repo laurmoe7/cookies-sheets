@@ -7,7 +7,8 @@ export const CHANGELOG = [
     items: [
       'The Compendium’s result list and entry text sit on the same burnt-edge parchment as the other pages, with a frame line.',
       'The cards on the Characters page are parchment too, each sheet a little different.',
-      'The torn edges on some pages are redrawn to look like real tears: uneven bites and flaps instead of tiny saw teeth.',
+      'Every parchment page now has a worn, chipped edge like old paper, each one different. The chips are shallower than the page’s margin, so they never touch text or buttons.',
+      'The cards on the Characters page have the same thin dark frame line as the other pages.',
       'Weapons and Armor & Shields each have a ＋ Magic item button: pick one from the compendium (Flame Tongue, Elven Chain, Armor of the Shadow Lord...) and its base weapon or armor, enhancement, special abilities and material are filled in from the description. Check the numbers: they are read from the text.',
       'The picture in the middle of the paper doll has the same tools as the portrait on the Overview: hover it to change the picture, recenter or resize it, or remove it. Until you give it a picture of its own it shows your portrait.',
       'Inventory items can carry bonuses that count while they are worn: a cloak of resistance adds to your saves, a ring of protection to AC, a headband of intelligence to Int, and your own items can have any bonus you set. Open an item and choose Add bonuses, or Use the usual for the ones the app knows.',
