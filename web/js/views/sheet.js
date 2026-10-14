@@ -13,7 +13,7 @@ import { summonSpell } from '../summons.js';
 import { rollBar, fillSpellRolls } from '../roller.js';
 import { chooseSummon } from './summons.js';
 import { renderCompanions } from './companions.js';
-import { playPageTurn, snapshotPage } from '../options.js';
+import { playPageTurn, snapshotPage, options, setOption, orderKeys } from '../options.js';
 import { hpSegments, segsHtml } from '../bars.js';
 import { playSfx } from '../sfx.js';
 import { hpFx } from '../healfx.js';
@@ -37,6 +37,39 @@ const TABS = [
   ['overview', 'Overview'], ['buffs', 'Buffs & Conditions'], ['skills', 'Skills'], ['gear', 'Gear'], ['spells', 'Spells'],
   ['companions', 'Companions'], ['feats', 'Feats & Abilities'], ['bio', 'Biography'], ['notes', 'Notes'],
 ];
+
+/** The tabs in the order the player chose (Options → Look → drag the tabs). */
+const orderedTabs = () => orderKeys(TABS.map(t => t[0]), options().tabOrder).map(k => TABS.find(t => t[0] === k));
+const tabsKey = () => orderedTabs().map(t => t[0]).join() + (options().tabDrag ? '+drag' : '');
+
+/** Dragging a tab onto another puts it before or after it, depending on which half it is dropped on. Saved in the options. */
+function wireTabDrag(main) {
+  const bar = $('.tabs', main);
+  let from = null;
+  const clear = () => $$('.tab', bar).forEach(x => x.classList.remove('dragging', 'drop-before', 'drop-after'));
+  const after = (e, b) => { const r = b.getBoundingClientRect(); return e.clientX > r.left + r.width / 2; };
+  $$('.tab', bar).forEach(b => {
+    b.draggable = true;
+    b.ondragstart = e => { from = b.dataset.tab; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', from); b.classList.add('dragging'); };
+    b.ondragend = () => { from = null; clear(); };
+    b.ondragover = e => {
+      if (!from || from === b.dataset.tab) return;
+      e.preventDefault();
+      $$('.tab', bar).forEach(x => x.classList.remove('drop-before', 'drop-after'));
+      b.classList.add(after(e, b) ? 'drop-after' : 'drop-before');
+    };
+    b.ondrop = e => {
+      e.preventDefault();
+      if (!from || from === b.dataset.tab) return;
+      const keys = orderedTabs().map(t => t[0]).filter(k => k !== from);
+      keys.splice(keys.indexOf(b.dataset.tab) + (after(e, b) ? 1 : 0), 0, from);
+      from = null; clear();
+      setOption('tabOrder', keys);
+      changed({ rerender: true });
+    };
+  });
+}
+document.addEventListener('options-changed', () => { if (state.view === 'sheet' && state.char) changed({ rerender: true }); });
 
 /** Read-first text bound to a character path: click to read in full, double-click to edit. */
 const tf = (path, opts = {}) => textField(path, getPath(state.char, path), opts);
@@ -67,13 +100,15 @@ export function renderSheet(main) {
   const c = state.char;
   const d = state.derived;
   // The tab bar stays in the page while you edit or switch tabs (only the body is redrawn), so it never flickers.
-  if (!$('.tabs', main) || main.dataset.view !== 'sheet') {
+  if (!$('.tabs', main) || main.dataset.view !== 'sheet' || main.dataset.tabs !== tabsKey()) {
+    main.dataset.tabs = tabsKey();
     main.innerHTML = `<div class="page">
-      <div class="tabs" role="tablist">${TABS.map(([k, l]) => `<button class="tab" data-tab="${k}">${icon(k)}${l}</button>`).join('')}
+      <div class="tabs" role="tablist">${orderedTabs().map(([k, l]) => `<button class="tab" data-tab="${k}">${icon(k)}${l}</button>`).join('')}
         <div class="grow"></div><span id="tabs-extra"></span>
       </div>
       <div id="tab-body"></div></div>`;
-    $$('.tab', main).forEach(b => (b.onclick = () => { if (state.sheetTab !== b.dataset.tab) { const snap = snapshotPage($('#tab-body')); const back = TABS.findIndex(t => t[0] === b.dataset.tab) < TABS.findIndex(t => t[0] === state.sheetTab); state.turn = snap && { snap, back }; state.sheetTab = b.dataset.tab; render(); petView('tab-' + b.dataset.tab); } }));
+    $$('.tab', main).forEach(b => (b.onclick = () => { if (state.sheetTab !== b.dataset.tab) { const snap = snapshotPage($('#tab-body')); const order = orderedTabs().map(t => t[0]), back = order.indexOf(b.dataset.tab) < order.indexOf(state.sheetTab); state.turn = snap && { snap, back }; state.sheetTab = b.dataset.tab; render(); petView('tab-' + b.dataset.tab); } }));
+    if (options().tabDrag) wireTabDrag(main);
   }
   $$('.tab', main).forEach(b => b.classList.toggle('active', b.dataset.tab === state.sheetTab));
   $('#tabs-extra', main).innerHTML = d.level === 0 ? '<button class="btn primary" data-goto-levelup>Choose 1st level class →</button>' : '';

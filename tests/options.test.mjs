@@ -42,3 +42,15 @@ test('the Options window never keeps state in a data-pick attribute on its own b
   const src = readFileSync(new URL('../web/js/options.js', import.meta.url), 'utf8');
   assert.equal(/body\.dataset\.pick/.test(src), false);
 });
+
+test('the tab order: saved keys first, unknown ones dropped, new tabs keep their place at the end', async () => {
+  const { orderKeys, sanitize, DEFAULTS } = await import('../web/js/options.js');
+  const base = ['overview', 'buffs', 'skills', 'gear'];
+  assert.deepEqual(orderKeys(base, []), base, 'nothing saved: the usual order');
+  assert.deepEqual(orderKeys(base, ['gear', 'overview']), ['gear', 'overview', 'buffs', 'skills']);
+  assert.deepEqual(orderKeys(base, ['gear', 'gone', 'gear', 'skills']), ['gear', 'skills', 'overview', 'buffs'], 'a removed tab and repeats are ignored');
+  assert.equal(DEFAULTS.tabDrag, false, 'dragging is off until switched on');
+  assert.deepEqual(sanitize({ tabOrder: 'nonsense', tabDrag: 1 }).tabOrder, []);
+  assert.equal(sanitize({ tabDrag: 1 }).tabDrag, true);
+  assert.deepEqual(sanitize({ tabOrder: ['a', 5, 'a', 'b'] }).tabOrder, ['a', 'b'], 'only text, no repeats');
+});

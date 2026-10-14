@@ -18,7 +18,7 @@ export const TEXT_SIZES = [[90, 'Small'], [100, 'Normal'], [112, 'Large'], [125,
 
 export const THEMES = [['dark', 'Classic dark'], ['tome', 'Dusty tome']];
 
-export const DEFAULTS = { theme: 'tome', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: true, pageSound: true, volume: 100, soundOff: {}, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false, webhook: '', rollSend: true, rollAsk: true };
+export const DEFAULTS = { theme: 'tome', accent: 'crimson', textSize: 100, compact: false, motion: true, pageTurn: true, pageSound: true, volume: 100, soundOff: {}, cookie: true, cookieTalk: 'normal', cookieSwear: 'full', cookieSound: false, webhook: '', rollSend: true, rollAsk: true, tabDrag: false, tabOrder: [] };
 
 /** Fill in defaults and drop anything invalid, so a bad or old stored value can never break the page. */
 export function sanitize(raw) {
@@ -30,7 +30,8 @@ export function sanitize(raw) {
   o.pageTurn = o.pageTurn !== 'off' && o.pageTurn !== false; // used to be Full / Light / Off
   if (!['quiet', 'normal', 'chatty'].includes(o.cookieTalk)) o.cookieTalk = DEFAULTS.cookieTalk;
   if (!['full', 'bleep'].includes(o.cookieSwear)) o.cookieSwear = DEFAULTS.cookieSwear;
-  for (const k of ['compact', 'motion', 'pageSound', 'cookieSound']) o[k] = !!o[k];
+  for (const k of ['compact', 'motion', 'pageSound', 'cookieSound', 'tabDrag']) o[k] = !!o[k];
+  o.tabOrder = Array.isArray(o.tabOrder) ? [...new Set(o.tabOrder.filter(k => typeof k === 'string' && k.length < 30))].slice(0, 30) : [];
   // One volume for every sound. Saves from before the slider had a "Sound effects" checkbox: unchecked becomes volume 0.
   const v = Math.round(Number(o.volume));
   o.volume = !(raw && typeof raw === 'object') || raw.volume === undefined ? (raw && raw.sfx === false ? 0 : DEFAULTS.volume) : Number.isFinite(v) ? Math.max(0, Math.min(100, v)) : DEFAULTS.volume;
@@ -57,6 +58,12 @@ let current = sanitize(null);
 export const options = () => current;
 /** The volume slider as 0 to 1, for every sound the app plays. */
 export const volume = () => current.volume / 100;
+
+/** The sheet's tabs in the player's order: the saved keys first (unknown ones dropped), then any tab not mentioned, in its usual place. Pure. */
+export function orderKeys(base, saved) {
+  const keep = (saved || []).filter((k, i, a) => base.includes(k) && a.indexOf(k) === i);
+  return [...keep, ...base.filter(k => !keep.includes(k))];
+}
 
 /** Change one option from code (the roll bar's Discord switch). */
 export function setOption(k, v) { current = sanitize({ ...current, [k]: v }); save(); }
@@ -128,6 +135,8 @@ function optionRows(tab, o, customSounds) {
       <div class="opt-row" ${tome ? 'style="opacity:.45"' : ''}><b>Accent color <span class="muted small">(Classic dark only)</span></b><div class="swatches">${Object.entries(ACCENTS).map(([k, a]) => `<button class="swatch ${o.accent === k ? 'on' : ''}" data-opt="accent" data-v="${k}" title="${a.name}" style="background:${a.dark || '#e0605a'}" ${tome ? 'disabled' : ''}></button>`).join('')}</div></div>
       <div class="opt-row"><b>Text size</b>${seg('textSize', o.textSize, TEXT_SIZES)}</div>
       ${check('compact', 'Compact layout', o.compact)}
+      ${check('tabDrag', 'Drag the sheet tabs to rearrange them', o.tabDrag)}
+      ${o.tabOrder.length ? '<div class="opt-row"><b>Tab order</b><button class="btn small ghost" data-tab-reset>Put the tabs back in the usual order</button></div>' : ''}
       ${check('motion', 'Animations', o.motion)}`;
   }
   if (tab === 'sound') {
@@ -158,9 +167,10 @@ export function showOptions() {
         <div class="opt-foot"><span class="muted small">Cookie’s Sheets, version ${VERSION}</span><span class="grow"></span>
           <button class="btn small ghost" data-changelog>What’s new</button><button class="btn small ghost" data-ogl>Game content &amp; license</button>${devTools ? '<button class="btn small ghost" data-dev>Developer tools</button>' : ''}</div>`;
     };
-    const set = (k, v) => { current = sanitize({ ...current, [k]: v }); save(); applyOptions(); draw(); };
+    const set = (k, v) => { current = sanitize({ ...current, [k]: v }); save(); applyOptions(); draw(); document.dispatchEvent(new Event('options-changed')); };
     const refreshSounds = async () => { customSounds = await loadCustomSounds(); };
     body.onclick = async e => {
+      if (e.target.closest('[data-tab-reset]')) return set('tabOrder', []);
       const tab = e.target.closest('[data-tab]');
       if (tab) { optTab = tab.dataset.tab; return draw(); }
       const b = e.target.closest('button[data-opt]');

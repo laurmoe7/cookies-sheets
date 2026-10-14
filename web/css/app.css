@@ -679,3 +679,9 @@ html[data-motion="off"] .fx-spark { display: none; }
   box-shadow: 0 0 0 2px rgba(230,187,88,.38), 0 2px 8px rgba(0,0,0,.4); text-shadow: 0 1px 0 rgba(255,240,200,.45); }
 .sp-actions .btn[data-summon]:hover, .btn[data-spell-roll]:hover, .btn[data-roll]:hover, .rchip.go:hover, html[data-theme] .sp-actions .btn[data-summon]:hover, html[data-theme] .btn[data-spell-roll]:hover, html[data-theme] .btn[data-roll]:hover, html[data-theme] .rchip.go:hover { background: linear-gradient(180deg, #f0c968, #c4902e); border-color: #7a560f; color: #2a1904; }
 .rchip.go { padding: 3px 14px; }
+
+/* Dragging the sheet tabs (Options → Look). The marker is an inset shadow because the Dusty tome ribbons are clipped to their shape. */
+.tab[draggable="true"] { cursor: grab; }
+.tab.dragging { opacity: .45; }
+.tab.drop-before { box-shadow: inset 5px 0 0 #f0c86e; }
+.tab.drop-after { box-shadow: inset -5px 0 0 #f0c86e; }
