@@ -45,10 +45,7 @@ export function rollBar() {
 const modsTotal = () => mods.reduce((t, m) => t + m.n, 0);
 const modsChip = () => ['Modifier', mods.length ? bonusText(modsTotal()) || '+0' : '', mode === 'adv' ? 'Adv' : mode === 'dis' ? 'Disadv' : ''].filter(Boolean).join(' ');
 
-let spellModsDraw = null; // redraws the modifier area of the open spell roll window (a roll clears the modifiers, so it must follow)
-
 function syncBar() {
-  spellModsDraw?.();
   const mb = document.getElementById('roll-mods');
   if (mb) { mb.textContent = modsChip(); mb.classList.toggle('on', mods.length > 0 || !!mode); }
   document.querySelectorAll('[data-rmode]').forEach(b => b.classList.toggle('on', b.dataset.rmode === mode));
@@ -184,19 +181,34 @@ function askRoll(p, el, shift) {
   rollWindow(p, isAttack(p, el));
 }
 
-function rollWindow(p, attack) {
-  const items = p.items || [p];
-  const d20 = /^d20/.test(items[0].expr);
-  const title = p.items ? items[0].label.replace(/ attack \d+\/\d+$/, '') + ' full attack' : (p.label || 'Roll');
+/**
+ * The roll window. For a spell, `sp` = {title, facts, start, dice, choices: [{label, p, attack, kind} | {label, dice: true, label2}]} adds a row
+ * to pick what to roll (to hit, concentration, damage...) and filters the presets to the ones that apply to spells.
+ */
+function rollWindow(p0, attack0, sp = null) {
+  let pick = sp ? sp.start : 0;
+  let diceVal = sp?.dice || '';
+  const cur = () => {
+    if (!sp) return { p: p0, attack: attack0 };
+    const ch = sp.choices[pick];
+    return ch.dice ? { p: { expr: diceVal.trim() || '0', label: ch.label2 }, attack: false, ch } : { p: ch.p, attack: ch.attack, ch };
+  };
+  const title = sp ? sp.title : p0.items ? p0.items[0].label.replace(/ attack \d+\/\d+$/, '') + ' full attack' : (p0.label || 'Roll');
   const snap = { mods: mods.map(m => ({ ...m })), mode };
   let went = false;
   modal(title, (body, close) => {
     const draw = () => {
+      const { p, attack, ch } = cur();
+      const items = p.items || [p];
+      const d20 = /^d20/.test(items[0].expr);
       const exprs = items.map(it => withMode(it.expr));
       const shown = exprs[0] + (exprs.length > 1 ? ' … and ' + (exprs.length - 1) + ' more' : '');
-      const presets = d20 ? presetsFor(attack) : [];
+      const presets = d20 ? presetsFor(attack, sp && { kind: ch.kind }) : [];
       const sending = !!(options().webhook && options().rollSend);
-      body.innerHTML = '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' +
+      body.innerHTML = (sp ? '<p class="small muted">' + esc(sp.facts) + '.</p><div class="roll-bar" style="margin:8px 0">' +
+          sp.choices.map((c, i) => '<button class="rchip ' + (i === pick ? 'on' : '') + '" data-sp-pick="' + i + '" title="' + esc(c.tip || '') + '">' + esc(c.label) + '</button>').join(' ') + '</div>' +
+          (ch.dice ? '<div class="row" style="margin:8px 0"><input id="spell-dice" class="w12" value="' + esc(diceVal) + '" placeholder="e.g. 5d6" autocomplete="off" aria-label="Spell dice"></div>' : '') : '') +
+        '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' +
         (d20 ? '<div class="roll-bar" style="margin:8px 0"><button class="rchip ' + (mode === 'adv' ? 'on' : '') + '" data-win-mode="adv">Advantage</button><button class="rchip ' + (mode === 'dis' ? 'on' : '') + '" data-win-mode="dis">Disadvantage</button></div>' : '') +
         (presets.length ? presetGroups(presets) : '') +
         (d20 ? '<p class="small muted" style="margin:0">Charging, fighting defensively, shaken, power attack and other conditions that last or change your AC are on the Buffs &amp; Conditions tab and apply by themselves.</p>' : '') +
@@ -206,16 +218,29 @@ function rollWindow(p, attack) {
         '<div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn small" id="win-cancel">Cancel</button>' +
         '<button class="rchip go" data-win-go="roll">🎲 Roll</button>' +
         '<button class="rchip dchip ' + (sending ? 'on' : '') + '" id="win-discord" title="Post this roll to your Discord channel, or keep it on the sheet">' + esc(discordLabel()) + '</button></div>';
-      body.querySelector('[data-win-go]')?.focus();
+      if (ch?.dice) { const di = body.querySelector('#spell-dice'); di.focus(); di.setSelectionRange(di.value.length, di.value.length); }
+      else body.querySelector('[data-win-go]')?.focus();
     };
     draw();
     const add = () => {
       const n = Math.trunc(Number(body.querySelector('#mod-n').value));
       if (n) mods.push({ n, label: body.querySelector('#mod-label').value.trim() || 'modifier' });
     };
+    const go = () => {
+      const { p, ch } = cur();
+      if (ch?.dice && !diceVal.trim()) return toast('Type the dice first, such as 5d6', 'err');
+      went = true; close(); syncBar(); doRoll(p);
+    };
+    body.oninput = e => {
+      if (e.target.id !== 'spell-dice') return;
+      diceVal = e.target.value;
+      const b = body.querySelector('.rw-expr b');
+      if (b) b.textContent = diceVal.trim() || '0';
+    };
     body.onclick = e => {
-      const pr = e.target.closest('[data-mod-preset]'), md = e.target.closest('[data-win-mode]'), go = e.target.closest('[data-win-go]');
-      if (go) { went = true; close(); syncBar(); return doRoll(p); }
+      const pr = e.target.closest('[data-mod-preset]'), md = e.target.closest('[data-win-mode]'), sk = e.target.closest('[data-sp-pick]');
+      if (e.target.closest('[data-win-go]')) return go();
+      if (sk) { pick = +sk.dataset.spPick; return draw(); }
       if (e.target.closest('#win-discord')) {
         if (!options().webhook) return showOptions();
         setOption('rollSend', !options().rollSend);
@@ -232,7 +257,10 @@ function rollWindow(p, attack) {
       syncBar(); draw();
     };
     body.onchange = e => { if (e.target.id === 'mod-keep') keepMods = e.target.checked; };
-    body.onkeydown = e => { if (e.key === 'Enter' && e.target.closest('#mod-n,#mod-label')) { e.preventDefault(); add(); syncBar(); draw(); } };
+    body.onkeydown = e => {
+      if (e.key === 'Enter' && e.target.id === 'spell-dice') { e.preventDefault(); go(); }
+      else if (e.key === 'Enter' && e.target.closest('#mod-n,#mod-label')) { e.preventDefault(); add(); syncBar(); draw(); }
+    };
   }).then(() => { if (!went) { mods = snap.mods; mode = snap.mode; syncBar(); } });
 }
 
@@ -311,10 +339,10 @@ async function spellWindow(btn) {
   const info = spellInfo(entry, sc.cl);
   const known = !!(entry && sp.id); // custom spells have no data, so offer every chip
   const dc = sc.dcs[sp.level];
-  const chip = (label, n, kind) => `<button class="rchip" data-w-add="${n}" data-w-label="${esc(name + ' ' + kind)}" title="Roll d20 ${esc(kind)}">${esc(label)} ${esc(bonusText(n) || '+0')}</button>`;
+  const chip = (label, n, kind) => ({ label: label + ' ' + (bonusText(n) || '+0'), n, tip: 'Roll d20 ' + kind, name: name + ' ' + kind });
   const chips = [
-    ...(!known || info.attack === 'ranged' ? [chip('Roll to hit: ranged ' + (info.touch === false ? 'attack' : 'touch'), d.ranged, 'ranged ' + (info.touch === false ? 'attack' : 'touch attack'))] : []),
-    ...(!known || info.attack === 'melee' ? [chip('Roll to hit: melee ' + (info.touch === false ? 'attack' : 'touch'), d.melee, 'melee ' + (info.touch === false ? 'attack' : 'touch attack'))] : []),
+    ...(!known || info.attack === 'ranged' ? [chip('To hit: ranged ' + (info.touch === false ? 'attack' : 'touch'), d.ranged, 'ranged ' + (info.touch === false ? 'attack' : 'touch attack'))] : []),
+    ...(!known || info.attack === 'melee' ? [chip('To hit: melee ' + (info.touch === false ? 'attack' : 'touch'), d.melee, 'melee ' + (info.touch === false ? 'attack' : 'touch attack'))] : []),
     chip('Concentration', sc.concentration, 'concentration check'),
     chip('Cast defensively (DC ' + (15 + 2 * (Number(sp.level) || 0)) + ')', sc.concentration, 'cast defensively, DC ' + (15 + 2 * (Number(sp.level) || 0))),
     ...(!known || info.sr ? [chip('Caster level check', sc.cl, 'caster level check' + (info.sr ? ' to beat spell resistance' : ''))] : []),
@@ -323,41 +351,12 @@ async function spellWindow(btn) {
     info.save ? `${info.save.label}${dc != null && info.save.type ? `, DC ${dc}` : ''}` : known ? 'no saving throw' : (dc != null ? `save DC ${dc}` : ''),
     known ? (info.sr ? 'spell resistance applies' : 'ignores spell resistance') : ''].filter(Boolean);
   const what = info.kind === 'healing' ? 'healing' : info.kind === 'damage' ? 'damage' : '';
-  modal(name + ': roll', (body, close) => {
-    body.innerHTML = `<p class="small muted">${esc(facts.join(' · '))}.</p>
-      <div class="roll-bar" style="margin:8px 0">${chips.join(' ')}</div>
-      <div class="row"><input id="spell-dice" class="w12" value="${esc(info.dice)}" placeholder="e.g. 5d6" autocomplete="off" aria-label="Spell dice">
-        <button class="btn" id="spell-go">Roll ${esc(what || name)}</button></div>
-      <p class="small muted" style="margin:10px 0 0">Modifiers are added to the d20 rolls above (to hit, concentration, caster level). For the damage, type the bonus into the dice box, such as 5d6+2.</p>
-      <div id="sw-mods"></div>`;
-    const drawMods = () => {
-      const box = body.querySelector('#sw-mods');
-      if (!box) return;
-      box.innerHTML = '<div class="row" style="margin:8px 0"><input id="mod-n" class="w3" type="number" placeholder="±" aria-label="Modifier"><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>' +
-        (mods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b> <button class="btn small ghost" id="mod-clear">Clear</button></div>' : '') +
-        '<label class="small"><input type="checkbox" id="mod-keep" ' + (keepMods ? 'checked' : '') + '> Keep these modifiers for my next rolls</label>';
-    };
-    spellModsDraw = drawMods;
-    drawMods();
-    const addMod = () => {
-      const n = Math.trunc(Number(body.querySelector('#mod-n').value));
-      if (n) mods.push({ n, label: body.querySelector('#mod-label').value.trim() || 'modifier' });
-      syncBar();
-    };
-    const go = () => { const v = body.querySelector('#spell-dice').value.trim(); if (v) doRoll({ expr: v, label: what ? `${name} ${what}` : name }); };
-    body.onclick = e => {
-      const a = e.target.closest('[data-w-add]');
-      if (a) askRoll({ expr: 'd20' + bonusText(a.dataset.wAdd), label: a.dataset.wLabel }, null, e.shiftKey);
-      else if (e.target.closest('#spell-go')) go();
-      else if (e.target.closest('#mod-add')) addMod();
-      else if (e.target.closest('#mod-clear')) { mods = []; syncBar(); }
-    };
-    body.onchange = e => { if (e.target.id === 'mod-keep') keepMods = e.target.checked; };
-    body.onkeydown = e => {
-      if (e.key !== 'Enter') return;
-      if (e.target.id === 'spell-dice') go();
-      else if (e.target.closest('#mod-n,#mod-label')) { e.preventDefault(); addMod(); }
-    };
-    setTimeout(() => body.querySelector('#spell-dice')?.focus(), 0);
-  }).then(() => { spellModsDraw = null; });
+  const kindOf = t => (t.includes('ranged') ? 'ranged' : t.includes('melee') ? 'melee' : null);
+  const choices = [
+    ...chips.map(ch => ({ label: ch.label, tip: ch.tip, kind: kindOf(ch.tip), attack: /touch attack|ranged attack|melee attack/.test(ch.tip),
+      p: { expr: 'd20' + bonusText(ch.n), label: ch.name } })),
+    { label: 'Roll ' + (what || 'dice'), dice: true, label2: what ? `${name} ${what}` : name, tip: 'Roll the dice of the spell (edit them first if the guess is wrong)' },
+  ];
+  const first = choices.findIndex(ch => ch.attack);
+  rollWindow(null, false, { title: name, facts: facts.join(' · '), choices, dice: info.dice, start: first >= 0 && known ? first : (info.dice ? choices.length - 1 : 0) });
 }

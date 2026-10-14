@@ -106,32 +106,37 @@ export const modsLabel = mods => '(' + mods.map(m => bonusText(m.n) + ' ' + m.la
  * Range increments are one group: only one applies. "for: 'attack'" ones are only offered on attack rolls.
  */
 export const MOD_PRESETS = [
-  { label: 'not proficient', n: -4, for: 'attack', tip: 'Using a weapon you are not proficient with: -4 to hit' },
-  { label: '2nd range increment', n: -2, group: 'range', for: 'attack', tip: 'Each range increment past the first is -2 to hit' },
-  { label: '3rd range increment', n: -4, group: 'range', for: 'attack' },
-  { label: '4th range increment', n: -6, group: 'range', for: 'attack' },
-  { label: '5th range increment', n: -8, group: 'range', for: 'attack' },
-  { label: 'flanking', n: 2, for: 'attack', tip: 'You and an ally threaten the target from opposite sides: +2 to melee attacks' },
-  { label: 'you are prone', n: -4, for: 'attack', tip: 'Making a melee attack while prone: -4' },
+  { label: 'not proficient', spell: false, n: -4, for: 'attack', tip: 'Using a weapon you are not proficient with: -4 to hit' },
+  { label: '2nd range increment', spell: false, n: -2, group: 'range', for: 'attack', tip: 'Each range increment past the first is -2 to hit' },
+  { label: '3rd range increment', spell: false, n: -4, group: 'range', for: 'attack' },
+  { label: '4th range increment', spell: false, n: -6, group: 'range', for: 'attack' },
+  { label: '5th range increment', spell: false, n: -8, group: 'range', for: 'attack' },
+  { label: 'flanking', kind: 'melee', n: 2, for: 'attack', tip: 'You and an ally threaten the target from opposite sides: +2 to melee attacks' },
+  { label: 'you are prone', kind: 'melee', n: -4, for: 'attack', tip: 'Making a melee attack while prone: -4' },
   { label: 'dazzled', n: -1, for: 'attack', tip: '-1 on attacks (and sight-based Perception)' },
-  { label: 'higher ground', n: 1, for: 'attack', tip: 'Melee against a lower foe: +1' },
-  { label: 'target prone (melee)', n: 4, for: 'attack', tip: '+4 to melee attacks against a prone target' },
-  { label: 'target prone (ranged)', n: -4, for: 'attack', tip: '-4 to ranged attacks against a prone target' },
-  { label: 'firing into melee', n: -4, for: 'attack', tip: 'Ranged attack into a melee without Precise Shot: -4' },
+  { label: 'higher ground', kind: 'melee', n: 1, for: 'attack', tip: 'Melee against a lower foe: +1' },
+  { label: 'target prone (melee)', kind: 'melee', n: 4, for: 'attack', tip: '+4 to melee attacks against a prone target' },
+  { label: 'target prone (ranged)', kind: 'ranged', n: -4, for: 'attack', tip: '-4 to ranged attacks against a prone target' },
+  { label: 'firing into melee', kind: 'ranged', n: -4, for: 'attack', tip: 'Ranged attack into a melee without Precise Shot: -4' },
   { label: 'attacker unseen', n: 2, for: 'attack', tip: 'Invisible, or the target cannot see you: +2' },
-  { label: 'improvised weapon', n: -4, for: 'attack', tip: 'Using something that is not a weapon: -4' },
-  { label: 'two-weapon: main hand', n: -6, for: 'attack', tip: 'No Two-Weapon Fighting feat; -4 with a light off-hand weapon, less with the feat' },
-  { label: 'two-weapon: off hand', n: -10, for: 'attack', tip: 'No Two-Weapon Fighting feat; -8 with a light off-hand weapon, less with the feat' },
+  { label: 'improvised weapon', spell: false, n: -4, for: 'attack', tip: 'Using something that is not a weapon: -4' },
+  { label: 'two-weapon: main hand', spell: false, n: -6, for: 'attack', tip: 'No Two-Weapon Fighting feat; -4 with a light off-hand weapon, less with the feat' },
+  { label: 'two-weapon: off hand', spell: false, n: -10, for: 'attack', tip: 'No Two-Weapon Fighting feat; -8 with a light off-hand weapon, less with the feat' },
   { label: 'squeezing', n: -4, for: 'attack', tip: 'Fighting in a space too narrow for you' },
-  { label: 'strong wind (ranged)', n: -2, for: 'attack', tip: 'Strong wind: -2 to ranged attacks (-4 in a severe wind)' },
+  { label: 'strong wind (ranged)', spell: false, kind: 'ranged', n: -2, for: 'attack', tip: 'Strong wind: -2 to ranged attacks (-4 in a severe wind)' },
   { label: 'aid another', n: 2, tip: 'An ally helped you' },
   { label: 'favorable conditions', n: 2, tip: 'The GM says circumstances help (skills and checks)' },
   { label: 'unfavorable conditions', n: -2, tip: 'The GM says circumstances hurt (skills and checks)' },
   { label: 'no tools', n: -2, tip: 'A skill that needs tools, done without them' },
 ];
 
-/** The presets that make sense for this roll: attack rolls get all of them, other d20 rolls only the general ones. */
-export const presetsFor = attack => MOD_PRESETS.filter(m => attack || m.for !== 'attack');
+/**
+ * The presets that make sense for this roll: attack rolls get all of them, other d20 rolls only the general ones.
+ * For a spell ({kind: 'melee'|'ranged'|null}) the weapon-only ones (proficiency, range increments, two-weapon...) are left out,
+ * and a melee or ranged touch attack only gets the ones for that kind of attack.
+ */
+export const presetsFor = (attack, spell = null) => MOD_PRESETS.filter(m => (attack || m.for !== 'attack')
+  && (!spell || (m.spell !== false && (!spell.kind || !m.kind || m.kind === spell.kind))));
 
 const DIVISOR = { two: 2, three: 3, four: 4, five: 5 };
 const divisor = w => (w ? DIVISOR[w.toLowerCase()] ?? (+w || 1) : 1);

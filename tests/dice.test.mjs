@@ -126,3 +126,17 @@ test('the roll window offers attack modifiers only on attacks', async () => {
   assert.ok(['flanking', 'you are prone', 'dazzled'].every(n => names(presetsFor(true)).includes(n)), 'one-roll situations live in the roll window');
   assert.ok(MOD_PRESETS.every(m => m.n !== 0));
 });
+
+test('spell rolls get only the modifiers that apply to spells', async () => {
+  const { presetsFor } = await import('../web/js/dice.js');
+  const names = list => list.map(m => m.label);
+  const ranged = names(presetsFor(true, { kind: 'ranged' })), melee = names(presetsFor(true, { kind: 'melee' }));
+  for (const w of ['not proficient', '2nd range increment', 'improvised weapon', 'two-weapon: main hand', 'strong wind (ranged)']) {
+    assert.ok(!ranged.includes(w) && !melee.includes(w), w + ' is for weapons, not spells');
+  }
+  assert.ok(ranged.includes('target prone (ranged)') && ranged.includes('firing into melee') && ranged.includes('dazzled') && ranged.includes('attacker unseen'));
+  assert.ok(!ranged.includes('flanking') && !ranged.includes('higher ground'), 'flanking is a melee bonus');
+  assert.ok(melee.includes('flanking') && melee.includes('target prone (melee)') && !melee.includes('target prone (ranged)'));
+  assert.ok(!names(presetsFor(false, { kind: null })).includes('dazzled'), 'a concentration check is not an attack');
+  assert.ok(names(presetsFor(false, { kind: null })).includes('aid another'));
+});
