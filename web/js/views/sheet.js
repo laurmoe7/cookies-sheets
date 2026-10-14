@@ -379,6 +379,7 @@ function wireCommon(body) {
       }[t.dataset.add];
       getPath(c, t.dataset.add).push(structuredClone(blank));
       changed({ rerender: true });
+      if (t.dataset.add === 'gear') openItem(c.gear.length - 1);
     } else if (t.dataset.del) {
       const parts = t.dataset.del.split('.');
       const idx = +parts.pop();
@@ -658,7 +659,7 @@ const isActive = (cls, i) => spellDrawer?.cls === cls && spellDrawer.i === i;
 
 function clearActiveSpell() {
   spellDrawer = null;
-  document.querySelectorAll('.sp-chip.on').forEach(x => x.classList.remove('on'));
+  document.querySelectorAll('.sp-chip[data-sp-select].on').forEach(x => x.classList.remove('on'));
 }
 
 /** Clicking a spell chip: show the spell in the side panel (its text, then the actions under its name). */
@@ -667,10 +668,64 @@ function openSpell(cls, i, chip) {
   if (!s) return;
   parkedSpell = null;
   spellDrawer = { cls, i, armed: true, id: s.id || null };
-  document.querySelectorAll('.sp-chip.on').forEach(x => x.classList.remove('on'));
+  document.querySelectorAll('.sp-chip[data-sp-select].on').forEach(x => x.classList.remove('on'));
   chip?.classList.add('on');
   if (s.id) showEntry(s.id);
   else showCustom({ name: s.name || 'New spell', cat: 'Custom spell', sub: ORD[s.level] + ' level', html: '' });
+}
+
+// An inventory item shown in the side panel: its compendium text, and under the name the fields to edit. {i, armed, id, el}
+let itemDrawer = null;
+const isItemActive = i => itemDrawer?.i === i;
+const WEARABLE = () => [['', 'Not worn'], ...SLOTS.filter(x => !['armor', 'shield', 'main', 'off'].includes(x.id)).map(x => [x.id, slotName(x.id)])];
+
+function openItem(i) {
+  const g = state.char.gear[i];
+  if (!g) return;
+  itemDrawer = { i, armed: true, id: g.id || null };
+  document.querySelectorAll('.sp-chip[data-item].on').forEach(x => x.classList.remove('on'));
+  document.querySelector(`[data-item="${i}"]`)?.classList.add('on');
+  if (g.id) showEntry(g.id);
+  else showCustom({ name: g.name || 'New item', cat: 'Custom item', sub: g.value || '', html: '' });
+}
+
+document.addEventListener('entry-shown', e => {
+  const it = itemDrawer;
+  if (!it) return;
+  if (it.armed && (e.detail.entry.id ?? null) === it.id) { it.armed = false; it.el = e.detail.actions; renderItemActions(); }
+  else if (!it.armed) clearItem(); // the panel moved on to something else
+});
+document.addEventListener('drawer-closed', () => clearItem());
+function clearItem() { itemDrawer = null; document.querySelectorAll('.sp-chip[data-item].on').forEach(x => x.classList.remove('on')); }
+
+function renderItemActions() {
+  const it = itemDrawer;
+  if (!it?.el?.isConnected) return;
+  const c = state.char, g = c.gear[it.i];
+  if (!g) { it.el.innerHTML = ''; return; }
+  const p = k => `gear.${it.i}.${k}`;
+  it.el.innerHTML = `<div class="item-actions">
+    ${g.id ? '' : `<label class="wide"><span>Name</span><input data-item-name value="${esc(g.name || '')}" placeholder="Item name"></label>`}
+    <label><span>Worn in</span>${sel(p('slot'), WEARABLE(), { rerender: true })}</label>
+    <label><span>Qty</span>${inp(p('qty'), { type: 'num', cls: 'w3', rerender: true })}</label>
+    <label><span>Weight (each)</span>${inp(p('weight'), { type: 'num', cls: 'w3' })}</label>
+    <label><span>Value</span>${inp(p('value'), { cls: 'w6' })}</label>
+    <label class="wide"><span>Your notes</span><textarea data-bind="${p('notes')}" rows="3" placeholder="Anything to remember about it">${esc(g.notes || '')}</textarea></label>
+    <div class="wide row end"><button class="btn small danger" data-item-del>Remove from inventory</button></div></div>`;
+  it.el.onchange = e => {
+    if (!e.target.matches('[data-item-name]')) return;
+    g.name = e.target.value;
+    const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = g.name || 'New item';
+    changed({ rerender: true });
+  };
+  it.el.onclick = async e => {
+    if (!e.target.closest('[data-item-del]')) return;
+    if (!await confirmBox(`Remove “${g.name || 'this item'}” from your inventory?`, 'Remove')) return;
+    c.gear.splice(it.i, 1);
+    itemDrawer = null;
+    closeDrawer();
+    changed({ rerender: true });
+  };
 }
 
 document.addEventListener('entry-shown', e => {
@@ -840,14 +895,11 @@ function gear(body, c, d) {
   <section class="card span2">
     <div class="row"><h3 class="grow">Inventory</h3>
       <button class="btn small" data-pick-item>＋ Magic item</button><button class="btn small" data-add="gear">＋ Item</button></div>
-    ${c.gear.length ? `<table class="tbl"><thead><tr><th>Item</th><th title="Where it is worn (shown on the paper doll)">Worn in</th><th>Qty</th><th>Wt (each)</th><th>Value</th><th>Notes</th><th></th></tr></thead><tbody>
-      ${c.gear.map((g, i) => `<tr class="${g.slot ? 'equipped' : ''}"><td class="w12">${g.slot ? `<span class="eq-mark" title="Equipped: ${esc(slotName(g.slot))}">◆</span>` : '<span class="eq-mark off"></span>'}${g.id ? refId(g.id, g.name)
-          : tf(`gear.${i}.name`, { placeholder: 'Item name', read: { title: g.name || 'Item', titlePath: `gear.${i}.name`, cat: 'Custom item', path: `gear.${i}.notes` } })}</td>
-        <td>${sel(`gear.${i}.slot`, [['', '—'], ...SLOTS.filter(x => x.id !== 'armor' && x.id !== 'shield' && x.id !== 'main' && x.id !== 'off').map(x => [x.id, slotName(x.id)])], { rerender: true })}</td>
-        <td>${inp(`gear.${i}.qty`, { type: 'num', cls: 'w2' })}</td><td>${inp(`gear.${i}.weight`, { type: 'num', cls: 'w3' })}</td>
-        <td>${inp(`gear.${i}.value`, { cls: 'w5' })}</td>
-        <td class="grow-cell">${tf(`gear.${i}.notes`, { multiline: true, placeholder: 'Add notes', read: { title: g.name || 'Item', titlePath: `gear.${i}.name`, cat: g.id ? 'Your notes' : 'Custom item' } })}</td>
-        <td><button class="icon-btn" data-del="gear.${i}">✕</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted">Nothing carried.</p>'}
+    ${c.gear.length ? `<div class="sp-chips inv-chips">${c.gear.map((g, i) => {
+      const worn = !!g.slot, qty = num(g.qty) > 1 ? `<span class="sp-s">×${esc(g.qty)}</span>` : '';
+      const where = worn ? `<span class="sp-s">${esc(slotName(g.slot))}</span><span class="pips"><i class="pip"></i></span>` : '';
+      return `<button class="sp-chip ${isItemActive(i) ? 'on' : ''} ${worn ? 'ready' : g.hint ? 'idle' : ''}" data-item="${i}" title="${worn ? 'Equipped: ' + esc(slotName(g.slot)) + '. ' : ''}Click for details"><span class="sp-n">${esc(g.name || 'New item')}</span>${qty}${where}</button>`;
+    }).join('')}</div>` : '<p class="muted">Nothing carried.</p>'}
   </section>
   <section class="card">
     <h3>Money</h3>
@@ -873,6 +925,7 @@ function gear(body, c, d) {
   wireCommon(body);
   wireArmorFx(body);
   wirePaperDoll(body);
+  body.addEventListener('click', e => { const t = e.target.closest('[data-item]'); if (t) openItem(+t.dataset.item); });
   const upd = () => { $('#money-total').textContent = (num(c.money.pp) * 10 + num(c.money.gp) + num(c.money.sp) / 10 + num(c.money.cp) / 100).toLocaleString(); };
   upd();
   document.addEventListener('recalc', upd);
@@ -885,6 +938,7 @@ function gear(body, c, d) {
     const price = (en.html.match(/<dt>Price<\/dt><dd>([^<]+)/) || [])[1] || '';
     c.gear.push({ id: r.id, name: r.name, qty: 1, weight: w, value: price, notes: '', slot: '', hint: hintFromSub(r.sub) });
     changed({ rerender: true });
+    openItem(c.gear.length - 1);
   };
 }
 

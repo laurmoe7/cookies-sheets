@@ -38,7 +38,7 @@ export function paperDollCard(c, d) {
   const fig = c.portrait || c.avatar ? `<img src="${c.portrait || c.avatar}" alt="">` : '<svg class="doll-sil" viewBox="0 0 24 32" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="3.6"/><path d="M12 10.5c-4.2 0-6.5 2.2-6.5 5.5v6h2.2v8.5h3.2v-8h2.2v8h3.2V22h2.2v-6c0-3.3-2.3-5.5-6.5-5.5z"/></svg>';
   const total = Object.values(worn).reduce((n, l) => n + l.length, 0);
   return `<section class="card span2 doll-card">
-    <div class="row"><h3 class="grow">Worn equipment</h3><span class="small muted">${total} slot${total === 1 ? '' : 's'} filled of ${SLOTS.length}</span></div>
+    <div class="row"><h3 class="grow">Equipment</h3><span class="small muted">${total} slot${total === 1 ? '' : 's'} filled of ${SLOTS.length}</span></div>
     <div class="doll">
       <div class="doll-col">${LAYOUT.left.map(t).join('')}</div>
       <div class="doll-mid"><div class="doll-fig">${fig}</div>
