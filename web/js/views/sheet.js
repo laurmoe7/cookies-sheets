@@ -560,7 +560,6 @@ function spells(body, c, d) {
           <span class="pill" title="d20 + caster level + ${sc.stat.toUpperCase()} modifier">${ref('Concentration', 'Rules')} ${roll(`spellcasting.${cls}.concentration`, cls + ' concentration', `<b>${sign(sc.concentration)}</b>`)}</span>
           ${d.asf && ['Wizard', 'Sorcerer', 'Witch', 'Magus', 'Arcanist', 'Bard', 'Summoner', 'Skald', 'Bloodrager'].includes(cls) ? `<span class="pill warn" title="Arcane spell failure from armor">ASF ${d.asf}%</span>` : ''}
           ${sc.hasExtraSlot ? `<label class="small" title="Cleric/druid domain, wizard specialist school, or shaman spirit slot">${chk(`spellbooks.${cls}.extraSlot`, { rerender: true })} Domain / school slot</label>` : ''}
-          <button class="btn small" data-rest="${esc(cls)}" title="New day: reset used slots, and the spells you cast are prepared again">Rest (reset)</button>
         </div>
       </div>
       ${cls === 'Arcanist' ? resourceBlock(c, 'arcane-reservoir') : ''}
@@ -604,7 +603,7 @@ function spells(body, c, d) {
     const cls = sbEl.dataset.cls;
     const book = c.spellbooks[cls];
     const sc = d.spellcasting[cls];
-    const t = e.target.closest('[data-sp-select],[data-add-spell],[data-custom-spell],[data-cast],[data-cast-spont],[data-rest],[data-prep]');
+    const t = e.target.closest('[data-sp-select],[data-add-spell],[data-custom-spell],[data-cast],[data-cast-spont],[data-prep]');
     if (!t) return;
     if (t.dataset.spSelect !== undefined) {
       openSpell(cls, +t.dataset.spSelect, t);
@@ -638,12 +637,6 @@ function spells(body, c, d) {
       book.used[l] = num(book.used[l]) + 1;
       const left = slotsLeft(book, sc, l);
       toast(`${book.spells[+t.dataset.spell]?.name || 'Spell'} cast. ${left} ${left === 1 ? 'slot' : 'slots'} left at ${ORD[l]} level`);
-      changed({ rerender: true });
-    } else if (t.dataset.rest !== undefined) {
-      book.used = Array(10).fill(0);
-      for (const s of book.spells) { s.prepared = num(s.prepared) + num(s.cast); s.cast = 0; } // the spells cast today are prepared again
-      if (cls === 'Arcanist' && c.resources) delete c.resources['arcane-reservoir'];
-      toast('Rested: slots reset and cast spells are prepared again');
       changed({ rerender: true });
     }
   });
