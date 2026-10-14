@@ -40,7 +40,7 @@ export function paperDollCard(c, d) {
   const worn = wornBySlot(c), t = id => tile(c, d, id, worn);
   const pic = c.doll || c.portrait || c.avatar;
   const fig = pic
-    ? `<div class="doll-fig"><img src="${pic}" alt=""><div class="portrait-tools"><button class="icon-btn" data-doll-img title="${c.doll ? 'Change picture' : 'Choose a picture of its own (your portrait is shown until you do)'}">✎</button>${c.doll ? '<button class="icon-btn" data-doll-edit title="Recenter or resize">⤢</button><button class="icon-btn" data-doll-clear title="Remove picture (your portrait is shown instead)">✕</button>' : ''}</div></div>`
+    ? `<div class="doll-fig"><img src="${pic}" alt=""><div class="portrait-tools"><button class="icon-btn" data-doll-img title="${c.doll ? 'Change picture' : 'Choose a picture of its own (your portrait is shown until you do)'}">✎</button><button class="icon-btn" data-doll-edit title="Recenter or resize${c.doll ? '' : ' (this makes a picture of its own from your portrait)'}">⤢</button>${c.doll ? '<button class="icon-btn" data-doll-clear title="Remove this picture (your portrait is shown instead)">✕</button>' : ''}</div></div>`
     : '<button class="doll-fig empty" data-doll-img title="Add a picture for the paper doll">＋ Add a picture</button>';
   const total = Object.values(worn).reduce((n, l) => n + l.length, 0);
   return `<section class="card span2 doll-card">
@@ -97,6 +97,6 @@ const PIC = { w: 3, h: 4, out: 800 };
 async function pictureAction(ds) {
   const c = state.char;
   if ('dollImg' in ds) { const r = await choosePicture(PIC); if (r) { c.doll = r.image; c.dollSrc = r.src; changed({ rerender: true }); } }
-  else if ('dollEdit' in ds) { const r = await repositionPicture(c.dollSrc || c.doll, PIC); if (r) { c.doll = r.image; changed({ rerender: true }); } }
+  else if ('dollEdit' in ds) { const r = await repositionPicture(c.dollSrc || c.doll || c.portraitSrc || c.portrait || c.avatarSrc || c.avatar, PIC); if (r) { c.doll = r.image; c.dollSrc ||= c.portraitSrc || c.portrait || c.avatarSrc || c.avatar; changed({ rerender: true }); } }
   else { c.doll = ''; c.dollSrc = ''; changed({ rerender: true }); }
 }
