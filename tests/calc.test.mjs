@@ -293,3 +293,20 @@ test('feat, cover and condition presets change the numbers they say', () => {
   assert.equal(d0.saves.will.total - one.saves.will.total, 1, 'one negative level is -1 on saves');
   assert.equal(d0.melee - one.melee, 1, 'and -1 on attacks');
 });
+
+// ---------- spell-like abilities ----------
+
+test('spell-like abilities: caster level is the character level, the DC uses Charisma unless set, uses are counted per day', () => {
+  const c = make({ base: { str: 10, cha: 14, int: 12 }, levels: ['Fighter', 'Fighter', 'Fighter', 'Fighter', 'Fighter'], raceChoice: 'cha',
+    spellLikes: [
+      { name: 'Dimension Door', level: 4, perDay: 3, used: 1, cl: '', ability: 'cha' },
+      { name: 'Detect Magic', level: 0, perDay: '', used: 0, cl: 9, ability: 'int' },
+    ] });
+  const d = calc(c);
+  const [dd, dm] = d.spellLikes;
+  assert.equal(d.abilities.cha.mod, 3, 'Human Cha 14 + 2 = 16');
+  assert.deepEqual([dd.cl, dd.mod, dd.dc, dd.concentration], [5, 3, 10 + 4 + 3, 5 + 3], 'DC 10 + level 4 + Cha 3 = 17; concentration = CL 5 + Cha 3');
+  assert.deepEqual([dd.max, dd.left, dd.unlimited], [3, 2, false], '3 per day with 1 used leaves 2');
+  assert.deepEqual([dm.cl, dm.mod, dm.dc, dm.unlimited, dm.left], [9, 1, 10 + 0 + 1, true, Infinity], 'Int 12 is +1; at will never runs out; the CL 9 override wins');
+  assert.equal(d.bd['spellLikes.0.cl'].reduce((n, p) => n + p.value, 0), 5);
+});

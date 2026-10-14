@@ -34,6 +34,7 @@ export function newCharacter() {
     modifiers: [],
     gear: [], money: { pp: 0, gp: 0, sp: 0, cp: 0, custom: [] }, // custom: [{name, amount}] other currencies
     spellbooks: {},
+    spellLikes: [], // spell-like abilities: {id?, name, school, summary, notes, level, perDay ('' = at will), used, cl ('' = character level), ability}
     resources: {}, // current points in class pools by id (arcane reservoir...); absent = full for the day
     trackers: [], // the player's own counters {name, max, cur}
     bio: '', // the character's biography (Biography tab)

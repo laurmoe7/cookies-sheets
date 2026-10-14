@@ -141,9 +141,16 @@ export async function resolveAll(src) {
   (Array.isArray(src.spells) ? src.spells : []).forEach((lv, l) =>
     (Array.isArray(lv?.slotted) ? lv.slotted : []).forEach((s, i) => str(s?.name) && push(`spell.${l}.${i}`, s.name, ['Spell'])));
   (Array.isArray(src.gear) ? src.gear : []).forEach((g, i) => str(g?.name) && push(`gear.${i}`, g.name, ['Magic Item']));
+  (Array.isArray(src.spellLikes) ? src.spellLikes : []).forEach((s, i) => str(s?.name) && push(`sla.${i}`, s.name, ['Spell']));
   const hits = jobs.length ? await api.resolve(jobs.map(j => ({ variants: j.variants, cats: j.cats }))) : [];
   const map = {};
   jobs.forEach((j, i) => { map[j.key] = { hit: hits[i] || null, detail: j.detail, name: j.variants[0] || j.name }; });
+  // A spell-like ability's level sets its save DC: take the lowest level any class gets the spell at.
+  const slas = Object.entries(map).filter(([k, v]) => k.startsWith('sla.') && v.hit);
+  if (slas.length) {
+    const entries = await api.entries(slas.map(([, v]) => v.hit.id)).catch(() => []);
+    slas.forEach(([, v], i) => { const lv = Object.values(entries[i]?.meta?.levels || {}).map(Number).filter(Number.isFinite); if (lv.length) v.level = Math.min(...lv); });
+  }
   return map;
 }
 
@@ -321,14 +328,22 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
   (src.feats || []).forEach((x, i) => x && str(x.name) && addItem('feats', 'feats', x, i));
   (src.traits || []).forEach((x, i) => x && str(x.name) && addItem('traits', 'traits', x, i));
   (src.specialAbilities || []).forEach((x, i) => x && str(x.name) && addItem('specialAbilities', 'specials', x, i));
-  for (const s of src.spellLikes || []) {
-    if (!s || !str(s.name)) continue;
+  (src.spellLikes || []).forEach((s, i) => {
+    if (!s || !str(s.name)) return;
+    // A spell-like ability that is a spell goes on the Spells tab, with its uses per day; anything else (a class pool such as Arcane Reservoir) stays a special ability.
+    const r = resolved[`sla.${i}`], hit = r?.hit?.cat === 'Spell' ? r.hit : null;
+    if (hit || str(s.school)) {
+      const perDay = s.atWill ? '' : n0(s.prepared) || '';
+      c.spellLikes.push({ ...(hit ? { id: hit.id } : {}), name: hit ? hit.name : str(s.name), school: (str(s.school) || hit?.sub || '').toLowerCase(), summary: '', notes: str(s.notes),
+        level: r?.level ?? 1, perDay, used: perDay ? Math.min(n0(s.cast), perDay) : 0, cl: '', ability: 'cha' });
+      return;
+    }
     const per = s.atWill ? 'at will' : toNum(s.prepared) ? `${toNum(s.prepared)}/day` : '';
     const note = [per, str(s.notes)].filter(Boolean).join(' · ');
     const same = [...lists.specials, ...lists.feats, ...lists.traits].find(x => x.name.toLowerCase() === str(s.name).toLowerCase());
     if (same) same.notes = [note, same.notes].filter(Boolean).join(' · ');
     else lists.specials.push({ name: str(s.name), notes: note });
-  }
+  });
   Object.assign(c, lists);
   const moved = ['feats', 'traits', 'specialAbilities'].reduce((n, k) => n + (src[k] || []).length, 0);
   const linked = Object.entries(resolved).filter(([k, v]) => !k.startsWith('spell') && !k.startsWith('gear') && v.hit).length;

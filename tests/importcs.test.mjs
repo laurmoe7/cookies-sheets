@@ -217,3 +217,13 @@ test('entries that keep their name in "type" are imported, not skipped as namele
   assert.equal(char.traits[0].name, 'Survivor');
   assert.equal(char.feats[0].name, 'Toughness');
 });
+
+test('spell-like abilities that are spells go to the Spells tab with their uses; class pools stay special abilities', () => {
+  const src = { name: 'Sla', level: 'Sorcerer 5', abilities: { str: '10', dex: '10', con: '10', int: '10', wis: '10', cha: '16' },
+    spellLikes: [{ name: 'Dimension Door', school: 'Conjuration', prepared: '3', cast: '1' }, { name: 'Light', school: 'Evocation', atWill: true }, { name: 'Arcane Reservoir', prepared: 12, cast: 0 }] };
+  const resolved = { 'sla.0': { hit: { id: 7, name: 'Dimension Door', cat: 'Spell', sub: 'conjuration' }, level: 3, name: 'Dimension Door' } };
+  const { char } = build(src, undefined) && buildCharacter(src, guessClasses(src.level, classes), resolved, classesByName);
+  assert.deepEqual(char.spellLikes.map(s => [s.name, s.id ?? null, s.level, s.perDay, s.used]), [['Dimension Door', 7, 3, 3, 1], ['Light', null, 1, '', 0]]);
+  assert.ok(char.specials.some(s => s.name === 'Arcane Reservoir'), 'a class pool is not a spell');
+  assert.ok(!char.specials.some(s => s.name === 'Dimension Door'));
+});

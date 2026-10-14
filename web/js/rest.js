@@ -38,6 +38,7 @@ export function fullRest(c, { maxHp, level }) {
       s.cast = 0;
     }
   }
+  for (const s of c.spellLikes || []) if (num(s.used)) { s.used = 0; spells = true; }
   if (spells) said.push('spell slots reset');
   return said;
 }

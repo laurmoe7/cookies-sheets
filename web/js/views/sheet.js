@@ -10,7 +10,7 @@ import { choosePicture, repositionPicture } from '../cropper.js';
 import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
 import { summonSpell } from '../summons.js';
-import { rollBar, fillSpellRolls } from '../roller.js';
+import { rollBar, fillSpellRolls, SLA_KEY as SLA } from '../roller.js';
 import { chooseSummon } from './summons.js';
 import { renderCompanions } from './companions.js';
 import { playPageTurn, snapshotPage, options, setOption, orderKeys } from '../options.js';
@@ -560,8 +560,10 @@ function spells(body, c, d) {
   const casters = Object.entries(d.spellcasting);
   if (!casters.length) {
     body.innerHTML = `<section class="card"><h3>Spells</h3><p class="muted">None of your classes cast spells (yet). Paladins and rangers start casting at 4th level.</p>
-      <p>Looking something up? Try the ${'<a href="#" data-goto="compendium">Compendium</a>'} or ${'<a href="#" data-goto="rules">Quick Rules</a>'}.</p></section>`;
+      <p>Looking something up? Try the ${'<a href="#" data-goto="compendium">Compendium</a>'} or ${'<a href="#" data-goto="rules">Quick Rules</a>'}.</p></section>` + slaCard(c, d);
     $$('[data-goto]', body).forEach(a => (a.onclick = e => { e.preventDefault(); go(a.dataset.goto); }));
+    wireSla(body, c);
+    if (spellDrawer?.el?.isConnected) renderSpellActions();
     return;
   }
   body.innerHTML = casters.map(([cls, sc]) => {
@@ -615,7 +617,8 @@ function spells(body, c, d) {
         </div>`;
       }).join('')}
     </section>`;
-  }).join('');
+  }).join('') + slaCard(c, d);
+  wireSla(body, c);
   wireCommon(body);
   wireResources(body, c);
   if (spellDrawer?.el?.isConnected) renderSpellActions(); // the open spell's bar shows the same numbers as the tab
@@ -623,6 +626,7 @@ function spells(body, c, d) {
     const sbEl = e.target.closest('[data-cls]');
     if (!sbEl) return;
     const cls = sbEl.dataset.cls;
+    if (cls === SLA) return; // the spell-like abilities card has its own handler (wireSla)
     const book = c.spellbooks[cls];
     const sc = d.spellcasting[cls];
     const t = e.target.closest('[data-slot-adj],[data-sp-select],[data-add-spell],[data-custom-spell],[data-cast],[data-cast-spont],[data-prep]');
@@ -669,6 +673,112 @@ function spells(body, c, d) {
     }
   });
 }
+/** The Spells tab's last card: spell-like abilities (Dimension Door 1/day, Light at will). No slots, just uses per day, refilled by Rest. */
+function slaCard(c, d) {
+  const list = c.spellLikes || [];
+  const chip = (s, i) => {
+    const x = d.spellLikes[i];
+    const pips = x.unlimited ? '<span class="sp-s">at will</span>'
+      : `<span class="pips" title="${x.left} of ${x.max} left today">${'<i class="pip"></i>'.repeat(Math.min(x.left, 9))}${'<i class="pip used"></i>'.repeat(Math.min(x.max - x.left, 9))}</span>`;
+    return `<button class="sp-chip ${isActive(SLA, i) ? 'on' : ''} ${x.unlimited || x.left ? 'ready' : 'idle'}" data-sp-select="${i}" data-level="${x.level}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(SLA, i)}"><span class="sp-n">${esc(s.name || 'New ability')}</span><span class="sp-s">${x.level ? ORD[x.level] : '0'}</span>${pips}</button>`;
+  };
+  return `<section class="card spellbook sla-card" data-cls="${SLA}">
+    <div class="sb-head"><div class="sb-title"><h3>Spell-like abilities</h3><span class="muted small">no slots · uses per day · Rest refills them</span></div>
+      <div class="sb-tools"><button class="btn small ghost" data-sla-add>＋ Add</button><button class="btn small ghost" data-sla-custom title="An ability that is not in the compendium">＋ Custom</button></div></div>
+    ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>` : '<p class="muted small sl-none">None. Racial and monster abilities that work like a spell (Dimension Door 1/day, Light at will) go here.</p>'}
+  </section>`;
+}
+
+function wireSla(body, c) {
+  const card = body.querySelector('.sla-card');
+  if (!card) return;
+  const blank = extra => ({ name: '', school: '', summary: '', notes: '', level: 1, perDay: 1, used: 0, cl: '', ability: 'cha', ...extra });
+  card.onclick = async e => {
+    const t = e.target.closest('[data-sp-select],[data-sla-add],[data-sla-custom]');
+    if (!t) return;
+    if (t.dataset.spSelect !== undefined) return openSpell(SLA, +t.dataset.spSelect, t);
+    if (t.dataset.slaCustom !== undefined) {
+      (c.spellLikes ||= []).push(blank());
+      changed({ rerender: true });
+      return openSpell(SLA, c.spellLikes.length - 1, null); // open it in the side panel so it can be named
+    }
+    const r = await pickEntry('Add spell-like ability', 'Spell');
+    if (!r) return;
+    let level = 1, summary = '';
+    try { // a spell's level for the save DC: the lowest level any class gets it at
+      const en = await api.entry(r.id);
+      summary = en.summary || '';
+      const lv = Object.values(en.meta?.levels || {}).map(Number).filter(Number.isFinite);
+      if (lv.length) level = Math.min(...lv);
+    } catch { /* the ability still gets added; its level can be set in the panel */ }
+    (c.spellLikes ||= []).push(blank({ id: r.id, name: r.name, school: r.sub || '', summary, level }));
+    changed({ rerender: true });
+  };
+}
+
+/** The side panel's action area for the open spell-like ability. */
+function renderSlaActions() {
+  const sd = spellDrawer;
+  if (!sd?.el?.isConnected) return;
+  const c = state.char, d = state.derived;
+  const s = c.spellLikes?.[sd.i], x = d?.spellLikes?.[sd.i];
+  if (!s || !x) { sd.el.innerHTML = ''; return; }
+  const p = k => `spellLikes.${sd.i}.${k}`;
+  sd.el.dataset.cls = SLA; // the roll window finds the ability from here
+  sd.el.innerHTML = `<div class="sp-actions">
+      <div class="sp-group">${s.id ? `<span data-spell-slot="${sd.i}" data-spell-id="${s.id}"></span>` : `<button class="btn" data-spell-roll="${sd.i}" title="Roll an attack, concentration or the damage for this ability">🎲 Roll</button>`}</div>
+      <div class="sp-group">
+        ${x.unlimited ? '<span class="sp-group-label">At will</span>'
+    : `<span class="sp-group-label">Left today</span><b>${x.left} / ${x.max}</b>
+        <button class="btn primary sp-cast" data-sa="sla-use" ${x.left <= 0 ? 'disabled' : ''} title="${x.left <= 0 ? 'No uses left today' : 'Use it once: one fewer left until you rest'}">Use</button>
+        <button class="btn small ghost" data-sa="sla-back" ${num(s.used) ? '' : 'disabled'} title="Get one use back">Undo</button>`}
+      </div>
+    </div>
+    <div class="item-actions">
+      <label><span>Times per day (blank = at will)</span>${inp(p('perDay'), { type: 'num', cls: 'w3', rerender: true })}</label>
+      <label><span>Spell level</span>${inp(p('level'), { type: 'num', cls: 'w3', rerender: true })}</label>
+      <label><span>Caster level (blank = yours)</span>${inp(p('cl'), { type: 'num', cls: 'w3', rerender: true })}</label>
+      <label><span>Save DC from</span>${sel(p('ability'), [['cha', 'Charisma'], ['int', 'Intelligence'], ['wis', 'Wisdom']], { rerender: true })}</label>
+      <div class="wide small muted">Save DC ${x.dc} · caster level ${x.cl} · concentration ${sign(x.concentration)}</div>
+      ${s.id ? '' : `<label class="wide"><span>Name</span><input data-sla-name value="${esc(s.name || '')}" placeholder="Ability name"></label>
+      <label class="wide"><span>Description</span><textarea rows="6" data-bind="${p('notes')}" placeholder="What it does">${esc(s.notes || '')}</textarea></label>`}
+    </div>`;
+  fillSpellRolls(sd.el);
+  const body = sd.el.parentElement?.querySelector('.entry-body');
+  if (body) {
+    body.querySelector('.sp-foot')?.remove();
+    const foot = document.createElement('div');
+    foot.className = 'sp-foot';
+    foot.innerHTML = '<button class="btn danger-solid" title="Remove this spell-like ability">Delete ability</button>';
+    body.appendChild(foot);
+    foot.querySelector('button').onclick = async () => {
+      if (!(await confirmBox(`Remove ${s.name || 'this ability'} from your spell-like abilities?`, 'Delete ability'))) return;
+      c.spellLikes.splice(sd.i, 1);
+      closeDrawer();
+      changed({ rerender: true });
+    };
+  }
+  sd.el.onclick = e => {
+    const b = e.target.closest('[data-sa]');
+    if (!b) return;
+    if (b.dataset.sa === 'sla-use') {
+      if (x.left <= 0) return;
+      s.used = num(s.used) + 1;
+      toast(`${s.name || 'Ability'} used. ${x.left - 1} left`);
+    } else if (b.dataset.sa === 'sla-back') s.used = Math.max(0, num(s.used) - 1);
+    else return;
+    changed({ rerender: true });
+    renderSlaActions();
+  };
+  sd.el.onchange = e => {
+    if (!e.target.matches('[data-sla-name]')) return;
+    s.name = e.target.value;
+    const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = s.name || 'New ability';
+    changed({ rerender: true });
+    renderSlaActions();
+  };
+}
+
 // The spell shown in the side panel, with its actions (Roll, Summon, Prepared, Cast, Delete) under the name. {cls, i, armed, el}
 // `armed` means the next entry the panel shows is this spell, so its actions go into that entry's action area.
 let spellDrawer = null;
@@ -682,7 +792,7 @@ function clearActiveSpell() {
 
 /** Clicking a spell chip: show the spell in the side panel (its text, then the actions under its name). */
 function openSpell(cls, i, chip) {
-  const s = state.char.spellbooks[cls]?.spells[i];
+  const s = cls === SLA ? state.char.spellLikes?.[i] : state.char.spellbooks[cls]?.spells[i];
   if (!s) return;
   parkedSpell = null;
   spellDrawer = { cls, i, armed: true, id: s.id || null };
@@ -777,6 +887,7 @@ document.addEventListener('spell-changed', () => renderSpellActions()); // a rol
 function renderSpellActions() {
   const sd = spellDrawer;
   if (!sd?.el?.isConnected) return;
+  if (sd.cls === SLA) return renderSlaActions();
   const c = state.char, d = state.derived;
   const book = c.spellbooks[sd.cls], s = book?.spells[sd.i], sc = d?.spellcasting?.[sd.cls];
   if (!s || !sc) { sd.el.innerHTML = ''; return; }

@@ -363,5 +363,14 @@ export function compute(c, classesByName) {
       concentration: cl + statMod + concSt.total, maxLevel: cast.max_level, extracts: !!cast.extracts, hasExtraSlot: !!cast.domain,
     };
   }
+  // ---- spell-like abilities: caster level is the character's level unless the ability says otherwise; the save DC uses the ability named on it (Charisma by default) ----
+  d.spellLikes = (c.spellLikes || []).map((s, i) => {
+    const stat = ['int', 'wis', 'cha'].includes(s.ability) ? s.ability : 'cha';
+    const mod = M(stat), cl = Math.max(0, num(s.cl) || d.level), lvl = Math.max(0, Math.min(9, Math.floor(num(s.level))));
+    const max = Math.max(0, Math.floor(num(s.perDay))), unlimited = !max;
+    bd[`spellLikes.${i}.cl`] = parts({ label: s.cl ? 'Caster level of this ability' : 'Character level', value: cl });
+    bd[`spellLikes.${i}.concentration`] = parts({ label: 'Caster level', value: cl }, { label: ABIL_SHORT[stat] + ' modifier', value: mod });
+    return { cl, stat, mod, level: lvl, dc: 10 + lvl + mod, concentration: cl + mod, unlimited, max, left: unlimited ? Infinity : Math.max(0, max - Math.floor(num(s.used))) };
+  });
   return d;
 }

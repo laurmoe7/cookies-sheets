@@ -51,3 +51,10 @@ test('martial flexibility is half the brawler level, at least 1', () => {
   assert.equal(byId({ Brawler: 1 })['martial-flexibility'].max, 1);
   assert.equal(byId({ Brawler: 9 })['martial-flexibility'].max, 4, 'floor(9/2)');
 });
+
+test('rest gives the uses of spell-like abilities back', () => {
+  const c = { hp: {}, abilities: {}, resources: {}, trackers: [], spellbooks: {}, spellLikes: [{ name: 'Dimension Door', perDay: 3, used: 2 }, { name: 'Light', perDay: '', used: 0 }] };
+  const said = fullRest(c, { maxHp: 10, level: 5 });
+  assert.equal(c.spellLikes[0].used, 0);
+  assert.ok(said.includes('spell slots reset'));
+});

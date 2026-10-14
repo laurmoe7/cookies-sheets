@@ -371,6 +371,17 @@ function rollDiceBox() {
  * Puts the Roll button on the spells that have something to roll (damage or healing dice, an attack roll, or spell resistance to beat).
  * Spells with none of those, like Mage Armor, get no button. Runs after the Spells tab is drawn; entries are cached, so redraws are instant.
  */
+/** The pseudo class that holds spell-like abilities on the Spells tab (the card and the roll buttons carry it as data-cls). */
+export const SLA_KEY = 'Spell-like';
+
+/** The caster numbers a spell is rolled with: a class's, or for a spell-like ability its own (caster level, DC, concentration). */
+function casterOf(d, cls, i) {
+  if (cls !== SLA_KEY) return d?.spellcasting?.[cls];
+  const s = d?.spellLikes?.[i];
+  return s && { cl: s.cl, dcs: { [s.level]: s.dc }, concentration: s.concentration, kind: 'spelllike', stat: s.stat };
+}
+const spellsOf = (c, cls) => (cls === SLA_KEY ? c?.spellLikes : c?.spellbooks?.[cls]?.spells);
+
 export function fillSpellRolls(root) {
   const d = state.derived;
   const slots = [...root.querySelectorAll('[data-spell-slot]')];
@@ -380,7 +391,7 @@ export function fillSpellRolls(root) {
     slots.forEach((slot, n) => {
       const dd = slot.closest('.sp-panel')?.querySelector('[data-fill-desc]'); // saves that did not keep the spell's summary get it from the compendium
       if (dd && list[n]?.summary) dd.textContent = list[n].summary;
-      const sc = d?.spellcasting?.[slot.closest('[data-cls]')?.dataset.cls];
+      const sc = casterOf(d, slot.closest('[data-cls]')?.dataset.cls, +slot.dataset.spellSlot);
       if (!sc || !slot.isConnected) return;
       const i = spellInfo(list[n], sc.cl);
       if (!(i.kind || i.attack || i.sr)) return;
@@ -395,8 +406,24 @@ let lastSpellCast = { key: '', at: 0 }; // the spell a roll last counted as cast
  * What rolling a spell uses up: a prepared copy for prepared casters, a slot for spontaneous and arcanist casters (cantrips use nothing).
  * {label, left, on, recent, spend()} for the roll window's "Cast it" box.
  */
-function spellCast(cls, sp, sc) {
-  const c = state.char, book = c.spellbooks[cls], l = Number(sp.level) || 0;
+function spellCast(cls, sp, sc, idx) {
+  const c = state.char;
+  if (cls === SLA_KEY) { // a spell-like ability: at will costs nothing, otherwise it uses one of the day's uses
+    const x = state.derived?.spellLikes?.[idx];
+    if (!x || x.unlimited) return null;
+    const key = cls + ':' + (sp.id || sp.name), recent = lastSpellCast.key === key && Date.now() - lastSpellCast.at < 90000;
+    return {
+      label: 'Cast it: use one of today’s uses', left: x.left, recent, on: x.left > 0 && !recent,
+      spend() {
+        sp.used = num(sp.used) + 1;
+        lastSpellCast = { key, at: Date.now() };
+        changed({ rerender: true });
+        document.dispatchEvent(new Event('spell-changed'));
+        toast(`${sp.name || 'Ability'} used. ${x.left - 1} left`);
+      },
+    };
+  }
+  const book = c.spellbooks[cls], l = Number(sp.level) || 0;
   if (!book || l < 1) return null;
   const pre = sc.kind === 'prepared';
   const ord = ['0th', '1st', '2nd', '3rd'][l] || l + 'th';
@@ -423,8 +450,10 @@ function spellCast(cls, sp, sc) {
 async function spellWindow(btn) {
   const c = state.char, d = state.derived;
   const cls = btn.closest('[data-cls]')?.dataset.cls;
-  const sp = c?.spellbooks?.[cls]?.spells?.[+btn.dataset.spellRoll], sc = d?.spellcasting?.[cls];
+  const idx = +btn.dataset.spellRoll, sla = cls === SLA_KEY;
+  const sp = spellsOf(c, cls)?.[idx], sc = casterOf(d, cls, idx);
   if (!sp || !sc) return;
+  const path = sla ? `spellLikes.${idx}` : `spellcasting.${cls}`; // where the breakdown of this caster's numbers is kept
   const name = sp.name || 'Spell';
   let entry = null;
   if (sp.id) { try { entry = await api.entry(sp.id); } catch { /* the window still works without the entry */ } }
@@ -436,11 +465,11 @@ async function spellWindow(btn) {
   const chips = [
     ...(!known || info.attack === 'ranged' ? [chip('To hit: ranged ' + (info.touch === false ? 'attack' : 'touch'), d.ranged, 'ranged ' + (info.touch === false ? 'attack' : 'touch attack'), 'ranged')] : []),
     ...(!known || info.attack === 'melee' ? [chip('To hit: melee ' + (info.touch === false ? 'attack' : 'touch'), d.melee, 'melee ' + (info.touch === false ? 'attack' : 'touch attack'), 'melee')] : []),
-    chip('Concentration', sc.concentration, 'concentration check', `spellcasting.${cls}.concentration`),
-    chip('Cast defensively (DC ' + (15 + 2 * (Number(sp.level) || 0)) + ')', sc.concentration, 'cast defensively, DC ' + (15 + 2 * (Number(sp.level) || 0)), `spellcasting.${cls}.concentration`),
-    ...(!known || info.sr ? [chip('Caster level check', sc.cl, 'caster level check' + (info.sr ? ' to beat spell resistance' : ''), `spellcasting.${cls}.cl`)] : []),
+    chip('Concentration', sc.concentration, 'concentration check', `${path}.concentration`),
+    chip('Cast defensively (DC ' + (15 + 2 * (Number(sp.level) || 0)) + ')', sc.concentration, 'cast defensively, DC ' + (15 + 2 * (Number(sp.level) || 0)), `${path}.concentration`),
+    ...(!known || info.sr ? [chip('Caster level check', sc.cl, 'caster level check' + (info.sr ? ' to beat spell resistance' : ''), `${path}.cl`)] : []),
   ];
-  const facts = [`${cls} caster level ${sc.cl}`,
+  const facts = [sla ? `Spell-like ability, caster level ${sc.cl}` : `${cls} caster level ${sc.cl}`,
     info.save ? `${info.save.label}${dc != null && info.save.type ? `, DC ${dc}` : ''}` : known ? 'no saving throw' : (dc != null ? `save DC ${dc}` : ''),
     known ? (info.sr ? 'spell resistance applies' : 'ignores spell resistance') : ''].filter(Boolean);
   const what = info.kind === 'healing' ? 'healing' : info.kind === 'damage' ? 'damage' : '';
@@ -451,5 +480,5 @@ async function spellWindow(btn) {
     { group: what === 'healing' ? 'Healing' : 'Damage', label: what ? (what === 'healing' ? 'Healing' : 'Damage') + (info.dice ? ' ' + info.dice : '') : 'Roll dice', dice: true, label2: what ? `${name} ${what}` : name, tip: 'Roll the dice of the spell (edit them first if the guess is wrong)' },
   ];
   const first = choices.findIndex(ch => ch.attack);
-  rollWindow(null, false, { title: name, facts: facts.join(' · '), choices, cast: spellCast(cls, sp, sc), dice: info.dice, start: first >= 0 && known ? first : (info.dice ? choices.length - 1 : 0) });
+  rollWindow(null, false, { title: name, facts: facts.join(' · '), choices, cast: spellCast(cls, sp, sc, idx), dice: info.dice, start: first >= 0 && known ? first : (info.dice ? choices.length - 1 : 0) });
 }
