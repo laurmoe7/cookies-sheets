@@ -4,6 +4,12 @@
 
 export const CHANGELOG = [
   {
+    version: '1.4', next: true,
+    items: [
+      'Run in your web browser: “Cookie’s Sheets in browser.bat” opens the app in your browser, with a tray icon to open it again or quit.',
+    ],
+  },
+  {
     version: '1.3', date: '2026-10-15',
     items: [
       'Making a character: pick your traits (two, plus two more with Additional Traits), see your race’s standard racial traits, and swap in alternates where the books have them.',

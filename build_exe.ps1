@@ -29,6 +29,7 @@ python -m PyInstaller --noconfirm --clean --windowed --onedir `
     app.py
 
 Copy-Item 'tools\dist_readme.txt' "dist\Cookie's Sheets\READ ME FIRST.txt"
+Copy-Item 'tools\dist_browser.bat' "dist\Cookie's Sheets\Cookie's Sheets in browser.bat"
 
 Write-Host ''
 Write-Host "Done. Run: dist\Cookie's Sheets\Cookie's Sheets.exe"

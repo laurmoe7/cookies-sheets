@@ -19,6 +19,7 @@ import traceback
 import uuid
 import updater
 import windowstate
+import tray
 import webbrowser
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -986,11 +987,25 @@ def start_server_from(port, tries=20):
 def main():
     install_new_db()
     browser = '--browser' in sys.argv
+    web = '--web' in sys.argv  # like --browser, for people: opens the page and keeps a tray icon to Open or Quit
     srv = start_server_from(int(os.environ.get('PF_PORT') or 8765))
     # The query string makes each launch's address new to the browser cache. Without it, a page some other program once served on
     # this port (a dev server with no cache headers is cached for days on the strength of its Last-Modified date) came back from
     # the cache instead of ours. The file server ignores the query.
     url = f'http://127.0.0.1:{srv.server_address[1]}/?launch={int(time.time())}'
+    if web:
+        port = srv.server_address[1]
+        open_page = lambda: webbrowser.open(f'http://127.0.0.1:{port}/?launch={int(time.time())}')
+        open_page()
+        if not tray.run(f"Cookie's Sheets: http://127.0.0.1:{port}", open_page, os.path.join(WEB, 'icon.ico')):
+            log_error('No tray icon; serving until the console is closed.')
+            try:
+                while True:
+                    time.sleep(3600)
+            except KeyboardInterrupt:
+                pass
+        srv.shutdown()
+        return
     if browser:
         print('Serving', url.split('?')[0])
         try:
