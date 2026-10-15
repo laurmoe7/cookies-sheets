@@ -140,7 +140,7 @@ function optionRows(tab, o, customSounds) {
       <div class="opt-row"><b>Sheet tabs</b><span class="opt-inline"><button class="btn small ${o.tabDrag ? '' : 'ghost'}" data-tab-lock title="${o.tabDrag ? 'The tabs can be dragged into a new order. Click to lock them where they are.' : 'The tabs are locked in place. Click to unlock them so they can be dragged.'}">${o.tabDrag ? '🔓 Drag to rearrange' : '🔒 Locked'}</button>${o.tabOrder.length ? '<button class="btn small ghost" data-tab-reset title="Put the tabs back in their usual order">Reset order</button>' : ''}</span></div>
       ${check('motion', 'Animations', o.motion)}
       ${check('updateCheck', 'Look for a new version when the app starts', o.updateCheck)}
-      <div class="opt-row"><b>Updates</b><button class="btn small" data-update-now>Check for updates now</button></div>`;
+      <div class="opt-row"><b>Updates</b><button class="btn small" data-update-now>🔄 Check for updates now</button></div>`;
   }
   if (tab === 'sound') {
     return `<div class="opt-row"><b>Volume</b><span class="vol"><input type="range" min="0" max="100" step="5" data-opt="volume" value="${o.volume}" aria-label="Volume"> <b id="vol-out">${o.volume}%</b></span></div>
