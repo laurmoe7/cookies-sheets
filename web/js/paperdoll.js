@@ -82,3 +82,10 @@ export function wear(c, slotId, kind, i) {
 
 /** The first free ring slot, for an item that says it is a ring. */
 export const freeRingSlot = c => ['ring1', 'ring2'].find(s => !(wornBySlot(c)[s] || []).length) || 'ring1';
+
+/** The items in alphabetical order (numbers sort as numbers, letter case is ignored, unnamed items go last). A new list; equal names keep their order. */
+export const sortByName = list => [...list].sort((a, b) => {
+  const x = String(a.name || '').trim(), y = String(b.name || '').trim();
+  if (!x || !y) return !x && !y ? 0 : !x ? 1 : -1;
+  return x.localeCompare(y, undefined, { numeric: true, sensitivity: 'base' });
+});

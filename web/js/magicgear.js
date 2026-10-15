@@ -79,7 +79,7 @@ export function parseMagicWeapon(entry) {
   if (!t) return null;
   const mat = materialOf(entry);
   return {
-    id: entry.id, name: entry.name, ability: '', ranged: t.ranged, enh, misc: 0, damage: t.damage, dmgMult: t.mult, dmgMisc: 0, crit: t.crit, range: t.range, type: t.type,
+    id: entry.id, name: entry.name, ability: '', ranged: t.ranged, enh, misc: 0, damage: t.damage, dmgAbility: '', dmgMult: t.mult, dmgMisc: 0, crit: t.crit, range: t.range, type: t.type,
     weight: entryWeight(entry) ?? t.weight, mw: false, material: mat, improvedCritical: false, slot: '',
     fx: abilitiesIn(words, WEAPON_ABILITIES, WEAPON_ALIASES).map(id => ({ id, on: false })),
   };

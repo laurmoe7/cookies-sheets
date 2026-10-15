@@ -24,7 +24,7 @@ import { armorFxChip, wireArmorFx } from './armorfx.js';
 import { paperDollCard, wirePaperDoll } from './paperdoll.js';
 import { suggestEffects, effectsText } from '../itemfx.js';
 import { parseMagicWeapon, parseMagicArmor } from '../magicgear.js';
-import { SLOTS, slotName, hintFromSub } from '../paperdoll.js';
+import { SLOTS, slotName, hintFromSub, sortByName } from '../paperdoll.js';
 
 const ICONS = {
   overview: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
@@ -246,7 +246,7 @@ function overview(body, c, d) {
       <div class="row"><h3 class="grow">Weapons & Attacks</h3><button class="btn small" data-pick-weapon>＋ Magic item</button><button class="btn small" data-add="weapons">＋ Add weapon</button></div>
       ${c.weapons.length ? `<table class="tbl weapons-tbl"><thead><tr><th>Weapon</th><th>Attack</th><th>Damage</th><th>Crit</th>
         <th title="Ability for attack roll">Atk stat</th><th title="Ranged weapon">Rng</th><th title="Enhancement bonus">Enh</th>
-        <th title="Misc attack bonus (masterwork +1, Weapon Focus, etc.)">Atk+</th><th>Dice</th><th title="Strength to damage">Str dmg</th><th title="Misc damage">Dmg+</th>
+        <th title="Misc attack bonus (masterwork +1, Weapon Focus, etc.)">Atk+</th><th>Dice</th><th title="Which ability adds to damage, and how much of it">Damage stat</th><th title="Misc damage">Dmg+</th>
         <th>Range</th><th>Type</th><th></th></tr></thead><tbody>
         ${c.weapons.map((w, i) => `<tr>
           <td class="w10">${tf(`weapons.${i}.name`, { placeholder: 'Name (double-click)' })}${weaponFxRow(c, i)}</td>
@@ -258,7 +258,8 @@ function overview(body, c, d) {
           <td>${inp(`weapons.${i}.enh`, { type: 'num', cls: 'w2', rerender: true })}</td>
           <td>${inp(`weapons.${i}.misc`, { type: 'num', cls: 'w2' })}</td>
           <td>${inp(`weapons.${i}.damage`, { cls: 'w4', ph: '1d8' })}</td>
-          <td>${sel(`weapons.${i}.dmgMult`, [['', 'auto'], ['1', '×1'], ['1.5', '×1½ (2H)'], ['0.5', '×½ (off)'], ['0', 'none']])}</td>
+          <td class="nowrap">${sel(`weapons.${i}.dmgAbility`, [['', 'Str (auto)'], ['str', 'Str'], ['dex', 'Dex'], ['con', 'Con'], ['int', 'Int'], ['wis', 'Wis'], ['cha', 'Cha'], ['none', 'none']], { title: 'Which ability adds to damage. Auto is Strength for melee and nothing for ranged weapons; pick Str for thrown weapons and Strength-rated bows.' })}
+            ${sel(`weapons.${i}.dmgMult`, [['', 'auto'], ['1', '×1'], ['1.5', '×1½ (2H)'], ['0.5', '×½ (off)'], ['0', 'none']])}</td>
           <td>${inp(`weapons.${i}.dmgMisc`, { type: 'num', cls: 'w2' })}</td>
           <td>${inp(`weapons.${i}.range`, { cls: 'w4' })}</td>
           <td>${inp(`weapons.${i}.type`, { cls: 'w3', ph: 'S' })}</td>
@@ -370,7 +371,7 @@ function wireCommon(body) {
     e.preventDefault();
     if (t.dataset.add) {
       const blank = {
-        weapons: { name: '', ability: '', ranged: false, enh: 0, misc: 0, damage: '1d8', dmgMult: '', dmgMisc: 0, crit: '×2', range: '', type: '', weight: 0, mw: false, material: '', improvedCritical: false, fx: [], slot: '' },
+        weapons: { name: '', ability: '', ranged: false, enh: 0, misc: 0, damage: '1d8', dmgAbility: '', dmgMult: '', dmgMisc: 0, crit: '×2', range: '', type: '', weight: 0, mw: false, material: '', improvedCritical: false, fx: [], slot: '' },
         armor: { name: '', type: 'armor', category: 'light', bonus: 0, enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true, mw: false, material: '', fx: [] },
         gear: { name: '', qty: 1, weight: 0, value: '', notes: '', slot: '', hint: '', effects: [] },
         specials: { name: '', notes: '' },
@@ -417,7 +418,7 @@ async function addMagicGear(kind) {
   if (row) toast(`${r.name} added. Check the numbers: they were read from its description.`);
   else toast(`Could not tell what ${r.name} is built on, so it was added as a blank row to fill in.`, 'err');
   (weapon ? c.weapons : c.armor).push(row || (weapon
-    ? { id: r.id, name: r.name, ability: '', ranged: false, enh: 0, misc: 0, damage: '1d8', dmgMult: '', dmgMisc: 0, crit: '×2', range: '', type: '', weight: 0, mw: false, material: '', improvedCritical: false, fx: [], slot: '' }
+    ? { id: r.id, name: r.name, ability: '', ranged: false, enh: 0, misc: 0, damage: '1d8', dmgAbility: '', dmgMult: '', dmgMisc: 0, crit: '×2', range: '', type: '', weight: 0, mw: false, material: '', improvedCritical: false, fx: [], slot: '' }
     : { id: r.id, name: r.name, type: 'armor', category: 'light', bonus: 0, enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true, mw: false, material: '', fx: [] }));
   changed({ rerender: true });
 }
@@ -1038,7 +1039,7 @@ function gear(body, c, d) {
   </section>
   <section class="card span2">
     <div class="row"><h3 class="grow">Inventory</h3>
-      <button class="btn small" data-pick-item>＋ Magic item</button><button class="btn small" data-add="gear">＋ Item</button></div>
+      <button class="btn small ghost" data-sort-gear title="Put the inventory in alphabetical order">A–Z</button><button class="btn small" data-pick-item>＋ Magic item</button><button class="btn small" data-add="gear">＋ Item</button></div>
     ${c.gear.length ? `<div class="sp-chips inv-chips">${c.gear.map((g, i) => {
       const worn = !!g.slot, qty = num(g.qty) > 1 ? `<span class="sp-s">×${esc(g.qty)}</span>` : '';
       const fxMark = (g.effects || []).length ? `<span class="sp-s" title="${esc(effectsText(g.effects))}${worn ? '' : ' (counts once worn)'}">✦</span>` : '';
@@ -1077,6 +1078,12 @@ function gear(body, c, d) {
   upd();
   document.addEventListener('recalc', upd);
   onLeave(() => document.removeEventListener('recalc', upd));
+  $('[data-sort-gear]', body).onclick = () => {
+    if (c.gear.length < 2) return;
+    c.gear = sortByName(c.gear);
+    if (itemDrawer) { itemDrawer = null; closeDrawer(); } // the open item's place in the list has changed
+    changed({ rerender: true });
+  };
   $('[data-pick-item]', body).onclick = async () => {
     const r = await pickEntry('Add magic item', 'Magic Item');
     if (!r) return;

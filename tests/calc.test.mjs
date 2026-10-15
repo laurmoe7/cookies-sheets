@@ -320,3 +320,22 @@ test('old saves get an empty note on every skill, and a typed note is kept', asy
   assert.equal(m.skills[0].notes, '+2 vs. traps');
   assert.ok(m.skills.slice(1).every(s => s.notes === ''));
 });
+
+test('weapon damage stat: a ranged weapon adds nothing on auto, and can be set to Str (thrown, bows), Dex or none', () => {
+  const sword = { name: 'Sling', ranged: true, damage: '1d4', enh: 0, misc: 0, dmgMisc: 0, dmgMult: '', crit: '×2', fx: [] };
+  const mk = extra => calc(make({ raceChoice: 'con', base: { str: 16, dex: 14 }, levels: ['Fighter'], weapons: [{ ...sword, ...extra }] })).weapons[0];
+  assert.equal(mk({}).dmgBonus, 0, 'auto: ranged adds no ability modifier');
+  assert.equal(mk({ dmgAbility: 'str' }).dmgBonus, 3, 'Str 16 is +3, once');
+  assert.equal(mk({ dmgAbility: 'dex' }).dmgBonus, 2, 'Dex 14 is +2');
+  assert.equal(mk({ dmgAbility: 'str', dmgMult: '0.5' }).dmgBonus, 1, 'half of +3 rounds down');
+  assert.equal(mk({ dmgAbility: 'none' }).dmgBonus, 0);
+  const melee = { ...sword, name: 'Sword', ranged: false };
+  assert.equal(calc(make({ raceChoice: 'con', base: { str: 16, dex: 14 }, levels: ['Fighter'], weapons: [melee] })).weapons[0].dmgBonus, 3, 'melee auto is Str');
+  assert.equal(calc(make({ raceChoice: 'con', base: { str: 16, dex: 14 }, levels: ['Fighter'], weapons: [{ ...melee, dmgAbility: 'none' }] })).weapons[0].dmgBonus, 0, 'melee can be set to none');
+});
+
+test('old weapons get a damage stat of auto', async () => {
+  const { migrate } = await import('../web/js/model.js');
+  const c = make({ weapons: [{ name: 'x' }] });
+  assert.equal(migrate(c).weapons[0].dmgAbility, '');
+});

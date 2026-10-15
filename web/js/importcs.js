@@ -356,7 +356,7 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
       const dice = (str(w.damage).match(/^\s*(\d+d\d+(?:\s*[+]\s*\d+d\d+)*)/i) || [])[1] || '';
       c.weapons.push({
         name: str(w.weapon), ability: '', ranged, enh: 0, misc: 0, damage: dice.replace(/\s+/g, '') || str(w.damage),
-        dmgMult: '', dmgMisc: 0, crit: str(w.critical), range: '', type: str(w.type), weight: 0, mw: false, material: '', improvedCritical: false, fx: [], slot: '',
+        dmgAbility: '', dmgMult: '', dmgMisc: 0, crit: str(w.critical), range: '', type: str(w.type), weight: 0, mw: false, material: '', improvedCritical: false, fx: [], slot: '',
         _src: { attack: leadNum(w.attackBonus), damage: str(w.damage), dice },
       });
       const wn = [str(w.notes), str(w.ammunition) && `ammunition: ${str(w.ammunition)}`].filter(Boolean).join('; ');

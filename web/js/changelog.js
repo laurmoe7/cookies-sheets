@@ -5,6 +5,8 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
+      'Weapons have a Damage stat: pick which ability adds to damage (Str, Dex, Con, Int, Wis, Cha or none), next to the ×1 / ×1½ / ×½ choice. Auto is Strength for melee and nothing for ranged, so thrown weapons and Strength-rated bows can be set to Str.',
+      'Inventory has an A–Z button that puts the items in alphabetical order.',
       'Skills: every skill has a Notes box for things like “+2 vs. traps” or “only in dim light”.',
       'Spell-likes and other spells live on the Spells tab now, as their own card at the top (it works for any character, even one whose class cannot cast): chips with uses per day (or at will), a side panel with Use and Undo, a Roll window like any spell (save DC from Charisma, Intelligence or Wisdom, your level as caster level unless you set one), and Rest gives the uses back. Add one from the compendium or make your own. Imported sheets bring theirs over.',
       'New: Import from Google Sheet on the Characters page. Paste the link of a sheet made with the popular Pathfinder character sheet template (sharing set to Anyone with the link), or choose its downloaded .csv. You get the same review window as the charactersheet.co.uk import, with the numbers check.',

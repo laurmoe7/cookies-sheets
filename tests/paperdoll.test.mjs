@@ -77,3 +77,15 @@ test('an item can be worn in another slot than its default: a robe is "body" arm
   assert.equal(slotOf(c, 'armor', 2), 'body');
   assert.equal(c.armor[0].equipped, true, 'the chain shirt stays on: a different slot');
 });
+
+test('inventory sorts alphabetically: case ignored, numbers as numbers, unnamed last, stable', async () => {
+  const { sortByName } = await import('../web/js/paperdoll.js');
+  const names = l => l.map(x => x.name);
+  assert.deepEqual(names(sortByName([{ name: 'rope' }, { name: 'Bedroll' }, { name: '' }, { name: 'Ration' }, { name: 'Torch 10' }, { name: 'Torch 2' }])),
+    ['Bedroll', 'Ration', 'rope', 'Torch 2', 'Torch 10', ''], 'Torch 2 before Torch 10');
+  const a = { name: 'Potion', id: 1 }, b = { name: 'potion', id: 2 };
+  assert.deepEqual(sortByName([a, b]).map(x => x.id), [1, 2], 'equal names keep their order');
+  const list = [{ name: 'b' }, { name: 'a' }];
+  sortByName(list);
+  assert.equal(list[0].name, 'b', 'the original list is not changed');
+});
