@@ -3,7 +3,7 @@ import { state, changed, render, go, refreshCalc } from '../app.js';
 import { sign, num, raceInfo, classLevels } from '../calc.js';
 import {
   ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS,
-  BUFF_PRESETS, BUFF_GROUPS, presetsIn, SCHOOLS, SPELL_FILTERS, CASTING_STAT_NAMES,
+  BUFF_PRESETS, BUFF_GROUPS, presetsIn, SCHOOLS, SPELL_FILTERS, SPELL_LIST_CLASSES, CASTING_STAT_NAMES,
 } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom, showEntry, closeDrawer } from '../ui.js';
 import { choosePicture, repositionPicture } from '../cropper.js';
@@ -12,8 +12,6 @@ import { chooseArchetypes } from './archetypes.js';
 import { summonSpell } from '../summons.js';
 import { rollBar, fillSpellRolls, SLA_KEY as SLA } from '../roller.js';
 import { chooseSummon } from './summons.js';
-import { chooseSpells } from './spellpicker.js';
-import { favoritesAllowance } from '../spellrules.js';
 import { renderCompanions } from './companions.js';
 import { playPageTurn, snapshotPage, options, setOption, orderKeys } from '../options.js';
 import { hpSegments, segsHtml } from '../bars.js';
@@ -628,7 +626,7 @@ function spells(body, c, d) {
           return `<button class="sp-chip ${isActive(cls, s.i) ? 'on' : ''} ${prepared && l > 0 ? (left || spent ? 'ready' : 'idle') : ''}" data-sp-select="${s.i}" data-level="${l}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(cls, s.i)}"><span class="sp-n">${esc(s.name || 'New spell')}</span>${s.school ? `<span class="sp-s">${esc(s.school)}</span>` : ''}${pips}</button>`;
         };
         return `<div class="spell-level">
-          <div class="sl-head"><h4>${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>${prepared ? `<button class="btn small ghost" data-browse-spells="${l}" title="Browse every ${l === 0 ? 'cantrip' : ORD[l] + '-level spell'} on your ${esc(cls)} list and add the ones you want">🔍 Browse</button>` : ''}${count}${heading}<span class="grow"></span>
+          <div class="sl-head"><h4>${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>${count}${heading}<span class="grow"></span>
             <button class="btn small ghost" data-add-spell="${l}">＋ Add</button>
             <button class="btn small ghost" data-custom-spell="${l}" title="A spell that isn't in the compendium">＋ Custom</button></div>
           ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>`
@@ -648,20 +646,8 @@ function spells(body, c, d) {
     if (cls === SLA) return; // the spell-like abilities card has its own handler (wireSla)
     const book = c.spellbooks[cls];
     const sc = d.spellcasting[cls];
-    const t = e.target.closest('[data-slot-adj],[data-sp-select],[data-add-spell],[data-browse-spells],[data-custom-spell],[data-cast],[data-cast-spont],[data-prep]');
+    const t = e.target.closest('[data-slot-adj],[data-sp-select],[data-add-spell],[data-custom-spell],[data-cast],[data-cast-spont],[data-prep]');
     if (!t) return;
-    if (t.dataset.browseSpells !== undefined) { // look through every spell of that level on the class list, and add as many as you like
-      const picks = [], added = [];
-      // Every pick (or taking one back) goes straight onto the list, so the page behind the window shows it at once.
-      const sync = () => {
-        for (const s of added.splice(0)) { const i = book.spells.indexOf(s); if (i >= 0) book.spells.splice(i, 1); }
-        for (const s of picks) { const row = { id: s.id, name: s.name, level: s.level, school: s.school, summary: s.summary, prepared: 0, cast: 0 }; added.push(row); book.spells.push(row); }
-        changed({ rerender: true });
-      };
-      await chooseSpells({ cls, lists: sc.lists, allowance: favoritesAllowance(sc, +t.dataset.browseSpells), picks, known: book.spells.map(s => s.name), onChange: sync });
-      if (picks.length) toast(`${picks.length} spell${picks.length === 1 ? '' : 's'} added to your ${cls} list`, 'good');
-      return;
-    }
     if (t.dataset.slotAdj !== undefined) {
       const l = +t.dataset.slotAdj;
       book.used[l] = Math.min(sc.slots[l], Math.max(0, num(book.used[l]) - +t.dataset.d)); // + = a slot back, - = one spent
@@ -681,7 +667,7 @@ function spells(body, c, d) {
     if (t.dataset.addSpell !== undefined) {
       const picked = await pickSpell(cls, sc, +t.dataset.addSpell);
       if (picked) {
-        book.spells.push({ id: picked.id, name: picked.name, level: +t.dataset.addSpell, school: picked.school, summary: picked.summary, prepared: 0, cast: 0 });
+        book.spells.push({ id: picked.id, name: picked.name, level: picked.level ?? +t.dataset.addSpell, school: picked.school, summary: picked.summary, prepared: 0, cast: 0 });
         changed({ rerender: true });
       }
     } else if (t.dataset.prep !== undefined) {
@@ -1015,17 +1001,22 @@ export function pickSpell(cls, sc, level) {
   return modal(`Add ${cls} spell`, (body, close) => {
     body.innerHTML = `<div class="row">
         <input class="search grow" placeholder="Search spell names…">
-        <select data-f="level">${['', ...Array.from({ length: sc.maxLevel + 1 }, (_, i) => i)].map(l => `<option value="${l}" ${l === level ? 'selected' : ''}>${l === '' ? 'Any level' : 'Level ' + l}</option>`).join('')}</select>
+        <select data-f="level"></select>
         <select data-f="school" title="Filter by school of magic, elemental school (Metal, Wood, Fire...) or subschool"><option value="">Any school</option>${SPELL_FILTERS.map(([group, list]) => `<optgroup label="${esc(group)}">${list.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('')}</optgroup>`).join('')}</select>
       </div>
-      <div class="small muted">Spell lists: ${esc(sc.lists.join(', '))}</div>
+      <div class="row"><label class="small">Spell list <select data-f="list" title="Whose spell list to look through. Your own class is the default; pick another when you can learn that class's spells (a scroll, a feat, a bloodline...).">
+          <option value="">${esc(cls)} (${esc(sc.lists.join(', '))})</option>${SPELL_LIST_CLASSES.filter(k => !sc.lists.includes(k)).map(k => `<option>${esc(k)}</option>`).join('')}</select></label>
+        <span class="small muted" data-hint></span></div>
       <div class="picker"><div class="picker-list"></div><div class="picker-preview entry-body"><p class="muted">Select a spell to preview it.</p></div></div>`;
-    const q = $('input', body), lv = $('[data-f=level]', body), sch = $('[data-f=school]', body);
+    const q = $('input', body), lv = $('[data-f=level]', body), sch = $('[data-f=school]', body), which = $('[data-f=list]', body), hint = $('[data-hint]', body);
     const list = $('.picker-list', body), prev = $('.picker-preview', body);
     let rows = [], seq = 0;
+    // Your own class offers the levels you can cast; another class's list offers all of them (the spell goes on your list at the level that class has it).
+    const fillLevels = (max, keep) => { lv.innerHTML = ['', ...Array.from({ length: max + 1 }, (_, i) => i)].map(l => `<option value="${l}" ${String(l) === String(keep) ? 'selected' : ''}>${l === '' ? 'Any level' : 'Level ' + l}</option>`).join(''); };
+    fillLevels(sc.maxLevel, level);
     const run = debounce(async () => {
       const my = ++seq;
-      const res = await api.spells(sc.lists.join(','), lv.value, q.value, sch.value);
+      const res = await api.spells(which.value || sc.lists.join(','), lv.value, q.value, sch.value);
       if (my !== seq) return;
       rows = res;
       list.innerHTML = rows.map((r, i) => `<div class="pick-row" data-i="${i}">
@@ -1033,6 +1024,11 @@ export function pickSpell(cls, sc, level) {
         <div class="muted small">${esc(r.summary || '')}</div><button class="btn small primary" data-pick="${i}">Add</button></div>`).join('') || '<p class="pad muted">No spells match.</p>';
     }, 120);
     [q, lv, sch].forEach(x => x.addEventListener('input', run));
+    which.addEventListener('input', () => {
+      fillLevels(which.value ? 9 : sc.maxLevel, '');
+      hint.textContent = which.value ? `Added to your ${cls} spells at the level ${which.value}s have it.` : '';
+      run();
+    });
     list.addEventListener('click', async e => {
       const p = e.target.closest('[data-pick]');
       if (p) { close(rows[+p.dataset.pick]); return; }

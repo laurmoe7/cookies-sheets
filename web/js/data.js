@@ -202,6 +202,8 @@ export const BUFF_GROUPS = ['Combat option', 'Spell', 'Class', 'Feat', 'Conditio
 export const presetsIn = group => BUFF_PRESETS.filter(p => p.group === group).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 
 export const CASTING_STAT_NAMES = { int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
+/** Every class with a spell list in the compendium (what the spell search can look through). */
+export const SPELL_LIST_CLASSES = ['Alchemist', 'Antipaladin', 'Bard', 'Bloodrager', 'Cleric', 'Druid', 'Hunter', 'Inquisitor', 'Investigator', 'Magus', 'Oracle', 'Paladin', 'Ranger', 'Shaman', 'Skald', 'Sorcerer', 'Summoner', 'Warpriest', 'Witch', 'Wizard', 'Medium', 'Mesmerist', 'Occultist', 'Psychic', 'Spiritualist'];
 export const SCHOOLS = ['abjuration', 'conjuration', 'divination', 'enchantment', 'evocation', 'illusion', 'necromancy', 'transmutation', 'universal'];
 /** What the spell search can filter by, in groups: the schools of magic, the wizard's elemental schools (by descriptor, or the Metal and Wood lists) and the schools that follow a subschool.
  * The value is what /api/spells takes as `school` (see school_match in app.py). */

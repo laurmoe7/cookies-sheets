@@ -1,14 +1,12 @@
 import { api } from '../api.js';
 import { state, changed } from '../app.js';
 import { esc, $, $$, debounce, entryHtml, wireEntryLinks, toast } from '../ui.js';
-import { SCHOOLS } from '../data.js';
+import { SCHOOLS, SPELL_LIST_CLASSES } from '../data.js';
 import { search as petSearch } from '../pet/pet.js';
 
 const CATS = ['Spell', 'Feat', 'Trait', 'Rules', 'Condition', 'Class', 'Archetype', 'Class Feature', 'Race', 'Racial Trait',
   'Skill', 'Magic Item', 'Affliction', 'Mythic Spell', 'Monster Ability'];
-const SPELL_CLASSES = ['Alchemist', 'Antipaladin', 'Bard', 'Bloodrager', 'Cleric', 'Druid', 'Hunter', 'Inquisitor', 'Investigator',
-  'Magus', 'Oracle', 'Paladin', 'Ranger', 'Shaman', 'Skald', 'Sorcerer', 'Summoner', 'Warpriest', 'Witch', 'Wizard',
-  'Medium', 'Mesmerist', 'Occultist', 'Psychic', 'Spiritualist'];
+const SPELL_CLASSES = SPELL_LIST_CLASSES;
 
 const st = { q: '', cat: '', cls: '', level: '', school: '', selected: null, results: [], offset: 0 };
 
