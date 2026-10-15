@@ -81,3 +81,11 @@ test('old free-text archetypes are kept as names', () => {
   assert.deepEqual(archetypesOf(c, 'Rogue'), [{ name: 'Acrobat' }, { name: 'Scout' }]);
   assert.deepEqual(archetypesOf({ archetypes: { Rogue: 'Acrobat' } }, 'Rogue'), [{ name: 'Acrobat' }]);
 });
+
+test('the archetype card passes the class name it was given (an undefined name broke the chooser for every class)', async () => {
+  const { readFileSync } = await import('node:fs');
+  const src = readFileSync(new URL('../web/js/views/archetypes.js', import.meta.url), 'utf8');
+  const card = src.slice(src.indexOf('function card('), src.indexOf('export function renderArchetypeChooser'));
+  assert.ok(/findTargets\(base, t, def\.name\)/.test(card), 'card() knows the class as def.name');
+  assert.ok(!/\bcls\b/.test(card), 'card() has no `cls` of its own, so it must not use one');
+});

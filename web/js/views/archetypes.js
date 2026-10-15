@@ -24,7 +24,7 @@ function card(a, def, on, blockedBy) {
     <div class="muted small">${esc(a.source || '')}</div>
     ${a.description ? `<div class="desc">${esc(a.description)}</div>` : ''}
     <ul>${feats.map(f => {
-      const hits = (f.replaces || []).flatMap(t => findTargets(base, t, cls));
+      const hits = (f.replaces || []).flatMap(t => findTargets(base, t, def.name));
       const lv = f.level ?? (hits.length ? Math.min(...hits.map(h => h.level)) : null);
       const rep = (f.replaces || []).map(t => t.text || t.name).join(', ');
       return `<li><span class="lv">${lv ? ord(lv) : '—'}</span><b>${esc(f.name)}</b>${rep ? ` <span class="rep">replaces ${esc(rep)}</span>` : ''}</li>`;
