@@ -68,3 +68,11 @@ test('clerics and druids prepare from their whole list and learn nothing', () =>
   assert.equal(allow('Druid', 3, { raceChoice: 'wis' }).kind, 'none');
   assert.equal(allow('Fighter', 1).kind, 'none');
 });
+
+test('spell search filters: every choice is a school or a desc:/sub:/list: filter the server understands', async () => {
+  const { SPELL_FILTERS, SCHOOLS } = await import('../web/js/data.js');
+  const values = SPELL_FILTERS.flatMap(([, list]) => list.map(([v]) => v));
+  assert.ok(values.every(v => SCHOOLS.includes(v) || /^(desc|sub|list):[a-z]+$/.test(v)), values.join(', '));
+  assert.ok(values.includes('list:metal') && values.includes('list:wood') && values.includes('desc:fire'));
+  assert.equal(new Set(values).size, values.length, 'no choice is listed twice');
+});

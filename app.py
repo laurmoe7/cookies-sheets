@@ -155,14 +155,57 @@ def get_entry(id=None, name=None, cat=None):
     return d
 
 
+# The spell lists the Ultimate Magic elementalist schools hand out; the compendium has each as a rules entry of "level-- spell, spell; ..." text.
+SCHOOL_LISTS = {'metal': 'Metal Elementalist Wizard Spells', 'wood': 'Wood Elementalist Wizard Spells'}
+
+
+def _name_key(name):
+    """A spell name as a set of words, so "magic weapon (greater)" and "Magic Weapon, Greater" are the same spell."""
+    return ' '.join(sorted(re.findall(r'[a-z0-9]+', str(name).lower())))
+
+
+def school_list(key):
+    """One of the SCHOOL_LISTS as {_name_key words: spell level}, or {}. The list names spells the school adds to the wizard's list, such as
+    heat metal, which no wizard gets otherwise, so the spell search must not hold them to the class's own list."""
+    rule = SCHOOL_LISTS.get(key)
+    r = rule and db().execute("select html from entries where cat='Rules' and name=?", (rule,)).fetchone()
+    if not r:
+        return {}
+    import html as _html
+    text = _html.unescape(re.sub(r'<[^>]+>', ' ', r['html'] or ''))
+    out = {}
+    for lvl, names in re.findall(r'(\d+)(?:st|nd|rd|th)?\s*\u2014([^\u2014]*?)(?=\s+\d+(?:st|nd|rd|th)?\s*\u2014|$)', text):  # "3rd-- chill metal, heat metal ; 4th-- ..."
+        for n in re.split(r'[;,]', names):
+            if _name_key(n):
+                out[_name_key(n)] = int(lvl)
+    return out
+
+
+def school_match(school, meta, name, lists):
+    """Does a spell belong to a wizard school? `school` is a plain school ("evocation"), "desc:fire" (the elemental schools),
+    "sub:teleportation" (a subschool, for the schools like Teleportation and Creation), or "list:metal" (the Metal and Wood lists)."""
+    kind, _, val = school.partition(':')
+    if not val:
+        return True  # a plain school is filtered in SQL
+    val = val.lower()
+    if kind == 'desc':
+        return val in [d.strip().lower() for d in str(meta.get('descriptor') or '').split(',')]
+    if kind == 'sub':
+        return str(meta.get('subschool') or '').lower() == val
+    if kind == 'list':
+        return _name_key(name) in lists
+    return True
+
+
 def spells(cls='', level='', q='', school='', limit=1500):
     classes = [c for c in cls.split(',') if c]
     where, args = ["e.cat='Spell'"], []
-    if classes:
+    if classes and not school.startswith('list:'):  # a school's own list adds spells the class does not have
         where.append('(' + ' or '.join("json_extract(e.meta, '$.levels.\"%s\"') is not null" % c.replace('"', '') for c in classes) + ')')
-    if school:
+    if school and ':' not in school:
         where.append('lower(e.sub)=lower(?)')
         args.append(school)
+    lists = school_list(school.partition(':')[2].lower()) if school.startswith('list:') else {}
     join = ''
     if q.strip():
         join = 'join entries_fts f on f.rowid = e.id'
@@ -173,8 +216,10 @@ def spells(cls='', level='', q='', school='', limit=1500):
     out = []
     for r in rows:
         meta = json.loads(r['meta'])
+        if school and not school_match(school, meta, r['name'], lists):
+            continue
         lv = [meta['levels'][c] for c in classes if c in meta.get('levels', {})]
-        lvl = min(lv) if lv else None
+        lvl = lists.get(_name_key(r['name'])) if lists else (min(lv) if lv else None)
         if level != '' and level is not None and str(lvl) != str(level):
             continue
         out.append(dict(id=r['id'], name=r['name'], school=r['sub'], source=r['source'], summary=r['summary'],

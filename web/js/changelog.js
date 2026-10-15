@@ -5,6 +5,7 @@ export const CHANGELOG = [
   {
     version: 'Rest and weapon enchantments', date: '2026-10-14',
     items: [
+      'The spell search can filter by wizard school: the schools of magic, the elemental schools (Air, Earth, Fire, Water, and the Metal and Wood lists, which include spells like Heat Metal that are not on the wizard list) and the subschool schools such as Teleportation, Creation and Shapechange.',
       'Weapons have a Damage stat: pick which ability adds to damage (Str, Dex, Con, Int, Wis, Cha or none), next to the ×1 / ×1½ / ×½ choice. Auto is Strength for melee and nothing for ranged, so thrown weapons and Strength-rated bows can be set to Str.',
       'Inventory has an A–Z button that puts the items in alphabetical order.',
       'Skills: every skill has a Notes box for things like “+2 vs. traps” or “only in dim light”.',

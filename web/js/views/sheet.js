@@ -3,7 +3,7 @@ import { state, changed, render, go, refreshCalc } from '../app.js';
 import { sign, num, raceInfo, classLevels } from '../calc.js';
 import {
   ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS,
-  BUFF_PRESETS, BUFF_GROUPS, presetsIn, SCHOOLS, CASTING_STAT_NAMES,
+  BUFF_PRESETS, BUFF_GROUPS, presetsIn, SCHOOLS, SPELL_FILTERS, CASTING_STAT_NAMES,
 } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom, showEntry, closeDrawer } from '../ui.js';
 import { choosePicture, repositionPicture } from '../cropper.js';
@@ -987,7 +987,7 @@ export function pickSpell(cls, sc, level) {
     body.innerHTML = `<div class="row">
         <input class="search grow" placeholder="Search spell names…">
         <select data-f="level">${['', ...Array.from({ length: sc.maxLevel + 1 }, (_, i) => i)].map(l => `<option value="${l}" ${l === level ? 'selected' : ''}>${l === '' ? 'Any level' : 'Level ' + l}</option>`).join('')}</select>
-        <select data-f="school"><option value="">Any school</option>${SCHOOLS.map(s => `<option>${s}</option>`).join('')}</select>
+        <select data-f="school" title="Filter by school of magic, elemental school (Metal, Wood, Fire...) or subschool"><option value="">Any school</option>${SPELL_FILTERS.map(([group, list]) => `<optgroup label="${esc(group)}">${list.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('')}</optgroup>`).join('')}</select>
       </div>
       <div class="small muted">Spell lists: ${esc(sc.lists.join(', '))}</div>
       <div class="picker"><div class="picker-list"></div><div class="picker-preview entry-body"><p class="muted">Select a spell to preview it.</p></div></div>`;

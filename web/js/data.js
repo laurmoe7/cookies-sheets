@@ -203,3 +203,11 @@ export const presetsIn = group => BUFF_PRESETS.filter(p => p.group === group).so
 
 export const CASTING_STAT_NAMES = { int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
 export const SCHOOLS = ['abjuration', 'conjuration', 'divination', 'enchantment', 'evocation', 'illusion', 'necromancy', 'transmutation', 'universal'];
+/** What the spell search can filter by, in groups: the schools of magic, the wizard's elemental schools (by descriptor, or the Metal and Wood lists) and the schools that follow a subschool.
+ * The value is what /api/spells takes as `school` (see school_match in app.py). */
+export const SPELL_FILTERS = [
+  ['School of magic', SCHOOLS.map(s => [s, s[0].toUpperCase() + s.slice(1)])],
+  ['Elemental school', [['desc:air', 'Air'], ['desc:earth', 'Earth'], ['desc:fire', 'Fire'], ['desc:water', 'Water'], ['list:metal', 'Metal'], ['list:wood', 'Wood']]],
+  ['Arcane school (subschool)', [['sub:teleportation', 'Teleportation'], ['sub:creation', 'Creation'], ['sub:polymorph', 'Shapechange (polymorph)'], ['sub:scrying', 'Scryer (scrying)'],
+    ['sub:phantasm', 'Phantasm'], ['sub:shadow', 'Shadow'], ['sub:healing', 'Healing'], ['sub:summoning', 'Summoning'], ['sub:compulsion', 'Compulsion'], ['sub:charm', 'Charm']]],
+];

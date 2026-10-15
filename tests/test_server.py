@@ -294,6 +294,19 @@ class HttpApi(unittest.TestCase):
         self.assertEqual(self.headers('/api/characters'), 200)  # no browser headers at all (tests, curl)
 
 
+    @NEEDS_DB
+    def test_wizard_school_filters(self):
+        names = lambda school: {x['name'] for x in app.spells('Wizard', '', '', school)}
+        metal = names('list:metal')
+        self.assertTrue({'Heat Metal', 'Chill Metal', 'Lightning Bolt', 'Magic Weapon, Greater'} <= metal, 'the Metal list is read from the rules entry, and "magic weapon (greater)" matches "Magic Weapon, Greater"')
+        self.assertNotIn('Fireball', metal)
+        self.assertIn('Fireball', names('desc:fire'), 'the Fire school is every spell with the fire descriptor')
+        self.assertIn('Dimension Door', names('sub:teleportation'))
+        self.assertIn('Fireball', names('evocation'), 'a plain school still filters by school')
+        self.assertTrue(names('list:wood') and names('list:wood') != metal)
+        self.assertEqual(names('list:nothing'), set(), 'an unknown list matches nothing')
+
+
 class GoogleSheetLinks(unittest.TestCase):
     def test_link_and_tab(self):
         sid = '1DkPwfR5IdcJ0Bk9NhUnBA7iXTUF-aQl4kqaCRj50Tps'
