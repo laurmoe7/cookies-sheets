@@ -164,7 +164,8 @@ def enrich(entries, gear, groups):
         if key in widx:
             w = widx[key]
             pairs = weapon_pairs(w, groups)
-            line = f"{w['prof']} {KINDS.get(w['kind'], w['kind'])} weapon: {w['dmgM']} {_damage_types(w['type'])}, {w['crit'] or 'x2'}."
+            hit = ' '.join(x for x in (w['dmgM'], _damage_types(w['type'])) if x)  # a net has no damage
+            line = f"{w['prof']} {KINDS.get(w['kind'], w['kind'])} weapon" + (f": {hit}, {w['crit'] or 'x2'}." if hit else ".")
         elif key in aidx:
             a = aidx[key]
             pairs = armor_pairs(a)
