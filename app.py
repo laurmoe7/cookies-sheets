@@ -87,7 +87,7 @@ _local = threading.local()
 def install_new_db():
     """tools/build_data.py writes pf1e.db.new when the app had the database open; swap it in at startup."""
     new = DB_PATH + '.new'
-    if os.path.exists(new):
+    if os.path.exists(new) and os.path.getsize(new) > 0:  # never swap in an empty file: it would replace the compendium with nothing
         try:
             os.replace(new, DB_PATH)
         except OSError:
