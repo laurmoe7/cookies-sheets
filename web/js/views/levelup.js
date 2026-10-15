@@ -154,7 +154,6 @@ function racialSection(el, c, d, newLevel) {
   const left = remainingBaseline(data.baseline, draft.racial);
   const link = t => `<a href="#" class="ref" data-entry="${esc(t.name)}" data-entry-id="${t.id}">${esc(t.name)}</a>`;
   return `<h4 class="lu-sub">${esc(c.race)} racial traits</h4>
-    <p class="small muted">${left.length || draft.racial.length ? 'These come with your race and go on your sheet. Where the books have an alternate, you can swap it in.' : ''}</p>
     <ul class="rt-list">${left.map(t => `<li>${link(t)} ${alternativesFor(t.name, data.alternates, draft.racial).length ? `<button class="btn small ghost" data-swap-racial="${esc(t.name)}">Swap…</button>` : ''}</li>`).join('')}
       ${draft.racial.map((t, i) => `<li class="alt">${link(t)} <span class="rep">alternate, replaces ${esc(t.replaces.join(', '))}</span> <button class="icon-btn" data-undo-racial="${i}" title="Go back to the standard trait">✕</button></li>`).join('')}</ul>`;
 }

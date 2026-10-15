@@ -516,7 +516,7 @@ function feats(body, c, d) {
       ${c[key].length ? `<table class="tbl"><tbody>${c[key].map((f, i) => `<tr>
         <td class="nowrap w12">${f.id ? refId(f.id, f.name)
           : tf(`${key}.${i}.name`, { placeholder: 'Name', read: { title: f.name || 'Untitled', titlePath: `${key}.${i}.name`, cat: KIND[key], path: `${key}.${i}.notes` } })}</td>
-        <td class="muted small">${esc(f.sub || '')}${f.level && key !== 'traits' ? ` · L${f.level}` : ''}${f.replaces?.length ? `<div class="alt-note" title="An alternate racial trait">replaces ${esc(f.replaces.join(', '))}</div>` : ''}</td>
+        <td class="muted small"><span class="nowrap">${esc(f.sub || '')}${f.level && key !== 'traits' ? ` · L${f.level}` : ''}</span>${f.replaces?.length ? `<div class="alt-note" title="An alternate racial trait">replaces ${esc(f.replaces.join(', '))}</div>` : ''}</td>
         <td class="grow-cell">${tf(`${key}.${i}.notes`, { multiline: true, placeholder: f.id ? 'Add notes' : 'Add a description',
           read: { title: f.name || 'Notes', titlePath: `${key}.${i}.name`, cat: f.id ? 'Your notes' : KIND[key] } })}</td>
         <td><button class="icon-btn" data-del="${key}.${i}">✕</button></td></tr>`).join('')}</tbody></table>`
