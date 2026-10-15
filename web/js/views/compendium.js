@@ -106,8 +106,8 @@ function addButtons(en) {
   if (!c) return '';
   const name = esc(c.name);
   if (en.cat === 'Feat') return `<button class="btn small" data-add-to="feats">＋ Add to ${name}'s feats</button>`;
-  if (en.cat === 'Trait') return `<button class="btn small" data-add-to="traits">＋ Add to ${name}'s traits</button>`;
-  if (en.cat === 'Racial Trait' || en.cat === 'Class Feature') return `<button class="btn small" data-add-to="specials">＋ Add to ${name}'s abilities</button>`;
+  if (en.cat === 'Trait' || en.cat === 'Racial Trait') return `<button class="btn small" data-add-to="traits">＋ Add to ${name}'s traits</button>`;
+  if (en.cat === 'Class Feature') return `<button class="btn small" data-add-to="specials">＋ Add to ${name}'s abilities</button>`;
   if (en.cat === 'Magic Item') return `<button class="btn small" data-add-to="gear">＋ Add to ${name}'s gear</button>`;
   if (en.cat === 'Spell' && state.derived) {
     const levels = en.meta?.levels || {};

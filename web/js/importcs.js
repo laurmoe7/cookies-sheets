@@ -107,7 +107,7 @@ export function normalizeCs(src) {
 
 // ---- name resolution against the compendium ----
 
-const ROUTE = { Feat: 'feats', Trait: 'traits' };
+const ROUTE = { Feat: 'feats', Trait: 'traits', 'Racial Trait': 'traits' };
 const LIST_CATS = {
   feats: ['Feat', 'Trait', 'Racial Trait', 'Class Feature', 'Archetype'],
   traits: ['Trait', 'Racial Trait', 'Feat', 'Class Feature'],

@@ -2,6 +2,7 @@ import { api } from './api.js';
 import { compute, sign } from './calc.js';
 import { newCharacter, migrate } from './model.js';
 import { classLine } from './features.js';
+import { moveRacialTraits } from './racialtraits.js';
 import { esc, $, $$, getPath, setPath, toast, showEntry, closeDrawer, initDrawerDismiss, debounce, modal, initTextFields, initTooltips } from './ui.js';
 import { initSheetSearch } from './sheetsearch.js';
 import { initOptions, showOptions, showChangelog } from './options.js';
@@ -103,6 +104,7 @@ export function changed({ rerender = false } = {}) {
 export async function openCharacter(id) {
   state.char = migrate(await api.character(id));
   state.dirty = false;
+  try { if (await moveRacialTraits(state.char, api.resolve)) { state.dirty = true; saveNow(); } } catch { /* the compendium is unavailable; try again next time */ }
   try { localStorage.setItem('lastChar', id); } catch { /* storage may be unavailable */ }
   go('sheet', { sheetTab: 'overview' });
   petOpened(state.char, state.derived);

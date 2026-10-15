@@ -529,7 +529,7 @@ function feats(body, c, d) {
             <button class="btn small ghost" data-arch="${esc(cls)}">${archs.length ? 'Change' : 'Choose'}</button></div>`;
         }).join('') || '<p class="muted">No classes yet.</p>'}
       </section>
-      ${listBlock('feats', 'Feats', 'Feat', 'Add feat')}${listBlock('traits', 'Traits', 'Trait', 'Add trait')}</div>
+      ${listBlock('feats', 'Feats', 'Feat', 'Add feat')}${listBlock('traits', 'Traits', 'Trait, racial trait', 'Add trait')}</div>
     <div>
       <section class="card">
         <h3>Class Features <span class="muted small">(from your class levels and archetypes; click to read)</span></h3>
@@ -538,7 +538,7 @@ function feats(body, c, d) {
           : `${ref(featureLookupName(f.name), '', f.name)}${f.modified ? ` <span class="mod" title="Changed by your archetype">✱</span>` : ''}`}</li>`).join('')}</ul>`
           : '<p class="muted">Take a level to see class features.</p>'}
       </section>
-      ${listBlock('specials', 'Special Abilities & Racial Traits', 'Racial Trait', 'Add racial trait / ability')}
+      ${listBlock('specials', 'Special Abilities', 'Class Feature', 'Add ability')}
     </div></div>`;
   wireCommon(body);
   body.addEventListener('click', async e => {
@@ -546,7 +546,9 @@ function feats(body, c, d) {
     const cu = e.target.closest('[data-custom]');
     const ar = e.target.closest('[data-arch]');
     if (p) {
-      const r = await pickEntry(p.dataset.title, p.dataset.cat, { renderRow: r => r.summary || r.source });
+      // Traits are the character traits and the racial traits, in one list.
+      const search = p.dataset.pick === 'traits' ? async q => (await Promise.all(['Trait', 'Racial Trait'].map(k => api.search(q, k, 100)))).flat().sort((a, b) => a.name.localeCompare(b.name)) : undefined;
+      const r = await pickEntry(p.dataset.title, p.dataset.cat, { renderRow: r => r.summary || r.source, search });
       if (r) { c[p.dataset.pick].push({ id: r.id, name: r.name, sub: r.sub, notes: '', level: d.level }); changed({ rerender: true }); }
     } else if (cu) {
       c[cu.dataset.custom].push({ name: '', notes: '' });
