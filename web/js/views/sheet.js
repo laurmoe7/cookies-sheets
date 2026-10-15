@@ -7,7 +7,7 @@ import {
 } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom, showEntry, closeDrawer } from '../ui.js';
 import { choosePicture, repositionPicture } from '../cropper.js';
-import { classFeatures, archetypesOf, classLine } from '../features.js';
+import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
 import { summonSpell } from '../summons.js';
 import { rollBar, fillSpellRolls, SLA_KEY as SLA } from '../roller.js';
@@ -138,7 +138,6 @@ export function renderSheet(main) {
 function overview(body, c, d) {
   const activeMods = c.modifiers.filter(m => m.active);
   body.innerHTML = `
-  <div class="char-line"><b>${esc(d.race.name)}</b> · <span title="Your classes, with the archetype you chose for each (change it on the Feats & Abilities tab)">${esc(classLine(c, d.classLevels) || 'Level 0')}</span></div>
   <div class="buff-strip">
     <span class="muted small">Active:</span>
     ${activeMods.length ? activeMods.map((m, i) => `<span class="chip on" data-toggle-mod="${c.modifiers.indexOf(m)}" title="Click to turn off">${esc(m.name)} ✕</span>`).join('') : '<span class="muted small">no buffs or conditions</span>'}

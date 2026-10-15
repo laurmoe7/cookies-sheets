@@ -191,7 +191,6 @@ html[data-theme] .btn.primary.discord-btn:hover, .btn.discord-btn:hover { backgr
 .rw-buff.neg { border-color: #a8372c; }
 .rw-buff.off { background: transparent; border-style: dashed; opacity: .6; }
 .rchip.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
-.char-line { margin-bottom: 8px; font-size: 15px; }
 .buff-strip { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 12px; }
 .saves td, .saves th { text-align: center; }
 .weapons-tbl td { padding: 3px 4px; }

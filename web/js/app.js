@@ -196,6 +196,7 @@ async function init() {
   $('#options-btn').onclick = () => showOptions();
   $('#changelog-btn').onclick = () => showChangelog();
   $('#char-icon').onclick = () => editIcon();
+  $('#char-sub').onclick = () => { if (state.char) go('sheet', { sheetTab: 'feats' }); }; // the archetype lives there
 
   state.classes = await api.classes();
   state.classesByName = Object.fromEntries(state.classes.map(c => [c.name, c]));
