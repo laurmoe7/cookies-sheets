@@ -137,6 +137,14 @@ class Compendium(unittest.TestCase):
         self.assertEqual(app._summary(c), 'Arcanist (White Mage) 8 / Rogue (Scout, Thug) 1')
         self.assertEqual(app._summary(dict(levelUps=[dict(cls='Fighter')])), 'Fighter 1')
 
+    def test_search_filters_by_sub_category(self):
+        meta = app.search('', 'Feat', 500, 0, 'Metamagic')
+        self.assertGreater(len(meta), 20)
+        self.assertTrue(all('Metamagic' in r['sub'] for r in meta))
+        self.assertTrue(all('Metamagic' in r['sub'] for r in app.search('fire', 'Feat', 50, 0, 'Metamagic')), 'with a text search too')
+        self.assertTrue(all(r['sub'] == 'Social' for r in app.search('', 'Trait', 500, 0, 'Social')))
+        self.assertEqual(app.search('', 'Feat', 50, 0, '%'), [], 'a % in the filter is text, not a wildcard')
+
     def test_resolve_names(self):
         hits = app.resolve_names({'items': [
             {'variants': ['Weapon Finesse'], 'cats': ['Feat']},

@@ -1,5 +1,11 @@
 // Static Pathfinder 1e rules data used by the sheet and calculators.
 
+/** Filter choices for the feat and trait lists: [label, text the entry's sub-category must contain]. */
+export const FEAT_TYPES = [['Combat', 'Combat'], ['General', 'General'], ['Teamwork', 'Teamwork'], ['Metamagic', 'Metamagic'], ['Item creation', 'Item Creation'],
+  ['Critical', 'Critical'], ['Style', 'Style'], ['Performance', 'Performance'], ['Grit', 'Grit'], ['Panache', 'Panache'], ['Story', 'Story'], ['Mythic', 'Mythic'], ['Monster', 'Monster']];
+export const TRAIT_CATEGORIES = [['Combat', 'Combat'], ['Faith', 'Faith'], ['Magic', 'Magic'], ['Social', 'Social'], ['Religion', 'Religion'], ['Regional', 'Region'],
+  ['Racial (by race)', 'Racial'], ['Campaign', 'Campaign'], ['Bloodline', 'Bloodline']];
+
 export const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 export const ABILITY_NAMES = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
 

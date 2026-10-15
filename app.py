@@ -118,9 +118,14 @@ CAT_ORDER = ['Spell', 'Feat', 'Condition', 'Trait', 'Class', 'Race', 'Skill', 'R
              'Racial Trait', 'Magic Item', 'Affliction', 'Mythic Spell', 'Monster Ability']
 
 
-def search(q='', cat='', limit=60, offset=0):
+def search(q='', cat='', limit=60, offset=0, sub=''):
+    """`sub` keeps entries whose sub-category contains it (a feat type such as Combat, a trait category such as Social)."""
     cats = [c for c in cat.split(',') if c]
     cat_sql = ' and e.cat in (%s)' % ','.join('?' * len(cats)) if cats else ''
+    sub = (sub or '').strip()
+    if sub:
+        cat_sql += " and e.sub like ? escape '!'"
+        cats = [*cats, '%' + re.sub(r'([!%_])', lambda m: '!' + m.group(1), sub) + '%']
     order_cat = 'case e.cat ' + ' '.join(f"when '{c}' then {i}" for i, c in enumerate(CAT_ORDER)) + ' else 99 end'
     cols = 'e.id, e.cat, e.sub, e.name, e.source, e.summary'
     q = (q or '').strip()
@@ -817,7 +822,7 @@ class Handler(SimpleHTTPRequestHandler):
             elif route == ('GET', 'magic-gear'):
                 self._json(magic_gear(p.get('kind', ''), p.get('q', '')))
             elif route == ('GET', 'search'):
-                self._json(search(p.get('q', ''), p.get('cat', ''), int(p.get('limit', 60)), int(p.get('offset', 0))))
+                self._json(search(p.get('q', ''), p.get('cat', ''), int(p.get('limit', 60)), int(p.get('offset', 0)), p.get('sub', '')))
             elif route == ('GET', 'entries'):
                 ids = [int(x) for x in (p.get('ids') or '').split(',') if x.strip().isdigit()][:300]
                 self._json([e for e in (get_entry(i) for i in ids) if e])

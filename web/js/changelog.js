@@ -6,6 +6,7 @@ export const CHANGELOG = [
   {
     version: '1.3', next: true,
     items: [
+      'Feats and traits can be filtered by type (Combat, Metamagic, Teamwork...) or category (Social, Faith...) in the Compendium, the level-up wizard and the Add feat / Add trait windows. The wizard also has more room between Feats and Traits.',
       'Traits: the level-up wizard has a traits window for 1st level (two traits, each from a different category) and again when you pick the feat Additional Traits (two more, from categories you have none in). Taking Additional Traits on the sheet opens it too.',
       'Traits: racial traits now go in the Traits list with the character traits (“Add trait” finds both). Racial traits already under Special Abilities on your sheets move over when you open them.',
       'Weapons and armor added from the list or as magic items open their compendium entry in the side panel when you click the name (double-click still renames).',

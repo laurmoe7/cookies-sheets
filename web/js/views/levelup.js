@@ -1,6 +1,6 @@
 import { state, changed, go, render } from '../app.js';
 import { compute, sign, num, classLevels, raceInfo, mod } from '../calc.js';
-import { ABILITIES, ABILITY_NAMES, RACES, POINT_BUY, SKILL_BY_NAME } from '../data.js';
+import { ABILITIES, ABILITY_NAMES, RACES, POINT_BUY, SKILL_BY_NAME, FEAT_TYPES } from '../data.js';
 import { skillKey } from '../model.js';
 import { api } from '../api.js';
 import { playSfx } from '../sfx.js';
@@ -217,7 +217,7 @@ function detail(el, c, d, newLevel) {
       ${/bonus feat|combat feat|teamwork feat/i.test(row.special) ? `<p class="good">This class level grants a bonus feat. Check the class feature for allowed feats.</p>` : ''}
       <div class="chips">${draft.feats.map((f, i) => `<span class="chip on">${esc(f.name)} <button class="icon-btn" data-rm-feat="${i}">✕</button></span>`).join('')}</div>
       <button class="btn small" data-add-feat>＋ Choose feat</button>
-      ${traitCount ? `<h3>${getsAbility ? 7 : 6} · Traits</h3>
+      ${traitCount ? `<h3 class="lu-sep">${getsAbility ? 7 : 6} · Traits</h3>
         <p>${newLevel === 1 ? 'Choose two character traits, each from a different category.' : 'Additional Traits gives you two more, from categories you have no trait in yet.'}${newLevel === 1 && traitCount > 2 ? ' Additional Traits adds two more.' : ''}</p>
         <div class="chips">${draft.traits.map((t, i) => `<span class="chip on">${esc(t.name)} <span class="dim small">${esc(t.sub || '')}</span> <button class="icon-btn" data-rm-trait="${i}">✕</button></span>`).join('')}</div>
         <button class="btn small" data-choose-traits>＋ Choose traits (${traitCount - draft.traits.length} left)</button>` : ''}
@@ -267,7 +267,7 @@ function detail(el, c, d, newLevel) {
     rerender();
   }));
   $('[data-add-feat]', el).onclick = async () => {
-    const r = await pickEntry('Choose a feat', 'Feat');
+    const r = await pickEntry('Choose a feat', 'Feat', { subs: FEAT_TYPES });
     if (r) { draft.feats.push(r); rerender(); }
   };
   const tb = $('[data-choose-traits]', el);

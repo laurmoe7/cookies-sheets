@@ -1,14 +1,16 @@
 import { api } from '../api.js';
 import { state, changed } from '../app.js';
 import { esc, $, $$, debounce, entryHtml, wireEntryLinks, toast } from '../ui.js';
-import { SCHOOLS, SPELL_LIST_CLASSES } from '../data.js';
+import { SCHOOLS, SPELL_LIST_CLASSES, FEAT_TYPES, TRAIT_CATEGORIES } from '../data.js';
 import { search as petSearch } from '../pet/pet.js';
 
 const CATS = ['Spell', 'Feat', 'Trait', 'Rules', 'Condition', 'Class', 'Archetype', 'Class Feature', 'Race', 'Racial Trait',
   'Skill', 'Magic Item', 'Affliction', 'Mythic Spell', 'Monster Ability'];
 const SPELL_CLASSES = SPELL_LIST_CLASSES;
 
-const st = { q: '', cat: '', cls: '', level: '', school: '', selected: null, results: [], offset: 0 };
+// Categories with a second filter, and its choices.
+const SUB_FILTERS = { Feat: ['Any type', FEAT_TYPES], Trait: ['Any category', TRAIT_CATEGORIES.filter(([, v]) => v !== 'Racial')] };
+const st = { q: '', cat: '', cls: '', level: '', school: '', sub: '', selected: null, results: [], offset: 0 };
 
 export async function renderCompendium(main) {
   main.innerHTML = `<div class="compendium">
@@ -24,6 +26,7 @@ export async function renderCompendium(main) {
           <select id="f-level"><option value="">Any level</option>${[...Array(10).keys()].map(l => `<option ${String(l) === st.level ? 'selected' : ''}>${l}</option>`).join('')}</select>
           <select id="f-school"><option value="">Any school</option>${SCHOOLS.map(s => `<option ${s === st.school ? 'selected' : ''}>${s}</option>`).join('')}</select>
         </div>
+        ${SUB_FILTERS[st.cat] ? `<div class="row sub-filters"><select id="f-sub"><option value="">${SUB_FILTERS[st.cat][0]}</option>${SUB_FILTERS[st.cat][1].map(([label, v]) => `<option value="${esc(v)}" ${v === st.sub ? 'selected' : ''}>${esc(label)}</option>`).join('')}</select></div>` : ''}
       </div>
       <div id="comp-results" class="results"></div>
     </div>
@@ -42,7 +45,9 @@ export async function renderCompendium(main) {
     if (e.key === 'Enter' && st.results[0]) select(main, st.results[0].id);
     if (e.key === 'ArrowDown') { e.preventDefault(); $('.result', main)?.focus(); }
   });
-  $$('.cat', main).forEach(b => (b.onclick = () => { st.cat = b.dataset.cat; st.offset = 0; renderCompendium(main); }));
+  $$('.cat', main).forEach(b => (b.onclick = () => { st.cat = b.dataset.cat; st.sub = ''; st.offset = 0; renderCompendium(main); }));
+  const subSel = $('#f-sub', main);
+  if (subSel) subSel.onchange = () => { st.sub = subSel.value; st.offset = 0; search(main); };
   for (const [id, k] of [['f-cls', 'cls'], ['f-level', 'level'], ['f-school', 'school']]) {
     $('#' + id, main).onchange = e => { st[k] = e.target.value; search(main); };
   }
@@ -77,7 +82,7 @@ async function search(main, append = false) {
     box.innerHTML = rows.length ? `<div class="muted small pad">${rows.length} spells</div>` + rows.map(rowHtml).join('') : '<p class="pad muted">No matches.</p>';
     return;
   }
-  rows = await api.search(st.q, st.cat, 100, st.offset);
+  rows = await api.search(st.q, st.cat, 100, st.offset, SUB_FILTERS[st.cat] ? st.sub : '');
   if (my !== searchSeq) return;
   if (!append) petSearch(st.q);
   st.results = append ? [...st.results, ...rows] : rows;
