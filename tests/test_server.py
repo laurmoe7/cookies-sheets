@@ -132,6 +132,25 @@ class Compendium(unittest.TestCase):
                          ['Weapon Finesse', 'Dimensional Slide', 'Cloak of Resistance', None])
         self.assertEqual(hits[1]['cat'], 'Class Feature')
 
+    @NEEDS_DB
+    def test_weapon_and_armor_entries_carry_combat_stats(self):
+        import re
+        def stats(name, source=None):
+            rows = [app.get_entry(name=name, cat='Magic Item')] if source is None else []
+            e = rows[0]
+            self.assertIsNotNone(e, name)
+            return dict(re.findall(r'<dt>(.*?)</dt><dd>(.*?)</dd>', e['html']))
+        chain = stats('Spiked Chain')
+        self.assertEqual((chain['Damage'], chain['Critical'], chain['Type'], chain['Category']), ('1d6 (small), 2d4 (medium)', 'x2', 'piercing', 'two-handed'))
+        self.assertEqual((chain['Proficiency'], chain['Weapon Group'], chain['Special']), ('exotic', 'flails', 'disarm, trip'))
+        self.assertEqual(stats('Longsword')['Critical'], '19-20/x2')
+        self.assertEqual(stats('Longbow')['Range'], '100 ft.')
+        self.assertEqual(stats('Club')['Weapon Group'], 'hammers, thrown', 'a weapon in two groups lists both')
+        mail = stats('Chainmail')
+        self.assertEqual((mail['Armor Bonus'], mail['Maximum Dex Bonus'], mail['Armor Check Penalty'], mail['Arcane Spell Failure']), ('+6', '+2', '-5', '30%'))
+        self.assertIn('Price', mail, 'the price and weight that were there are kept')
+        self.assertEqual(stats('Buckler')['Shield Bonus'], '+1')
+
 
 class ImportLink(unittest.TestCase):
     def test_rejects_non_sheet_links(self):

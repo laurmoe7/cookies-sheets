@@ -530,6 +530,9 @@ def main():
     entries = build_entries(books)
     added = merge_tsv_spells(entries)
     print('added', added, 'spells from spreadsheet')
+    gear_list = equipment.build(books)
+    stats = equipment.enrich(entries, gear_list, equipment.weapon_groups(books))
+    print('combat stats added to', stats, 'weapon and armor entries')
     from collections import Counter
     print(Counter(e['cat'] for e in entries))
     write_db(entries)
@@ -552,7 +555,6 @@ def main():
     with open(OUT_CREATURES, 'w', encoding='utf-8') as f:
         json.dump(creature_list, f, separators=(',', ':'), ensure_ascii=False)
     print('wrote creatures:', len(creature_list), 'stat blocks')
-    gear_list = equipment.build(books)
     with open(OUT_EQUIPMENT, 'w', encoding='utf-8') as f:
         json.dump(gear_list, f, separators=(',', ':'), ensure_ascii=False)
     print('wrote equipment:', len(gear_list['weapons']), 'weapons,', len(gear_list['armor']), 'armor and shields')
