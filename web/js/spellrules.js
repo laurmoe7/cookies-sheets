@@ -51,6 +51,15 @@ export function learnAllowance(def, classLevel, known, sc, intMod) {
 }
 
 /**
+ * No limit at all: spells picked only to have them on the list (a prepared caster can prepare anything on the class list, so this is for quick access
+ * to favourites). Every level the caster has slots for, or just `only`. The same shape as learnAllowance, so the spell chooser works with it unchanged.
+ */
+export function favoritesAllowance(sc, only = null) {
+  const levels = only !== null ? [only] : [...Array(10).keys()].filter(l => sc.slots[l] != null);
+  return { kind: 'favorites', byLevel: Object.fromEntries(levels.map(l => [l, Infinity])), allCantrips: false, any: null };
+}
+
+/**
  * What is still left to choose after `picks` ([{level}]) were taken this level.
  * Returns {byLevel: {lvl: n}, any: {count, maxLevel}|null, total}.
  */
@@ -78,6 +87,10 @@ export function pickableLevels(rem) {
 const ORD = ['cantrip', '1st-level', '2nd-level', '3rd-level', '4th-level', '5th-level', '6th-level', '7th-level', '8th-level', '9th-level'];
 /** "2 × 1st-level, 4 × cantrip" style summary. */
 export function describeRemaining(rem) {
+  const open = Object.entries(rem.byLevel).filter(([, n]) => n === Infinity); // unlimited levels (favourites)
+  if (open.length && open.length === Object.keys(rem.byLevel).length && !rem.any) {
+    return open.length === 1 ? (open[0][0] === '0' ? 'any cantrips' : `any ${ORD[open[0][0]]} spells`) : 'any spells you like';
+  }
   const parts = Object.entries(rem.byLevel).sort((a, b) => a[0] - b[0]).map(([l, n]) => `${n} × ${ORD[l]}${n > 1 && l === '0' ? 's' : ''}`);
   if (rem.any) parts.push(`${rem.any.count} of any level up to ${ORD[rem.any.maxLevel].replace('-level', '')}`);
   return parts.join(', ');

@@ -5,7 +5,7 @@ import { skillKey } from '../model.js';
 import { api } from '../api.js';
 import { playSfx } from '../sfx.js';
 import { featuresFor, archetypesOf } from '../features.js';
-import { learnAllowance, remaining, describeRemaining } from '../spellrules.js';
+import { learnAllowance, favoritesAllowance, remaining, describeRemaining } from '../spellrules.js';
 import { esc, $, $$, pickEntry, toast, confirmBox, warnBox, showCustom } from '../ui.js';
 import { levelWarnings } from '../levelcheck.js';
 import { pickSpell, featureLookupName } from './sheet.js';
@@ -18,7 +18,7 @@ const ORD = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 - 20) % 10] || ['th', 's
 
 function freshDraft(c) {
   return { forLevel: c.levelUps.length, charId: c.id, cls: null, hpMode: 'avg', hpRoll: null, hpManual: '', fcb: 'hp', fcbNote: '',
-    abilityIncrease: '', ranks: {}, feats: [], spells: [], archetypes: [], notes: '', budget: 20 };
+    abilityIncrease: '', ranks: {}, feats: [], spells: [], favs: [], archetypes: [], notes: '', budget: 20 };
 }
 
 export function renderLevelUp(main) {
@@ -287,9 +287,17 @@ function detail(el, c, d, newLevel) {
     const sc = after.spellcasting[draft.cls];
     const book = c.spellbooks[draft.cls] || { spells: [] };
     await chooseSpells({ cls: draft.cls, lists: sc.lists, allowance: spellAllowance(c, def, clsLevel, after), picks: draft.spells,
-      known: book.spells.map(s => s.name) });
+      known: [...book.spells, ...draft.favs].map(s => s.name) });
     rerender();
   };
+  // Favourites: spells picked only to have them on the Spells tab (prepared casters can prepare anything on their list), with no limit.
+  $$('[data-choose-favs]', el).forEach(b => (b.onclick = async () => {
+    const sc = after.spellcasting[draft.cls];
+    const book = c.spellbooks[draft.cls] || { spells: [] };
+    await chooseSpells({ cls: draft.cls, lists: sc.lists, allowance: favoritesAllowance(sc), picks: draft.favs, known: [...book.spells, ...draft.spells].map(s => s.name) });
+    rerender();
+  }));
+  $$('[data-rm-fav]', el).forEach(b => (b.onclick = () => { draft.favs.splice(+b.dataset.rmFav, 1); rerender(); }));
   $$('[data-rm-spell]', el).forEach(b => (b.onclick = () => { draft.spells.splice(+b.dataset.rmSpell, 1); rerender(); }));
   $('[data-apply]', el).onclick = () => apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after, clsLevel);
 }
@@ -334,15 +342,19 @@ function spellPicks(c, def, row, prevRow, after, newLevel) {
     guidance = `${def.name}s prepare from their entire spell list, so there's nothing to learn. Track favourites on the Spells tab.`;
   }
   const chips = draft.spells.map((s, i) => `<span class="chip on">${s.level === 0 ? 'Cantrip' : 'L' + s.level} ${esc(s.name)} <button class="icon-btn" data-rm-spell="${i}">✕</button></span>`).join('');
+  const favChips = draft.favs.map((s, i) => `<span class="chip on">${s.level === 0 ? 'Cantrip' : 'L' + s.level} ${esc(s.name)} <button class="icon-btn" data-rm-fav="${i}">✕</button></span>`).join('');
   if (allowance.kind === 'none') {
-    return `<section class="card"><div class="row"><h3 class="grow">Spells</h3><button class="btn small ghost" data-add-lu-spell="-1">＋ Track a spell</button></div>
-      <p>${guidance}</p><div class="chips">${chips}</div></section>`;
+    return `<section class="card"><div class="row"><h3 class="grow">Favorite spells <span class="muted small">(optional)</span></h3><button class="btn small primary" data-choose-favs>Choose favorites…</button></div>
+      <p>${def.name}s prepare from their entire spell list, so you do not have to learn anything. Pick any spells you want quick access to and they are put on your Spells tab, ready to prepare. You can add more there any time.</p>
+      <div class="chips">${favChips}</div></section>`;
   }
   return `<section class="card"><div class="row"><h3 class="grow">${def.casting.extracts ? 'Formulae' : 'Spells'} to learn</h3>
       <span class="pill ${rem.total ? 'warn' : 'good'}">${rem.total ? `Left: <b>${esc(describeRemaining(rem))}</b>` : 'All chosen ✓'}</span>
       <button class="btn small ${rem.total ? 'primary' : ''}" data-choose-spells ${rem.total ? '' : 'disabled'}>Choose ${word}</button></div>
     <p>${guidance}</p>
     <div class="chips">${chips}</div>
+    ${allowance.kind === 'book' ? `<div class="row"><button class="btn small ghost" data-choose-favs title="Spells you want on your list for quick access, beyond the ones above">＋ More favorites (optional)</button></div>
+      <div class="chips">${favChips}</div>` : ''}
   </section>`;
 }
 
@@ -365,7 +377,7 @@ async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after
   let cantrips = [];
   if (allowance?.allCantrips) {
     try {
-      const known = new Set((c.spellbooks[def.name]?.spells || []).map(s => s.name.toLowerCase()));
+      const known = new Set([...(c.spellbooks[def.name]?.spells || []), ...draft.favs].map(s => s.name.toLowerCase()));
       cantrips = (await api.spells(after.spellcasting[def.name].lists.join(','), 0)).filter(s => !known.has(s.name.toLowerCase()));
     } catch { toast('Could not load cantrips; add them on the Spells tab.', 'err'); }
   }
@@ -378,9 +390,9 @@ async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after
     if (s) s.ranks = num(s.ranks) + n;
   }
   for (const f of draft.feats) c.feats.push({ id: f.id, name: f.name, sub: f.sub, notes: '', level: newLevel, addedAt: newLevel });
-  if (draft.spells.length) {
+  if (draft.spells.length || draft.favs.length) {
     const book = (c.spellbooks[def.name] ||= { spells: [], used: Array(10).fill(0), extraSlot: false });
-    for (const s of draft.spells) book.spells.push({ id: s.id, name: s.name, level: s.level, school: s.school, summary: s.summary, prepared: 0, cast: 0, addedAt: newLevel });
+    for (const s of [...draft.spells, ...draft.favs]) book.spells.push({ id: s.id, name: s.name, level: s.level, school: s.school, summary: s.summary, prepared: 0, cast: 0, addedAt: newLevel });
   }
   const unspent = rankBudget - ranksUsed;
   const msg = `${def.name} ${classLevels(c)[def.name]} applied!` + (unspent > 0 ? ` (${unspent} skill rank${unspent > 1 ? 's' : ''} unspent; assign them on the Skills tab)` : '');

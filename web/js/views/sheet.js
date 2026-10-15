@@ -12,6 +12,8 @@ import { chooseArchetypes } from './archetypes.js';
 import { summonSpell } from '../summons.js';
 import { rollBar, fillSpellRolls, SLA_KEY as SLA } from '../roller.js';
 import { chooseSummon } from './summons.js';
+import { chooseSpells } from './spellpicker.js';
+import { favoritesAllowance } from '../spellrules.js';
 import { renderCompanions } from './companions.js';
 import { playPageTurn, snapshotPage, options, setOption, orderKeys } from '../options.js';
 import { hpSegments, segsHtml } from '../bars.js';
@@ -626,7 +628,7 @@ function spells(body, c, d) {
           return `<button class="sp-chip ${isActive(cls, s.i) ? 'on' : ''} ${prepared && l > 0 ? (left || spent ? 'ready' : 'idle') : ''}" data-sp-select="${s.i}" data-level="${l}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(cls, s.i)}"><span class="sp-n">${esc(s.name || 'New spell')}</span>${s.school ? `<span class="sp-s">${esc(s.school)}</span>` : ''}${pips}</button>`;
         };
         return `<div class="spell-level">
-          <div class="sl-head"><h4>${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>${count}${heading}<span class="grow"></span>
+          <div class="sl-head"><h4>${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>${prepared ? `<button class="btn small ghost" data-browse-spells="${l}" title="Browse every ${l === 0 ? 'cantrip' : ORD[l] + '-level spell'} on your ${esc(cls)} list and add the ones you want">🔍 Browse</button>` : ''}${count}${heading}<span class="grow"></span>
             <button class="btn small ghost" data-add-spell="${l}">＋ Add</button>
             <button class="btn small ghost" data-custom-spell="${l}" title="A spell that isn't in the compendium">＋ Custom</button></div>
           ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>`
@@ -646,8 +648,18 @@ function spells(body, c, d) {
     if (cls === SLA) return; // the spell-like abilities card has its own handler (wireSla)
     const book = c.spellbooks[cls];
     const sc = d.spellcasting[cls];
-    const t = e.target.closest('[data-slot-adj],[data-sp-select],[data-add-spell],[data-custom-spell],[data-cast],[data-cast-spont],[data-prep]');
+    const t = e.target.closest('[data-slot-adj],[data-sp-select],[data-add-spell],[data-browse-spells],[data-custom-spell],[data-cast],[data-cast-spont],[data-prep]');
     if (!t) return;
+    if (t.dataset.browseSpells !== undefined) { // look through every spell of that level on the class list, and add as many as you like
+      const picks = [];
+      await chooseSpells({ cls, lists: sc.lists, allowance: favoritesAllowance(sc, +t.dataset.browseSpells), picks, known: book.spells.map(s => s.name) });
+      if (picks.length) {
+        for (const s of picks) book.spells.push({ id: s.id, name: s.name, level: s.level, school: s.school, summary: s.summary, prepared: 0, cast: 0 });
+        toast(`${picks.length} spell${picks.length === 1 ? '' : 's'} added to your ${cls} list`, 'good');
+        changed({ rerender: true });
+      }
+      return;
+    }
     if (t.dataset.slotAdj !== undefined) {
       const l = +t.dataset.slotAdj;
       book.used[l] = Math.min(sc.slots[l], Math.max(0, num(book.used[l]) - +t.dataset.d)); // + = a slot back, - = one spent

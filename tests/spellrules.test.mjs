@@ -76,3 +76,26 @@ test('spell search filters: every choice is a school or a desc:/sub:/list: filte
   assert.ok(values.includes('list:metal') && values.includes('list:wood') && values.includes('desc:fire'));
   assert.equal(new Set(values).size, values.length, 'no choice is listed twice');
 });
+
+// ---------- favourites: spells picked only to have them on the list ----------
+
+test('favourites have no limit: every level the caster has slots for, or just one', async () => {
+  const { favoritesAllowance } = await import('../web/js/spellrules.js');
+  const sc = { slots: [Infinity, 4, 3, 2, null, null, null, null, null, null] }; // a level 5 wizard: cantrips, 1st, 2nd, 3rd
+  const all = favoritesAllowance(sc);
+  assert.deepEqual(Object.keys(all.byLevel).map(Number), [0, 1, 2, 3], 'levels with no slots yet are not offered');
+  const picks = Array.from({ length: 30 }, (_, i) => ({ level: i % 4, name: 'spell ' + i }));
+  const rem = remaining(all, picks);
+  assert.equal(rem.total, Infinity, 'thirty picks later there is still no limit');
+  assert.deepEqual(pickableLevels(rem), [0, 1, 2, 3]);
+  assert.equal(describeRemaining(rem), 'any spells you like');
+  const one = favoritesAllowance(sc, 2);
+  assert.deepEqual(pickableLevels(remaining(one, [])), [2], 'browsing 2nd level offers only 2nd-level spells');
+  assert.equal(describeRemaining(remaining(one, [])), 'any 2nd-level spells');
+  assert.equal(describeRemaining(remaining(favoritesAllowance(sc, 0), [])), 'any cantrips');
+});
+
+test('favourites leave the real allowance alone: a wizard still has exactly two spells to learn', () => {
+  const a = learnAllowance(classesByName.Wizard, 2, [{ level: 0 }, { level: 1 }, { level: 1 }, { level: 1 }], { slots: [Infinity, 3, null] }, 3);
+  assert.equal(remaining(a, [{ level: 1 }]).total, 1, 'one of the two is used up');
+});
