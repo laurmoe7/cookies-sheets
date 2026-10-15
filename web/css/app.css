@@ -389,11 +389,15 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .comp-bar-main { flex: 1; min-width: 0; }
 .comp-bar .comp-strip { margin: 0; }
 .comp-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.pill-btn { color: inherit; font: inherit; font-size: 12px; cursor: pointer; }
-.pill-btn:hover { border-color: var(--accent); filter: brightness(1.15); }
+/* The kind chip and the stat block button: the dark brown the chip had on the leather, cream text. */
+.comp-bar .pill, .comp-bar .pill-btn { background: #54452b; border: 1px solid #75603c; color: #e6d7b2; }
+.pill-btn { font: inherit; font-size: 12px; cursor: pointer; }
+.comp-bar .pill-btn:hover { border-color: #b08a3e; filter: brightness(1.15); }
 .comp-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; margin: 6px 0 10px; }
 .comp-strip label { display: flex; align-items: center; gap: 6px; }
 .comp-strip .comp-links { flex-basis: 100%; }
+.comp-links { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.comp-links .comp-statblock { flex-shrink: 0; }
 .comp-strip .comp-reqs { flex-basis: 100%; margin: 0; padding-left: 18px; }
 .equip-scroll { max-height: 56vh; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
 .equip-tbl th { position: sticky; top: 0; background: var(--panel); z-index: 1; }

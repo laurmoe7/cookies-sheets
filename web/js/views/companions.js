@@ -334,6 +334,9 @@ function creatureCard(comp, i, head, actions) {
   return `<div class="companion" data-comp="${i}">${head}<section class="card comp-bar"><div class="comp-bar-main">${ed.strip}</div><div class="comp-actions">${actions}</div></section>${topPanels(comp, s, p, ed)}</div>`;
 }
 
+/** The button that opens the classic stat block in the side panel, at the end of the line of links under the controls. */
+const STAT_BTN = '<button class="pill pill-btn comp-statblock" data-statblock title="Open the full stat block in the side panel">📋 Stat block</button>';
+
 /** The player's adjustments, one small box in each panel they change. */
 const adjust = (comp, p) => ({
   hp: `<label>HP misc ${bind(`${p}.hpMisc`, comp.hpMisc, { type: 'num' })}</label>`,
@@ -358,9 +361,9 @@ function buildEditors(comp, s, p, { data, levels }) {
         : `<label>Base form ${select(`${p}.form`, comp.form, data.eidolon.forms.map(x => [x.name, `${x.name} (${x.source})`]))}</label>`}
       <label>${isAnimal ? 'Effective druid level' : 'Summoner level'} ${bind(`${p}.levelOverride`, comp.levelOverride, { type: 'num', ph: String(s.autoLevel || 1) })}</label>
       <span class="small muted">${levelNote}</span>
-      <span class="small muted comp-links">${isAnimal
+      <div class="small muted comp-links"><span>${isAnimal
         ? `${esc(s.species.source)} · advances at ${ord(s.species.advance?.level || 4)} level${s.advanced ? ' <b class="good">(advanced)</b>' : ''} · <a href="#" class="ref" data-entry="Animal Companion" data-cat="Rules">companion rules</a>`
-        : '<a href="#" class="ref" data-entry="Eidolon" data-cat="Rules">eidolon rules</a>'}</span></div>`;
+        : '<a href="#" class="ref" data-entry="Eidolon" data-cat="Rules">eidolon rules</a>'}</span>${STAT_BTN}</div></div>`;
   const abilities = s.increases ? `<h4>Ability score increases (${s.increases})</h4><div class="row">${Array.from({ length: s.increases }, (_, k) =>
     select(`${p}.increases.${k}`, comp.increases?.[k], [['', 'choose…'], ...ABIL.map(a => [a, '+1 ' + a.toUpperCase()])])).join('')}</div>` : '';
   const build = `<section class="card span2"><h3>Build</h3>
@@ -399,16 +402,16 @@ function familiarEditors(comp, s, p, { data, levels }) {
       ${sp.improved ? '' : `<label>Archetype ${select(`${p}.template`, comp.template, [['', 'None'], ...(data.familiar.templates || []).map(t => [t.name, `${t.name} (${t.alignment})`])])}</label>`}
       <label>Effective master level ${bind(`${p}.levelOverride`, comp.levelOverride, { type: 'num', ph: String(s.autoLevel || 1) })}</label>
       <span class="small muted">${levelNote}</span>
-      <span class="small muted comp-links">${esc(sp.source)} · <a href="#" class="ref" data-entry="Familiar" data-cat="Rules">familiar rules</a>
+      <div class="small muted comp-links"><span>${esc(sp.source)} · <a href="#" class="ref" data-entry="Familiar" data-cat="Rules">familiar rules</a>
         · <a href="#" class="ref" data-entry="Improved Familiar" data-cat="Feat">Improved Familiar</a>
-        ${sp.improved ? `· <a href="#" class="ref" data-entry="${esc(sp.entry)}" data-cat="Monster">${esc(sp.entry)} stat block</a>` : ''}</span>
+        ${sp.improved ? `· <a href="#" class="ref" data-entry="${esc(sp.entry)}" data-cat="Monster">${esc(sp.entry)} stat block</a>` : ''}</span>${STAT_BTN}</div>
       ${s.requirements.length ? `<ul class="small comp-reqs">${s.requirements.map(r => `<li class="${r.ok ? 'good' : 'warn'}">${r.ok ? '✓' : '✗'} ${esc(r.text)}</li>`).join('')}</ul>` : ''}</div>`;
   return { strip, ...adjust(comp, p), cards: notesCard(comp, p, 'Variants, gear, personality…') };
 }
 
 /** A creature from the creature list has nothing to choose: just its adjustments and notes. */
 function creatureEditors(comp, p) {
-  return { strip: `<p class="small muted comp-strip">Taken from the creature list (${esc(comp.creature?.source || '')}). Its numbers do not change with your level; adjust them for gear, spells and templates.</p>`,
+  return { strip: `<div class="small muted comp-strip comp-links"><span>Taken from the creature list (${esc(comp.creature?.source || '')}). Its numbers do not change with your level; adjust them for gear, spells and templates.</span>${STAT_BTN}</div>`,
     ...adjust(comp, p), cards: notesCard(comp, p, 'Gear, orders, personality, conditions…') };
 }
 
@@ -416,7 +419,6 @@ function companionCard(comp, i, levels, data, master) {
   const p = `companions.${i}`;
   // The kind chip, the stat block button and remove sit on the paper card under the name (a custom companion has no such card, so they stay beside its name).
   const actions = `<span class="pill">${{ animal: 'Animal companion', eidolon: 'Eidolon', familiar: 'Familiar', creature: 'Creature', custom: 'Companion' }[comp.kind]}</span>
-    ${comp.kind === 'custom' ? '' : '<button class="pill pill-btn" data-statblock title="Open the full stat block in the side panel">📋 Stat block</button>'}
     <button class="icon-btn" data-del-comp title="Remove">✕</button>`;
   const head = `<div class="row"><h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>${comp.kind === 'custom' ? actions : ''}</div>`;
   if (comp.kind === 'custom') {
