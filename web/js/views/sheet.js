@@ -520,7 +520,16 @@ function feats(body, c, d) {
         : '<p class="muted">None yet.</p>'}
     </section>`;
   body.innerHTML = `<div class="grid two">
-    <div>${listBlock('feats', 'Feats', 'Feat', 'Add feat')}${listBlock('traits', 'Traits', 'Trait', 'Add trait')}</div>
+    <div>
+      <section class="card"><h3>Archetype</h3>
+        ${Object.keys(lv).map(cls => {
+          const archs = archetypesOf(c, cls);
+          return `<div class="kv-line"><b class="w8">${esc(cls)}</b>
+            <span class="grow">${archs.length ? archs.map(a => `<a href="#" class="ref" data-entry="${esc(a.name)}" data-cat="Archetype">${esc(a.name)}</a>`).join(', ') : '<span class="muted">Standard class</span>'}</span>
+            <button class="btn small ghost" data-arch="${esc(cls)}">${archs.length ? 'Change' : 'Choose'}</button></div>`;
+        }).join('') || '<p class="muted">No classes yet.</p>'}
+      </section>
+      ${listBlock('feats', 'Feats', 'Feat', 'Add feat')}${listBlock('traits', 'Traits', 'Trait', 'Add trait')}</div>
     <div>
       <section class="card">
         <h3>Class Features <span class="muted small">(from your class levels and archetypes; click to read)</span></h3>
@@ -530,15 +539,6 @@ function feats(body, c, d) {
           : '<p class="muted">Take a level to see class features.</p>'}
       </section>
       ${listBlock('specials', 'Special Abilities & Racial Traits', 'Racial Trait', 'Add racial trait / ability')}
-      <section class="card"><h3>Archetypes</h3>
-        ${Object.keys(lv).map(cls => {
-          const archs = archetypesOf(c, cls);
-          return `<div class="kv-line"><b class="w8">${esc(cls)}</b>
-            <span class="grow">${archs.length ? archs.map(a => a.id ? refId(a.id, a.name) : `${esc(a.name)} <span class="small warn" title="Open the chooser to link it to the compendium">(not linked)</span>`).join(', ') : '<span class="muted">Standard class</span>'}</span>
-            <button class="btn small ghost" data-arch="${esc(cls)}">${archs.length ? 'Change' : 'Choose'}</button></div>`;
-        }).join('') || '<p class="muted">No classes yet.</p>'}
-        <p class="small muted">Archetype features replace the class features they say they replace, and their class-skill and spellcasting changes apply automatically.</p>
-      </section>
     </div></div>`;
   wireCommon(body);
   body.addEventListener('click', async e => {

@@ -549,9 +549,10 @@ def main():
     write_ogl(books)
     print('loaded', len(books), 'books')
     entries = build_entries(books)
-    print('added', merge_aon_archetypes(entries), 'archetypes from Archives of Nethys')
     added = merge_tsv_spells(entries)
     print('added', added, 'spells from spreadsheet')
+    # After everything else, so the ids of the entries above (saved on characters) do not move.
+    print('added', merge_aon_archetypes(entries), 'archetypes from Archives of Nethys')
     gear_list = equipment.build(books)
     stats = equipment.enrich(entries, gear_list, equipment.weapon_groups(books))
     print('combat stats added to', stats, 'weapon and armor entries')
