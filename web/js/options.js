@@ -101,7 +101,7 @@ export function initOptions() {
   loadCustomSounds(); // which custom sound files exist
 }
 
-const OPT_TABS = [['look', 'Look'], ['sound', 'Sound'], ['cookie', 'Cookie'], ['discord', 'Discord'], ['saves', 'Saves']];
+const OPT_TABS = [['look', 'Look'], ['sound', 'Sound'], ['cookie', 'Cookie'], ['discord', 'Discord']];
 const openCats = new Set(); // which sound effects are expanded in the Sound tab
 const AUDIO_TYPES = { mp3: 'audio/mpeg', ogg: 'audio/ogg', wav: 'audio/wav', m4a: 'audio/mp4', aac: 'audio/aac', webm: 'audio/webm', flac: 'audio/flac' };
 let optTab = 'look'; // the window opens on the tab you used last
@@ -155,14 +155,6 @@ function optionRows(tab, o, customSounds) {
       <div class="opt-row"><b>How much he talks</b>${seg('cookieTalk', o.cookieTalk, [['quiet', 'Quiet'], ['normal', 'Normal'], ['chatty', 'Chatty']])}</div>
       <div class="opt-row"><b>Swearing</b>${seg('cookieSwear', o.cookieSwear, [['full', 'Full'], ['bleep', 'Bleeped']])}</div>`;
   }
-  if (tab === 'saves') {
-    return `<div class="opt-row"><span><b>Characters are saved in</b><br><span class="muted small" id="sv-now">…</span></span><button class="btn small" data-sv-open title="Open the folder in Explorer">Open folder</button></div>
-      <div class="opt-row"><span><b>Save them in a different folder</b><br><span class="muted small">Type a folder path or browse for one. A folder in OneDrive or Dropbox keeps your characters backed up.</span></span></div>
-      <div class="row sv-row"><input class="grow" id="sv-dir" placeholder="D:/Dropbox/Pathfinder Characters" spellcheck="false" autocomplete="off"><button class="btn" data-sv-browse hidden>Browse…</button></div>
-      <label class="small"><input type="checkbox" id="sv-copy" checked> Copy the characters I have now into that folder (the old folder is left as it is)</label>
-      <div class="row"><button class="btn primary" data-sv-apply>Use this folder</button><button class="btn ghost" data-sv-default title="Go back to the Documents folder">Back to the default</button></div>
-      <p class="small" id="sv-msg"></p>`;
-  }
   return `<div class="opt-row"><span><b>Webhook</b><br><span class="muted small">The channel's webhook URL (Channel settings, Integrations, Webhooks).</span></span><input type="password" class="w20" data-opt="webhook" value="${esc(o.webhook)}" placeholder="https://discord.com/api/webhooks/..." autocomplete="off"></div>
     ${check('rollSend', 'Send rolls to Discord', o.rollSend)}
     ${check('rollAsk', 'Ask before rolling (hold Shift to roll straight away)', o.rollAsk)}`;
@@ -177,32 +169,6 @@ export function showOptions() {
         <div class="opt-grid">${optionRows(optTab, current, customSounds)}</div>
         <div class="opt-foot"><span class="muted small">Cookie’s Sheets, version ${VERSION}</span><span class="grow"></span>
           <button class="btn small ghost" data-changelog>What’s new</button><button class="btn small ghost" data-ogl>Game content &amp; license</button>${devTools ? '<button class="btn small ghost" data-dev>Developer tools</button>' : ''}</div>`;
-      if (optTab === 'saves') fillSaves();
-    };
-    /** Fills in the Saves tab from the server: where characters go now, and whether this window can open a folder chooser. */
-    const fillSaves = async () => {
-      const now = body.querySelector('#sv-now'), dir = body.querySelector('#sv-dir');
-      if (!now) return;
-      try {
-        const s = await api.storage();
-        now.textContent = `${s.path} (${s.count} character${s.count === 1 ? '' : 's'})${s.custom ? '' : ' · the default'}`;
-        if (dir && !dir.value) dir.value = s.custom ? s.path : '';
-        const msg = body.querySelector('#sv-msg');
-        if (s.locked) { msg.textContent = 'The folder is fixed for this run, so it cannot be changed here.'; msg.className = 'small warn'; body.querySelector('[data-sv-apply]').disabled = true; }
-        else if (s.missing) { msg.textContent = `The folder you chose (${s.missing}) cannot be reached, so the default is used for now.`; msg.className = 'small warn'; }
-        body.querySelector('[data-sv-browse]').hidden = !window.pywebview?.api?.pick_folder;
-      } catch (e) { now.textContent = e.message; }
-    };
-    const useFolder = async path => {
-      const msg = body.querySelector('#sv-msg');
-      try {
-        const r = await api.setStorage(path, body.querySelector('#sv-copy').checked);
-        msg.className = 'small good';
-        msg.textContent = `Characters are saved in ${r.path} now.${r.copied ? ` ${r.copied} copied over.` : ''}`;
-        body.querySelector('#sv-dir').value = r.custom ? r.path : '';
-        fillSaves();
-        document.dispatchEvent(new Event('storage-changed'));
-      } catch (e) { msg.className = 'small bad'; msg.textContent = e.message; }
     };
     const set = (k, v) => { current = sanitize({ ...current, [k]: v }); save(); applyOptions(); draw(); document.dispatchEvent(new Event('options-changed')); };
     const refreshSounds = async () => { customSounds = await loadCustomSounds(); };
@@ -231,15 +197,6 @@ export function showOptions() {
           else { await api.removeSound(k); current = sanitize({ ...current, soundOff: { ...current.soundOff, [k]: [] } }); save(); }
         } catch (err) { toast(err.message, 'err'); }
         await refreshSounds(); return draw();
-      }
-      if (e.target.closest('[data-sv-open]')) return api.openFolder().catch(err => toast(err.message, 'err'));
-      if (e.target.closest('[data-sv-apply]')) return useFolder(body.querySelector('#sv-dir').value);
-      if (e.target.closest('[data-sv-default]')) { body.querySelector('#sv-dir').value = ''; return useFolder(''); }
-      if (e.target.closest('[data-sv-browse]')) {
-        const dir = body.querySelector('#sv-dir');
-        const picked = await window.pywebview.api.pick_folder(dir.value);
-        if (picked) dir.value = picked;
-        return;
       }
       if (e.target.closest('[data-update-now]')) { e.target.closest('.modal-back')?.querySelector('[data-close]')?.click(); return checkForUpdate(); }
       if (e.target.closest('[data-changelog]')) return showChangelog();

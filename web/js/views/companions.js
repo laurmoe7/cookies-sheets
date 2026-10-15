@@ -43,7 +43,7 @@ export async function renderCompanions(body, c) {
   const archs = Object.keys(base).flatMap(cls => archetypesOf(c, cls).map(a => (a.name || '').toLowerCase()));
   const levels = withCompanionSources(base, c, classFeatures(c, state.classesByName), archs, state.derived?.level || 0);
   body.innerHTML = `
-    <h2 class="page-title">Companions</h2>
+    <h3 class="page-title">Companions</h3>
     <section class="card summons" id="summons-card"></section>
     <div class="row"><span class="grow"></span>
       <button class="btn small" data-new="animal">＋ Animal companion</button>

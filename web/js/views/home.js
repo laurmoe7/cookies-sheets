@@ -4,11 +4,38 @@ import { esc, $, confirmBox, toast } from '../ui.js';
 import { isCsCharacter } from '../importcs.js';
 import { openCsImport, openGsImport } from './csimport.js';
 
+/** Shows where characters are saved, and lets the player pick another folder (a native folder chooser in the desktop window). */
+async function wireSaveFolder(main) {
+  const show = $('#save-path', main), change = $('#change-folder', main), reset = $('#reset-folder', main);
+  let info;
+  try { info = await api.storage(); } catch { show.textContent = 'Documents\\Pathfinder Characters'; return; }
+  show.textContent = info.path;
+  reset.hidden = !info.custom || info.locked;
+  change.hidden = info.locked; // fixed for this run (PF_CHAR_DIR)
+  if (info.missing) toast(`The folder you chose (${info.missing}) cannot be reached, so characters are in the default folder for now.`, 'err');
+  const use = async (path, message) => {
+    if (!await confirmBox(message, 'Yes, use it')) return;
+    try {
+      const r = await api.setStorage(path, true);
+      toast(`Characters are saved in ${r.path} now${r.copied ? `. ${r.copied} copied over` : ''}.`, 'good');
+      renderHome(main);
+    } catch (e) { toast(e.message, 'err'); }
+  };
+  change.onclick = async () => {
+    const native = window.pywebview?.api?.pick_folder;
+    const picked = native ? await window.pywebview.api.pick_folder(info.path) : (window.prompt('Folder to save characters in:', info.path) || '');
+    if (picked && picked !== info.path) await use(picked, `Save your characters in ${picked} from now on? The ones you have now are copied there, and the old folder is left as it is.`);
+  };
+  reset.onclick = () => use('', `Go back to saving characters in ${info.default}? They are copied there, and the other folder is left as it is.`);
+}
+
 export async function renderHome(main) {
   main.innerHTML = `<div class="page narrow">
     <div class="hero">
       <h1>Characters</h1>
-      <p class="muted">Characters save automatically to <code>Documents\\Pathfinder Characters</code>.</p>
+      <p class="muted">Characters save automatically to <code id="save-path">…</code>
+        <button class="btn small" id="change-folder" title="Choose another folder to save your characters in">Change folder…</button>
+        <button class="btn small ghost" id="reset-folder" hidden title="Go back to Documents\\Pathfinder Characters">Use the default</button></p>
       <div class="row">
         <button class="btn primary" id="new-char">＋ New character</button>
         <button class="btn" id="open-folder">Open save folder</button>
@@ -22,6 +49,7 @@ export async function renderHome(main) {
     <div id="char-history"></div>
   </div>`;
   $('#new-char').onclick = createCharacter;
+  wireSaveFolder(main);
   $('#open-folder').onclick = () => api.openFolder();
   $('#cs-import-btn').onclick = () => openCsImport();
   $('#gs-import-btn').onclick = () => openGsImport();
