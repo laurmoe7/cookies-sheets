@@ -307,6 +307,84 @@ class HttpApi(unittest.TestCase):
         self.assertEqual(names('list:nothing'), set(), 'an unknown list matches nothing')
 
 
+class SaveFolder(unittest.TestCase):
+    """Choosing another folder for characters. The real default folder and settings file are swapped for temporary ones."""
+
+    def setUp(self):
+        self.root = tempfile.mkdtemp(prefix='pf-savedir-')
+        self.saved = (app.CHAR_DIR, app.TRASH_DIR, app.HISTORY_DIR, app.CHAR_DIR_MISSING, app.SETTINGS_PATH, app.DEFAULT_CHAR_DIR, os.environ.pop('PF_CHAR_DIR', None))
+        app.SETTINGS_PATH = os.path.join(self.root, 'settings.json')
+        app.DEFAULT_CHAR_DIR = os.path.join(self.root, 'default')
+        self.old = os.path.join(self.root, 'old')
+        app.CHAR_DIR, app.TRASH_DIR, app.HISTORY_DIR = self.old, os.path.join(self.old, '.deleted'), os.path.join(self.old, '.history')
+        os.makedirs(self.old)
+        app.save_character({'id': 'aaa', 'name': 'Ann'})
+
+    def tearDown(self):
+        app.CHAR_DIR, app.TRASH_DIR, app.HISTORY_DIR, app.CHAR_DIR_MISSING, app.SETTINGS_PATH, app.DEFAULT_CHAR_DIR, env = self.saved
+        if env is not None:
+            os.environ['PF_CHAR_DIR'] = env
+        shutil.rmtree(self.root, ignore_errors=True)
+
+    def test_switch_copies_and_keeps_the_old_folder(self):
+        app.delete_character(app.save_character({'id': 'bbb', 'name': 'Bob'})['id'])  # one in .deleted
+        new = os.path.join(self.root, 'cloud', 'chars')  # does not exist yet
+        r = app.set_char_dir(new)
+        self.assertEqual((r['path'], r['copied'], r['custom']), (os.path.abspath(new), 1, True), 'one character copied; the deleted one goes with .deleted')
+        self.assertTrue(os.path.exists(os.path.join(new, 'aaa.json')))
+        self.assertEqual(len(os.listdir(os.path.join(new, '.deleted'))), 1)
+        self.assertTrue(os.path.exists(os.path.join(self.old, 'aaa.json')), 'the old folder is left as it was')
+        app.save_character({'id': 'ccc', 'name': 'Cy'})
+        self.assertTrue(os.path.exists(os.path.join(new, 'ccc.json')), 'new saves go to the new folder')
+        self.assertFalse(os.path.exists(os.path.join(self.old, 'ccc.json')))
+        self.assertEqual({c['name'] for c in app.list_characters()}, {'Ann', 'Cy'})
+        self.assertEqual(app.read_settings()['charDir'], os.path.abspath(new), 'the choice is remembered')
+
+    def test_copy_off_and_nothing_overwritten(self):
+        new = os.path.join(self.root, 'new')
+        os.makedirs(new)
+        with open(os.path.join(new, 'aaa.json'), 'w') as f:
+            f.write('{"id": "aaa", "name": "Already here"}')
+        self.assertEqual(app.set_char_dir(new, copy=True)['copied'], 0, 'a character with the same id is not overwritten')
+        self.assertEqual(app.load_character('aaa')['name'], 'Already here')
+        app.set_char_dir(self.old, copy=False)
+        self.assertEqual(app.load_character('aaa')['name'], 'Ann', 'switching back without copying just looks in the old folder')
+
+    def test_back_to_default_forgets_the_choice(self):
+        app.set_char_dir(os.path.join(self.root, 'elsewhere'))
+        self.assertIn('charDir', app.read_settings())
+        r = app.set_char_dir('')
+        self.assertEqual((r['path'], r['custom']), (app.DEFAULT_CHAR_DIR, False))
+        self.assertNotIn('charDir', app.read_settings())
+
+    def test_bad_folders_are_refused_and_nothing_changes(self):
+        f = os.path.join(self.root, 'a-file')
+        open(f, 'w').close()
+        with self.assertRaises(ValueError):
+            app.set_char_dir(f)
+        self.assertEqual(app.CHAR_DIR, self.old)
+        os.environ['PF_CHAR_DIR'] = self.old
+        try:
+            with self.assertRaises(ValueError):
+                app.set_char_dir(os.path.join(self.root, 'x'))
+        finally:
+            del os.environ['PF_CHAR_DIR']
+
+    def test_start_up_uses_the_choice_or_falls_back(self):
+        chosen = os.path.join(self.root, 'chosen')
+        os.makedirs(chosen)
+        app.write_settings({'charDir': chosen})
+        self.assertEqual(app._start_char_dir(), (chosen, ''))
+        gone = os.path.join(self.root, 'no-such-drive', 'chars')
+        app.write_settings({'charDir': gone})
+        self.assertEqual(app._start_char_dir(), (app.DEFAULT_CHAR_DIR, gone), 'an unreachable folder falls back to the default and says so')
+        app.write_settings({})
+        self.assertEqual(app._start_char_dir(), (app.DEFAULT_CHAR_DIR, ''))
+        with open(app.SETTINGS_PATH, 'w', encoding='utf-8-sig') as f:  # as saved by Notepad
+            f.write('{"charDir": %s}' % json.dumps(chosen))
+        self.assertEqual(app._start_char_dir(), (chosen, ''), 'a byte-order mark does not hide the setting')
+
+
 class CreatureList(unittest.TestCase):
     def test_search_and_read(self):
         r = app.search_creatures('owlbear')

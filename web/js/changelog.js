@@ -11,6 +11,7 @@ export const CHANGELOG = [
       'Spell search can filter by wizard school, including the elemental schools (Air, Earth, Fire, Water, Metal, Wood).',
       'Weapons have a Damage stat, so any ability (or none) can add to damage. Thrown weapons and Strength-rated bows can use Str.',
       'Inventory has an A–Z button to put the items in alphabetical order.',
+      'Options has a Saves tab: choose which folder your characters are saved in (a Dropbox or OneDrive folder keeps them backed up), and copy your characters over.',
       'Spell-likes & other spells now sit inside the first spellbook, right above the cantrips.',
       'What’s new is shorter and sorted by version.',
     ],

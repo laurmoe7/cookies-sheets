@@ -384,6 +384,7 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 
 /* ---------- class-skill dot ---------- */
 .skills-tbl th:first-child, .skills-tbl td:first-child { text-align: center; width: 36px; }
+.btn[hidden] { display: none; } /* a button's own display would otherwise show it */
 .skills-tbl td.skill-note { width: 40%; }
 .skills-tbl td.skill-note input { width: 100%; min-width: 120px; }
 .skills-tbl td.skill-note input:placeholder-shown:not(:focus) { opacity: .4; } /* an empty note fades back, a written one stands out */

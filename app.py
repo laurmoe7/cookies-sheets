@@ -27,7 +27,42 @@ OLD_APP_NAME = 'Pathfinder Sheet'  # the folder name before the rename
 BASE = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
 WEB = os.path.join(BASE, 'web')
 DATA = os.path.join(BASE, 'data')
-CHAR_DIR = os.environ.get('PF_CHAR_DIR') or os.path.join(os.path.expanduser('~'), 'Documents', 'Pathfinder Characters')
+DEFAULT_CHAR_DIR = os.path.join(os.path.expanduser('~'), 'Documents', 'Pathfinder Characters')
+# The app's own settings (where characters are saved). Options and sounds live in the page's storage and in the sounds folder; this one the server needs before any page loads.
+SETTINGS_PATH = os.environ.get('PF_SETTINGS') or os.path.join(os.environ.get('LOCALAPPDATA') or os.path.expanduser('~'), APP_NAME, 'settings.json')
+
+
+def read_settings():
+    try:
+        with open(SETTINGS_PATH, encoding='utf-8-sig') as f:  # -sig: a file saved by Notepad or PowerShell starts with a byte-order mark
+            d = json.load(f)
+        return d if isinstance(d, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def write_settings(d):
+    os.makedirs(os.path.dirname(SETTINGS_PATH), exist_ok=True)
+    tmp = SETTINGS_PATH + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as f:
+        json.dump(d, f, indent=1)
+    os.replace(tmp, SETTINGS_PATH)
+
+
+def _start_char_dir():
+    """The folder characters are saved in: PF_CHAR_DIR (tests, dev), else the one chosen in Options, else Documents. A chosen folder whose drive is gone falls back
+    to the default (the choice is kept, so it works again when the drive is back), and the fallback is reported by storage_info()."""
+    if os.environ.get('PF_CHAR_DIR'):
+        return os.environ['PF_CHAR_DIR'], ''
+    p = read_settings().get('charDir')
+    if isinstance(p, str) and p and os.path.isabs(p):
+        if os.path.isdir(p) or os.path.isdir(os.path.dirname(p)):
+            return p, ''
+        return DEFAULT_CHAR_DIR, p
+    return DEFAULT_CHAR_DIR, ''
+
+
+CHAR_DIR, CHAR_DIR_MISSING = _start_char_dir()
 TRASH_DIR = os.path.join(CHAR_DIR, '.deleted')
 HISTORY_DIR = os.path.join(CHAR_DIR, '.history')
 HISTORY_EVERY = 300   # seconds: a save is only copied to .history when the newest copy is older than this
@@ -417,6 +452,54 @@ def purge_character(fn):
     return {'ok': True}
 
 
+def storage_info():
+    """Where characters are saved: {path, default, custom, locked, count, missing}. `locked` when PF_CHAR_DIR fixes it; `missing` is a chosen folder that could not be reached."""
+    try:
+        count = sum(1 for fn in os.listdir(CHAR_DIR) if fn.endswith('.json'))
+    except OSError:
+        count = 0
+    return dict(path=CHAR_DIR, default=DEFAULT_CHAR_DIR, custom=os.path.normcase(CHAR_DIR) != os.path.normcase(DEFAULT_CHAR_DIR),
+                locked=bool(os.environ.get('PF_CHAR_DIR')), count=count, missing=CHAR_DIR_MISSING)
+
+
+def set_char_dir(path='', copy=True):
+    """Saves characters in another folder from now on ('' = back to the default). With `copy`, the characters, earlier saves and deleted characters already
+    in the old folder are copied over (nothing is overwritten, and the old folder is left as it was). Returns storage_info() plus how many were copied."""
+    global CHAR_DIR, TRASH_DIR, HISTORY_DIR, CHAR_DIR_MISSING
+    if os.environ.get('PF_CHAR_DIR'):
+        raise ValueError('The save folder is fixed for this run (PF_CHAR_DIR is set).')
+    path = str(path or '').strip().strip('"')
+    new = os.path.abspath(os.path.expanduser(path)) if path else DEFAULT_CHAR_DIR
+    if os.path.isfile(new):
+        raise ValueError('That is a file, not a folder.')
+    try:
+        os.makedirs(new, exist_ok=True)
+        probe = os.path.join(new, f'.write-test-{uuid.uuid4().hex[:8]}')
+        with open(probe, 'w'):
+            pass
+        os.remove(probe)
+    except OSError as e:
+        raise ValueError(f'Characters cannot be saved in that folder ({e.strerror or e}).')
+    old, copied = CHAR_DIR, 0
+    if copy and os.path.isdir(old) and os.path.normcase(os.path.abspath(old)) != os.path.normcase(new):
+        for fn in os.listdir(old):
+            src, dst = os.path.join(old, fn), os.path.join(new, fn)
+            if fn.endswith('.json') and os.path.isfile(src) and not os.path.exists(dst):
+                shutil.copy2(src, dst)
+                copied += 1
+        for sub in ('.history', '.deleted'):
+            if os.path.isdir(os.path.join(old, sub)):
+                shutil.copytree(os.path.join(old, sub), os.path.join(new, sub), dirs_exist_ok=True)
+    CHAR_DIR, TRASH_DIR, HISTORY_DIR, CHAR_DIR_MISSING = new, os.path.join(new, '.deleted'), os.path.join(new, '.history'), ''
+    s = read_settings()
+    if os.path.normcase(new) == os.path.normcase(DEFAULT_CHAR_DIR):
+        s.pop('charDir', None)
+    else:
+        s['charDir'] = new
+    write_settings(s)
+    return dict(storage_info(), copied=copied)
+
+
 def open_folder():
     os.makedirs(CHAR_DIR, exist_ok=True)
     if sys.platform == 'win32':
@@ -775,6 +858,11 @@ class Handler(SimpleHTTPRequestHandler):
                 self._json(updater.check(app_version()))
             elif route == ('POST', 'update-apply'):
                 self._json(updater.apply(app_version()))
+            elif route == ('GET', 'storage'):
+                self._json(storage_info())
+            elif route == ('POST', 'storage'):
+                body = self._body() or {}
+                self._json(set_char_dir(body.get('path', ''), bool(body.get('copy', True))))
             elif route == ('GET', 'creatures'):
                 self._json(search_creatures(p.get('q', ''), p.get('type', ''), p.get('cr', ''), min(int(p.get('limit', 200)), 500), max(0, int(p.get('offset', 0)))))
             elif route == ('GET', 'creature'):
@@ -892,6 +980,17 @@ def main():
         except KeyboardInterrupt:
             return
     import webview
+
+    class WindowApi:
+        """What the page can ask the desktop window for: a native folder chooser (the page itself cannot pick a folder path)."""
+        window = None
+
+        def pick_folder(self, start=''):
+            kind = webview.FileDialog.FOLDER if hasattr(webview, 'FileDialog') else webview.FOLDER_DIALOG
+            r = self.window.create_file_dialog(kind, directory=start or CHAR_DIR)
+            return r[0] if r else ''
+
+    window_api = WindowApi()
     webview.settings['ALLOW_DOWNLOADS'] = True  # lets 'Export' save character files
     if sys.platform == 'win32':
         # Own taskbar identity, so the window shows the d20 icon instead of grouping under Python.
@@ -911,7 +1010,7 @@ def main():
         except OSError:
             pass
     try:
-        webview.create_window(APP_NAME, url, width=1400, height=900, min_size=(1000, 650))
+        window_api.window = webview.create_window(APP_NAME, url, width=1400, height=900, min_size=(1000, 650), js_api=window_api)
         webview.start(icon=os.path.join(WEB, 'icon.ico'), private_mode=False, storage_path=storage)
     except Exception:
         # No usable WebView2 runtime (or the window could not open): use the default browser instead, so the app still works.

@@ -51,6 +51,8 @@ export const api = {
   purgeCharacter: file => req('POST', 'character/purge?' + qs({ file })),
   updateCheck: () => req('GET', 'update-check'),
   updateApply: () => req('POST', 'update-apply'),
+  storage: () => req('GET', 'storage'),
+  setStorage: (path, copy = true) => req('POST', 'storage', { path, copy }),
   openFolder: () => req('POST', 'open-folder'),
   gsFetch: ref => req('GET', 'gs-fetch?' + qs({ id: ref })),
   creatures: (q = '', type = '', cr = '', limit = 200, offset = 0) => req('GET', 'creatures?' + qs({ q, type, cr, limit, offset: offset || undefined })),
