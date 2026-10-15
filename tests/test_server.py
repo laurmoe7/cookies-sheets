@@ -324,6 +324,17 @@ class CreatureList(unittest.TestCase):
         self.assertTrue(app.search_creatures('')['total'] > 1500)
         self.assertEqual(app._cr_value('1/2'), 0.5)
 
+    def test_paging_and_type_counts(self):
+        first = app.search_creatures('', '', '', 5)
+        second = app.search_creatures('', '', '', 5, 5)
+        self.assertEqual(len(first['rows']), 5)
+        self.assertTrue({r['i'] for r in first['rows']}.isdisjoint({r['i'] for r in second['rows']}), 'offset moves on to the next rows')
+        self.assertEqual(sum(first['types'].values()), first['total'], 'the type counts add up to everything that matched')
+        dragons = app.search_creatures('', 'Dragon', '', 5)
+        self.assertEqual(dragons['types'], first['types'], 'the type counts ignore the type filter, so the side list keeps all its types')
+        self.assertTrue(dragons['total'] < first['total'])
+        self.assertEqual(sum(app.search_creatures('wyvern')['types'].values()), app.search_creatures('wyvern')['total'])
+
     def test_missing_creature_is_not_found(self):
         with self.assertRaises(FileNotFoundError):
             app.get_creature(10 ** 6)

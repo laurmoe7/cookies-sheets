@@ -13,6 +13,7 @@ import { renderHome } from './views/home.js';
 import { renderSheet } from './views/sheet.js';
 import { renderLevelUp } from './views/levelup.js';
 import { renderCompendium } from './views/compendium.js';
+import { renderMonsters } from './views/monsters.js';
 import { renderRules } from './views/rules.js';
 
 export const state = {
@@ -20,7 +21,7 @@ export const state = {
   view: 'home', sheetTab: 'overview', dirty: false,
 };
 
-const VIEWS = { home: renderHome, sheet: renderSheet, levelup: renderLevelUp, compendium: renderCompendium, rules: renderRules };
+const VIEWS = { home: renderHome, sheet: renderSheet, levelup: renderLevelUp, compendium: renderCompendium, monsters: renderMonsters, rules: renderRules };
 
 export function go(view, opts = {}) {
   petView('view-' + view);

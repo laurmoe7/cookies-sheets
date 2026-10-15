@@ -561,14 +561,14 @@ const ORD = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th']
 function spells(body, c, d) {
   const casters = Object.entries(d.spellcasting);
   if (!casters.length) {
-    body.innerHTML = slaCard(c, d) + `<section class="card"><h3>Spells</h3><p class="muted">None of your classes cast spells (yet), but you can still keep spells here: add any compendium spell or your own under <b>Spell-likes &amp; other spells</b> above. Paladins and rangers start casting at 4th level.</p>
+    body.innerHTML = `<section class="card spellbook">${slaCard(c, d)}</section><section class="card"><h3>Spells</h3><p class="muted">None of your classes cast spells (yet), but you can still keep spells here: add any compendium spell or your own under <b>Spell-likes &amp; other spells</b> above. Paladins and rangers start casting at 4th level.</p>
       <p>Looking something up? Try the ${'<a href="#" data-goto="compendium">Compendium</a>'} or ${'<a href="#" data-goto="rules">Quick Rules</a>'}.</p></section>`;
     $$('[data-goto]', body).forEach(a => (a.onclick = e => { e.preventDefault(); go(a.dataset.goto); }));
     wireSla(body, c);
     if (spellDrawer?.el?.isConnected) renderSpellActions();
     return;
   }
-  body.innerHTML = slaCard(c, d) + casters.map(([cls, sc]) => {
+  body.innerHTML = casters.map(([cls, sc], ci) => {
     const book = (c.spellbooks[cls] ||= { spells: [], used: Array(10).fill(0), extraSlot: false });
     book.used ||= Array(10).fill(0);
     const prepared = sc.kind === 'prepared' || sc.kind === 'arcanist';
@@ -598,6 +598,7 @@ function spells(body, c, d) {
         <tr><th>Save DC</th>${levels.map(l => `<td>${sc.dcs[l]}</td>`).join('')}</tr>
         <tr><th title="Concentration DC to cast defensively: 15 + 2 × spell level">${ref('Casting Defensively', 'Rules', 'Defensive DC')}</th>${levels.map(l => `<td title="Need ${15 + 2 * l - sc.concentration} or higher on d20">${15 + 2 * l}<span class="dim small"> (${Math.max(1, Math.min(20, 15 + 2 * l - sc.concentration))}+)</span></td>`).join('')}</tr>
       </tbody></table>
+      ${ci === 0 ? slaCard(c, d) : ''}
       ${levels.map(l => {
         const list = book.spells.map((s, i) => ({ ...s, i })).filter(s => s.level === l);
         const hasCast = sc.kind === 'prepared' || spont;
@@ -675,7 +676,7 @@ function spells(body, c, d) {
     }
   });
 }
-/** The Spells tab's last card: spell-like abilities (Dimension Door 1/day, Light at will). No slots, just uses per day, refilled by Rest. */
+/** The spell-likes block on the Spells tab: spell-like abilities (Dimension Door 1/day, Light at will). No slots, just uses per day, refilled by Rest. */
 function slaCard(c, d) {
   const list = c.spellLikes || [];
   const chip = (s, i) => {
@@ -684,11 +685,11 @@ function slaCard(c, d) {
       : `<span class="pips" title="${x.left} of ${x.max} left today">${'<i class="pip"></i>'.repeat(Math.min(x.left, 9))}${'<i class="pip used"></i>'.repeat(Math.min(x.max - x.left, 9))}</span>`;
     return `<button class="sp-chip ${isActive(SLA, i) ? 'on' : ''} ${x.unlimited || x.left ? 'ready' : 'idle'}" data-sp-select="${i}" data-level="${x.level}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(SLA, i)}"><span class="sp-n">${esc(s.name || 'New ability')}</span><span class="sp-s">${x.level ? ORD[x.level] : '0'}</span>${pips}</button>`;
   };
-  return `<section class="card spellbook sla-card" data-cls="${SLA}">
-    <div class="sb-head"><div class="sb-title"><h3>Spell-likes &amp; other spells</h3><span class="muted small">any spell, no class needed · uses per day (or at will) · Rest refills them</span></div>
-      <div class="sb-tools"><button class="btn small ghost" data-sla-add title="Pick a spell from the compendium">＋ Add spell</button><button class="btn small ghost" data-sla-custom title="A spell or ability that is not in the compendium">＋ Custom</button></div></div>
+  return `<div class="spell-level sla-card" data-cls="${SLA}">
+    <div class="sl-head"><h4>Spell-likes &amp; other spells</h4><span class="muted small">any spell, no class needed · uses per day (or at will) · Rest refills them</span><span class="grow"></span>
+      <button class="btn small ghost" data-sla-add title="Pick a spell from the compendium">＋ Add spell</button><button class="btn small ghost" data-sla-custom title="A spell or ability that is not in the compendium">＋ Custom</button></div>
     ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>` : '<p class="muted small sl-none">None yet. For spells that are not on a class list: racial and monster spell-likes (Dimension Door 1/day), item spells, or a spell you were given. Set how many times a day, or leave it blank for at will.</p>'}
-  </section>`;
+  </div>`;
 }
 
 function wireSla(body, c) {

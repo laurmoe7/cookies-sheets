@@ -504,6 +504,11 @@ export const LINES = {
     "Looking something up? Try 'common sense'. It's not in there.",
     "Ooh, research. Let me guess, you'll forget it in five minutes.",
   ],
+  'view-monsters': [
+    "The Monster Codex. Shopping for something to kill you? Browse away.",
+    "Ooh, monsters. Pick a big one. I'll watch from over here.",
+    "Every one of those wants to eat you. Some are just politer about it.",
+  ],
   'view-rules': [
     "Quick Rules? Can't remember how your own game works?",
     "Rules lawyer, huh. I hate rules lawyers. I have a lawyer. He's also a thug.",

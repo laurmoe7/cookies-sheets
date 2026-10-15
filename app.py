@@ -607,28 +607,30 @@ def _cr_value(cr):
     return (int(m.group(1)) / int(m.group(2)) if m.group(2) else int(m.group(1))) if m else -1
 
 
-def search_creatures(q='', typ='', cr='', limit=200):
-    """Rows for the creature picker: [{i, name, cr, type, size, source}] by name, and how many matched. `cr` is "low-high"."""
+def search_creatures(q='', typ='', cr='', limit=200, offset=0):
+    """Rows for the creature picker and the Monster Codex: [{i, name, cr, type, size, source}] by name from `offset`, how many matched, and how many
+    match per creature type (ignoring the type filter, for the Codex's side list). `cr` is "low-high"."""
     words = [w for w in re.split(r'\s+', str(q or '').lower().strip()) if w]
     lo, hi = -1, 10 ** 6
     m = re.match(r'^(\d+)-(\d+)$', str(cr or ''))
     if m:
         lo, hi = int(m.group(1)), int(m.group(2))
-    rows, total = [], 0
+    rows, total, types = [], 0, {}
     for i, e in enumerate(creature_list()):
         name = e['name'].lower()
         kind = (e.get('creature_type') or '').lower()
         if words and not all(w in name or w in kind for w in words):
             continue
-        if typ and kind != typ.lower():
-            continue
         v = _cr_value(e.get('cr'))
         if m and not (lo <= v <= hi):
             continue
+        types[e.get('creature_type', '')] = types.get(e.get('creature_type', ''), 0) + 1
+        if typ and kind != typ.lower():
+            continue
         total += 1
-        if len(rows) < limit:
+        if total > offset and len(rows) < limit:
             rows.append(dict(i=i, name=e['name'], cr=e.get('cr', ''), type=e.get('creature_type', ''), size=e.get('size', ''), source=e.get('source', '')))
-    return {'rows': rows, 'total': total}
+    return {'rows': rows, 'total': total, 'types': types}
 
 
 def get_creature(i):
@@ -774,7 +776,7 @@ class Handler(SimpleHTTPRequestHandler):
             elif route == ('POST', 'update-apply'):
                 self._json(updater.apply(app_version()))
             elif route == ('GET', 'creatures'):
-                self._json(search_creatures(p.get('q', ''), p.get('type', ''), p.get('cr', ''), min(int(p.get('limit', 200)), 500)))
+                self._json(search_creatures(p.get('q', ''), p.get('type', ''), p.get('cr', ''), min(int(p.get('limit', 200)), 500), max(0, int(p.get('offset', 0)))))
             elif route == ('GET', 'creature'):
                 self._json(get_creature(p.get('i', '-1')))
             elif route == ('GET', 'gs-fetch'):
