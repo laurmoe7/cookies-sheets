@@ -384,6 +384,11 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 
 /* ---------- class-skill dot ---------- */
 .skills-tbl th:first-child, .skills-tbl td:first-child { text-align: center; width: 36px; }
+.page-title { margin: 0 0 8px; }
+.equip-scroll { max-height: 56vh; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+.equip-tbl th { position: sticky; top: 0; background: var(--panel); z-index: 1; }
+.equip-tbl tbody tr { cursor: pointer; }
+.equip-tbl tbody tr:hover, .equip-tbl tbody tr:focus { background: var(--accent-soft); outline: none; }
 .btn[hidden] { display: none; } /* a button's own display would otherwise show it */
 .skills-tbl td.skill-note { width: 40%; }
 .skills-tbl td.skill-note input { width: 100%; min-width: 120px; }

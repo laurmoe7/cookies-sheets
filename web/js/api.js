@@ -51,6 +51,7 @@ export const api = {
   purgeCharacter: file => req('POST', 'character/purge?' + qs({ file })),
   updateCheck: () => req('GET', 'update-check'),
   updateApply: () => req('POST', 'update-apply'),
+  equipment: () => req('GET', 'equipment'),
   storage: () => req('GET', 'storage'),
   setStorage: (path, copy = true) => req('POST', 'storage', { path, copy }),
   openFolder: () => req('POST', 'open-folder'),

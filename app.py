@@ -858,6 +858,9 @@ class Handler(SimpleHTTPRequestHandler):
                 self._json(updater.check(app_version()))
             elif route == ('POST', 'update-apply'):
                 self._json(updater.apply(app_version()))
+            elif route == ('GET', 'equipment'):
+                with open(os.path.join(DATA, 'equipment.json'), encoding='utf-8') as f:
+                    self._json(json.load(f))
             elif route == ('GET', 'storage'):
                 self._json(storage_info())
             elif route == ('POST', 'storage'):

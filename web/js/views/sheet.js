@@ -24,6 +24,8 @@ import { armorFxChip, wireArmorFx } from './armorfx.js';
 import { paperDollCard, wirePaperDoll } from './paperdoll.js';
 import { suggestEffects, effectsText } from '../itemfx.js';
 import { parseMagicWeapon, parseMagicArmor } from '../magicgear.js';
+import { weaponFromTemplate, armorFromTemplate, blankWeapon, blankArmor } from '../equipment.js';
+import { chooseWeapon, chooseArmor } from './equipment.js';
 import { SLOTS, slotName, hintFromSub, sortByName } from '../paperdoll.js';
 
 const ICONS = {
@@ -243,7 +245,7 @@ function overview(body, c, d) {
     </div>
 
     <section class="card weapons span2">
-      <div class="row"><h3 class="grow">Weapons & Attacks</h3><button class="btn small" data-pick-weapon>＋ Magic item</button><button class="btn small" data-add="weapons">＋ Add weapon</button></div>
+      <div class="row"><h3 class="grow">Weapons & Attacks</h3><button class="btn small" data-pick-weapon>＋ Magic item</button><button class="btn small" data-add-weapon title="Pick a standard weapon, or start with a blank row">＋ Add weapon</button></div>
       ${c.weapons.length ? `<table class="tbl weapons-tbl"><thead><tr><th>Weapon</th><th>Attack</th><th>Damage</th><th>Crit</th>
         <th title="Ability for attack roll">Atk stat</th><th title="Ranged weapon">Rng</th><th title="Enhancement bonus">Enh</th>
         <th title="Misc attack bonus (masterwork +1, Weapon Focus, etc.)">Atk+</th><th>Dice</th><th title="Which ability adds to damage, and how much of it">Damage stat</th><th title="Misc damage">Dmg+</th>
@@ -274,6 +276,7 @@ function overview(body, c, d) {
   wireCommon(body);
   wireWeaponFx(body, c);
   $('[data-pick-weapon]', body).onclick = () => addMagicGear('weapon');
+  $('[data-add-weapon]', body).onclick = () => addFromList('weapon');
   wireRest(body, c);
   wireImages(body, c);
   renderResources($('#res-card', body), c);
@@ -406,6 +409,17 @@ function wireCommon(body) {
       if (preset) { addPreset(preset); changed({ rerender: true }); }
     }
   });
+}
+
+/** "＋ Add weapon" and "＋ Add armor/shield": pick a standard one from the list, or take a blank row to fill in by hand. */
+async function addFromList(kind) {
+  const c = state.char, weapon = kind === 'weapon';
+  const size = state.derived?.size || 'Medium';
+  const pick = await (weapon ? chooseWeapon(size) : chooseArmor());
+  if (!pick) return;
+  const row = pick === 'blank' ? (weapon ? blankWeapon() : blankArmor()) : weapon ? weaponFromTemplate(pick, size) : armorFromTemplate(pick);
+  (weapon ? c.weapons : c.armor).push(row);
+  changed({ rerender: true });
 }
 
 /** "＋ Magic item" on the Weapons and Armor tables: pick it from the compendium and its base weapon or armor, enchantments and material are filled in from the text. */
@@ -1027,7 +1041,7 @@ function gear(body, c, d) {
   body.innerHTML = `<div class="grid two">
   ${paperDollCard(c, d)}
   <section class="card span2">
-    <div class="row"><h3 class="grow">Armor & Shields</h3><button class="btn small" data-pick-armor>＋ Magic item</button><button class="btn small" data-add="armor">＋ Add armor/shield</button></div>
+    <div class="row"><h3 class="grow">Armor & Shields</h3><button class="btn small" data-pick-armor>＋ Magic item</button><button class="btn small" data-add-armor title="Pick standard armor or a shield, or start with a blank row">＋ Add armor/shield</button></div>
     ${c.armor.length ? `<table class="tbl"><thead><tr><th>Worn</th><th>Name</th><th>Type</th><th>Category</th><th title="Armor/shield bonus">Bonus</th><th title="Enhancement">Enh</th>
       <th title="Max Dex bonus (blank = none)">Max Dex</th><th title="Armor check penalty">ACP</th><th title="Arcane spell failure %">ASF %</th><th>Weight</th><th></th></tr></thead><tbody>
       ${c.armor.map((a, i) => `<tr><td>${chk(`armor.${i}.equipped`)}</td><td class="w10">${tf(`armor.${i}.name`, { placeholder: 'Name' })}${armorFxChip(c, i)}</td>
@@ -1073,6 +1087,7 @@ function gear(body, c, d) {
   wireCommon(body);
   wireArmorFx(body);
   $('[data-pick-armor]', body).onclick = () => addMagicGear('armor');
+  $('[data-add-armor]', body).onclick = () => addFromList('armor');
   wirePaperDoll(body);
   body.addEventListener('click', e => { const t = e.target.closest('[data-item]'); if (t) openItem(+t.dataset.item); });
   const upd = () => { $('#money-total').textContent = (num(c.money.pp) * 10 + num(c.money.gp) + num(c.money.sp) / 10 + num(c.money.cp) / 100).toLocaleString(); };

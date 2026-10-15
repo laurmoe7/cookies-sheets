@@ -18,6 +18,7 @@ import sys
 import archetypes
 import companions
 import creatures
+import equipment
 import fcb
 import summons
 from htmltable import parse_table
@@ -29,6 +30,7 @@ OUT_CLASSES = os.path.join(ROOT, 'data', 'classes.json')
 OUT_COMPANIONS = os.path.join(ROOT, 'data', 'companions.json')
 OUT_SUMMONS = os.path.join(ROOT, 'data', 'summons.json')
 OUT_CREATURES = os.path.join(ROOT, 'data', 'creatures.json')
+OUT_EQUIPMENT = os.path.join(ROOT, 'data', 'equipment.json')
 OUT_FCB = os.path.join(ROOT, 'data', 'fcb.json')
 
 # Book priority (earlier wins when the same entry appears twice)
@@ -550,6 +552,10 @@ def main():
     with open(OUT_CREATURES, 'w', encoding='utf-8') as f:
         json.dump(creature_list, f, separators=(',', ':'), ensure_ascii=False)
     print('wrote creatures:', len(creature_list), 'stat blocks')
+    gear_list = equipment.build(books)
+    with open(OUT_EQUIPMENT, 'w', encoding='utf-8') as f:
+        json.dump(gear_list, f, separators=(',', ':'), ensure_ascii=False)
+    print('wrote equipment:', len(gear_list['weapons']), 'weapons,', len(gear_list['armor']), 'armor and shields')
     print('wrote companions:', len(comp['animal']['species']), 'animals,', len(comp['familiar']['species']), 'familiars,', len(comp['eidolon']['evolutions']), 'evolutions')
 
 
