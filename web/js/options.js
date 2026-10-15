@@ -242,7 +242,7 @@ export async function showLicense() {
 
 export function showChangelog() {
   return modal('What’s new', body => {
-    body.innerHTML = CHANGELOG.map(e => `<h3>${esc(e.version)}${e.date ? ` <span class="muted small">${esc(e.date)}</span>` : ''}</h3>
+    body.innerHTML = CHANGELOG.map(e => `<h3>Version ${esc(e.version)}${e.date ? ` <span class="muted small">${esc(e.date)}</span>` : ''}${e.next ? ' <span class="pill">next update</span>' : ''}${e.version === VERSION ? ' <span class="pill good">you have this</span>' : ''}</h3>
       <ul class="changelog">${e.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`).join('');
   }, { wide: true });
 }

@@ -39,7 +39,7 @@ The full list is in **[dev-docs/ui-conventions.md](dev-docs/ui-conventions.md)**
 - **Escaping:** `esc()` for anything user- or data-supplied that goes into HTML.
 - **Text selection is off app-wide**; anything copyable opts in with `user-select: text`.
 - **Dev-only tools** live in `web/dev/` and never ship.
-- **Changelog and version:** add an entry to `web/js/changelog.js` for a shipped batch; raise `web/js/version.js` per shared build.
+- **Changelog and version:** `web/js/changelog.js` has one entry per version number, newest first; add a line to the top entry (marked `next: true` until it ships, then give it a date and start a new one). Raise `web/js/version.js` per shared build.
 
 ## Commands
 
