@@ -85,7 +85,10 @@ test('old free-text archetypes are kept as names', () => {
 test('the archetype card passes the class name it was given (an undefined name broke the chooser for every class)', async () => {
   const { readFileSync } = await import('node:fs');
   const src = readFileSync(new URL('../web/js/views/archetypes.js', import.meta.url), 'utf8');
-  const card = src.slice(src.indexOf('function card('), src.indexOf('export function renderArchetypeChooser'));
+  const from = src.indexOf('function card(');
+  const card = src.slice(from, src.indexOf('
+}
+', from)); // just that function
   assert.ok(/findTargets\(base, t, def\.name\)/.test(card), 'card() knows the class as def.name');
   assert.ok(!/\bcls\b/.test(card), 'card() has no `cls` of its own, so it must not use one');
 });
