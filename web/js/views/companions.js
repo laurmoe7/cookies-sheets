@@ -331,7 +331,7 @@ function creatureCard(comp, i, head) {
   const p = `companions.${i}`;
   const s = computeCreature(comp);
   const ed = creatureEditors(comp, p);
-  return `<div class="companion" data-comp="${i}">${head}${ed.strip}${topPanels(comp, s, p, ed)}</div>`;
+  return `<div class="companion" data-comp="${i}">${head}<section class="card comp-bar">${ed.strip}</section>${topPanels(comp, s, p, ed)}</div>`;
 }
 
 /** The player's adjustments, one small box in each panel they change. */
@@ -428,7 +428,7 @@ function companionCard(comp, i, levels, data, master) {
   const s = computeCompanion(comp, levels, data);
   syncLevel(comp, s);
   const ed = buildEditors(comp, s, p, { data, levels });
-  return `<div class="companion" data-comp="${i}">${head}${ed.strip}${topPanels(comp, s, p, ed)}</div>`;
+  return `<div class="companion" data-comp="${i}">${head}<section class="card comp-bar">${ed.strip}</section>${topPanels(comp, s, p, ed)}</div>`;
 }
 
 function familiarCard(comp, i, levels, data, master, head) {
@@ -436,7 +436,7 @@ function familiarCard(comp, i, levels, data, master, head) {
   const s = computeCompanion(comp, levels, data, master);
   syncLevel(comp, s);
   const ed = familiarEditors(comp, s, p, { data, levels });
-  return `<div class="companion" data-comp="${i}">${head}${ed.strip}${topPanels(comp, s, p, ed)}</div>`;
+  return `<div class="companion" data-comp="${i}">${head}<section class="card comp-bar">${ed.strip}</section>${topPanels(comp, s, p, ed)}</div>`;
 }
 
 /** The familiar Kind picker: the standard list, then what the Improved Familiar feat adds. */
