@@ -4,7 +4,7 @@
 
 export const CHANGELOG = [
   {
-    version: '1.3', next: true,
+    version: '1.3', date: '2026-10-15',
     items: [
       'Making a character: pick your traits (two, plus two more with Additional Traits), see your race’s standard racial traits, and swap in alternates where the books have them.',
       'Racial traits: now in the Traits list, filterable by race, with all the standard and alternate traits for the later-book races (Kitsune, Tiefling, Aasimar and 26 more). Alternates show what they replace and offer to remove it.',
