@@ -5,7 +5,7 @@ import {
   ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS,
   BUFF_PRESETS, BUFF_GROUPS, presetsIn, SPELL_FILTERS, SPELL_LIST_CLASSES, CASTING_STAT_NAMES,
 } from '../data.js';
-import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom, showEntry, closeDrawer } from '../ui.js';
+import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom, showEntry, showEntryFromClick, closeDrawer } from '../ui.js';
 import { choosePicture, repositionPicture } from '../cropper.js';
 import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
@@ -251,7 +251,7 @@ function overview(body, c, d) {
         <th title="Misc attack bonus (masterwork +1, Weapon Focus, etc.)">Atk+</th><th>Dice</th><th title="Which ability adds to damage, and how much of it">Damage stat</th><th title="Misc damage">Dmg+</th>
         <th>Range</th><th>Type</th><th></th></tr></thead><tbody>
         ${c.weapons.map((w, i) => `<tr>
-          <td class="w10">${tf(`weapons.${i}.name`, { placeholder: 'Name (double-click)' })}${weaponFxRow(c, i)}</td>
+          <td class="w10"${entryAttrs(w)}>${tf(`weapons.${i}.name`, { placeholder: 'Name (double-click)' })}${weaponFxRow(c, i)}</td>
           <td class="big accent nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="attack">${calc(`weapons.${i}.attackText`)}</button>${d.iteratives.length > 1 ? `<button class="rchip" data-roll-weapon="${i}" data-roll-kind="full">Full</button>` : ''}</td>
           <td class="big nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="damage">${calc(`weapons.${i}.damageText`)}</button></td>
           <td>${inp(`weapons.${i}.crit`, { cls: 'w5', ph: '19-20/x2' })}</td>
@@ -817,6 +817,14 @@ function openSpell(cls, i, chip) {
   else showCustom({ name: s.name || 'New spell', cat: 'Custom spell', sub: ORD[s.level] + ' level', html: '' });
 }
 
+/** Weapons and armor added from the list or as magic items remember their compendium entry; a click on the name opens it. */
+const entryAttrs = row => row.id ? ` data-open-id="${row.id}" title="Click to read it · double-click the name to rename"` : row.tpl ? ` data-open-name="${esc(row.tpl)}" title="Click to read it · double-click the name to rename"` : '';
+document.addEventListener('click', e => {
+  const cell = e.target.closest('[data-open-id],[data-open-name]');
+  if (!cell || e.target.closest('a,button,input,select,textarea') || cell.querySelector('input,textarea')) return;
+  showEntryFromClick(cell.dataset.openId ? +cell.dataset.openId : cell.dataset.openName, 'Magic Item');
+});
+
 // An inventory item shown in the side panel: its compendium text, and under the name the fields to edit. {i, armed, id, el}
 let itemDrawer = null;
 const isItemActive = i => itemDrawer?.i === i;
@@ -1052,7 +1060,7 @@ function gear(body, c, d) {
     <div class="row"><h3 class="grow">Armor & Shields</h3><button class="btn small" data-pick-armor>＋ Magic item</button><button class="btn small" data-add-armor title="Pick standard armor or a shield, or start with a blank row">＋ Add armor/shield</button></div>
     ${c.armor.length ? `<table class="tbl"><thead><tr><th>Worn</th><th>Name</th><th>Type</th><th>Category</th><th title="Armor/shield bonus">Bonus</th><th title="Enhancement">Enh</th>
       <th title="Max Dex bonus (blank = none)">Max Dex</th><th title="Armor check penalty">ACP</th><th title="Arcane spell failure %">ASF %</th><th>Weight</th><th></th></tr></thead><tbody>
-      ${c.armor.map((a, i) => `<tr><td>${chk(`armor.${i}.equipped`)}</td><td class="w10">${tf(`armor.${i}.name`, { placeholder: 'Name' })}${armorFxChip(c, i)}</td>
+      ${c.armor.map((a, i) => `<tr><td>${chk(`armor.${i}.equipped`)}</td><td class="w10"${entryAttrs(a)}>${tf(`armor.${i}.name`, { placeholder: 'Name' })}${armorFxChip(c, i)}</td>
         <td>${sel(`armor.${i}.type`, [['armor', 'Armor'], ['shield', 'Shield']], { rerender: true })}</td>
         <td>${sel(`armor.${i}.category`, [['light', 'Light'], ['medium', 'Medium'], ['heavy', 'Heavy']])}</td>
         <td>${inp(`armor.${i}.bonus`, { type: 'num', cls: 'w2' })}</td><td>${inp(`armor.${i}.enh`, { type: 'num', cls: 'w2', rerender: true })}</td>

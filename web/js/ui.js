@@ -67,6 +67,7 @@ export function warnBox(title, items, { okLabel = 'Continue anyway', backLabel =
 
 // ---------- Reference drawer (right side) ----------
 let drawerHistory = [];
+let openedByClick = false; // the drawer was opened by a click that may turn out to be half of a double-click
 export async function showEntry(idOrName, cat) {
   let entry;
   try {
@@ -83,6 +84,12 @@ export async function showEntry(idOrName, cat) {
 }
 
 /** Show something that isn't a compendium entry (an archetype feature, a custom trait's notes) in the drawer. */
+/** Open an entry because of a click on a name that can also be double-clicked to edit: the double-click closes it again. */
+export function showEntryFromClick(idOrName, cat) {
+  showEntry(idOrName, cat);
+  openedByClick = true;
+}
+
 export function showCustom({ name, cat = '', sub = '', html = '', source = '' }) {
   const entry = { id: null, name, cat, sub, html, source };
   drawerHistory.push(entry);
@@ -208,7 +215,6 @@ export function textField(path, value, { multiline = false, read = null, placeho
 
 /** Wire text fields once for the whole app. get(path) reads, set(path, value) saves. */
 export function initTextFields({ get, set }) {
-  let openedByClick = false;
   // A click anywhere in a table cell that holds a single text field counts as a click on that field.
   const fieldAt = target => {
     const tf = target.closest('.tf');

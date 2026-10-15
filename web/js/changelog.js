@@ -6,6 +6,7 @@ export const CHANGELOG = [
   {
     version: '1.3', next: true,
     items: [
+      'Weapons and armor added from the list or as magic items open their compendium entry in the side panel when you click the name (double-click still renames).',
       'Racial traits: 17 more kitsune alternate racial traits (Duplicitous, Fast Shifter, Kitsune Chakra, Nine-Tailed Inheritor and more).',
       'Archetypes: choosing one opens a window like the spell picker (search, read each archetype in full, see what it replaces). Your archetype now shows after the class in the top bar, on the Overview and in the character list, like “Arcanist (White Mage) 8”.',
       'Archetypes: Ninja, Samurai and Antipaladin now have their archetypes (21), taken from Archives of Nethys.',
