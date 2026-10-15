@@ -261,6 +261,10 @@ export function compute(c, classesByName) {
   bd.cmb = parts({ label: 'Base attack bonus', value: bab }, { label: 'Str modifier', value: M('str') }, { label: `Size (${size}, maneuvers)`, value: sz.cmb }, { label: 'Misc', value: num(c.cmbMisc) }, stackParts(cmbList));
   const cmdAc = Object.entries(acSt.byType).filter(([t]) => CMD_AC_TYPES.has(t)).reduce((s, [, v]) => s + v, 0);
   d.cmd = 10 + bab + M('str') + M('dex') + sz.cmb + num(c.cmdMisc) + cmdAc + stack(listOf('cmd')).total;
+  // What the number is made of. The AC bonuses of the kinds CMD counts, and every AC penalty (rage's -2, for one), are part of it.
+  bd.cmd = parts({ label: 'Base attack bonus', value: bab }, { label: 'Str modifier', value: M('str') }, { label: 'Dex modifier', value: M('dex') },
+    { label: `Size (${size}, maneuvers)`, value: sz.cmb }, { label: 'Misc', value: num(c.cmdMisc) },
+    stackParts(acList.filter(m => CMD_AC_TYPES.has(m.type || 'untyped'))).map(p => ({ ...p, label: p.label + ' (also counts for AC)' })), stackParts(listOf('cmd')));
   d.cmdFlat = d.cmd - M('dex') - Math.max(dodge, 0);
 
   for (const w of c.weapons) {

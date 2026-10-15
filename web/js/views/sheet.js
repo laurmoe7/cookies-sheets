@@ -203,6 +203,7 @@ function overview(body, c, d) {
         <div class="stat"><div class="label">${ref('Combat Maneuver Defense', 'Rules', 'CMD')}</div>${calc('cmd', 'plain', 'big')}</div>
       </div>
       <div class="small muted" id="ac-breakdown"></div>
+      <div class="small muted" id="cmd-breakdown"></div>
       <div class="kv">
         <label title="Natural armor bonus">Natural ${inp('ac.natural', { type: 'num', cls: 'w3' })}</label>
         <label title="Deflection bonus (ring of protection)">Deflect ${inp('ac.deflection', { type: 'num', cls: 'w3' })}</label>
@@ -305,6 +306,7 @@ function overview(body, c, d) {
     card.classList.toggle('dead', cur <= -conScore);
     card.classList.toggle('downed', cur <= 0 && cur > -conScore);
     const t = dd.ac.byType;
+    $('#cmd-breakdown').textContent = 'CMD = 10 ' + (dd.bd.cmd || []).map(p => `${p.value >= 0 ? '+' : '−'} ${Math.abs(p.value)} ${p.label.replace('Base attack bonus', 'BAB').replace(' modifier', '')}`).join(' ');
     $('#ac-breakdown').textContent = 'AC = 10 ' + [['Dex', dd.ac.dex], ['size', dd.ac.size], ...Object.entries(t)].filter(([, v]) => v).map(([k, v]) => `${v >= 0 ? '+' : '−'} ${Math.abs(v)} ${k}`).join(' ') +
       (dd.maxDex != null ? ` · max Dex ${dd.maxDex}` : '') + (dd.acp ? ` · ACP ${dd.acp}` : '');
   };

@@ -4,6 +4,12 @@
 
 export const CHANGELOG = [
   {
+    version: '1.3.4', next: true,
+    items: [
+      'CMD: the Overview lists what makes it up under the AC line, so you can see that rage’s –2 penalty to AC also counts against your CMD (the +2 from rage’s extra Strength and the –2 cancel out).',
+    ],
+  },
+  {
     version: '1.3.3', date: '2026-10-15',
     items: [
       'Class resources (rage, arcane reservoir, ki, bombs...): type the points you have left, and use ✎ to add extra capacity from feats and exploits like Extra Rage or Extra Reservoir.',

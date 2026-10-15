@@ -339,3 +339,17 @@ test('old weapons get a damage stat of auto', async () => {
   const c = make({ weapons: [{ name: 'x' }] });
   assert.equal(migrate(c).weapons[0].dmgAbility, '');
 });
+
+test('CMD counts the -2 AC penalty from rage, so a higher Strength from rage still adds up', () => {
+  const c = make({ race: 'Custom', base: { str: 18, dex: 14 }, levels: Array(7).fill('Fighter') });
+  const calm = calc(c);
+  assert.equal(calm.cmd, 23, '10 + BAB 7 + Str 4 (18) + Dex 2 (14)');
+  buff(c, 'Rage');
+  const raging = calc(c);
+  assert.equal(raging.abilities.str.mod, 6, 'rage +4 Str: 22 is a +6 modifier');
+  assert.equal(raging.cmd, 23, '10 + 7 + Str 6 + Dex 2 - 2 (rage penalty to AC also applies to CMD) = 23: the +2 from Strength and the -2 cancel');
+  const sum = 10 + raging.bd.cmd.reduce((s, p) => s + p.value, 0);
+  assert.equal(sum, raging.cmd, 'the listed parts add up to the CMD');
+  assert.ok(raging.bd.cmd.some(p => /Rage/.test(p.label) && p.value === -2), 'and the penalty is named in them');
+  assert.ok(!calm.bd.cmd.some(p => /Rage/.test(p.label)), 'no rage, no penalty');
+});
