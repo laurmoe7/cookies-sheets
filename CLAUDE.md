@@ -54,7 +54,7 @@ All of these run from the project root:
 | Syntax-check all JS | `npm run check` |
 | Rebuild compendium data | `python tools/build_data.py` |
 | Build the .exe | `powershell -ExecutionPolicy Bypass -File build_exe.ps1` (output in `dist\Cookie's Sheets\`) |
-| Regenerate icon / shortcut | `python tools/make_icon.py` / `powershell -ExecutionPolicy Bypass -File tools\make_shortcut.ps1` |
+| Regenerate icon / shortcut | `python tools/make_icon.py` / `python tools/brand.py launcher` then `powershell -ExecutionPolicy Bypass -File tools\make_shortcut.ps1` |
 
 Node.js is installed at `C:\Program Files\nodejs`. A shell started before it was installed may need `$env:Path = "C:\Program Files\nodejs;$env:Path"`.
 
@@ -74,6 +74,7 @@ Node.js is installed at `C:\Program Files\nodejs`. A shell started before it was
 - **Rebuilding while the app runs:** `tools/build_data.py` writes `data/pf1e.db.new` when the database is in use, and the app installs it on next start (`install_new_db`). Delete a stale `.new` if you rebuild again after closing the app. `PF_DB` points the server at a different database file.
 - **Escaping in shell edit scripts:** don't write JS containing `\b` or `\n` through Python heredoc scripts; they turn into backspace characters and real newlines. Use the Edit tool for those. `grep -c $'\x08' file` finds stray backspaces.
 - **Another program's page in our window.** If the window shows some other project, something else served 127.0.0.1:8765 at some point. Two guards: on Windows the server refuses a port another program holds (`Server.allow_reuse_address`) and moves on, and the window opens `/?launch=<time>` so the browser cache cannot hand back a page cached from that port (a dev server with no cache headers is cached for days). If it still happens, delete `%LOCALAPPDATA%\Cookie's Sheets\webview\EBWebView\Default\Cache` with the app closed; Local Storage next to it holds the options and is safe to keep.
+- **Task Manager name and icon:** Windows reads them from the .exe file, not the window. The built exe gets its name and version from `tools/brand.py version-file` (used by `build_exe.ps1`). Running from source, the shortcut and `Run Cookie's Sheets.bat` use `.launcher\Cookie's Sheets.exe`, a real copy of `pythonw.exe` with the app's icon and name plus its DLLs and a `pyvenv.cfg` (`python tools/brand.py launcher`; git-ignored; rerun after a Python upgrade). A venv's python.exe is only a redirector that starts the real one, which would still show as "Python". Never hand pywebview an object that can reach the window (`js_api`): it walks it forever and freezes the app.
 - **Use `127.0.0.1`, not `localhost`.** On this machine `localhost` resolves to IPv6 first, and every request is about 300 ms slower.
 - **The .exe bundles a copy of `web/` and `data/`.** Source edits don't reach `dist/` until you rebuild. Day to day, run from source.
 - **Never rebuild the .exe or refresh the zip (`python tools/make_zip.py`) unless the user asks.** Finish changes in source and commit only.

@@ -16,5 +16,8 @@ tools/sources/spells.tsv
 # Machine-specific shortcut (recreate with tools/make_shortcut.ps1)
 *.lnk
 
+# The branded launcher for running from source (recreate with: python tools/brand.py launcher)
+.launcher/
+
 node_modules/
 *.zip

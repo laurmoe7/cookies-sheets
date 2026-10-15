@@ -16,10 +16,14 @@ if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
 robocopy web $stage /E /XD dev /NFL /NDL /NJH /NJS /NP | Out-Null
 if ($LASTEXITCODE -ge 8) { throw 'Could not stage the web folder' }
 
+# The name and version Windows (Task Manager, file properties) shows for the .exe
+python tools\brand.py version-file build\version_info.txt
+
 python -m PyInstaller --noconfirm --clean --windowed --onedir `
     --name "Cookie's Sheets" `
     --exclude-module setuptools --exclude-module pkg_resources `
     --icon 'web\icon.ico' `
+    --version-file 'build\version_info.txt' `
     --add-data "$stage;web" `
     --add-data 'data;data' `
     app.py
