@@ -232,7 +232,7 @@ function topPanels(comp, s, p, ed = {}) {
 
 /** What the hit points are made of, from the stat block: the dice, or whose they are. */
 function hpNote(s) {
-  if (s.kind === 'familiar') return 'Half the master’s hit points';
+  if (s.kind === 'familiar') return ''; // the At a glance panel already says whose they are
   if (s.kind === 'creature') return s.hpText ? `Stat block: ${esc(s.hpText)}` : '';
   return `${s.hd}d${s.hdDie}${s.mods?.con ? sign(s.mods.con * s.hd) : ''} hit dice`;
 }
