@@ -169,7 +169,18 @@ function initPapers() {
   run();
 }
 
+/** Tells the app this page is open, so the web-browser version can close itself when the last page goes. Harmless in the window. */
+function heartbeat() {
+  const id = Math.random().toString(36).slice(2);
+  const ping = () => api.ping(id).catch(() => {});
+  ping();
+  setInterval(ping, 10000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) ping(); });
+  addEventListener('pagehide', () => { try { navigator.sendBeacon('/api/bye', new Blob([JSON.stringify({ id })], { type: 'application/json' })); } catch { /* the app notices the pings stopped */ } });
+}
+
 async function init() {
+  heartbeat();
   initOptions();
   initPapers();
   mountPet($('#cookie-slot'));

@@ -54,18 +54,56 @@ def write_settings(d):
 OPEN_IN = ('window', 'browser')
 
 
+class Presence:
+    """Which browser tabs have the page open, so the app run in a web browser can quit itself once the last one is closed.
+
+    Every open page pings every few seconds and says goodbye as it closes. A refresh says goodbye and pings again at once, so only a short
+    wait with no tabs counts as closed. A tab that never says goodbye (a crash, a sleeping laptop) is forgotten after `stale` seconds."""
+
+    def __init__(self, clock=time.time):
+        self.clock, self.tabs, self.seen, self.empty_since, self.started = clock, {}, False, None, clock()
+
+    def ping(self, tab):
+        self.tabs[str(tab)[:64]] = self.clock()
+        self.seen, self.empty_since = True, None
+
+    def bye(self, tab):
+        self.tabs.pop(str(tab)[:64], None)
+        if not self.tabs:
+            self.empty_since = self.clock()
+
+    def should_quit(self, grace=8, stale=150, first=120):
+        """True when no page has been open for `grace` seconds (or none ever opened within `first` seconds of starting)."""
+        now = self.clock()
+        for t in [t for t, at in self.tabs.items() if now - at > stale]:
+            del self.tabs[t]
+            if not self.tabs:
+                self.empty_since = now
+        if self.tabs:
+            return False
+        if not self.seen:
+            return now - self.started >= first
+        return now - (self.empty_since or now) >= grace
+
+
+PRESENCE = Presence()
+
+
 def app_settings():
     """The settings the page can change that the app needs before any page exists: where it opens (its own window, or the web browser)."""
     v = read_settings().get('openIn')
-    return dict(openIn=v if v in OPEN_IN else 'window')
+    return dict(openIn=v if v in OPEN_IN else 'window', autoQuit=read_settings().get('autoQuit') is not False)
 
 
 def set_app_settings(body):
-    v = (body or {}).get('openIn')
-    if v not in OPEN_IN:
-        raise ValueError('openIn must be "window" or "browser".')
+    body = body or {}
     s = read_settings()
-    s['openIn'] = v
+    if 'openIn' in body:
+        if body['openIn'] not in OPEN_IN:
+            raise ValueError('openIn must be "window" or "browser".')
+        s['openIn'] = body['openIn']
+    if 'autoQuit' in body:
+        s['autoQuit'] = bool(body['autoQuit'])
     write_settings(s)
     return app_settings()
 
@@ -909,6 +947,12 @@ class Handler(SimpleHTTPRequestHandler):
             elif route == ('GET', 'equipment'):
                 with open(os.path.join(DATA, 'equipment.json'), encoding='utf-8') as f:
                     self._json(json.load(f))
+            elif route == ('POST', 'ping'):
+                PRESENCE.ping((self._body() or {}).get('id', ''))
+                self._json(True)
+            elif route == ('POST', 'bye'):
+                PRESENCE.bye((self._body() or {}).get('id', ''))
+                self._json(True)
             elif route == ('GET', 'app-settings'):
                 self._json(app_settings())
             elif route == ('POST', 'app-settings'):
@@ -992,6 +1036,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 class Server(ThreadingHTTPServer):
+    daemon_threads = True  # a browser's idle connection must not keep the app running after it has quit
     # HTTPServer turns on SO_REUSEADDR. On Windows that lets us bind a port another program is already listening on, and that
     # program keeps getting the connections: the app then opened its window on a stranger's page instead of moving to the next
     # port. Without the flag a busy port fails to bind, which is what start_server_from relies on. On other systems the flag
@@ -1033,6 +1078,15 @@ def main():
         port = srv.server_address[1]
         open_page = lambda: webbrowser.open(f'http://127.0.0.1:{port}/?launch={int(time.time())}')
         open_page()
+
+        def watch():  # quit by the same route as the tray menu once the last page is closed
+            while True:
+                time.sleep(2)
+                if app_settings()['autoQuit'] and PRESENCE.should_quit():
+                    tray.quit_running()
+                    return
+
+        threading.Thread(target=watch, daemon=True).start()
         if not tray.run(f"Cookie's Sheets: http://127.0.0.1:{port}", open_page, os.path.join(WEB, 'icon.ico')):
             log_error('No tray icon; serving until the console is closed.')
             try:
@@ -1041,6 +1095,7 @@ def main():
             except KeyboardInterrupt:
                 pass
         srv.shutdown()
+        srv.server_close()
         return
     if browser:
         print('Serving', url.split('?')[0])

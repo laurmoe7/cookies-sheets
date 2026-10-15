@@ -141,7 +141,9 @@ function optionRows(tab, o, customSounds, app = null) {
       ${check('motion', 'Animations', o.motion)}
       ${check('updateCheck', 'Look for a new version when the app starts', o.updateCheck)}
       ${app ? `<div class="opt-row"><b>Open Cookie’s Sheets in</b><span class="opt-inline"><div class="seg">${[['window', 'Its own window'], ['browser', 'My web browser']].map(([k, l]) => `<button class="seg-btn ${app.openIn === k ? 'on' : ''}" data-open-in="${k}">${l}</button>`).join('')}</div></span></div>
-      <p class="muted small opt-note">Applies the next time you start the app. In the browser it keeps running after you close the tab: use its icon by the clock to open the page again or quit.</p>` : ''}
+      <p class="muted small opt-note">Applies the next time you start the app.</p>
+      <label class="opt-row"><b>Close the app when the browser page is closed</b><input type="checkbox" data-app-quit ${app.autoQuit ? 'checked' : ''}></label>
+      <p class="muted small opt-note">Browser version only. Turned off, it keeps running until you choose Quit on its icon by the clock.</p>` : ''}
       <div class="opt-row"><b>Updates</b><button class="btn small" data-update-now>🔄 Check for updates now</button></div>`;
   }
   if (tab === 'sound') {
@@ -176,6 +178,10 @@ export function showOptions() {
     const set = (k, v) => { current = sanitize({ ...current, [k]: v }); save(); applyOptions(); draw(); document.dispatchEvent(new Event('options-changed')); };
     const refreshSounds = async () => { customSounds = await loadCustomSounds(); };
     body.onclick = async e => {
+      if (e.target.matches('[data-app-quit]')) {
+        try { appCfg = await api.setAppSettings({ autoQuit: e.target.checked }); } catch (err) { toast(err.message, 'err'); }
+        return draw();
+      }
       const openIn = e.target.closest('[data-open-in]');
       if (openIn) {
         try { appCfg = await api.setAppSettings({ openIn: openIn.dataset.openIn }); } catch (err) { toast(err.message, 'err'); }

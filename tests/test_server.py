@@ -367,8 +367,8 @@ class AppSettings(unittest.TestCase):
         shutil.rmtree(self.root, ignore_errors=True)
 
     def test_opens_in_a_window_until_told_otherwise(self):
-        self.assertEqual(app.app_settings(), {'openIn': 'window'})
-        self.assertEqual(app.set_app_settings({'openIn': 'browser'}), {'openIn': 'browser'})
+        self.assertEqual(app.app_settings(), {'openIn': 'window', 'autoQuit': True})
+        self.assertEqual(app.set_app_settings({'openIn': 'browser'}), {'openIn': 'browser', 'autoQuit': True})
         self.assertEqual(app.app_settings()['openIn'], 'browser', 'it is remembered')
         app.write_settings({'openIn': 'nonsense', 'charDir': 'x'})
         self.assertEqual(app.app_settings()['openIn'], 'window', 'a bad value is ignored')
@@ -379,6 +379,50 @@ class AppSettings(unittest.TestCase):
             app.set_app_settings({'openIn': 'fullscreen'})
         app.set_app_settings({'openIn': 'browser'})
         self.assertEqual(app.read_settings()['charDir'], 'somewhere')
+
+    def test_closing_the_app_with_the_page_can_be_turned_off(self):
+        self.assertTrue(app.app_settings()['autoQuit'], 'on by default')
+        self.assertFalse(app.set_app_settings({'autoQuit': False})['autoQuit'])
+        self.assertEqual(app.app_settings()['openIn'], 'window', 'the other choice is untouched')
+        self.assertTrue(app.set_app_settings({'autoQuit': True})['autoQuit'])
+
+    def test_the_app_quits_after_the_last_page_closes(self):
+        now = [1000.0]
+        p = app.Presence(clock=lambda: now[0])
+        now[0] += 60
+        self.assertFalse(p.should_quit(), 'no page yet, but it is still early')
+        p.ping('a'); p.ping('b')
+        now[0] += 30
+        self.assertFalse(p.should_quit(), 'two pages are open')
+        p.bye('a')
+        now[0] += 60
+        p.ping('b')
+        self.assertFalse(p.should_quit(), 'one is still open')
+        p.bye('b')
+        now[0] += 3
+        self.assertFalse(p.should_quit(), 'a refresh says goodbye and pings again at once, so wait a moment')
+        p.ping('b2')
+        now[0] += 5
+        self.assertFalse(p.should_quit(), 'the refreshed page came back')
+        p.bye('b2')
+        now[0] += 9
+        self.assertTrue(p.should_quit(), 'nobody came back')
+
+    def test_a_page_that_never_says_goodbye_is_forgotten_and_a_page_that_never_opens_ends_it(self):
+        now = [0.0]
+        p = app.Presence(clock=lambda: now[0])
+        p.ping('x')
+        now[0] += 100
+        self.assertFalse(p.should_quit(), 'pinged 100 seconds ago: a sleeping tab can be this quiet')
+        now[0] += 60
+        self.assertFalse(p.should_quit(), 'silent for 160 seconds: forgotten now, and the short wait starts')
+        now[0] += 9
+        self.assertTrue(p.should_quit(), 'nobody came back')
+        q = app.Presence(clock=lambda: now[0])
+        now[0] += 119
+        self.assertFalse(q.should_quit())
+        now[0] += 2
+        self.assertTrue(q.should_quit(), 'the browser never opened the page')
 
     def test_how_the_app_starts(self):
         self.assertEqual(app.start_mode([], {}), 'window')

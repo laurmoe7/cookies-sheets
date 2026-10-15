@@ -52,6 +52,7 @@ export const api = {
   updateCheck: () => req('GET', 'update-check'),
   updateApply: () => req('POST', 'update-apply'),
   equipment: () => req('GET', 'equipment'),
+  ping: id => req('POST', 'ping', { id }),
   appSettings: () => req('GET', 'app-settings'),
   setAppSettings: patch => req('POST', 'app-settings', patch),
   storage: () => req('GET', 'storage'),

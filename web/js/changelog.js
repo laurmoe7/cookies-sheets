@@ -7,6 +7,7 @@ export const CHANGELOG = [
     version: '1.3.2', date: '2026-10-15',
     items: [
       'Options, Look: “Open Cookie’s Sheets in” its own window or your web browser, so the normal .exe can start either way.',
+      'The browser version closes itself a few seconds after you close its page, so nothing is left running. You can turn that off in Options.',
     ],
   },
   {
