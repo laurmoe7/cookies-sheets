@@ -31,6 +31,22 @@ test('a weapon template becomes a row: damage by size, two-handed gets x1.5 Stre
   assert.deepEqual(Object.keys(sword).sort(), Object.keys(blankWeapon()).sort(), 'every field a weapon needs is there');
 });
 
+test('Weapon Finesse: a character with the feat gets Dex on light weapons and the four the feat names, never on others', () => {
+  const dex = name => weaponFromTemplate(w(name), 'Medium', true).ability;
+  assert.equal(dex('Spiked chain'), 'dex', 'the spiked chain is named in the feat');
+  assert.equal(dex('Rapier'), 'dex');
+  assert.equal(dex('Whip'), 'dex');
+  assert.equal(dex('Dagger'), 'dex', 'light weapons');
+  assert.equal(dex('Longsword'), '', 'a longsword is not light');
+  assert.equal(dex('Longbow'), '', 'ranged weapons never');
+  assert.equal(weaponFromTemplate(w('Spiked chain')).ability, '', 'without the feat it stays on auto (Strength)');
+  const c = make({ raceChoice: 'dex', base: { str: 10, dex: 16 }, levels: ['Fighter', 'Fighter', 'Fighter', 'Fighter'] });
+  c.weapons = [weaponFromTemplate(w('Spiked chain'), 'Medium', true), weaponFromTemplate(w('Spiked chain'))];
+  const d = calc(c);
+  assert.equal(d.weapons[0].attack, 4 + 4, 'BAB 4 (fighter 4) + Dex 18 (+4) with the feat');
+  assert.equal(d.weapons[1].attack, 4 + 0, 'BAB 4 + Str 10 (+0) without');
+});
+
 test('an armor template becomes a row, and shields are shields', () => {
   const mail = armorFromTemplate(a('Chainmail'));
   assert.deepEqual([mail.type, mail.category, mail.bonus, mail.maxDex, mail.acp, mail.asf, mail.weight], ['armor', 'medium', 6, 2, -5, 30, 40]);

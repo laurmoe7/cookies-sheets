@@ -417,7 +417,7 @@ async function addFromList(kind) {
   const size = state.derived?.size || 'Medium';
   const pick = await (weapon ? chooseWeapon(size) : chooseArmor());
   if (!pick) return;
-  const row = pick === 'blank' ? (weapon ? blankWeapon() : blankArmor()) : weapon ? weaponFromTemplate(pick, size) : armorFromTemplate(pick);
+  const row = pick === 'blank' ? (weapon ? blankWeapon() : blankArmor()) : weapon ? weaponFromTemplate(pick, size, c.feats.some(f => /^weapon finesse/i.test(f.name))) : armorFromTemplate(pick);
   (weapon ? c.weapons : c.armor).push(row);
   changed({ rerender: true });
 }
