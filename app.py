@@ -51,6 +51,37 @@ def write_settings(d):
     os.replace(tmp, SETTINGS_PATH)
 
 
+OPEN_IN = ('window', 'browser')
+
+
+def app_settings():
+    """The settings the page can change that the app needs before any page exists: where it opens (its own window, or the web browser)."""
+    v = read_settings().get('openIn')
+    return dict(openIn=v if v in OPEN_IN else 'window')
+
+
+def set_app_settings(body):
+    v = (body or {}).get('openIn')
+    if v not in OPEN_IN:
+        raise ValueError('openIn must be "window" or "browser".')
+    s = read_settings()
+    s['openIn'] = v
+    write_settings(s)
+    return app_settings()
+
+
+def start_mode(argv, settings):
+    """How to start: 'serve' (--browser: just the server, for development), 'web' (the page in the browser, with a tray icon) or 'window'.
+    --web and --window override the Options choice."""
+    if '--browser' in argv:
+        return 'serve'
+    if '--web' in argv:
+        return 'web'
+    if '--window' in argv:
+        return 'window'
+    return 'web' if (settings or {}).get('openIn') == 'browser' else 'window'
+
+
 def _start_char_dir():
     """The folder characters are saved in: PF_CHAR_DIR (tests, dev), else the one chosen in Options, else Documents. A chosen folder whose drive is gone falls back
     to the default (the choice is kept, so it works again when the drive is back), and the fallback is reported by storage_info()."""
@@ -878,6 +909,10 @@ class Handler(SimpleHTTPRequestHandler):
             elif route == ('GET', 'equipment'):
                 with open(os.path.join(DATA, 'equipment.json'), encoding='utf-8') as f:
                     self._json(json.load(f))
+            elif route == ('GET', 'app-settings'):
+                self._json(app_settings())
+            elif route == ('POST', 'app-settings'):
+                self._json(set_app_settings(self._body()))
             elif route == ('GET', 'storage'):
                 self._json(storage_info())
             elif route == ('POST', 'storage'):
@@ -986,8 +1021,9 @@ def start_server_from(port, tries=20):
 
 def main():
     install_new_db()
-    browser = '--browser' in sys.argv
-    web = '--web' in sys.argv  # like --browser, for people: opens the page and keeps a tray icon to Open or Quit
+    mode = start_mode(sys.argv, read_settings())
+    browser = mode == 'serve'
+    web = mode == 'web'  # like --browser, for people: opens the page and keeps a tray icon to Open or Quit
     srv = start_server_from(int(os.environ.get('PF_PORT') or 8765))
     # The query string makes each launch's address new to the browser cache. Without it, a page some other program once served on
     # this port (a dev server with no cache headers is cached for days on the strength of its Last-Modified date) came back from

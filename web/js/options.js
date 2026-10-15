@@ -129,7 +129,7 @@ function soundCategory(k, label, o, customSounds) {
 }
 
 /** One tab's rows. Pure string building from the current options (and which sounds are custom). */
-function optionRows(tab, o, customSounds) {
+function optionRows(tab, o, customSounds, app = null) {
   const tome = o.theme === 'tome';
   if (tab === 'look') {
     return `<div class="opt-row"><b>Theme</b>${seg('theme', o.theme, THEMES)}</div>
@@ -140,6 +140,8 @@ function optionRows(tab, o, customSounds) {
       <div class="opt-row"><b>Sheet tabs</b><span class="opt-inline"><button class="btn small ${o.tabDrag ? '' : 'ghost'}" data-tab-lock title="${o.tabDrag ? 'The tabs can be dragged into a new order. Click to lock them where they are.' : 'The tabs are locked in place. Click to unlock them so they can be dragged.'}">${o.tabDrag ? '🔓 Drag to rearrange' : '🔒 Locked'}</button>${o.tabOrder.length ? '<button class="btn small ghost" data-tab-reset title="Put the tabs back in their usual order">Reset order</button>' : ''}</span></div>
       ${check('motion', 'Animations', o.motion)}
       ${check('updateCheck', 'Look for a new version when the app starts', o.updateCheck)}
+      ${app ? `<div class="opt-row"><b>Open Cookie’s Sheets in</b><span class="opt-inline"><div class="seg">${[['window', 'Its own window'], ['browser', 'My web browser']].map(([k, l]) => `<button class="seg-btn ${app.openIn === k ? 'on' : ''}" data-open-in="${k}">${l}</button>`).join('')}</div></span></div>
+      <p class="muted small opt-note">Applies the next time you start the app. In the browser it keeps running after you close the tab: use its icon by the clock to open the page again or quit.</p>` : ''}
       <div class="opt-row"><b>Updates</b><button class="btn small" data-update-now>🔄 Check for updates now</button></div>`;
   }
   if (tab === 'sound') {
@@ -163,16 +165,22 @@ function optionRows(tab, o, customSounds) {
 export function showOptions() {
   return modal('Options', body => {
     let customSounds = {};
+    let appCfg = null; // what the app itself remembers (where it opens); loaded below
     let pickFor = ''; // the effect the file chooser was opened for (a variable, not an attribute on the body: closest('[data-pick]') would then match the body itself for every later click)
     const draw = () => {
       body.innerHTML = `<div class="seg opt-tabs">${OPT_TABS.map(([k, l]) => `<button class="seg-btn ${optTab === k ? 'on' : ''}" data-tab="${k}">${l}</button>`).join('')}</div>
-        <div class="opt-grid">${optionRows(optTab, current, customSounds)}</div>
+        <div class="opt-grid">${optionRows(optTab, current, customSounds, appCfg)}</div>
         <div class="opt-foot"><span class="muted small">Cookie’s Sheets, version ${VERSION}</span><span class="grow"></span>
           <button class="btn small ghost" data-changelog>What’s new</button><button class="btn small ghost" data-ogl>Game content &amp; license</button>${devTools ? '<button class="btn small ghost" data-dev>Developer tools</button>' : ''}</div>`;
     };
     const set = (k, v) => { current = sanitize({ ...current, [k]: v }); save(); applyOptions(); draw(); document.dispatchEvent(new Event('options-changed')); };
     const refreshSounds = async () => { customSounds = await loadCustomSounds(); };
     body.onclick = async e => {
+      const openIn = e.target.closest('[data-open-in]');
+      if (openIn) {
+        try { appCfg = await api.setAppSettings({ openIn: openIn.dataset.openIn }); } catch (err) { toast(err.message, 'err'); }
+        return draw();
+      }
       if (e.target.closest('[data-tab-lock]')) return set('tabDrag', !current.tabDrag);
       if (e.target.closest('[data-tab-reset]')) return set('tabOrder', []);
       const tab = e.target.closest('[data-tab]');
@@ -230,6 +238,7 @@ export function showOptions() {
     };
     draw();
     refreshSounds().then(draw);
+    api.appSettings().then(s => { appCfg = s; draw(); }).catch(() => {}); // a copy without the server's answer just leaves the row out
   }, { top: true });
 }
 

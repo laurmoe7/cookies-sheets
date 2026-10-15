@@ -364,6 +364,7 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .arch-feat.advice { opacity: .7; }
 .rt-list { list-style: none; margin: 4px 0 10px; padding: 0; } .rt-list li { padding: 3px 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; } .rt-list .rep { color: var(--muted); font-size: 12.5px; }
 .lu-sub { margin: 16px 0 2px; font-size: 15px; }
+.opt-note { margin: -4px 0 6px; padding: 0 2px; }
 .lu-sep { margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--line); }
 .alt-note { font-size: 11.5px; color: var(--muted); font-style: italic; }
 .sub-filters { margin-top: 6px; }

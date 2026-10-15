@@ -13,6 +13,7 @@ Double-click "Cookie's Sheets in browser.bat" instead. It opens the app in your 
 http://127.0.0.1:8765) and puts a small icon in the notification area by the clock. It keeps running when you
 close the browser tab: double-click the icon to open the page again, or right-click it and choose Quit.
 The page is only reachable from your own computer, and your characters are saved in the same folder as usual.
+To make the normal "Cookie's Sheets.exe" open in your browser too, choose it in Options, Look, "Open Cookie's Sheets in".
 
 "WINDOWS PROTECTED YOUR PC"?
 This app isn't from a big publisher, so Windows may warn you the first time.

@@ -5,7 +5,7 @@ A standalone Windows desktop app for **Pathfinder 1st Edition** characters. It c
 ## Running it
 
 - **Packaged app:** `dist\Cookie's Sheets\Cookie's Sheets.exe`. Copy the whole `Cookie's Sheets` folder anywhere you like and pin the .exe to your taskbar.
-- **In a web browser:** `Cookie's Sheets in browser.bat` (next to the .exe) or `python app.py --web` opens the app in your default browser and keeps a tray icon (double-click to reopen the page, right-click for Quit). Without the icon, `python app.py --browser` just serves until you stop it. Either way it listens on `127.0.0.1` only. `tray.py` draws the icon with plain ctypes.
+- **In a web browser:** `Cookie's Sheets in browser.bat` (next to the .exe) or `python app.py --web` opens the app in your default browser and keeps a tray icon (double-click to reopen the page, right-click for Quit). Without the icon, `python app.py --browser` just serves until you stop it. Options, Look has "Open Cookie's Sheets in" (own window or web browser), kept in `settings.json` as `openIn`; `--web` and `--window` override it. Either way it listens on `127.0.0.1` only. `tray.py` draws the icon with plain ctypes.
 - **From source:** double-click the **Run Cookie's Sheets** shortcut (needs Python 3.10+ and `pip install -r requirements.txt`). `Run Cookie's Sheets.bat` does the same thing.
   - If you move the folder, recreate the shortcut with `powershell -ExecutionPolicy Bypass -File tools\make_shortcut.ps1`. Add `-Desktop` to also put one on your desktop.
   - The icon comes from `tools/make_icon.py`.

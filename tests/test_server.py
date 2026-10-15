@@ -353,6 +353,40 @@ class HttpApi(unittest.TestCase):
         self.assertEqual(names('list:nothing'), set(), 'an unknown list matches nothing')
 
 
+
+class AppSettings(unittest.TestCase):
+    """Where the app opens is remembered in the settings file (a temporary one here)."""
+
+    def setUp(self):
+        self.root = tempfile.mkdtemp()
+        self.old = app.SETTINGS_PATH
+        app.SETTINGS_PATH = os.path.join(self.root, 'settings.json')
+
+    def tearDown(self):
+        app.SETTINGS_PATH = self.old
+        shutil.rmtree(self.root, ignore_errors=True)
+
+    def test_opens_in_a_window_until_told_otherwise(self):
+        self.assertEqual(app.app_settings(), {'openIn': 'window'})
+        self.assertEqual(app.set_app_settings({'openIn': 'browser'}), {'openIn': 'browser'})
+        self.assertEqual(app.app_settings()['openIn'], 'browser', 'it is remembered')
+        app.write_settings({'openIn': 'nonsense', 'charDir': 'x'})
+        self.assertEqual(app.app_settings()['openIn'], 'window', 'a bad value is ignored')
+
+    def test_only_known_choices_are_accepted_and_other_settings_survive(self):
+        app.write_settings({'charDir': 'somewhere'})
+        with self.assertRaises(ValueError):
+            app.set_app_settings({'openIn': 'fullscreen'})
+        app.set_app_settings({'openIn': 'browser'})
+        self.assertEqual(app.read_settings()['charDir'], 'somewhere')
+
+    def test_how_the_app_starts(self):
+        self.assertEqual(app.start_mode([], {}), 'window')
+        self.assertEqual(app.start_mode([], {'openIn': 'browser'}), 'web')
+        self.assertEqual(app.start_mode(['--window'], {'openIn': 'browser'}), 'window', '--window overrides the choice')
+        self.assertEqual(app.start_mode(['--web'], {'openIn': 'window'}), 'web', '--web does too (the browser launcher uses it)')
+        self.assertEqual(app.start_mode(['--browser'], {'openIn': 'browser'}), 'serve', 'the development server wins')
+
 class SaveFolder(unittest.TestCase):
     """Choosing another folder for characters. The real default folder and settings file are swapped for temporary ones."""
 

@@ -52,6 +52,8 @@ export const api = {
   updateCheck: () => req('GET', 'update-check'),
   updateApply: () => req('POST', 'update-apply'),
   equipment: () => req('GET', 'equipment'),
+  appSettings: () => req('GET', 'app-settings'),
+  setAppSettings: patch => req('POST', 'app-settings', patch),
   storage: () => req('GET', 'storage'),
   setStorage: (path, copy = true) => req('POST', 'storage', { path, copy }),
   openFolder: () => req('POST', 'open-folder'),

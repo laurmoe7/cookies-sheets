@@ -7,6 +7,7 @@ export const CHANGELOG = [
     version: '1.3.1', date: '2026-10-15',
     items: [
       'Run in your web browser: “Cookie’s Sheets in browser.bat” opens the app in your browser, with a tray icon to open it again or quit.',
+      'Options, Look: “Open Cookie’s Sheets in” its own window or your web browser, so the normal .exe can start either way.',
     ],
   },
   {
