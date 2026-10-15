@@ -163,18 +163,18 @@ export function debounce(fn, ms = 200) {
 }
 
 /** Generic searchable picker for compendium entries. Resolves with the chosen entry summary. */
-export function pickEntry(title, cat, { extraFilter, renderRow, search, subs = null, subLabel = 'Any type', races = null } = {}) {
+export function pickEntry(title, cat, { extraFilter, renderRow, search, subs = null, subLabel = 'Any type', races = false } = {}) {
   return modal(title, (body, close) => {
-    body.innerHTML = `<div class="row"><input class="search grow" placeholder="Search ${esc(cat || 'compendium')}…">${subs ? `<select data-f="sub"><option value="">${esc(subLabel)}</option>${subs.map(([label, v]) => `<option value="${esc(v)}">${esc(label)}</option>`).join('')}</select>` : ''}${races ? '<select data-f="race" hidden><option value="">Any race</option></select>' : ''}</div>
+    body.innerHTML = `<div class="row"><input class="search grow" placeholder="Search ${esc(cat || 'compendium')}…">${subs ? `<select data-f="sub"><option value="">${esc(subLabel)}</option>${subs.map(([label, v]) => `<option value="${esc(v)}">${esc(label)}</option>`).join('')}</select>` : ''}${races ? '<select data-f="race" title="Show the racial traits of one race"><option value="">Any race</option></select>' : ''}</div>
       <div class="picker"><div class="picker-list"></div><div class="picker-preview entry-body"><p class="muted">Select an entry to preview it.</p></div></div>`;
     const input = $('input', body), subSel = $('[data-f=sub]', body), raceSel = $('[data-f=race]', body), list = $('.picker-list', body), prev = $('.picker-preview', body);
     let rows = [], seq = 0;
     const run = debounce(async () => {
       const my = ++seq;
       const sub = subSel ? subSel.value : '';
-      if (raceSel) raceSel.hidden = !races(sub); // the race list only applies to racial traits
-      const race = raceSel && !raceSel.hidden ? raceSel.value : '';
-      let res = await (search ? search(input.value, sub, race) : api.search(input.value, cat, 150, 0, race || sub));
+      const race = raceSel ? raceSel.value : '';
+      if (subSel && raceSel) subSel.disabled = !!race; // picking a race shows that race's racial traits; the category filter is for the other traits
+      let res = await (search ? search(input.value, sub, race) : api.search(input.value, cat, 150, 0, race ? '=' + race : sub));
       if (my !== seq) return; // a newer search is in flight
       rows = extraFilter ? res.filter(extraFilter) : res;
       list.innerHTML = rows.map((r, i) => `<div class="pick-row" data-i="${i}">

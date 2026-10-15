@@ -551,11 +551,11 @@ function feats(body, c, d) {
     if (p) {
       // Traits are the character traits and the racial traits, in one list.
       const isTraits = p.dataset.pick === 'traits', isFeats = p.dataset.pick === 'feats';
-      const search = isTraits ? async (q, sub, race) => (sub === 'Racial' ? await api.search(q, 'Racial Trait', 150, 0, race)
+      const search = isTraits ? async (q, sub, race) => (race ? await api.search(q, 'Racial Trait', 150, 0, '=' + race)
         : (await Promise.all(['Trait', 'Racial Trait'].map(k => api.search(q, k, 100, 0, sub)))).flat().sort((a, b) => a.name.localeCompare(b.name))) : undefined;
       const r = await pickEntry(p.dataset.title, p.dataset.cat, { renderRow: r => r.summary || r.source, search,
         subs: isTraits ? TRAIT_CATEGORIES : isFeats ? FEAT_TYPES : null, subLabel: isTraits ? 'Any category' : 'Any type',
-        races: isTraits ? sub => sub === 'Racial' : null });
+        races: isTraits });
       if (r) {
         const entry = { id: r.id, name: r.name, sub: r.sub, notes: '', level: d.level };
         if (isTraits && !await addAlternate(c, entry, replacesOf(r.summary))) return;

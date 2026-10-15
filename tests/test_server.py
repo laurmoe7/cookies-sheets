@@ -144,6 +144,9 @@ class Compendium(unittest.TestCase):
         self.assertTrue(all('Metamagic' in r['sub'] for r in app.search('fire', 'Feat', 50, 0, 'Metamagic')), 'with a text search too')
         self.assertTrue(all(r['sub'] == 'Social' for r in app.search('', 'Trait', 500, 0, 'Social')))
         self.assertEqual(app.search('', 'Feat', 50, 0, '%'), [], 'a % in the filter is text, not a wildcard')
+        elf = app.search('', 'Racial Trait', 500, 0, '=Elf')
+        self.assertTrue(elf and all(r['sub'] == 'Elf' for r in elf), 'an exact race: Half Elf is not Elf')
+        self.assertTrue(any(r['sub'] == 'Half Elf' for r in app.search('', 'Racial Trait', 500, 0, 'Elf')), 'without = it is a substring match')
 
     def test_resolve_names(self):
         hits = app.resolve_names({'items': [

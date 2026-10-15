@@ -18,6 +18,7 @@ import time
 import traceback
 import uuid
 import updater
+import windowstate
 import webbrowser
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -119,11 +120,15 @@ CAT_ORDER = ['Spell', 'Feat', 'Condition', 'Trait', 'Class', 'Race', 'Skill', 'R
 
 
 def search(q='', cat='', limit=60, offset=0, sub=''):
-    """`sub` keeps entries whose sub-category contains it (a feat type such as Combat, a trait category such as Social)."""
+    """`sub` keeps entries whose sub-category contains it (a feat type such as Combat, a trait category such as Social);
+    "=Elf" keeps only those whose sub-category is exactly Elf (so Half Elf is not included)."""
     cats = [c for c in cat.split(',') if c]
     cat_sql = ' and e.cat in (%s)' % ','.join('?' * len(cats)) if cats else ''
     sub = (sub or '').strip()
-    if sub:
+    if sub.startswith('='):
+        cat_sql += ' and e.sub = ?'
+        cats = [*cats, sub[1:]]
+    elif sub:
         cat_sql += " and e.sub like ? escape '!'"
         cats = [*cats, '%' + re.sub(r'([!%_])', lambda m: '!' + m.group(1), sub) + '%']
     order_cat = 'case e.cat ' + ' '.join(f"when '{c}' then {i}" for i, c in enumerate(CAT_ORDER)) + ' else 99 end'
@@ -1028,7 +1033,28 @@ def main():
         except OSError:
             pass
     try:
-        window_ref.append(webview.create_window(APP_NAME, url, width=1400, height=900, min_size=(1000, 650), js_api=window_api))
+        # Open where it was closed (size and position), pulled back onto the screen's usable area so it is never under the taskbar.
+        geo = windowstate.fit(read_settings().get('window'), windowstate.work_areas(), windowstate.screen_scale())
+        win = webview.create_window(APP_NAME, url, width=geo['width'], height=geo['height'], x=geo['x'], y=geo['y'],
+                                    min_size=windowstate.MIN_SIZE, js_api=window_api)
+        window_ref.append(win)
+        seen = dict(geo)
+
+        def remember(**kw):
+            seen.update({k: v for k, v in kw.items() if isinstance(v, int)})
+
+        win.events.moved += lambda x, y: remember(x=x, y=y)
+        win.events.resized += lambda width, height: remember(width=width, height=height)
+
+        def save_window():
+            try:
+                s = read_settings()
+                s['window'] = {k: seen[k] for k in ('x', 'y', 'width', 'height') if seen.get(k) is not None}
+                write_settings(s)
+            except Exception:
+                pass  # the position is a nicety; never stop the app closing over it
+
+        win.events.closing += save_window
         webview.start(icon=os.path.join(WEB, 'icon.ico'), private_mode=False, storage_path=storage)
     except Exception:
         # No usable WebView2 runtime (or the window could not open): use the default browser instead, so the app still works.

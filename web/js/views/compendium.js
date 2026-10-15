@@ -85,7 +85,7 @@ async function search(main, append = false) {
     box.innerHTML = rows.length ? `<div class="muted small pad">${rows.length} spells</div>` + rows.map(rowHtml).join('') : '<p class="pad muted">No matches.</p>';
     return;
   }
-  rows = await api.search(st.q, st.cat, 100, st.offset, SUB_FILTERS[st.cat] ? st.sub : '');
+  rows = await api.search(st.q, st.cat, 100, st.offset, SUB_FILTERS[st.cat] ? (st.cat === 'Racial Trait' && st.sub ? '=' + st.sub : st.sub) : '');
   if (my !== searchSeq) return;
   if (!append) petSearch(st.q);
   st.results = append ? [...st.results, ...rows] : rows;
