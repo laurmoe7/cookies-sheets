@@ -7,8 +7,10 @@ const atLeast1 = n => Math.max(1, n);
 /**
  * Every resource pool the character's classes give, with its capacity (`max`) and what it holds after a night's rest (`start`).
  * `levels` is {Class: level}; `mods` is {str, dex, con, int, wis, cha} ability modifiers.
+ * `adj` is the player's own change per pool, {id: {max, start}}: extra capacity (Extra Rage, Extra Reservoir...) and extra points at the start
+ * of the day; a blank `start` means the same as `max`.
  */
-export function classResources(levels, mods) {
+export function classResources(levels, mods, adj = {}) {
   const out = [];
   const add = (cls, id, name, max, note, { start = max, entry = name } = {}) => out.push({ cls, id, name, max, start, note, entry });
   const L = c => lvl(levels, c);
@@ -42,7 +44,13 @@ export function classResources(levels, mods) {
   if (L('Samurai')) add('Samurai', 'challenge-samurai', 'Challenge', perThree(L('Samurai')), '1 per day, +1 at 4th level and every 3 levels after.', { entry: 'Challenge' });
   if (L('Brawler')) add('Brawler', 'martial-flexibility', 'Martial flexibility', atLeast1(Math.floor(L('Brawler') / 2)), '½ brawler level (minimum 1) times per day.', { entry: 'Martial Flexibility' });
   if (L('Druid') >= 4) add('Druid', 'wild-shape', 'Wild shape', Math.min(8, Math.floor(L('Druid') / 2) - 1), '1 per day at 4th level, +1 at every even level after, up to 8 (at will at 20th).', { entry: 'Wild Shape' });
-  return out.map(r => ({ ...r, max: Math.max(0, r.max), start: Math.max(0, Math.min(r.start, r.max)) }));
+  return out.map(r => {
+    const a = adj?.[r.id] || {};
+    const bonus = Number(a.max) || 0;
+    const startBonus = a.start === '' || a.start == null ? bonus : Number(a.start) || 0;
+    const max = Math.max(0, r.max + bonus);
+    return { ...r, max, start: Math.max(0, Math.min(r.start + startBonus, max)), baseMax: r.max, bonus, startBonus };
+  });
 }
 
 /** Points currently held: the stored value, else the start-of-day value. Never below zero. */

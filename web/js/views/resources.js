@@ -11,22 +11,34 @@ const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
 export function poolsFor(c) {
   const d = state.derived;
   const mods = Object.fromEntries(Object.entries(d.abilities).map(([a, v]) => [a, v.mod]));
-  return classResources(d.classLevels || {}, mods);
+  return classResources(d.classLevels || {}, mods, c.resourceAdj);
 }
 
 /** One segment per point, up to 40 (a bigger pool is drawn as 20 equal segments so the bar stays readable). */
 const segs = max => { const n = Math.max(1, Math.round(+max) || 1); return n <= 40 ? n : 20; };
 
-function counter(res, cur) {
+const editing = new Set(); // pools whose editor is open
+
+function editor(res, c) {
+  const a = (c.resourceAdj ||= {})[res.id] ||= {};
+  return `<div class="res-edit" data-res-editor="${esc(res.id)}">
+    <label>Extra capacity <input type="number" class="num w3" data-bind="resourceAdj.${esc(res.id)}.max" data-type="num" data-rerender value="${esc(a.max ?? '')}" placeholder="0"></label>
+    <label>Extra at the start of the day <input type="number" class="num w3" data-bind="resourceAdj.${esc(res.id)}.start" data-type="num" data-rerender value="${esc(a.start ?? '')}" placeholder="${res.bonus || 0}" title="Leave blank to use the same as the extra capacity"></label>
+    <span class="muted small">Base ${res.baseMax}. Extra Rage: +6 and +6. Extra Reservoir: +3 capacity, +1 at the start. Blank start = same as capacity.</span>
+    <button class="btn small ghost" data-res-edit-clear title="Remove your changes to this pool">Clear</button></div>`;
+}
+
+function counter(res, cur, c) {
   const pct = res.max ? Math.max(0, Math.min(100, cur / res.max * 100)) : 0;
   return `<div class="res-row" data-res="${esc(res.id)}">
     <div class="res-name"><a href="#" class="ref" data-entry="${esc(res.entry)}" data-cat="Class Feature">${esc(res.name)}</a>
       <span class="muted small">${esc(res.cls)}</span></div>
     <div class="res-bar"><div style="width:${pct}%"></div>${segsHtml(segs(res.max))}</div>
     <span class="stepper"><button data-res-d="-1" title="Spend one" aria-label="Spend one">−</button><button data-res-d="1" title="Regain one" aria-label="Regain one">＋</button></span>
-    <b class="res-val">${cur} / ${res.max}</b>
+    <b class="res-val"><input type="number" class="num w3" min="0" max="${res.max}" data-res-cur value="${cur}" title="Points left: type a number"> / ${res.max}${res.bonus ? ` <span class="alt-note" title="Your extra capacity">(${res.bonus > 0 ? '+' : ''}${res.bonus})</span>` : ''}</b>
     <button class="btn small ghost" data-res-reset title="Back to the start-of-day amount (${res.start})">Reset</button>
-    <div class="small muted res-note">${esc(res.note)}</div></div>`;
+    <button class="icon-btn" data-res-edit title="Change this pool (extra rounds from Extra Rage, extra points from Extra Reservoir...)" aria-label="Edit this pool">✎</button>
+    <div class="small muted res-note">${esc(res.note)}</div>${editing.has(res.id) ? editor(res, c) : ''}</div>`;
 }
 
 function custom(t, i) {
@@ -60,7 +72,7 @@ export function renderResources(el, c) {
   el.innerHTML = `<div class="row"><h3 class="grow" style="margin:0">Class resources &amp; trackers</h3>
       <button class="btn small" data-tr-new>＋ Tracker</button>
       <button class="btn small ghost" data-res-rest title="Refill every pool below for a new day (the 🌙 Rest button at the top does that and more)">New day</button></div>
-    ${pools.map(r => counter(r, currentOf(r, c.resources))).join('')}
+    ${pools.map(r => counter(r, currentOf(r, c.resources), c)).join('')}
     ${c.trackers.map(custom).join('')}
     ${pools.length || c.trackers.length ? '' : '<p class="muted small">Nothing to track yet. Classes such as arcanist, barbarian, bard, magus and monk show their pools here; “＋ Tracker” adds your own counter for anything else.</p>'}`;
   wire(el, c);
@@ -69,13 +81,21 @@ export function renderResources(el, c) {
 /** A single pool inside a spell card (the arcanist's reservoir). */
 export function resourceBlock(c, id) {
   const res = poolsFor(c).find(r => r.id === id);
-  return res ? `<div class="res-inline">${counter(res, currentOf(res, c.resources))}</div>` : '';
+  return res ? `<div class="res-inline">${counter(res, currentOf(res, c.resources), c)}</div>` : '';
 }
 
 /** Delegated click handling for any element holding counters. */
 export function wire(el, c) {
+  el.addEventListener('change', e => { // typing the points left into a pool
+    const input = e.target.closest?.('[data-res-cur]');
+    const row = input?.closest('[data-res]');
+    const res = row && poolsFor(c).find(r => r.id === row.dataset.res);
+    if (!res) return;
+    (c.resources ||= {})[res.id] = Math.max(0, Math.min(res.max, Math.round(Number(input.value)) || 0));
+    changed({ rerender: true });
+  });
   el.addEventListener('click', e => {
-    const t = e.target.closest('[data-res-d],[data-res-reset],[data-res-rest],[data-tr-new],[data-tr-d],[data-tr-reset],[data-tr-del]');
+    const t = e.target.closest('[data-res-d],[data-res-reset],[data-res-rest],[data-res-edit],[data-res-edit-clear],[data-tr-new],[data-tr-d],[data-tr-reset],[data-tr-del]');
     if (!t) return;
     e.preventDefault();
     c.resources ||= {};
@@ -90,7 +110,9 @@ export function wire(el, c) {
     if (row?.dataset.res) {
       const res = poolsFor(c).find(r => r.id === row.dataset.res);
       if (!res) return;
-      if (t.dataset.resReset !== undefined) delete c.resources[res.id];
+      if (t.dataset.resEdit !== undefined) { if (!editing.delete(res.id)) editing.add(res.id); }
+      else if (t.dataset.resEditClear !== undefined) { delete (c.resourceAdj ||= {})[res.id]; editing.delete(res.id); }
+      else if (t.dataset.resReset !== undefined) delete c.resources[res.id];
       else c.resources[res.id] = Math.max(0, Math.min(res.max, currentOf(res, c.resources) + +t.dataset.resD));
     } else if (row?.dataset.tracker !== undefined) {
       const tr = c.trackers[+row.dataset.tracker];

@@ -36,6 +36,7 @@ export function newCharacter() {
     spellbooks: {},
     spellLikes: [], // spell-like abilities: {id?, name, school, summary, notes, level, perDay ('' = at will), used, cl ('' = character level), ability}
     resources: {}, // current points in class pools by id (arcane reservoir...); absent = full for the day
+    resourceAdj: {}, // the player's changes to those pools by id: {max, start} extra capacity and extra points at the start of the day
     trackers: [], // the player's own counters {name, max, cur}
     bio: '', // the character's biography (Biography tab)
     story: '', // the plot so far (Notes tab, Story)
