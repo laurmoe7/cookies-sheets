@@ -9,6 +9,7 @@ export const CHANGELOG = [
       'Monster Codex: a new page under the Compendium with about 1,850 creatures. Search by name, pick a type or CR, read the stat block, and take one as a companion.',
       'Companions: “＋ From creature list…” takes any creature as a companion, with hit points to track, attack and skill rolls, a picture and notes.',
       'Compendium: the standard weapons and armor now list their combat stats: damage for both sizes, critical, range, type, category, proficiency, weapon group and special (shields and armor get their bonus, max Dex, check penalty and spell failure).',
+      'Importing: when a number only matches the old sheet because the importer put a difference in a Misc box (hit points, a weapon’s attack or damage), the report now says so, with both numbers and which box to clear.',
       'Adding a weapon from the list gives it Dex for attacks when you have Weapon Finesse and it is a light weapon, rapier, whip, spiked chain or elven curve blade.',
       'Companion cards show everything from the stat block, and the Settings bar is gone: its controls sit in the panels. The old stat block is a 📋 Stat block button.',
       'Adding a spell lets you pick whose spell list to look through (your own class is the default), for the times you can learn another class’s spells.',

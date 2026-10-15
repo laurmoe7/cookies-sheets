@@ -414,11 +414,18 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
   c.importedFrom = { source: src._source || CS_SOURCE, id: str(src._id), date: new Date().toISOString() };
 
   // -- second pass: HP and weapons need the computed numbers --
-  reconcile(c, src, classesByName);
+  reconcile(c, src, classesByName, notes);
   return { char: c, notes };
 }
 
-function reconcile(c, src, classesByName) {
+/** A signed number for a sentence: +2, −3 (a real minus sign, so it cannot be mistaken for a dash). */
+const signed = n => (n < 0 ? '\u2212' : '+') + Math.abs(n);
+
+/**
+ * Makes the numbers this app works out match the old sheet's, by putting the difference in a Misc box. Every difference put there is written into `notes`:
+ * a number nobody can explain is how a wrong attack bonus hides for weeks, so the import report names each one and says where to clear it.
+ */
+function reconcile(c, src, classesByName, notes = []) {
   let d = compute(c, classesByName);
   // HP: first level max, then average; spread any difference across later levels so the total matches.
   const target = toNum(src.hp?.total);
@@ -440,6 +447,7 @@ function reconcile(c, src, classesByName) {
       c.hp.misc = diff;
     }
   } else if (target !== null) c.hp.misc = target - d.hp.max;
+  if (c.hp.misc) notes.push(`Hit points: the old sheet says ${target}, and this app works out ${target - c.hp.misc} from your levels and Constitution, so ${signed(c.hp.misc)} was put in the HP Misc box. A feat such as Toughness, a favored class bonus or rolled hit dice usually explain it; if none does, clear the box.`);
   const wounds = toNum(src.hp?.wounds);
   if (wounds) c.hp.current = (target ?? 0) - wounds;
   c.hp.nonlethal = n0(src.hp?.nonLethal);
@@ -457,6 +465,7 @@ function reconcile(c, src, classesByName) {
       const [abil, base] = opts.reduce((best, o) => (Math.abs(s.attack - o[1]) < Math.abs(s.attack - best[1]) ? o : best));
       w.ability = abil;
       w.misc = s.attack - base;
+      if (w.misc) notes.push(`${w.name} attack: the old sheet says ${signed(s.attack)}, and this app works out ${signed(base)} (${abil ? 'Dexterity' : w.ranged ? 'Dexterity' : 'Strength'}), so ${signed(w.misc)} was put in the weapon's Atk+ box. ${w.misc > 0 ? 'A feat such as Weapon Focus, a magic or masterwork bonus, or a buff the old sheet had on usually explains a bonus.' : 'A penalty such as not being proficient, fatigue or a spell the old sheet had on usually explains it.'} If you do not know where it comes from, clear the box.`);
     }
     // Damage: only reconcile when the old sheet spelled out a bonus ("1d8+4"), not just dice.
     const bonusM = s.dice && s.damage.slice(s.damage.indexOf(s.dice) + s.dice.length).match(/^\s*([+-]\s*\d+)/);
@@ -467,6 +476,7 @@ function reconcile(c, src, classesByName) {
       if (!w.ranged && strM > 0 && base - strM + Math.floor(strM * 1.5) === want) w.dmgMult = '1.5';
       else if (!w.ranged && strM > 0 && base - strM + Math.floor(strM * 0.5) === want) w.dmgMult = '0.5';
       else w.dmgMisc = want - base;
+      if (w.dmgMisc) notes.push(`${w.name} damage: the old sheet says ${signed(want)}, and this app works out ${signed(base)}, so ${signed(w.dmgMisc)} was put in the weapon's Dmg+ box. Check it against the weapon's feats and bonuses; if you do not know where it comes from, clear the box.`);
     }
   });
 }

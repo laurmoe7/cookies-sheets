@@ -204,6 +204,35 @@ test('archetypes in brackets after the class are read, even when the archetype n
   assert.deepEqual(g('White Mage Arcanist, lvl 8'), [['Arcanist', 8, 'White Mage']], 'the old way still works');
 });
 
+// ---------- checks on what the importer invents ----------
+
+test('every adjustment the importer had to invent is named in the report, with the number to clear', () => {
+  const { char, notes } = build(fixture('cs_fumu.json'));
+  const w = char.weapons[0];
+  assert.deepEqual([w.name, w.ability, w.misc], ['Spiked Chain', 'dex', -2], 'the old sheet said +6: BAB 4 + Dex 4 = +8, so -2 had to be invented');
+  const note = notes.find(n => n.startsWith('Spiked Chain attack'));
+  assert.ok(note, notes.join('\n'));
+  assert.ok(note.includes('+6') && note.includes('+8') && note.includes('\u22122'), note);
+  assert.ok(/clear the box/.test(note), 'it says what to do');
+  // no invented number, no note: a weapon whose numbers match gets none
+  const src = fixture('cs_fumu.json');
+  src.melee[0].attackBonus = '8';
+  const again = build(src);
+  assert.equal(again.char.weapons[0].misc, 0);
+  assert.ok(!again.notes.some(n => n.startsWith('Spiked Chain attack')), 'a matching weapon is not mentioned');
+});
+
+test('a bonus the importer invents for hit points and damage is reported too', () => {
+  const src = fixture('cs_fumu.json');
+  src.hp.total = '120'; // more than the hit dice can reach, so the rest has to go in HP Misc
+  src.melee[0].damage = '1d4+3';
+  const { char, notes } = build(src);
+  const hp = notes.find(n => n.startsWith('Hit points'));
+  assert.ok(hp && /HP Misc/.test(hp), notes.join('\n'));
+  assert.equal(char.weapons[0].dmgMisc !== 0, true);
+  assert.ok(notes.some(n => n.startsWith('Spiked Chain damage')), notes.join('\n'));
+});
+
 // ---------- a sheet that keeps names in `type` (a friend's import brought in one item of 41) ----------
 
 test('entries that keep their name in "type" are imported, not skipped as nameless', () => {
