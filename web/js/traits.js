@@ -19,6 +19,11 @@ export function traitAllowance(newLevel, draftFeats = []) {
   return (newLevel === 1 ? 2 : 0) + (extra ? 2 : 0);
 }
 
+/** How many of the picked traits use up the allowance: racial traits (alternate or not) are extra and do not. */
+export function countTraits(picks) {
+  return (picks || []).filter(p => !p.racial).length;
+}
+
 /** Categories the character already has a trait from. `known` maps lower-case trait names to their entry's sub. */
 export function usedCategories(traits, known) {
   const out = new Set();

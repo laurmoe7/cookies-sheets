@@ -7,7 +7,7 @@ export const CHANGELOG = [
     version: '1.3', next: true,
     items: [
       'The window opens where and how big you left it, and never under the taskbar.',
-      'Add trait has two filters: the usual category, and a race filter that shows one race’s racial traits.',
+      'Add trait has two filters: the usual category, and a race filter that shows one race’s racial traits. The trait window when you make a character has the race filter too; racial traits picked there do not use up your two traits.',
       'Racial traits: filter them by race (Add trait, and the Racial Trait page in the Compendium). Alternate racial traits say what they replace, show it on your sheet, and offer to remove the standard trait they replace.',
       'Feats and traits can be filtered by type (Combat, Metamagic, Teamwork...) or category (Social, Faith...) in the Compendium, the level-up wizard and the Add feat / Add trait windows. The wizard also has more room between Feats and Traits.',
       'Traits: the level-up wizard has a traits window for 1st level (two traits, each from a different category) and again when you pick the feat Additional Traits (two more, from categories you have none in). Taking Additional Traits on the sheet opens it too.',

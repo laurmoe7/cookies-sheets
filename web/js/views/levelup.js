@@ -11,7 +11,7 @@ import { levelWarnings } from '../levelcheck.js';
 import { pickSpell, featureLookupName } from './sheet.js';
 import { chooseArchetypes } from './archetypes.js';
 import { chooseTraits } from './traitpicker.js';
-import { traitAllowance } from '../traits.js';
+import { traitAllowance, countTraits } from '../traits.js';
 import { chooseSpells } from './spellpicker.js';
 
 let draft = null;
@@ -150,7 +150,8 @@ function detail(el, c, d, newLevel) {
   const getsAbility = newLevel % 4 === 0;
   const features = featuresFor(draft.cls, clsLevel, draft.archetypes, def).filter(f => f.level === clsLevel);
   const traitCount = traitAllowance(newLevel, draft.feats);
-  if (draft.traits.length > traitCount) draft.traits.length = traitCount; // Additional Traits was taken back out
+  // Racial traits picked in the same window do not use up the allowance. Drop the extra character traits if Additional Traits was taken back out.
+  for (let i = draft.traits.length - 1; i >= 0 && countTraits(draft.traits) > traitCount; i--) if (!draft.traits[i].racial) draft.traits.splice(i, 1);
   const hpGain = after.hp.max - d.hp.max;
   const delta = (a, b, f = sign) => `<span class="dim">${f(a)}</span> → <b>${f(b)}</b>${b !== a ? ` <span class="up">(${b > a ? '+' : ''}${b - a})</span>` : ''}`;
 
@@ -220,7 +221,7 @@ function detail(el, c, d, newLevel) {
       ${traitCount ? `<h3 class="lu-sep">${getsAbility ? 7 : 6} · Traits</h3>
         <p>${newLevel === 1 ? 'Choose two character traits, each from a different category.' : 'Additional Traits gives you two more, from categories you have no trait in yet.'}${newLevel === 1 && traitCount > 2 ? ' Additional Traits adds two more.' : ''}</p>
         <div class="chips">${draft.traits.map((t, i) => `<span class="chip on">${esc(t.name)} <span class="dim small">${esc(t.sub || '')}</span> <button class="icon-btn" data-rm-trait="${i}">✕</button></span>`).join('')}</div>
-        <button class="btn small" data-choose-traits>＋ Choose traits (${traitCount - draft.traits.length} left)</button>` : ''}
+        <button class="btn small" data-choose-traits>＋ Choose traits (${traitCount - countTraits(draft.traits)} left)</button>` : ''}
     </section>
   </div>
 
@@ -378,7 +379,7 @@ async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after
   const spent = ABILITIES.reduce((s, a) => s + (POINT_BUY[num(c.abilities[a].base)] ?? NaN), 0);
   const warnings = levelWarnings({
     newLevel, rankBudget, ranksUsed, getsFeat: newLevel % 2 === 1, bonusFeat: newLevel === 1 && !!ri.bonusFeat, featsChosen: draft.feats.length,
-    traitsLeft: Math.max(0, traitAllowance(newLevel, draft.feats) - draft.traits.length),
+    traitsLeft: Math.max(0, traitAllowance(newLevel, draft.feats) - countTraits(draft.traits)),
     getsAbility, abilityIncrease: draft.abilityIncrease, isFav: (c.favoredClass || (newLevel === 1 ? def.name : '')) === def.name, fcb: draft.fcb, fcbNote: draft.fcbNote,
     spellsLeft: rem.total ? `${describeRemaining(rem)} ${def.casting.extracts ? 'formulae' : 'spells'}` : '',
     pointsLeft: isNaN(spent) ? 0 : draft.budget - spent, name: c.name,
@@ -401,7 +402,7 @@ async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after
     const s = c.skills.find(x => skillKey(x) === key);
     if (s) s.ranks = num(s.ranks) + n;
   }
-  for (const t of draft.traits) c.traits.push({ id: t.id, name: t.name, sub: t.sub, notes: '' });
+  for (const t of draft.traits) c.traits.push({ id: t.id, name: t.name, sub: t.sub, notes: '', ...(t.replaces ? { replaces: t.replaces } : {}) });
   for (const f of draft.feats) c.feats.push({ id: f.id, name: f.name, sub: f.sub, notes: '', level: newLevel, addedAt: newLevel });
   if (draft.spells.length || draft.favs.length) {
     const book = (c.spellbooks[def.name] ||= { spells: [], used: Array(10).fill(0), extraSlot: false });

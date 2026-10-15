@@ -563,7 +563,7 @@ function feats(body, c, d) {
         changed({ rerender: true });
         if (p.dataset.pick === 'feats' && r.name.toLowerCase() === ADDITIONAL_TRAITS.toLowerCase()) { // the feat gives two more traits
           const got = await chooseTraits({ count: 2, have: c.traits, title: 'Additional Traits: choose two traits' });
-          if (got) { for (const t of got) c.traits.push({ id: t.id, name: t.name, sub: t.sub, notes: '' }); changed({ rerender: true }); }
+          if (got) { for (const t of got) c.traits.push({ id: t.id, name: t.name, sub: t.sub, notes: '', ...(t.replaces ? { replaces: t.replaces } : {}) }); changed({ rerender: true }); }
         }
       }
     } else if (cu) {

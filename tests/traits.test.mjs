@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { traitAllowance, traitBlock, traitCategory, usedCategories } from '../web/js/traits.js';
+import { traitAllowance, traitBlock, traitCategory, usedCategories, countTraits } from '../web/js/traits.js';
 import { levelWarnings } from '../web/js/levelcheck.js';
 
 test('a new character gets two traits; the feat Additional Traits adds two more, whatever the level', () => {
@@ -32,4 +32,10 @@ test('applying a level warns about traits not chosen', () => {
   const base = { newLevel: 1, rankBudget: 0, ranksUsed: 0, name: 'Bob', pointsLeft: 0, getsFeat: false };
   assert.ok(levelWarnings({ ...base, traitsLeft: 2 }).includes('2 traits not chosen yet.'));
   assert.ok(!levelWarnings({ ...base, traitsLeft: 0 }).some(w => /trait/.test(w)));
+});
+
+test('racial traits picked in the traits window do not use up the allowance', () => {
+  const picks = [{ name: 'Acrobat', sub: 'Social' }, { name: 'Affable', sub: 'Kitsune', racial: true }, { name: 'Eidetic', sub: 'Kitsune', racial: true }];
+  assert.equal(countTraits(picks), 1, 'only the character trait counts');
+  assert.equal(countTraits([]), 0);
 });
