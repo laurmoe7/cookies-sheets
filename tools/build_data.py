@@ -341,6 +341,23 @@ def merge_aon_archetypes(entries):
     return added
 
 
+def merge_aon_race_traits(entries):
+    """The standard racial traits of the non-core races, from tools/aon_races.py (the books only give most of them their alternates)."""
+    path = os.path.join(ROOT, 'data', 'aon_race_traits.json')
+    if not os.path.exists(path):
+        return 0
+    have = {(e['sub'], norm(e['name'])) for e in entries if e['cat'] == 'Racial Trait'}
+    added = 0
+    for t in json.load(open(path, encoding='utf-8')):
+        if (t['race'], norm(t['name'])) in have:
+            continue
+        entries.append(dict(cat='Racial Trait', sub=t['race'], name=t['name'], source=t['source'], summary='', html='<p>%s</p>' % t['text'],
+                            meta='{}', text=t['name'] + ' ' + re.sub(r'<[^>]+>', ' ', t['text']), late=True))
+        have.add((t['race'], norm(t['name'])))
+        added += 1
+    return added
+
+
 def merge_extra_entries(entries):
     """Hand-typed entries (tools/extra_entries.py), skipping any the books already have."""
     have = {(e['cat'], e['sub'], norm(e['name'])) for e in entries}
@@ -596,6 +613,7 @@ def main():
     print('added', added, 'spells from spreadsheet')
     # After everything else, so the ids of the entries above (saved on characters) do not move.
     print('added', merge_aon_archetypes(entries), 'archetypes from Archives of Nethys')
+    print('added', merge_aon_race_traits(entries), 'standard racial traits from Archives of Nethys')
     print('added', merge_extra_entries(entries), 'hand-typed entries')
     print('alternate racial traits tagged:', tag_racial_traits(entries))
     gear_list = equipment.build(books)

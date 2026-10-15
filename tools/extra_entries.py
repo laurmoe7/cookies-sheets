@@ -9,9 +9,9 @@ ARG = 'Advanced Race Guide'
 BOTB = 'Blood of the Beast'
 
 ENTRIES = [
-    ('Racial Trait', KITSUNE, 'Duplicitous', 'PZO9280',
+    ('Racial Trait', KITSUNE, 'Duplicitous', 'Inner Sea Races',
      'Many kitsune prefer to avoid the attention they often attract from human neighbors and attempt to convince all around them that they are human. They gain a +2 racial bonus on Bluff and Disguise checks. This racial trait replaces kitsune magic.'),
-    ('Racial Trait', KITSUNE, 'Fast Shifter (Su)', '',
+    ('Racial Trait', KITSUNE, 'Fast Shifter (Su)', ARG,
      'You were born with an innate talent for switching between your natural forms. Using your racial change shape ability is a move action instead of a standard action. This racial trait replaces kitsune magic.'),
     ('Racial Trait', KITSUNE, 'Keen Kitsune', BOTB,
      'Although amiable, kitsune are notoriously clever and cunning, often far more than they seem. Such characters gain a +2 bonus to Dexterity and Intelligence instead of Dexterity and Charisma. This racial trait alters the kitsune’s ability score modifiers.'),

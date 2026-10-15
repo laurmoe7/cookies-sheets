@@ -6,6 +6,7 @@ export const CHANGELOG = [
   {
     version: '1.3', next: true,
     items: [
+      'Racial traits: the standard traits of the later-book races (Kitsune, Tiefling, Aasimar, Tengu and 26 more, from Archives of Nethys) are in the compendium, so the Swap… button at character creation works for them too.',
       'Making a character: Traits now come before Feats, with even spacing, and your race’s standard racial traits are listed (and added to your sheet) with a Swap… button where the books give an alternate.',
       'The window opens where and how big you left it, and never under the taskbar.',
       'Add trait has two filters: the usual category, and a race filter that shows one race’s racial traits. The trait window when you make a character has the race filter too; racial traits picked there do not use up your two traits.',

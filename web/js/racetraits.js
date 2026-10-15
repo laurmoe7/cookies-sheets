@@ -41,16 +41,19 @@ export async function compendiumRace(raceName) {
 /** True for an alternate racial trait: the compendium summarises it as "Replaces X." or "Alters X." */
 export const isAlternate = entry => /^(Replaces|Alters) /.test(String(entry.summary || ''));
 
+/** Does the replaced phrase from an alternate trait mean the standard trait `name`? "languages" and "kitsune normal languages" both mean Languages. */
+const covers = (replaced, name) => key(replaced) === key(name) || key(replaced).endsWith(' ' + key(name));
+
 /** The racial traits that remain after the chosen alternates have replaced theirs. */
 export function remainingBaseline(baseline, chosen) {
-  const gone = new Set((chosen || []).flatMap(c => c.replaces || []).map(key));
-  return baseline.filter(b => !gone.has(key(b.name)));
+  const gone = (chosen || []).flatMap(c => c.replaces || []);
+  return baseline.filter(b => !gone.some(r => covers(r, b.name)));
 }
 
 /** The alternates that could take the place of the standard trait `name`, leaving out ones already chosen. */
 export function alternativesFor(name, alternates, chosen = []) {
   const taken = new Set(chosen.map(c => c.name));
-  return alternates.filter(a => !taken.has(a.name) && replacesOf(a.summary).some(r => key(r) === key(name)));
+  return alternates.filter(a => !taken.has(a.name) && replacesOf(a.summary).some(r => covers(r, name)));
 }
 
 const racialCache = new Map();

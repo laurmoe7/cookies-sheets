@@ -27,5 +27,7 @@ test('the standard traits of a race and the alternates that can replace each', (
   const chosen = [{ name: 'Sharp Eyes', replaces: ['keen senses', 'low-light vision'] }];
   assert.deepEqual(remainingBaseline(base, chosen).map(b => b.name), ['Elven Magic'], 'one alternate can replace several standard traits');
   assert.deepEqual(remainingBaseline(base, []).length, 3);
+  assert.deepEqual(alternativesFor('Languages', [{ name: 'Multilingual', summary: 'Replaces agile, kitsune normal languages.' }]).map(a => a.name), ['Multilingual'], 'a phrase that ends with the trait name counts');
+  assert.deepEqual(alternativesFor('Kitsune', [{ name: 'Skilled', summary: 'Replaces agile, kitsune magic.' }]), [], 'but a word in the middle does not')
 });
 

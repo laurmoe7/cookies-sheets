@@ -1,0 +1,1664 @@
+[
+ {
+  "race": "Kitsune",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Charisma, –2 Strength: Kitsune are agile and companionable, but tend to be physically weak."
+ },
+ {
+  "race": "Kitsune",
+  "name": "Kitsune",
+  "source": "Advanced Race Guide",
+  "text": "Kitsune are humanoids with the kitsune and shapechanger subtypes."
+ },
+ {
+  "race": "Kitsune",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Kitsune are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Kitsune",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Kitsune have a base speed of 30 feet."
+ },
+ {
+  "race": "Kitsune",
+  "name": "Low-Light Vision",
+  "source": "Advanced Race Guide",
+  "text": "Kitsune can see twice as far as humans in conditions of dim light."
+ },
+ {
+  "race": "Kitsune",
+  "name": "Change Shape",
+  "source": "Advanced Race Guide",
+  "text": "A kitsune can assume the appearance of a specific single human form of the same sex. The kitsune always takes this specific form when she uses this ability. A kitsune in human form cannot use her bite attack, but gains a +10 racial bonus on Disguise checks made to appear human. Changing shape is a standard action. This ability otherwise functions as <i>alter self</i>, except that the kitsune does not adjust her ability scores and can remain in this form indefinitely."
+ },
+ {
+  "race": "Kitsune",
+  "name": "Agile",
+  "source": "Advanced Race Guide",
+  "text": "Kitsune receive a +2 racial bonus on Acrobatics checks."
+ },
+ {
+  "race": "Kitsune",
+  "name": "Kitsune Magic",
+  "source": "Advanced Race Guide",
+  "text": "Kitsune add 1 to the DCs of any saving throws to resist enchantment spells that they cast. Kitsune with a Charisma score of 11 or higher gain the following spell-like ability: 3/day—<i>dancing lights</i> (caster level equals the kitsune’s level)."
+ },
+ {
+  "race": "Kitsune",
+  "name": "Natural Weapons",
+  "source": "Advanced Race Guide",
+  "text": "In her natural form, a kitsune has a bite attack that deals 1d4 points of damage."
+ },
+ {
+  "race": "Kitsune",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Kitsune begin play speaking Common and Sylvan. Kitsune with high Intelligence scores can choose from the following languages: any human language, Aklo, Celestial, Elven, Gnome, and Tengu."
+ },
+ {
+  "race": "Aasimar",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Wisdom, +2 Charisma: Aasimars are insightful, confident, and personable. Aasimars of specific bloodlines (see below) gain different ability score modifiers as indicated."
+ },
+ {
+  "race": "Aasimar",
+  "name": "Native Outsider",
+  "source": "Advanced Race Guide",
+  "text": "Aasimars are outsiders with the native subtype."
+ },
+ {
+  "race": "Aasimar",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Aasimars are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Aasimar",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Aasimars have a base speed of 30 feet."
+ },
+ {
+  "race": "Aasimar",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Aasimars can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Aasimar",
+  "name": "Skilled",
+  "source": "Advanced Race Guide",
+  "text": "Aasimars have a +2 racial bonus on Diplomacy and Perception checks. Aasimars of specific bloodlines (see below) gain a +2 bonus on different skill checks as indicated."
+ },
+ {
+  "race": "Aasimar",
+  "name": "Spell-Like Ability",
+  "source": "Advanced Race Guide",
+  "text": "Aasimars can use <i>daylight</i> once per day as a spell-like ability (with a caster level equal to the aasimar’s character level). Aasimars of specific bloodlines (see below) gain other spell-like abilities in place of <i>daylight</i>."
+ },
+ {
+  "race": "Aasimar",
+  "name": "Celestial Resistance",
+  "source": "Advanced Race Guide",
+  "text": "Aasimars have acid resistance 5, cold resistance 5, and electricity resistance 5."
+ },
+ {
+  "race": "Aasimar",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Aasimars begin play speaking Common and Celestial. Aasimars with high Intelligence scores can choose from the following languages: Draconic, Dwarven, Elven, Gnome, Halfling, and Sylvan."
+ },
+ {
+  "race": "Catfolk",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Charisma, –2 Wisdom: Catfolk are sociable and agile, but often lack common sense."
+ },
+ {
+  "race": "Catfolk",
+  "name": "Catfolk",
+  "source": "Advanced Race Guide",
+  "text": "Catfolk are humanoids with the catfolk subtype."
+ },
+ {
+  "race": "Catfolk",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Catfolk are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Catfolk",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Catfolk have a base speed of 30 feet."
+ },
+ {
+  "race": "Catfolk",
+  "name": "Low-Light Vision",
+  "source": "Advanced Race Guide",
+  "text": "In dim light, catfolk can see twice as far as humans."
+ },
+ {
+  "race": "Catfolk",
+  "name": "Cat’s Luck",
+  "source": "Advanced Race Guide",
+  "text": "Once per day when a catfolk attempts a Reflex saving throw, he can roll the saving throw twice and take the better result. He must decide to use this ability before the saving throw is attempted."
+ },
+ {
+  "race": "Catfolk",
+  "name": "Natural Hunter",
+  "source": "Advanced Race Guide",
+  "text": "Catfolk receive a +2 racial bonus on Perception, Stealth, and Survival checks."
+ },
+ {
+  "race": "Catfolk",
+  "name": "Sprinter",
+  "source": "Advanced Race Guide",
+  "text": "Catfolk gain a 10-foot racial bonus to their speed when using the charge, run, or withdraw actions."
+ },
+ {
+  "race": "Catfolk",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Catfolk begin play speaking Common and Catfolk. Catfolk with high Intelligence scores can choose from the following languages: Elven, Gnoll, Gnome, Goblin, Halfling, Orc, and Sylvan."
+ },
+ {
+  "race": "Changeling",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Wisdom, +2 Charisma, –2 Constitution: Changelings are frail, but are clever and comely."
+ },
+ {
+  "race": "Changeling",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Changelings are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Changeling",
+  "name": "Humanoid",
+  "source": "Advanced Race Guide",
+  "text": "Changelings are humanoids with the changeling subtype."
+ },
+ {
+  "race": "Changeling",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Changelings have a base speed of 30 feet."
+ },
+ {
+  "race": "Changeling",
+  "name": "Hag Racial Trait",
+  "source": "Advanced Race Guide",
+  "text": "Each changeling inherits one of the following racial traits, depending on her mother’s hag type. (As outsiders, night hags produce half-fiend children, not changelings.)"
+ },
+ {
+  "race": "Changeling",
+  "name": "Claws",
+  "source": "Advanced Race Guide",
+  "text": "Changelings’ fingernails are hard and sharp, granting them two claw attacks (1d4 points of damage each)."
+ },
+ {
+  "race": "Changeling",
+  "name": "Natural Armor",
+  "source": "Advanced Race Guide",
+  "text": "Changelings have a +1 natural armor bonus."
+ },
+ {
+  "race": "Changeling",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Changelings can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Changeling",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Changelings begin play speaking Common and the primary language of their host societies. Changelings with high Intelligence scores can choose from the following languages: Aklo, Draconic, Dwarven, Elven, Giant, Gnoll, Goblin, and Orc."
+ },
+ {
+  "race": "Dhampir",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Charisma, –2 Constitution: Dhampirs are fast and seductive, but their mortal vigor is impeded. Dhampirs of specific heritages (see below) gain different ability score modifiers as indicated."
+ },
+ {
+  "race": "Dhampir",
+  "name": "Dhampir",
+  "source": "Advanced Race Guide",
+  "text": "Dhampirs are humanoids with the dhampir subtype."
+ },
+ {
+  "race": "Dhampir",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Dhampirs are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Dhampir",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Dhampirs have a base speed of 30 feet."
+ },
+ {
+  "race": "Dhampir",
+  "name": "Senses",
+  "source": "Advanced Race Guide",
+  "text": "Dhampirs get low-light vision and darkvision with a range of 60 feet."
+ },
+ {
+  "race": "Dhampir",
+  "name": "Manipulative",
+  "source": "Advanced Race Guide",
+  "text": "Dhampirs gain a +2 racial bonus on Bluff and Perception checks. Dhampirs of specific heritages (see below) gain a +2 bonus on different skill checks as indicated."
+ },
+ {
+  "race": "Dhampir",
+  "name": "Undead Resistance",
+  "source": "Advanced Race Guide",
+  "text": "Dhampirs gain a +2 racial bonus on saving throws against disease and mind-affecting effects."
+ },
+ {
+  "race": "Dhampir",
+  "name": "Light Sensitivity",
+  "source": "Advanced Race Guide",
+  "text": "Dhampirs are dazzled in areas of bright sunlight or within the radius of a <i>daylight</i> spell. Dhampirs of specific heritages (see below) gain different weaknesses."
+ },
+ {
+  "race": "Dhampir",
+  "name": "Negative Energy Affinity",
+  "source": "Advanced Race Guide",
+  "text": "Though they’re living creatures, dhampirs react to positive and negative energy as if they were undead; positive energy harms them, and negative energy heals them."
+ },
+ {
+  "race": "Dhampir",
+  "name": "Spell-Like Ability",
+  "source": "Advanced Race Guide",
+  "text": "A dhampir can use <i>detect undead</i> three times per day as a spell-like ability (with a caster level equal to the dhampir’s character level). Dhampirs of specific heritages (see below) gain other spell-like abilities in place of <i>detect undead</i>."
+ },
+ {
+  "race": "Dhampir",
+  "name": "Resist Level Drain",
+  "source": "Advanced Race Guide",
+  "text": "A dhampir takes no penalties from energy drain effects, though he can still be killed if he accrues more negative levels then he has Hit Dice. After 24 hours, any negative levels a dhampir takes are removed without the need for an additional saving throw."
+ },
+ {
+  "race": "Dhampir",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Dhampirs begin play speaking Common. Dhampirs with high Intelligence scores can choose any languages they want (except secret languages, such as Druidic)."
+ },
+ {
+  "race": "Drow",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Charisma, –2 Constitution: Drow are nimble and manipulative."
+ },
+ {
+  "race": "Drow",
+  "name": "Elf",
+  "source": "Advanced Race Guide",
+  "text": "Drow are humanoids with the elf subtype."
+ },
+ {
+  "race": "Drow",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Drow are Medium creatures and receive no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Drow",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Drow have a base speed of 30 feet."
+ },
+ {
+  "race": "Drow",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Drow can see in the dark up to 120 feet."
+ },
+ {
+  "race": "Drow",
+  "name": "Drow Immunities",
+  "source": "Advanced Race Guide",
+  "text": "Drow are immune to magic sleep effects and gain a +2 racial bonus on saving throws against enchantment spells and effects."
+ },
+ {
+  "race": "Drow",
+  "name": "Keen Senses",
+  "source": "Advanced Race Guide",
+  "text": "Drow gain a +2 racial bonus on Perception checks."
+ },
+ {
+  "race": "Drow",
+  "name": "Poison Use",
+  "source": "Advanced Race Guide",
+  "text": "Drow are skilled in the use of poison and never risk accidentally poisoning themselves."
+ },
+ {
+  "race": "Drow",
+  "name": "Spell Resistance",
+  "source": "Advanced Race Guide",
+  "text": "A drow possesses an amount of spell resistance equal to 6 + her character level."
+ },
+ {
+  "race": "Drow",
+  "name": "Spell-Like Abilities",
+  "source": "Advanced Race Guide",
+  "text": "A drow can cast <i>dancing lights</i>, <i>darkness</i>, and <i>faerie fire</i>, each once per day, using her total character level as her caster level."
+ },
+ {
+  "race": "Drow",
+  "name": "Light Blindness",
+  "source": "Advanced Race Guide",
+  "text": "Abrupt exposure to bright light blinds drow for 1 round; on subsequent rounds, they are dazzled as long as they remain in the affected area."
+ },
+ {
+  "race": "Drow",
+  "name": "Weapon Familiarity",
+  "source": "Advanced Race Guide",
+  "text": "Drow are proficient with the hand crossbow, rapier, and short sword."
+ },
+ {
+  "race": "Drow",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Drow begin play speaking Elven and Undercommon. Drow with high Intelligence scores can choose from the following: Abyssal, Aklo, Aquan, Common, Draconic, Gnome, Goblin, and Sakvroth."
+ },
+ {
+  "race": "Duergar",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Constitution, +2 Wisdom, –4 Charisma: Duergar are hearty and observant, but also belligerent."
+ },
+ {
+  "race": "Duergar",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Duergar are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Duergar",
+  "name": "Dwarf",
+  "source": "Advanced Race Guide",
+  "text": "Duergar are humanoids with the dwarf subtype."
+ },
+ {
+  "race": "Duergar",
+  "name": "Slow and Steady",
+  "source": "Advanced Race Guide",
+  "text": "Duergar have a base speed of 20 feet, but their speed is never modified by armor or encumbrance."
+ },
+ {
+  "race": "Duergar",
+  "name": "Superior Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Duergar can see in the dark up to 120 feet."
+ },
+ {
+  "race": "Duergar",
+  "name": "Duergar Immunities",
+  "source": "Advanced Race Guide",
+  "text": "Duergar are immune to paralysis, phantasms, and poison. They gain a +2 racial bonus on saves against spells and spell-like abilities."
+ },
+ {
+  "race": "Duergar",
+  "name": "Stability",
+  "source": "Advanced Race Guide",
+  "text": "Duergar receive a +4 racial bonus to their Combat Maneuver Defense against bull rush or trip attempts while standing on the ground."
+ },
+ {
+  "race": "Duergar",
+  "name": "Spell-Like Abilities",
+  "source": "Advanced Race Guide",
+  "text": "A duergar can use <i>enlarge person</i> and <i>invisibility</i> each once per day, using her character level as her caster level and affecting itself only."
+ },
+ {
+  "race": "Duergar",
+  "name": "Light Sensitivity",
+  "source": "Advanced Race Guide",
+  "text": "Duergar are dazzled in areas of bright light."
+ },
+ {
+  "race": "Duergar",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Duergar begin play speaking Common, Dwarven, and Undercommon. Duergar with high Intelligence scores can choose from the following languages: Aklo, Draconic, Giant, Goblin, Orc, and Terran."
+ },
+ {
+  "race": "Fetchling",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Charisma, –2 Wisdom: Fetchlings are quick and forceful, but often strange and easily distracted by errant thoughts."
+ },
+ {
+  "race": "Fetchling",
+  "name": "Native Outsider",
+  "source": "Advanced Race Guide",
+  "text": "Fetchlings are outsiders with the native subtype."
+ },
+ {
+  "race": "Fetchling",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Fetchlings are Medium creatures and receive no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Fetchling",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Fetchlings have a base speed of 30 feet."
+ },
+ {
+  "race": "Fetchling",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Fetchlings can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Fetchling",
+  "name": "Low-Light Vision",
+  "source": "Advanced Race Guide",
+  "text": "Fetchlings can see twice as far as humans in conditions of dim light."
+ },
+ {
+  "race": "Fetchling",
+  "name": "Skilled",
+  "source": "Advanced Race Guide",
+  "text": "Fetchlings have a +2 racial bonus on Knowledge (planes) and Stealth checks."
+ },
+ {
+  "race": "Fetchling",
+  "name": "Shadow Blending",
+  "source": "Advanced Race Guide",
+  "text": "Attacks against a fetchling in dim light have a 50% miss chance instead of the normal 20% miss chance. This ability does not grant total concealment; it just increases the miss chance."
+ },
+ {
+  "race": "Fetchling",
+  "name": "Shadowy Resistance",
+  "source": "Advanced Race Guide",
+  "text": "Fetchlings have cold resistance 5 and electricity resistance 5."
+ },
+ {
+  "race": "Fetchling",
+  "name": "Spell-Like Abilities",
+  "source": "Advanced Race Guide",
+  "text": "A fetchling can use <i>disguise self</i> once per day as a spell-like ability. He can assume the form of any humanoid creature using this spell-like ability. When a fetchling reaches character 9th level in any combination of classes, he gains <i>shadow walk</i> (self only) as a spell-like ability usable once per day, and at 13th level, he gains <i>plane shift</i> (self only, to the Shadow Plane or the Material Plane only) usable once per day. A fetchling’s caster level for these abilities is equal to his character level."
+ },
+ {
+  "race": "Fetchling",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Fetchlings begin play speaking Common. Fetchlings with a high Intelligence scores can choose from the following languages: Aklo, Aquan, Auran, Draconic, D’ziriak (understanding only, cannot speak), Ignan, Terran, and any regional human tongue."
+ },
+ {
+  "race": "Gillman",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Constitution, +2 Charisma, –2 Wisdom: Gillmen are vigorous and beautiful, but their domination by the aboleths has made them weak-willed."
+ },
+ {
+  "race": "Gillman",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Gillmen are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Gillman",
+  "name": "Aquatic",
+  "source": "Advanced Race Guide",
+  "text": "Gillmen are humanoids with the aquatic subtype."
+ },
+ {
+  "race": "Gillman",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Gillmen have a base speed of 30 feet on land. As aquatic creatures, they also have a swim speed of 30 feet, can move in water without making Swim checks, and always treat Swim as a class skill."
+ },
+ {
+  "race": "Gillman",
+  "name": "Amphibious",
+  "source": "Advanced Race Guide",
+  "text": "Gillmen have the aquatic subtype, but can breathe both water and air."
+ },
+ {
+  "race": "Gillman",
+  "name": "Enchantment Resistance",
+  "source": "Advanced Race Guide",
+  "text": "Gillmen gain a +2 racial saving throw bonus against non-aboleth enchantment spells and effects, but take a –2 penalty on such saving throws against aboleth sources."
+ },
+ {
+  "race": "Gillman",
+  "name": "Water Dependent",
+  "source": "Advanced Race Guide",
+  "text": "A gillman's body requires constant submersion in fresh or salt water. Gillmen who spend more than 1 day without fully submerging themselves in water risk internal organ failure, painful cracking of the skin, and death within 4d6 hours."
+ },
+ {
+  "race": "Gillman",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Gillmen begin play speaking Common and Aboleth. Gillmen with high Intelligence scores can choose from the following: Aklo, Aquan, Draconic, and Elven."
+ },
+ {
+  "race": "Goblin",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+4 Dexterity, –2 Strength, –2 Charisma: Goblins are fast but weak, and they’re unpleasant to be around."
+ },
+ {
+  "race": "Goblin",
+  "name": "Goblinoid",
+  "source": "Advanced Race Guide",
+  "text": "Goblins are humanoids with the goblinoid subtype."
+ },
+ {
+  "race": "Goblin",
+  "name": "Small",
+  "source": "Advanced Race Guide",
+  "text": "Goblins are Small and gain a +1 size bonus to their AC, a +1 size bonus on attack rolls, a –1 penalty on combat maneuver checks and to their Combat Maneuver Defense, and a +4 size bonus on Stealth checks."
+ },
+ {
+  "race": "Goblin",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Goblins are fast for their size, and have a base speed of 30 feet."
+ },
+ {
+  "race": "Goblin",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Goblins can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Goblin",
+  "name": "Skilled",
+  "source": "Advanced Race Guide",
+  "text": "+4 racial bonus on Ride and Stealth checks."
+ },
+ {
+  "race": "Goblin",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Goblins begin play speaking Goblin. Goblins with high Intelligence scores can choose from the following languages: Common, Draconic, Dwarven, Gnoll, Gnome, Halfling, and Orc."
+ },
+ {
+  "race": "Grippli",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Wisdom, –2 Strength: Gripplis are nimble and alert, but spindly."
+ },
+ {
+  "race": "Grippli",
+  "name": "Small",
+  "source": "Advanced Race Guide",
+  "text": "Gripplis are Small creatures and gain a +1 size bonus to their AC, a +1 size bonus on attack rolls,a –1 penalty on combat maneuver checks and to their Combat Maneuver Defense, and a +4 size bonus on Stealth checks."
+ },
+ {
+  "race": "Grippli",
+  "name": "Grippli",
+  "source": "Advanced Race Guide",
+  "text": "Gripplis are humanoids with the grippli subtype."
+ },
+ {
+  "race": "Grippli",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Gripplis have a base speed of 30 feet."
+ },
+ {
+  "race": "Grippli",
+  "name": "Natural Climber",
+  "source": "Advanced Race Guide",
+  "text": "Gripplis have a climb speed of 20 feet."
+ },
+ {
+  "race": "Grippli",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Gripplis can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Grippli",
+  "name": "Camouflage",
+  "source": "Advanced Race Guide",
+  "text": "Gripplis receive a +4 racial bonus on Stealth checks in marshes and forested areas."
+ },
+ {
+  "race": "Grippli",
+  "name": "Swamp Stride",
+  "source": "Advanced Race Guide",
+  "text": "A grippli can move through difficult terrain at its normal speed while within a swamp. Magically altered terrain affects a grippli normally."
+ },
+ {
+  "race": "Grippli",
+  "name": "Weapon Familiarity",
+  "source": "Advanced Race Guide",
+  "text": "Gripplis are proficient with nets."
+ },
+ {
+  "race": "Grippli",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Gripplis begin play speaking Common and Grippli. Gripplis with high Intelligence scores can choose from the following languages: Boggard, Draconic, Elven, Gnome, Goblin, and Sylvan."
+ },
+ {
+  "race": "Hobgoblin",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Constitution: Hobgoblins are fast and hardy."
+ },
+ {
+  "race": "Hobgoblin",
+  "name": "Goblinoid",
+  "source": "Advanced Race Guide",
+  "text": "Hobgoblins are humanoids with the goblinoid subtype."
+ },
+ {
+  "race": "Hobgoblin",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Hobgoblins are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Hobgoblin",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Hobgoblins have a base speed of 30 feet."
+ },
+ {
+  "race": "Hobgoblin",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Hobgoblins can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Hobgoblin",
+  "name": "Sneaky",
+  "source": "Advanced Race Guide",
+  "text": "Hobgoblins receive a +4 racial bonus on Stealth checks."
+ },
+ {
+  "race": "Hobgoblin",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Hobgoblins begin play speaking Common and Goblin. Hobgoblins with high Intelligence scores can choose from the following languages: Draconic, Dwarven, Infernal, Giant, and Orc."
+ },
+ {
+  "race": "Ifrit",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Charisma, –2 Wisdom: Ifrits are passionate and quick, but also impetuous and destructive."
+ },
+ {
+  "race": "Ifrit",
+  "name": "Native Outsider",
+  "source": "Advanced Race Guide",
+  "text": "Ifrits are outsiders with the native subtype."
+ },
+ {
+  "race": "Ifrit",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Ifrits are Medium creatures and receive no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Ifrit",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Ifrits have a base speed of 30 feet."
+ },
+ {
+  "race": "Ifrit",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Ifrits can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Ifrit",
+  "name": "Spell-Like Ability",
+  "source": "Advanced Race Guide",
+  "text": "Ifrits can use <i>burning hands</i> 1/day as a spell-like ability (caster level equals the ifrit’s character level; DC 11 + Charisma modifier)."
+ },
+ {
+  "race": "Ifrit",
+  "name": "Energy Resistance",
+  "source": "Advanced Race Guide",
+  "text": "Ifrits have fire resistance 5."
+ },
+ {
+  "race": "Ifrit",
+  "name": "Fire Affinity",
+  "source": "Advanced Race Guide",
+  "text": "Ifrit sorcerers with the elemental (fire) bloodline treat their Charisma scores as 2 points higher for the purposes of all sorcerer spells and class abilities. Ifrit spellcasters with the Fire domain use their domain powers and spells at +1 caster level."
+ },
+ {
+  "race": "Ifrit",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Ifrits begin play speaking Common and Ignan. Ifrits with high Intelligence scores can choose from the following languages: Aquan, Auran, Dwarven, Elven, Gnome, Halfling, and Terran."
+ },
+ {
+  "race": "Kobold",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, –4 Strength, –2 Constitution: Kobolds are fast but weak."
+ },
+ {
+  "race": "Kobold",
+  "name": "Reptilian",
+  "source": "Advanced Race Guide",
+  "text": "Kobolds are humanoids with the reptilian subtype."
+ },
+ {
+  "race": "Kobold",
+  "name": "Small",
+  "source": "Advanced Race Guide",
+  "text": "Kobolds are Small creatures and gain a +1 size bonus to their AC, a +1 size bonus on attack rolls, a –1 penalty on combat maneuver checks and to their Combat Maneuver Defense, and a +4 size bonus on Stealth checks."
+ },
+ {
+  "race": "Kobold",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Kobolds have a base speed of 30 feet."
+ },
+ {
+  "race": "Kobold",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Kobolds can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Kobold",
+  "name": "Armor",
+  "source": "Advanced Race Guide",
+  "text": "Kobolds have a +1 natural armor bonus."
+ },
+ {
+  "race": "Kobold",
+  "name": "Crafty",
+  "source": "Advanced Race Guide",
+  "text": "Kobolds gain a +2 racial bonus on Craft (traps), Perception, and Profession (miner) checks. Craft (traps) and Stealth are always class skills for a kobold."
+ },
+ {
+  "race": "Kobold",
+  "name": "Light Sensitivity",
+  "source": "Advanced Race Guide",
+  "text": "Kobolds are dazzled as long as they remain in an area of bright light."
+ },
+ {
+  "race": "Kobold",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Kobolds begin play speaking Draconic. Kobolds with high Intelligence scores can choose from the following languages: Common, Dwarven, Gnome, and Undercommon."
+ },
+ {
+  "race": "Nagaji",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Strength, +2 Charisma, –2 Intelligence: Nagaji are strong and have forceful personalities, but they tend to ignore logic and mock scholarly pursuits."
+ },
+ {
+  "race": "Nagaji",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Nagaji are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Nagaji",
+  "name": "Reptilian",
+  "source": "Advanced Race Guide",
+  "text": "Nagaji are humanoids with the reptilian subtype."
+ },
+ {
+  "race": "Nagaji",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Nagaji have a base speed of 30 feet."
+ },
+ {
+  "race": "Nagaji",
+  "name": "Low-Light Vision",
+  "source": "Advanced Race Guide",
+  "text": "Nagaji can see twice as far as humans in conditions of dim light."
+ },
+ {
+  "race": "Nagaji",
+  "name": "Armored Scales",
+  "source": "Advanced Race Guide",
+  "text": "Nagaji have a +1 natural armor bonus because of their scaly flesh."
+ },
+ {
+  "race": "Nagaji",
+  "name": "Resistant",
+  "source": "Advanced Race Guide",
+  "text": "Nagaji receive a +2 racial saving throw bonus against mind-affecting effects and poison."
+ },
+ {
+  "race": "Nagaji",
+  "name": "Serpent’s Sense",
+  "source": "Advanced Race Guide",
+  "text": "Nagaji receive a +2 racial bonus on Handle Animal checks against reptiles, and a +2 racial bonus on Perception checks."
+ },
+ {
+  "race": "Nagaji",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Nagaji begin play speaking Common and Nagaji. Nagaji with high Intelligence scores can choose from the following languages: any human tongue, Abyssal, Aklo, Celestial, Draconic, Giant, Infernal, and Sylvan."
+ },
+ {
+  "race": "Orc",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+4 Strength, –2 Intelligence, –2 Wisdom, –2 Charisma: Orcs are brutal and savage."
+ },
+ {
+  "race": "Orc",
+  "name": "Orc",
+  "source": "Advanced Race Guide",
+  "text": "Orcs are humanoids with the orc subtype."
+ },
+ {
+  "race": "Orc",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Orcs are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Orc",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Orcs have a base speed of 30 feet."
+ },
+ {
+  "race": "Orc",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Orcs can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Orc",
+  "name": "Light Sensitivity",
+  "source": "Advanced Race Guide",
+  "text": "Orcs are dazzled in areas of bright sunlight or within the radius of a daylight spell."
+ },
+ {
+  "race": "Orc",
+  "name": "Ferocity",
+  "source": "Advanced Race Guide",
+  "text": "Orcs can remain conscious and continue fighting even if their hit point totals fall below 0. Orcs are still staggered at 0 hit points or lower and lose 1 hit point each round as normal."
+ },
+ {
+  "race": "Orc",
+  "name": "Weapon Familiarity",
+  "source": "Advanced Race Guide",
+  "text": "Orcs are always proficient with greataxes and falchions, and treat any weapon with the word “orc” in its name as a martial weapon."
+ },
+ {
+  "race": "Orc",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Orcs begin play speaking Common and Orc. Orcs with high Intelligence scores can choose from the following languages: Dwarven, Giant, Gnoll, Goblin, and Undercommon."
+ },
+ {
+  "race": "Oread",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Strength, +2 Wisdom, –2 Charisma: Oreads are strong, solid, stable, and stoic."
+ },
+ {
+  "race": "Oread",
+  "name": "Native Outsider",
+  "source": "Advanced Race Guide",
+  "text": "Oreads are outsiders with the native subtype."
+ },
+ {
+  "race": "Oread",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Oreads are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Oread",
+  "name": "Slow Speed",
+  "source": "Advanced Race Guide",
+  "text": "Oreads have a base speed of 20 feet."
+ },
+ {
+  "race": "Oread",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Oreads can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Oread",
+  "name": "Spell-Like Ability",
+  "source": "Advanced Race Guide",
+  "text": "Oreads can use <i>magic stone</i> 1/day as spell-like ability (with a caster level equal to the oread’s character level; DC 11 + Charisma modifier)."
+ },
+ {
+  "race": "Oread",
+  "name": "Energy Resistance",
+  "source": "Advanced Race Guide",
+  "text": "Oreads have acid resistance 5."
+ },
+ {
+  "race": "Oread",
+  "name": "Earth Affinity",
+  "source": "Advanced Race Guide",
+  "text": "Oread sorcerers with the elemental (earth) bloodline treat their Charisma scores as 2 points higher for the purposes of all sorcerer spells and class abilities. Oread clerics with the Earth domain use their domain powers and spells at +1 caster level."
+ },
+ {
+  "race": "Oread",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Oreads begin play speaking Common and Terran. Oreads with high Intelligence scores can choose from the following languages: Aquan, Auran, Dwarven, Elven, Gnome, Halfling, Ignan, and Undercommon"
+ },
+ {
+  "race": "Ratfolk",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Intelligence, –2 Strength: Ratfolk are agile and clever, yet physically weak."
+ },
+ {
+  "race": "Ratfolk",
+  "name": "Ratfolk",
+  "source": "Advanced Race Guide",
+  "text": "Ratfolk are humanoids with the ratfolk subtype."
+ },
+ {
+  "race": "Ratfolk",
+  "name": "Small",
+  "source": "Advanced Race Guide",
+  "text": "Ratfolk are Small and gain a +1 size bonus to their AC, a +1 size bonus on attack rolls, a –1 penalty on combat maneuver checks and to their Combat Maneuver Defense, and a +4 size bonus on Stealth checks."
+ },
+ {
+  "race": "Ratfolk",
+  "name": "Slow Speed",
+  "source": "Advanced Race Guide",
+  "text": "Ratfolk have a base speed of 20 feet."
+ },
+ {
+  "race": "Ratfolk",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Ratfolk can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Ratfolk",
+  "name": "Rodent Empathy",
+  "source": "Advanced Race Guide",
+  "text": "Ratfolk gain a +4 racial bonus on Handle Animal checks made to influence rodents."
+ },
+ {
+  "race": "Ratfolk",
+  "name": "Swarming",
+  "source": "Advanced Race Guide",
+  "text": "Ratfolk are used to living and fighting communally, and are adept at swarming foes for their own gain and their foes’ detriment. Up to two ratfolk can share the same square at the same time. If two ratfolk in the same square attack the same foe, they are considered to be flanking that foe as if they were in two opposite squares."
+ },
+ {
+  "race": "Ratfolk",
+  "name": "Tinker",
+  "source": "Advanced Race Guide",
+  "text": "Ratfolk gain a +2 racial bonus on Craft (alchemy), Perception, and Use Magic Device checks."
+ },
+ {
+  "race": "Ratfolk",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Ratfolk begin play speaking Common. Ratfolk with high Intelligence scores can choose from the following languages: Aklo, Draconic, Dwarven, Gnoll, Gnome, Goblin, Halfling, Orc, and Undercommon."
+ },
+ {
+  "race": "Samsaran",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Intelligence, +2 Wisdom, –2 Constitution: Samsarans are insightful and strong-minded, but with frail bodies."
+ },
+ {
+  "race": "Samsaran",
+  "name": "Samsaran",
+  "source": "Advanced Race Guide",
+  "text": "Samsarans are humanoids with the samsaran subtype."
+ },
+ {
+  "race": "Samsaran",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Samsarans are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Samsaran",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Samsarans have a base speed of 30 feet."
+ },
+ {
+  "race": "Samsaran",
+  "name": "Low-Light Vision",
+  "source": "Advanced Race Guide",
+  "text": "Samsarans can see twice as far as humans in conditions of dim light."
+ },
+ {
+  "race": "Samsaran",
+  "name": "Lifebound",
+  "source": "Advanced Race Guide",
+  "text": "Samsarans gain a +2 racial bonus on all saving throws to resist death effects, saving throws against negative energy effects, Fortitude saves to remove negative levels, and Constitution checks to stabilize if reduced to negative hit points."
+ },
+ {
+  "race": "Samsaran",
+  "name": "Samsaran Magic",
+  "source": "Advanced Race Guide",
+  "text": "Samsarans with a Charisma score of 11 or higher gain the following spell-like abilities: 1/day— <i>comprehend languages</i>, <i>deathwatch</i>, and <i>stabilize</i>. The caster level for these effects equals the samsaran’s character level."
+ },
+ {
+  "race": "Samsaran",
+  "name": "Shards of the Past",
+  "source": "Advanced Race Guide",
+  "text": "A samsaran’s past lives grant her bonuses on two skills. The samsaran chooses two skills—she gains a +2 racial bonus on both, and they are always class skills for her. Once made, this choice can’t be altered."
+ },
+ {
+  "race": "Samsaran",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Samsarans begin play speaking Common and Samsaran. Samsarans with high Intelligence scores can choose from the following languages: any human language, Abyssal, Aquan, Auran, Celestial, Draconic, Giant, Ignan, Infernal, Nagaji, Tengu, and Terran."
+ },
+ {
+  "race": "Strix",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, –2 Charisma: Strix are swift and elusive, but tend to be stubborn and swift to anger."
+ },
+ {
+  "race": "Strix",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Strix are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Strix",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Strix have a base speed of 30 feet on land. They also have a fly speed of 60 feet (average)."
+ },
+ {
+  "race": "Strix",
+  "name": "Low-Light Vision",
+  "source": "Advanced Race Guide",
+  "text": "Strix can see twice as far as humans in conditions of dim light."
+ },
+ {
+  "race": "Strix",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Strix can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Strix",
+  "name": "Hatred",
+  "source": "Advanced Race Guide",
+  "text": "Strix receive a +1 bonus on attack rolls against humanoid creatures of the human subtype because of their special training against these hated foes."
+ },
+ {
+  "race": "Strix",
+  "name": "Nocturnal",
+  "source": "Advanced Race Guide",
+  "text": "Strix gain a +2 racial bonus on Perception and Stealth checks in dim light or darkness."
+ },
+ {
+  "race": "Strix",
+  "name": "Suspicious",
+  "source": "Advanced Race Guide",
+  "text": "Strix receive a +2 racial bonus on saving throws against illusion spells or effects."
+ },
+ {
+  "race": "Strix",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Strix begin play speaking Strix. Those with high Intelligence scores can choose any of the following languages: Auran, Azlanti, Common, Draconic, Giant, Gnome, Goblin, and Infernal."
+ },
+ {
+  "race": "Suli",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Strength, +2 Charisma, –2 Intelligence: Sulis are brawny and charming, but slow-witted."
+ },
+ {
+  "race": "Suli",
+  "name": "Native Outsider",
+  "source": "Advanced Race Guide",
+  "text": "Sulis are outsiders with the native subtype."
+ },
+ {
+  "race": "Suli",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Sulis are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Suli",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Sulis have a base speed of 30 feet."
+ },
+ {
+  "race": "Suli",
+  "name": "Low-Light Vision",
+  "source": "Advanced Race Guide",
+  "text": "Sulis can see twice as far as humans in dim light."
+ },
+ {
+  "race": "Suli",
+  "name": "Negotiator",
+  "source": "Advanced Race Guide",
+  "text": "Sulis are keen negotiators, and gain a +2 racial bonus on Diplomacy and Sense Motive checks."
+ },
+ {
+  "race": "Suli",
+  "name": "Elemental Assault",
+  "source": "Advanced Race Guide",
+  "text": "Once per day as a swift action, a suli can shroud her arms in acid, cold, electricity, or fire. This effect lasts for 1 round per level and can be dismissed as a free action. Unarmed strikes with her arms or hands (or attacks with weapons held in those hands) deal +1d6 points of damage of the appropriate energy type."
+ },
+ {
+  "race": "Suli",
+  "name": "Energy Resistance",
+  "source": "Advanced Race Guide",
+  "text": "Sulis have resistance to acid 5, cold 5, electricity 5, and fire 5."
+ },
+ {
+  "race": "Suli",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Sulis begin play speaking Common and one elemental language (Aquan, Auran, Ignan, or Terran). Sulis with high Intelligence scores can choose from the following languages: Aquan, Auran, Draconic, Ignan, and Terran."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Wisdom, –2 Strength, –4 Charisma: Svirfneblin are fast and observant but relatively weak and emotionally distant."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Gnome",
+  "source": "Advanced Race Guide",
+  "text": "Svirfneblin are humanoids with the gnome subtype."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Small",
+  "source": "Advanced Race Guide",
+  "text": "Svirfneblin are Small creatures and gain a +1 size bonus to their AC, a +1 size bonus on attack rolls, a –1 penalty on combat maneuver checks and to their Combat Maneuver Defense, and a +4 size bonus on Stealth checks."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Slow Speed",
+  "source": "Advanced Race Guide",
+  "text": "Svirfneblin have a base speed of 20 feet."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Defensive Training",
+  "source": "Advanced Race Guide",
+  "text": "Svirfneblin gain a +2 dodge bonus to their AC."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Senses",
+  "source": "Advanced Race Guide",
+  "text": "Svirfneblin have darkvision 120 feet and lowlight vision."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Fortunate",
+  "source": "Advanced Race Guide",
+  "text": "Svirfneblin gain a +2 racial bonus on all saving throws."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Skilled",
+  "source": "Advanced Race Guide",
+  "text": "Svirfneblin gain a +2 racial bonus on Stealth checks; this improves to a +4 bonus underground. They gain a +2 racial bonus on Craft (alchemy) checks and Perception checks."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Hatred",
+  "source": "Advanced Race Guide",
+  "text": "Svirfneblin receive a +1 bonus on attack rolls against humanoid creatures of the reptilian and dwarf subtypes due to training against these hated foes."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Stonecunning",
+  "source": "Advanced Race Guide",
+  "text": "Svirfneblin gain the stonecunning trait as dwarves."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Spell Resistance",
+  "source": "Advanced Race Guide",
+  "text": "A svirfneblin has an amount of spell resistance equal to 11 + his character level."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Svirfneblin Magic",
+  "source": "Advanced Race Guide",
+  "text": "Svirfneblin add 1 to the DCs of any saving throws to resist illusion spells they cast. Svirfneblin also gain the following spell-like abilities: constant—<i>nondetection</i>; 1/day—<i>blindness/deafness</i> (DC 12 + Charisma modifier), <i>blur</i>, <i>disguise self</i>; caster level equals the svirfneblin’s character level."
+ },
+ {
+  "race": "Svirfneblin",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Svirfneblin begin play speaking Gnome and Undercommon. Those with high Intelligence scores can choose from the following languages: Aklo, Common, Draconic, Dwarven, Elven, Giant, Goblin, Orc, and Terran."
+ },
+ {
+  "race": "Sylph",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Intelligence, –2 Constitution: Sylphs are quick and insightful, but slight and delicate."
+ },
+ {
+  "race": "Sylph",
+  "name": "Native Outsider",
+  "source": "Advanced Race Guide",
+  "text": "Sylphs are outsiders with the native subtype."
+ },
+ {
+  "race": "Sylph",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Sylphs are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Sylph",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Sylphs have a base speed of 30 feet."
+ },
+ {
+  "race": "Sylph",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Sylphs can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Sylph",
+  "name": "Spell-Like Ability",
+  "source": "Advanced Race Guide",
+  "text": "Sylphs can use <i>feather fall</i> 1/day as a spell-like ability (with a caster level equal to the sylph’s character level)."
+ },
+ {
+  "race": "Sylph",
+  "name": "Energy Resistance",
+  "source": "Advanced Race Guide",
+  "text": "Sylphs have electricity resistance 5."
+ },
+ {
+  "race": "Sylph",
+  "name": "Air Affinity",
+  "source": "Advanced Race Guide",
+  "text": "Sylph sorcerers with the elemental (air) bloodline treat their Charisma scores as 2 points higher for the purposes of all sorcerer spells and class abilities. Sylph spellcasters with the Air domain use their domain powers and spells at +1 caster level."
+ },
+ {
+  "race": "Sylph",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Sylphs speak Common and Auran. Sylphs with high Intelligence scores can choose from the following languages: Aquan, Dwarven, Elven, Gnome, Halfling, Ignan, and Terran."
+ },
+ {
+  "race": "Tengu",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Wisdom, –2 Constitution: Tengus are fast and observant, but relatively fragile."
+ },
+ {
+  "race": "Tengu",
+  "name": "Tengu",
+  "source": "Advanced Race Guide",
+  "text": "Tengus are humanoids with the tengu subtype."
+ },
+ {
+  "race": "Tengu",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Tengus are Medium creatures and receive no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Tengu",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Tengus have a base speed of 30 feet."
+ },
+ {
+  "race": "Tengu",
+  "name": "Senses",
+  "source": "Advanced Race Guide",
+  "text": "Tengus have low-light vision."
+ },
+ {
+  "race": "Tengu",
+  "name": "Sneaky",
+  "source": "Advanced Race Guide",
+  "text": "Tengus gain a +2 racial bonus on Perception and Stealth checks."
+ },
+ {
+  "race": "Tengu",
+  "name": "Gifted Linguist",
+  "source": "Advanced Race Guide",
+  "text": "Tengus gain a +4 racial bonus on Linguistics checks, and learn two languages each time they gain a rank in Linguistics rather than one language."
+ },
+ {
+  "race": "Tengu",
+  "name": "Swordtrained",
+  "source": "Advanced Race Guide",
+  "text": "Tengus are automatically proficient with swordlike weapons (including bastard swords, daggers, elven curve blades, falchions, greatswords, kukris, longswords, punching daggers, rapiers, scimitars, short swords, and two-bladed swords)."
+ },
+ {
+  "race": "Tengu",
+  "name": "Natural Weapon",
+  "source": "Advanced Race Guide",
+  "text": "A tengu has a bite attack that deals 1d3 points of damage."
+ },
+ {
+  "race": "Tengu",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Tengus begin play speaking Common and Tengu. Tengus with high Intelligence scores can choose any languages they want (except for secret languages, such as Druidic)."
+ },
+ {
+  "race": "Tiefling",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Intelligence, –2 Charisma: Tieflings are quick in body and mind, but are inherently unnerving. Tieflings of specific bloodlines (see below) gain different ability score modifiers as indicated."
+ },
+ {
+  "race": "Tiefling",
+  "name": "Native Outsider",
+  "source": "Advanced Race Guide",
+  "text": "Tieflings are outsiders with the native subtype."
+ },
+ {
+  "race": "Tiefling",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Tieflings are Medium creatures and receive no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Tiefling",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Tieflings have a base speed of 30 feet."
+ },
+ {
+  "race": "Tiefling",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Tieflings see in the dark for up to 60 feet."
+ },
+ {
+  "race": "Tiefling",
+  "name": "Skilled",
+  "source": "Advanced Race Guide",
+  "text": "Tieflings gain a +2 racial bonus on Bluff and Stealth checks. Tieflings of specific bloodlines (see below) gain a +2 bonus on different skill checks as indicated."
+ },
+ {
+  "race": "Tiefling",
+  "name": "Spell-Like Ability",
+  "source": "Advanced Race Guide",
+  "text": "Tieflings can use darkness once per day as a spell-like ability (with a caster level equal to the tiefling’s character level). Tieflings of specific bloodlines (see below) gain different spell-like abilities."
+ },
+ {
+  "race": "Tiefling",
+  "name": "Fiendish Resistance",
+  "source": "Advanced Race Guide",
+  "text": "Tieflings have cold resistance 5, electricity resistance 5, and fire resistance 5."
+ },
+ {
+  "race": "Tiefling",
+  "name": "Fiendish Sorcery",
+  "source": "Advanced Race Guide",
+  "text": "Tiefling sorcerers with the Abyssal or Infernal bloodlines treat their Charisma scores as 2 points higher for the purposes of all sorcerer class abilities."
+ },
+ {
+  "race": "Tiefling",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Tieflings begin play speaking Common and either Abyssal or Infernal. Tieflings with high intelligence scores can choose from the following languages: Abyssal, Draconic, Dwarven, Elven, Gnome, Goblin, Halfling, Infernal, and Orc."
+ },
+ {
+  "race": "Undine",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Wisdom, –2 Strength: Undines are perceptive and agile, but somewhat weak."
+ },
+ {
+  "race": "Undine",
+  "name": "Native Outsider",
+  "source": "Advanced Race Guide",
+  "text": "Undines are outsiders with the native subtype."
+ },
+ {
+  "race": "Undine",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Undines are Medium creatures and receive no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Undine",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Undines have a base speed of 30 feet on land. They also have a swim speed of 30 feet, can move in water without needing to attempt Swim checks, and always treat Swim as a class skill."
+ },
+ {
+  "race": "Undine",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Undines can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Undine",
+  "name": "Spell-Like Ability",
+  "source": "Advanced Race Guide",
+  "text": "Undines can cast <i>hydraulic push</i> once per day as a spell-like ability (with a caster level equal to the undine’s character level)."
+ },
+ {
+  "race": "Undine",
+  "name": "Energy Resistance",
+  "source": "Advanced Race Guide",
+  "text": "Undines have cold resistance 5."
+ },
+ {
+  "race": "Undine",
+  "name": "Water Affinity",
+  "source": "Advanced Race Guide",
+  "text": "Undine sorcerers with the elemental (water) bloodline treat their Charisma scores as 2 points higher for the purposes of all sorcerer spells and class abilities. Undine clerics with the Water domain cast their Water domain powers and spells at +1 caster level."
+ },
+ {
+  "race": "Undine",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Undines begin play speaking Common and Aquan. Undines with high Intelligence scores can choose from the following languages: Auran, Dwarven, Elven, Gnome, Halfling, Ignan, and Terran."
+ },
+ {
+  "race": "Vanara",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Wisdom, –2 Charisma: Vanaras are agile and perceptive, but are also rather impish and mischievous."
+ },
+ {
+  "race": "Vanara",
+  "name": "Vanara",
+  "source": "Advanced Race Guide",
+  "text": "Vanaras are humanoids with the vanara subtype."
+ },
+ {
+  "race": "Vanara",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Vanaras are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Vanara",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Vanaras have a base speed of 30 feet and a Climb speed of 20 feet."
+ },
+ {
+  "race": "Vanara",
+  "name": "Low-Light Vision",
+  "source": "Advanced Race Guide",
+  "text": "A vanara can see twice as far as a human in dim light."
+ },
+ {
+  "race": "Vanara",
+  "name": "Nimble",
+  "source": "Advanced Race Guide",
+  "text": "Vanaras have a +2 racial bonus on Acrobatics and Stealth checks."
+ },
+ {
+  "race": "Vanara",
+  "name": "Prehensile Tail",
+  "source": "Advanced Race Guide",
+  "text": "A vanara has a long, flexible tail that she can use to carry objects. She cannot wield weapons with her tail, but the tail allows her to retrieve a small, stowed object carried on her person as a swift action."
+ },
+ {
+  "race": "Vanara",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Vanaras begin play speaking Common and Vanaran. Vanaras with high Intelligence scores can choose from the following languages: Aklo, Celestial, Elven, Gnome, Goblin, and Sylvan."
+ },
+ {
+  "race": "Vishkanya",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Charisma, –2 Wisdom: Vishkanyas are graceful but often irrational."
+ },
+ {
+  "race": "Vishkanya",
+  "name": "Vishkanya",
+  "source": "Advanced Race Guide",
+  "text": "Vishkanyas are humanoids with the vishkanya subtype."
+ },
+ {
+  "race": "Vishkanya",
+  "name": "Medium",
+  "source": "Advanced Race Guide",
+  "text": "Vishkanyas are Medium creatures and have no bonuses or penalties due to their size."
+ },
+ {
+  "race": "Vishkanya",
+  "name": "Normal Speed",
+  "source": "Advanced Race Guide",
+  "text": "Vishkanyas have a base speed of 30 feet."
+ },
+ {
+  "race": "Vishkanya",
+  "name": "Low-Light Vision",
+  "source": "Advanced Race Guide",
+  "text": "Vishkanyas can see twice as far as humans in conditions of dim light."
+ },
+ {
+  "race": "Vishkanya",
+  "name": "Keen Senses",
+  "source": "Advanced Race Guide",
+  "text": "Vishkanyas receive a +2 racial bonus on Perception checks."
+ },
+ {
+  "race": "Vishkanya",
+  "name": "Limber",
+  "source": "Advanced Race Guide",
+  "text": "Vishkanyas receive a +2 racial bonus on Escape Artist and Stealth checks."
+ },
+ {
+  "race": "Vishkanya",
+  "name": "Poison Resistance",
+  "source": "Advanced Race Guide",
+  "text": "A vishkanya has a racial bonus on saving throws against poison equal to its Hit Dice."
+ },
+ {
+  "race": "Vishkanya",
+  "name": "Poison Use",
+  "source": "Advanced Race Guide",
+  "text": "Vishkanyas are skilled in the use of poison and never accidentally poison themselves when using or applying poison."
+ },
+ {
+  "race": "Vishkanya",
+  "name": "Toxic",
+  "source": "Advanced Race Guide",
+  "text": "A number of times per day equal to his Constitution modifier (minimum 1/day), a vishkanya can envenom a weapon that he wields with his toxic saliva or blood (using blood requires the vishkanya to be injured when he uses this ability). Applying venom in this way is a swift action."
+ },
+ {
+  "race": "Vishkanya",
+  "name": "Weapon Familiarity",
+  "source": "Advanced Race Guide",
+  "text": "Vishkanyas are always proficient with blowguns, kukri, and shuriken."
+ },
+ {
+  "race": "Vishkanya",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Vishkanyas begin play speaking Common and Vishkanya. Vishkanyas with high Intelligence scores can choose from the following languages: Aklo, Draconic, Elven, Goblin, Sylvan, and Undercommon."
+ },
+ {
+  "race": "Wayang",
+  "name": "Ability Score Modifiers",
+  "source": "Advanced Race Guide",
+  "text": "+2 Dexterity, +2 Intelligence, –2 Wisdom: Wayangs are nimble and cagey, but their perception of the world is clouded by shadows."
+ },
+ {
+  "race": "Wayang",
+  "name": "Wayang",
+  "source": "Advanced Race Guide",
+  "text": "Wayangs are humanoids with the wayang subtype."
+ },
+ {
+  "race": "Wayang",
+  "name": "Small",
+  "source": "Advanced Race Guide",
+  "text": "Wayangs are Small creatures and gain a +1 size bonus to their AC, a +1 size bonus on attack rolls, a –1 penalty on combat maneuver checks and to their Combat Maneuver Defense, and a +4 size bonus on Stealth checks."
+ },
+ {
+  "race": "Wayang",
+  "name": "Slow Speed",
+  "source": "Advanced Race Guide",
+  "text": "Wayangs have a base speed of 20 feet."
+ },
+ {
+  "race": "Wayang",
+  "name": "Darkvision",
+  "source": "Advanced Race Guide",
+  "text": "Wayangs can see in the dark up to 60 feet."
+ },
+ {
+  "race": "Wayang",
+  "name": "Light and Dark",
+  "source": "Advanced Race Guide",
+  "text": "Once per day as an immediate action, a wayang can treat positive and negative energy effects as if she were an undead creature, taking damage from positive energy and being healed of damage by negative energy. This ability lasts for 1 minute once activated."
+ },
+ {
+  "race": "Wayang",
+  "name": "Lurker",
+  "source": "Advanced Race Guide",
+  "text": "Wayangs gain a +2 racial bonus on Perception and Stealth checks."
+ },
+ {
+  "race": "Wayang",
+  "name": "Shadow Magic",
+  "source": "Advanced Race Guide",
+  "text": "Wayangs add 1 to the DC of any saving throws to resist spells of the shadow subschool that they cast. Wayangs with a Charisma score of 11 or higher also gain the following spell-like abilities: 1/day—<i>ghost sound</i>, <i>pass without trace</i>, and <i>ventriloquism</i>. The caster level for these effects is equal to the wayang’s character level. The DCs of these spells are equal to 10 + the spell’s level + the wayang’s Charisma modifier."
+ },
+ {
+  "race": "Wayang",
+  "name": "Shadow Resistance",
+  "source": "Advanced Race Guide",
+  "text": "Wayangs get a +2 racial bonus on saving throws against spells of the shadow subschool."
+ },
+ {
+  "race": "Wayang",
+  "name": "Languages",
+  "source": "Advanced Race Guide",
+  "text": "Wayangs begin play speaking Common and Wayang. Wayangs with high Intelligence scores can choose from the following languages: any human language, Abyssal, Aklo, Draconic, Goblin, Infernal, Nagaji, Samsaran, and Tengu."
+ }
+]
