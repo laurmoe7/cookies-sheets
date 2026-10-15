@@ -984,13 +984,17 @@ def main():
             return
     import webview
 
+    window_ref = []  # the window, kept OUT of the js_api object: pywebview walks everything reachable from js_api, and through the window it never reaches the end
+
     class WindowApi:
-        """What the page can ask the desktop window for: a native folder chooser (the page itself cannot pick a folder path)."""
-        window = None
+        """What the page can ask the desktop window for: a native folder chooser (the page itself cannot pick a folder path). Only methods go here, no attributes
+        that lead to the window or anything big."""
 
         def pick_folder(self, start=''):
+            if not window_ref:
+                return ''
             kind = webview.FileDialog.FOLDER if hasattr(webview, 'FileDialog') else webview.FOLDER_DIALOG
-            r = self.window.create_file_dialog(kind, directory=start or CHAR_DIR)
+            r = window_ref[0].create_file_dialog(kind, directory=start or CHAR_DIR)
             return r[0] if r else ''
 
     window_api = WindowApi()
@@ -1013,7 +1017,7 @@ def main():
         except OSError:
             pass
     try:
-        window_api.window = webview.create_window(APP_NAME, url, width=1400, height=900, min_size=(1000, 650), js_api=window_api)
+        window_ref.append(webview.create_window(APP_NAME, url, width=1400, height=900, min_size=(1000, 650), js_api=window_api))
         webview.start(icon=os.path.join(WEB, 'icon.ico'), private_mode=False, storage_path=storage)
     except Exception:
         # No usable WebView2 runtime (or the window could not open): use the default browser instead, so the app still works.

@@ -385,6 +385,18 @@ class SaveFolder(unittest.TestCase):
         self.assertEqual(app._start_char_dir(), (chosen, ''), 'a byte-order mark does not hide the setting')
 
 
+class DesktopWindowApi(unittest.TestCase):
+    def test_the_window_is_not_reachable_from_the_js_api(self):
+        """pywebview walks every attribute reachable from the js_api object. With the window among them it never finishes: the whole app froze and
+        its server stopped answering. The window is kept in a separate list instead, and the object holds methods only."""
+        src = open(os.path.join(ROOT, 'app.py'), encoding='utf-8').read()
+        body = src[src.index('class WindowApi'):src.index('window_api = WindowApi()')]
+        self.assertNotIn('window =', body, 'no attribute on the js_api object may hold the window')
+        self.assertNotIn('self.window', body)
+        self.assertNotIn('window_api.window', src)
+        self.assertIn('js_api=window_api', src)
+
+
 class CreatureList(unittest.TestCase):
     def test_search_and_read(self):
         r = app.search_creatures('owlbear')
