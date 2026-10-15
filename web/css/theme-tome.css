@@ -182,3 +182,10 @@ html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
 @keyframes leaf-shadow-rev { 0% { opacity: 0; } 55% { opacity: .7; } 100% { opacity: 0; } }
 @keyframes leaf-bend { 0% { --c: 0; } 38% { --c: 1; } 75% { --c: .55; } 100% { --c: 0; } }
 @keyframes leaf-shadow { 0% { opacity: 0; } 35% { opacity: .75; } 100% { opacity: 0; } }
+
+/* Scroll bars inside windows sit on parchment: thin, a track that is a shade of the paper, and a thumb in ink brown that turns red under the mouse. */
+html[data-theme="tome"] .modal ::-webkit-scrollbar { width: 10px; height: 10px; }
+html[data-theme="tome"] .modal ::-webkit-scrollbar-track { background: rgba(70, 48, 20, .13); border: 0; border-radius: 6px; margin: 3px 0; }
+html[data-theme="tome"] .modal ::-webkit-scrollbar-thumb { background: rgba(84, 55, 22, .62); border: 2px solid transparent; background-clip: padding-box; border-radius: 6px; }
+html[data-theme="tome"] .modal ::-webkit-scrollbar-thumb:hover { background: #7a2415; border: 2px solid transparent; background-clip: padding-box; }
+html[data-theme="tome"] .modal ::-webkit-scrollbar-corner { background: transparent; }

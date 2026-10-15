@@ -651,13 +651,15 @@ function spells(body, c, d) {
     const t = e.target.closest('[data-slot-adj],[data-sp-select],[data-add-spell],[data-browse-spells],[data-custom-spell],[data-cast],[data-cast-spont],[data-prep]');
     if (!t) return;
     if (t.dataset.browseSpells !== undefined) { // look through every spell of that level on the class list, and add as many as you like
-      const picks = [];
-      await chooseSpells({ cls, lists: sc.lists, allowance: favoritesAllowance(sc, +t.dataset.browseSpells), picks, known: book.spells.map(s => s.name) });
-      if (picks.length) {
-        for (const s of picks) book.spells.push({ id: s.id, name: s.name, level: s.level, school: s.school, summary: s.summary, prepared: 0, cast: 0 });
-        toast(`${picks.length} spell${picks.length === 1 ? '' : 's'} added to your ${cls} list`, 'good');
+      const picks = [], added = [];
+      // Every pick (or taking one back) goes straight onto the list, so the page behind the window shows it at once.
+      const sync = () => {
+        for (const s of added.splice(0)) { const i = book.spells.indexOf(s); if (i >= 0) book.spells.splice(i, 1); }
+        for (const s of picks) { const row = { id: s.id, name: s.name, level: s.level, school: s.school, summary: s.summary, prepared: 0, cast: 0 }; added.push(row); book.spells.push(row); }
         changed({ rerender: true });
-      }
+      };
+      await chooseSpells({ cls, lists: sc.lists, allowance: favoritesAllowance(sc, +t.dataset.browseSpells), picks, known: book.spells.map(s => s.name), onChange: sync });
+      if (picks.length) toast(`${picks.length} spell${picks.length === 1 ? '' : 's'} added to your ${cls} list`, 'good');
       return;
     }
     if (t.dataset.slotAdj !== undefined) {

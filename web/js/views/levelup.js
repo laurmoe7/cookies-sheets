@@ -344,7 +344,7 @@ function spellPicks(c, def, row, prevRow, after, newLevel) {
   const chips = draft.spells.map((s, i) => `<span class="chip on">${s.level === 0 ? 'Cantrip' : 'L' + s.level} ${esc(s.name)} <button class="icon-btn" data-rm-spell="${i}">✕</button></span>`).join('');
   const favChips = draft.favs.map((s, i) => `<span class="chip on">${s.level === 0 ? 'Cantrip' : 'L' + s.level} ${esc(s.name)} <button class="icon-btn" data-rm-fav="${i}">✕</button></span>`).join('');
   if (allowance.kind === 'none') {
-    return `<section class="card"><div class="row"><h3 class="grow">Favorite spells <span class="muted small">(optional)</span></h3><button class="btn small primary" data-choose-favs>Choose favorites…</button></div>
+    return `<section class="card"><div class="row"><h3 class="grow">Spells <span class="muted small">(optional)</span></h3><button class="btn small primary" data-choose-favs>Choose spells</button></div>
       <p>${def.name}s prepare from their entire spell list, so you do not have to learn anything. Pick any spells you want quick access to and they are put on your Spells tab, ready to prepare. You can add more there any time.</p>
       <div class="chips">${favChips}</div></section>`;
   }
@@ -353,7 +353,7 @@ function spellPicks(c, def, row, prevRow, after, newLevel) {
       <button class="btn small ${rem.total ? 'primary' : ''}" data-choose-spells ${rem.total ? '' : 'disabled'}>Choose ${word}</button></div>
     <p>${guidance}</p>
     <div class="chips">${chips}</div>
-    ${allowance.kind === 'book' ? `<div class="row"><button class="btn small ghost" data-choose-favs title="Spells you want on your list for quick access, beyond the ones above">＋ More favorites (optional)</button></div>
+    ${allowance.kind === 'book' ? `<div class="row"><button class="btn small ghost" data-choose-favs title="Spells you want on your list for quick access, beyond the ones above">＋ More spells (optional)</button></div>
       <div class="chips">${favChips}</div>` : ''}
   </section>`;
 }

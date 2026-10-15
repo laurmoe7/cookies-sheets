@@ -59,7 +59,7 @@ export function chooseSpells({ cls, lists, allowance, picks, known, onChange = (
         return `<div class="pick-row ${isKnown || isPicked ? 'known' : ''}" data-i="${i}">
           <div><b>${esc(r.name)}</b> <span class="muted small">${LV(r.level)} · ${esc(r.school || '')}</span></div>
           <div class="muted small">${esc(r.summary || '')}</div>
-          ${isKnown ? '<span class="small muted">known</span>' : isPicked ? '<span class="small good">chosen ✓</span>' : `<button class="btn small primary" data-pick="${i}">Choose</button>`}</div>`;
+          ${isKnown ? '<span class="small muted">known</span>' : isPicked ? '<span class="small good">added ✓</span>' : `<button class="btn small primary" data-pick="${i}">Add</button>`}</div>`;
       }).join('') || '<p class="pad muted">No spells match.</p>';
     }, 120);
 
@@ -72,23 +72,41 @@ export function chooseSpells({ cls, lists, allowance, picks, known, onChange = (
       onChange();
       refresh();
     });
+    let current = null; // the spell shown in the preview pane
+    /** Takes a spell (from its row or from the preview's button). */
+    const take = r => {
+      if (!pickableLevels(rem()).includes(r.level)) { toast(`No ${LV(r.level).toLowerCase()} picks left`, 'err'); return false; }
+      picks.push({ id: r.id, name: r.name, level: r.level, school: r.school, summary: r.summary });
+      onChange();
+      if (rem().total === 0) { toast('All spells chosen', 'good'); close(true); return true; }
+      refresh();
+      return true;
+    };
+    /** The button under the preview's title: add it, or say why it cannot be added. */
+    const previewAction = r => {
+      const name = r.name.toLowerCase();
+      if (knownSet.has(name)) return '<span class="small muted">Already on your spell list</span>';
+      if (picks.some(p => p.name.toLowerCase() === name)) return '<span class="small good">Added ✓</span>';
+      return `<button class="btn primary" data-pick-preview>＋ Add to my spell list</button>`;
+    };
+    prev.addEventListener('click', e => {
+      if (!e.target.closest('[data-pick-preview]') || !current) return;
+      if (take(current)) { const slot = $('[data-preview-action]', prev); if (slot) slot.innerHTML = previewAction(current); }
+    });
     list.addEventListener('click', async e => {
       const p = e.target.closest('[data-pick]');
       if (p) {
         const r = rows[+p.dataset.pick];
-        if (!pickableLevels(rem()).includes(r.level)) { toast(`No ${LV(r.level).toLowerCase()} picks left`, 'err'); return; }
-        picks.push({ id: r.id, name: r.name, level: r.level, school: r.school, summary: r.summary });
-        onChange();
-        if (rem().total === 0) { toast('All spells chosen', 'good'); close(true); return; }
-        refresh();
+        if (take(r) && current && current.id === r.id) { const slot = $('[data-preview-action]', prev); if (slot) slot.innerHTML = previewAction(r); }
         return;
       }
       const row = e.target.closest('.pick-row');
       if (!row) return;
       $$('.pick-row.sel', list).forEach(x => x.classList.remove('sel'));
       row.classList.add('sel');
-      const en = await api.entry(rows[+row.dataset.i].id);
-      prev.innerHTML = `<h3>${esc(en.name)}</h3>${en.html}<p class="source">Source: ${esc(en.source)}</p>`;
+      current = rows[+row.dataset.i];
+      const en = await api.entry(current.id);
+      prev.innerHTML = `<div class="row"><h3 class="grow">${esc(en.name)}</h3><span data-preview-action>${previewAction(current)}</span></div>${en.html}<p class="source">Source: ${esc(en.source)}</p>`;
     });
     drawStatus();
     drawLevels();
