@@ -3,6 +3,7 @@
 
 const ROMAN = { I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7, VIII: 8, IX: 9 };
 import { linkTerms } from './termlinks.js';
+import { safeHtml } from './safehtml.js';
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 /** 'Summon Monster IV' -> {family: 'Summon Monster', level: 4}; anything else -> null. */
@@ -64,7 +65,7 @@ export function statBlockHtml(b, { template = false, links = false, companion = 
     <p>${esc(abil)}</p>
     <p><b>Base Atk</b> ${esc(b.base_attack || '—')}; <b>CMB</b> ${esc(b.cmb || '—')}; <b>CMD</b> ${esc(b.cmd || '—')}</p>
     ${row('Feats', b.feats)}${row('Skills', b.skills)}${row('Racial modifiers', b.racial_modifiers)}${row('Languages', b.languages)}${row('SQ', b.special_qualities, links)}
-    ${(b.abilities || []).length ? `<h4>Special abilities</h4>${b.abilities.map(a => `<div><b>${esc(a.name)}.</b> ${a.html}</div>`).join('')}` : ''}
+    ${(b.abilities || []).length ? `<h4>Special abilities</h4>${b.abilities.map(a => `<div><b>${esc(a.name)}.</b> ${safeHtml(a.html)}</div>`).join('')}` : ''}
     ${tpl ? `<h4>Template</h4><p class="small">Summoned with the celestial template if you are good, the fiendish template if you are evil (either if neutral).</p>
       <p class="small">${esc(tpl.celestial)}</p><p class="small">${esc(tpl.fiendish)}</p>` : ''}
     ${companion ? '' : '<p class="muted small">Augment Summoning gives +4 Str and +4 Con to every creature you summon.</p>'}

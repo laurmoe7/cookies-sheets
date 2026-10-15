@@ -378,7 +378,7 @@ export const SLA_KEY = 'Spell-like';
 function casterOf(d, cls, i) {
   if (cls !== SLA_KEY) return d?.spellcasting?.[cls];
   const s = d?.spellLikes?.[i];
-  return s && { cl: s.cl, dcs: { [s.level]: s.dc }, concentration: s.concentration, kind: 'spelllike', stat: s.stat };
+  return s && { cl: s.cl, dc: s.dc, dcs: { [s.level]: s.dc }, concentration: s.concentration, kind: 'spelllike', stat: s.stat };
 }
 const spellsOf = (c, cls) => (cls === SLA_KEY ? c?.spellLikes : c?.spellbooks?.[cls]?.spells);
 
@@ -460,7 +460,7 @@ async function spellWindow(btn) {
   else if (sp.notes) entry = { summary: sp.notes, html: '', meta: {} };
   const info = spellInfo(entry, sc.cl);
   const known = !!(entry && sp.id); // custom spells have no data, so offer every chip
-  const dc = sc.dcs[sp.level];
+  const dc = sla ? sc.dc : sc.dcs[sp.level]; // a spell-like ability's own level can be blank or odd; its DC was worked out from the clamped one
   const chip = (label, n, kind, path) => ({ label: label + ' ' + (bonusText(n) || '+0'), n, tip: 'Roll d20 ' + kind, name: name + ' ' + kind, parts: d.bd?.[path] });
   const chips = [
     ...(!known || info.attack === 'ranged' ? [chip('To hit: ranged ' + (info.touch === false ? 'attack' : 'touch'), d.ranged, 'ranged ' + (info.touch === false ? 'attack' : 'touch attack'), 'ranged')] : []),

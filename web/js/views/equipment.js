@@ -31,7 +31,7 @@ function chooser(title, kinds, head, rowCells, search, extraFilter) {
     };
     load().then(data => {
       const all = search(data);
-      [q, kind, ...$$('select', body)].forEach(x => x.addEventListener('input', () => draw(all)));
+      [q, ...$$('select', body)].forEach(x => x.addEventListener('input', () => draw(all)));
       tbody.addEventListener('click', e => { const tr = e.target.closest('tr[data-i]'); if (tr) close(rows[+tr.dataset.i]); });
       tbody.addEventListener('keydown', e => { const tr = e.target.closest('tr[data-i]'); if (tr && e.key === 'Enter') close(rows[+tr.dataset.i]); });
       draw(all);

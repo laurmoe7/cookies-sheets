@@ -43,7 +43,7 @@ export function renderLevelUp(main) {
   wireBasics(main, c);
   $$('[data-pick-class]', main).forEach(b => (b.onclick = () => {
     draft.cls = b.dataset.pickClass;
-    draft.ranks = {}; draft.spells = [];
+    draft.ranks = {}; draft.spells = []; draft.favs = [];
     draft.archetypes = [...archetypesOf(c, draft.cls)];
     if (newLevel === 1) draft.hpMode = 'max';
     render();
@@ -377,7 +377,7 @@ async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after
   let cantrips = [];
   if (allowance?.allCantrips) {
     try {
-      const known = new Set([...(c.spellbooks[def.name]?.spells || []), ...draft.favs].map(s => s.name.toLowerCase()));
+      const known = new Set([...(c.spellbooks[def.name]?.spells || []), ...draft.spells, ...draft.favs].map(s => s.name.toLowerCase()));
       cantrips = (await api.spells(after.spellcasting[def.name].lists.join(','), 0)).filter(s => !known.has(s.name.toLowerCase()));
     } catch { toast('Could not load cantrips; add them on the Spells tab.', 'err'); }
   }

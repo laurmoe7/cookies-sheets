@@ -6,6 +6,7 @@ import { classLevels, sign, num } from '../calc.js';
 import { computeCompanion, newCompanion, withCompanionSources, ANIMAL_SKILLS, EIDOLON_SKILLS, skillAbility } from '../companions.js';
 import { computeCreature, newCreatureCompanion } from '../creaturecomp.js';
 import { statBlockHtml } from '../summons.js';
+import { safeHtml } from '../safehtml.js';
 import { classFeatures, archetypesOf } from '../features.js';
 import { linkTerms } from '../termlinks.js';
 import { hpSegments, segsHtml } from '../bars.js';
@@ -63,12 +64,6 @@ export async function renderCompanions(body, c) {
     if (card) hpFx(card, fx);
   }
 
-  body.addEventListener('toggle', e => {
-    const d = e.target.closest?.('details[data-block]');
-    if (!d) return;
-    const comp = getPath(c, d.dataset.block);
-    if (comp && (comp.blockOpen !== false) !== d.open) { comp.blockOpen = d.open; changed(); }
-  }, true);
   body.onclick = async e => {
     const t = e.target.closest('[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-from-creature],[data-statblock],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
     if (!t) return;
@@ -224,7 +219,7 @@ function topPanels(comp, s, p, ed = {}) {
       ${extras(comp, s)}
       ${s.kind === 'familiar' ? `<h4>Master gains</h4><p>${esc(s.species?.masterBonus || 'No bonus listed in the books for this kind. Check with your GM.')}</p>
         <p class="small muted">Hit points are half the master’s, attacks use the master’s base attack bonus, and saves and skill ranks are the better of the familiar’s or the master’s. Feats and conditional skill bonuses (such as Skill Focus) are shown as printed. Improved Familiar kinds and the celestial, entropic, fiendish and resolute archetypes are calculated; other changes (such as the Evolved Familiar feat) aren’t, so note them below.</p>` : ''}
-      ${s.abilityNotes?.length ? `<h4>Special abilities</h4>${s.abilityNotes.map(a => `<div class="small"><b>${esc(a.name)}.</b> ${a.html}</div>`).join('')}` : ''}
+      ${s.abilityNotes?.length ? `<h4>Special abilities</h4>${s.abilityNotes.map(a => `<div class="small"><b>${esc(a.name)}.</b> ${safeHtml(a.html)}</div>`).join('')}` : ''}
       ${s.specials.length ? `<h4>Special abilities</h4><div class="chips">${s.specials.map(x => `<a href="#" class="chip ref" data-entry="${esc(x.replace(/ \d+$/, ''))}" data-cat="Class Feature">${esc(x)}</a>`).join('')}</div>` : ''}
       <h4>Skills</h4><div class="stat-row">${skillTiles(s).map(k => stat(esc(k.name), rb(k.total, k.name, skillParts(k)))).join('')}</div>
     </section>${ed.cards || ''}</div>`;

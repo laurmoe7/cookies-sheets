@@ -3,7 +3,7 @@ import { state, changed, render, go, refreshCalc } from '../app.js';
 import { sign, num, raceInfo, classLevels } from '../calc.js';
 import {
   ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS,
-  BUFF_PRESETS, BUFF_GROUPS, presetsIn, SCHOOLS, SPELL_FILTERS, SPELL_LIST_CLASSES, CASTING_STAT_NAMES,
+  BUFF_PRESETS, BUFF_GROUPS, presetsIn, SPELL_FILTERS, SPELL_LIST_CLASSES, CASTING_STAT_NAMES,
 } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom, showEntry, closeDrawer } from '../ui.js';
 import { choosePicture, repositionPicture } from '../cropper.js';
@@ -374,8 +374,6 @@ function wireCommon(body) {
     e.preventDefault();
     if (t.dataset.add) {
       const blank = {
-        weapons: { name: '', ability: '', ranged: false, enh: 0, misc: 0, damage: '1d8', dmgAbility: '', dmgMult: '', dmgMisc: 0, crit: '×2', range: '', type: '', weight: 0, mw: false, material: '', improvedCritical: false, fx: [], slot: '' },
-        armor: { name: '', type: 'armor', category: 'light', bonus: 0, enh: 0, maxDex: '', acp: 0, asf: 0, weight: 0, equipped: true, mw: false, material: '', fx: [] },
         gear: { name: '', qty: 1, weight: 0, value: '', notes: '', slot: '', hint: '', effects: [] },
         specials: { name: '', notes: '' },
         'money.custom': { name: '', amount: 0 },

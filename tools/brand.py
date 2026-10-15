@@ -56,7 +56,7 @@ def brand(exe):
     """Puts the app's icon and version resource into an .exe (one that is not running)."""
     from PyInstaller.utils.win32 import icon, versioninfo
     icon.CopyIcons_FromIco(exe, [ICON])
-    tmp = write_version_file(os.path.join(LAUNCHER_DIR, 'version_info.txt'))
+    tmp = write_version_file(os.path.join(os.path.dirname(exe), 'version_info.txt'))
     versioninfo.write_version_info_to_executable(exe, versioninfo.load_version_info_from_text_file(tmp))
     os.remove(tmp)
 
@@ -66,15 +66,24 @@ def make_launcher():
     src = os.path.join(base, 'pythonw.exe')
     if not os.path.isfile(src):
         raise SystemExit(f'No pythonw.exe in {base}: this needs a normal Windows Python install.')
-    shutil.rmtree(LAUNCHER_DIR, ignore_errors=True)
-    os.makedirs(LAUNCHER_DIR)
-    shutil.copy2(src, LAUNCHER)
+    if os.path.exists(LAUNCHER):  # Windows will not let a running program be replaced, and a half-deleted launcher cannot start the app
+        try:
+            open(LAUNCHER, 'r+b').close()
+        except OSError:
+            raise SystemExit(f"{NAME} is running from the launcher. Close it, then run this again.")
+    new = LAUNCHER_DIR + '.new'  # built beside the old one, and swapped in only when it is complete
+    shutil.rmtree(new, ignore_errors=True)
+    os.makedirs(new)
+    exe = os.path.join(new, NAME + '.exe')
+    shutil.copy2(src, exe)
     for f in os.listdir(base):  # python3.dll, python314.dll, vcruntime140.dll...: the DLLs the interpreter loads from its own folder
         if re.match(r'^(python3\d*|vcruntime\d+(_\d+)?)\.dll$', f, re.I):
-            shutil.copy2(os.path.join(base, f), LAUNCHER_DIR)
-    with open(os.path.join(LAUNCHER_DIR, 'pyvenv.cfg'), 'w', encoding='utf-8') as f:
+            shutil.copy2(os.path.join(base, f), new)
+    with open(os.path.join(new, 'pyvenv.cfg'), 'w', encoding='utf-8') as f:
         f.write(f'home = {base}\ninclude-system-site-packages = true\nversion = {sys.version.split()[0]}\n')
-    brand(LAUNCHER)
+    brand(exe)
+    shutil.rmtree(LAUNCHER_DIR, ignore_errors=True)
+    os.replace(new, LAUNCHER_DIR)
     print('made', LAUNCHER)
     return LAUNCHER
 
