@@ -92,5 +92,6 @@ export function computeCreature(comp) {
     attacks, attackCount: attacks.reduce((n, a) => n + a.count, 0), specialAttacks: b.special_attacks || '', qualities: b.special_qualities || '', bonusFeats: b.feats || '',
     specials: [], skills: parseSkills(b.skills).map(k => ({ name: k.name, ranks: 0, total: k.total, isClass: false })), senses: b.senses || '',
     defense: { defensive: b.defensive_abilities || '', dr: b.dr || '', immune: b.immune || '', resist: b.resist || '' }, sr: b.sr || '', weaknesses: b.weaknesses || '',
+    hpText: b.hp || '', space: b.space || '', reach: b.reach || '', aura: b.aura || '', languages: b.languages || '', abilityNotes: b.abilities || [],
   };
 }

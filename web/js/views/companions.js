@@ -70,7 +70,7 @@ export async function renderCompanions(body, c) {
     if (comp && (comp.blockOpen !== false) !== d.open) { comp.blockOpen = d.open; changed(); }
   }, true);
   body.onclick = async e => {
-    const t = e.target.closest('[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-from-creature],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
+    const t = e.target.closest('[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-from-creature],[data-statblock],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
     if (!t) return;
     e.preventDefault();
     if (t.dataset.new) { c.companions.push(newCompanion(t.dataset.new, data)); return changed({ rerender: true }); }
@@ -81,6 +81,13 @@ export async function renderCompanions(body, c) {
     }
     const i = +t.closest('[data-comp]').dataset.comp;
     const comp = c.companions[i];
+    if (t.dataset.statblock !== undefined) { // the classic stat block, in the side panel
+      const creature = comp.kind === 'creature';
+      const st = creature ? computeCreature(comp) : computeCompanion(comp, levels, data, masterOf(c, levels));
+      showCustom({ name: comp.name || (creature ? 'Creature' : 'Companion'), cat: 'Stat block', sub: creature ? `${comp.creature?.source || ''}` : `${st.kind} · level ${st.level}`,
+        html: creature ? statBlockHtml(comp.creature || {}, { links: true, companion: true }) : statBlock(comp, st) });
+      return;
+    }
     if (t.dataset.chp !== undefined) {
       const s = comp.kind === 'creature' ? computeCreature(comp) : computeCompanion(comp, levels, data, masterOf(c, levels));
       const row = t.closest('[data-comp]');
@@ -188,6 +195,7 @@ function topPanels(comp, s, p) {
           <button class="btn" data-chp="full" title="Heal to full hit points"><span class="heart">♥</span> Full heal</button></div>
         <div class="kv"><label>Current ${bind(`${p}.hpCur`, comp.hpCur, { type: 'num', cls: 'w4', ph: 'max' })}</label>
           <label>Temp ${bind(`${p}.hpTemp`, comp.hpTemp, { type: 'num', cls: 'w3' })}</label></div>
+        <p class="small muted">${hpNote(s)}</p>
         <p class="small muted">${status}</p></div>
       ${portrait}
     </section>
@@ -199,6 +207,7 @@ function topPanels(comp, s, p) {
       <p class="small muted">${s.kind === 'creature' ? 'AC from the stat block' + (num(comp.acMisc) ? ` ${sign(num(comp.acMisc))} adjustment` : '') : `AC = 10 ${[s.mods.dex ? `${sign(s.mods.dex)} Dex` : '', s.natural ? `+${s.natural} natural` : '', s.sizeMods.ac ? `${sign(s.sizeMods.ac)} size` : ''].filter(Boolean).join(' ')}`}</p>
       <table class="tbl saves"><thead><tr><th>Save</th><th>Total</th></tr></thead><tbody>
         ${[['Fortitude', 'fort'], ['Reflex', 'ref'], ['Will', 'will']].map(([n, k]) => `<tr><th>${n}</th><td class="big accent">${rb(s.saves[k], n + ' save', s.bd?.[k])}</td></tr>`).join('')}</tbody></table>
+      ${s.specials?.some(x => /devotion/i.test(x)) ? '<p class="small muted">+4 vs. enchantment spells and effects (devotion)</p>' : ''}
       ${defenseLine(s)}
     </section>
     <section class="card offense"><h3>Offense</h3>
@@ -211,9 +220,25 @@ function topPanels(comp, s, p) {
     <section class="card span2"><h3>At a glance</h3>
       <div class="chips">${glance(s).map(x => `<span class="chip on">${esc(x)}</span>`).join('')}</div>
       ${extras(comp, s)}
+      ${s.kind === 'familiar' && s.species?.masterBonus ? `<h4>Master gains</h4><p>${esc(s.species.masterBonus)}</p>` : ''}
+      ${s.abilityNotes?.length ? `<h4>Special abilities</h4>${s.abilityNotes.map(a => `<div class="small"><b>${esc(a.name)}.</b> ${a.html}</div>`).join('')}` : ''}
       ${s.specials.length ? `<h4>Special abilities</h4><div class="chips">${s.specials.map(x => `<a href="#" class="chip ref" data-entry="${esc(x.replace(/ \d+$/, ''))}" data-cat="Class Feature">${esc(x)}</a>`).join('')}</div>` : ''}
       <h4>Skills</h4><div class="stat-row">${skillTiles(s).map(k => stat(esc(k.name), rb(k.total, k.name, skillParts(k)))).join('')}</div>
     </section></div>`;
+}
+
+/** What the hit points are made of, from the stat block: the dice, or whose they are. */
+function hpNote(s) {
+  if (s.kind === 'familiar') return 'Half the master’s hit points';
+  if (s.kind === 'creature') return s.hpText ? `Stat block: ${esc(s.hpText)}` : '';
+  return `${s.hd}d${s.hdDie}${s.mods?.con ? sign(s.mods.con * s.hd) : ''} hit dice`;
+}
+/** Special qualities as the stat block lists them. A familiar's abilities are already chips, so only what they do not repeat is left. */
+function qualitiesText(s) {
+  if (!s.qualities) return '';
+  if (s.kind !== 'familiar') return s.qualities;
+  const have = new Set((s.specials || []).map(x => x.toLowerCase()));
+  return s.qualities.split(/,\s*/).filter(q => q && !have.has(q.toLowerCase())).join(', ');
 }
 
 /** Perception is always shown (it is in every stat block), then the trained skills. */
@@ -230,12 +255,12 @@ function extras(comp, s) {
   const block = (title, items) => (items.length ? `<h4>${title}</h4><div class="chips">${items.map(x => `<span class="chip">${linkTerms(x)}</span>`).join('')}</div>` : '');
   return block('Feats', feats) + block('Defensive abilities', evasion) + block('Evolutions', evo)
     + (s.kind === 'animal' && comp.tricks ? `<h4>Tricks</h4><p>${esc(comp.tricks)}</p>` : '')
-    + (s.qualities && s.kind !== 'familiar' ? `<h4>Special qualities</h4><p>${linkTerms(s.qualities)}</p>` : '');
+    + (qualitiesText(s) ? `<h4>Special qualities</h4><p>${linkTerms(qualitiesText(s))}</p>` : '');
 }
 
 /** Short facts shown as chips: size and type, level, hit dice, senses, space and reach. */
 function glance(s) {
-  if (s.kind === 'creature') return [`${s.size} ${s.type}`, `CR ${s.cr || '—'}`, `${s.hd} HD`, ...(s.senses ? [s.senses] : [])];
+  if (s.kind === 'creature') return [`${s.size} ${s.type}`, `CR ${s.cr || '—'}`, `${s.hd} HD`, ...(s.senses ? [s.senses] : []), ...(s.space || s.reach ? [`Space ${s.space || '—'}, reach ${s.reach || '—'}`] : []), ...(s.aura ? [`Aura ${s.aura}`] : []), ...(s.languages ? [`Speaks ${s.languages}`] : [])];
   const type = s.kind === 'animal' ? 'animal' : s.kind === 'familiar' ? s.type : 'outsider';
   const out = [`${s.size} ${type}`, `${s.kind === 'familiar' ? 'Master level' : 'Level'} ${s.level}`, `${s.hd} HD`];
   if (s.kind === 'familiar') {
@@ -301,21 +326,22 @@ function chooseCreature() {
 function creatureCard(comp, i, head) {
   const p = `companions.${i}`;
   const s = computeCreature(comp);
-  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<details class="block-toggle card-details" data-block="${p}" ${comp.blockOpen === false ? '' : 'open'}><summary>Adjustments, notes &amp; full stat block</summary>
-  <div class="grid two"><div>
+  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<details class="block-toggle card-details" data-block="${p}" ${comp.blockOpen === false ? '' : 'open'}><summary>Adjustments &amp; notes</summary>
+  <div class="comp-settings"><div>
     <p class="small muted">Taken from the creature list (${esc(comp.creature?.source || '')}). Its numbers do not change with your level; adjust them here for gear, spells and templates.</p>
     <h4>Adjustments</h4>
     <div class="kv"><label title="Barding, items, spells">AC misc ${bind(`${p}.acMisc`, comp.acMisc, { type: 'num' })}</label>
       <label>HP misc ${bind(`${p}.hpMisc`, comp.hpMisc, { type: 'num' })}</label>
       <label title="Enhancement, buffs">Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
     <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Gear, orders, personality, conditions…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
-  </div><div>${statBlockHtml(comp.creature || {}, { links: true, companion: true })}</div></div></details></div>`;
+  </div></div></details></div>`;
 }
 
 function companionCard(comp, i, levels, data, master) {
   const p = `companions.${i}`;
   const head = `<div class="row"><h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>
     <span class="pill">${{ animal: 'Animal companion', eidolon: 'Eidolon', familiar: 'Familiar', creature: 'Creature', custom: 'Companion' }[comp.kind]}</span>
+    <button class="btn small" data-statblock title="Open the full stat block in the side panel">📋 Stat block</button>
     <button class="icon-btn" data-del-comp title="Remove">✕</button></div>`;
   if (comp.kind === 'custom') {
     return `<section class="card companion" data-comp="${i}">${head}
@@ -334,8 +360,8 @@ function companionCard(comp, i, levels, data, master) {
   const ranksLeft = s.skillRanks - s.skillRanksUsed;
   const classSkills = [...s.classSkills, ...(comp.extraClassSkills || [])];
   const skillNames = [...new Set([...classSkills.filter(x => !x.includes('(') || x.startsWith('Knowledge')), ...Object.keys(comp.skills || {})])];
-  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<details class="block-toggle card-details" data-block="${p}" ${comp.blockOpen === false ? '' : 'open'}><summary>Settings, abilities &amp; full stat block</summary>
-  <div class="grid two">
+  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<details class="block-toggle card-details" data-block="${p}" ${comp.blockOpen === false ? '' : 'open'}><summary>Settings &amp; adjustments</summary>
+  <div class="comp-settings">
     <div>
       <div class="form">
         ${isAnimal
@@ -375,7 +401,6 @@ function companionCard(comp, i, levels, data, master) {
         <label title="Amulet of mighty fists, etc.">Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
       <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Gear, personality, conditions…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
     </div>
-    <div>${statBlock(comp, s)}</div>
   </div></details></div>`;
 }
 
@@ -387,8 +412,8 @@ function familiarCard(comp, i, levels, data, master, head) {
     ? `From your sheet: <b>${s.autoLevel}</b>${levels._why?.familiar ? ` · ${esc(levels._why.familiar)}` : ''}${overrideNote(comp, s)}`
     : '<span class="warn">Nothing on the sheet grants a familiar (wizard, sorcerer, witch or shaman levels, or the arcanist’s Familiar exploit); set the level here.</span>';
   const sp = s.species;
-  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<details class="block-toggle card-details" data-block="${p}" ${comp.blockOpen === false ? '' : 'open'}><summary>Settings, abilities &amp; full stat block</summary>
-  <div class="grid two">
+  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<details class="block-toggle card-details" data-block="${p}" ${comp.blockOpen === false ? '' : 'open'}><summary>Settings &amp; adjustments</summary>
+  <div class="comp-settings">
     <div>
       <div class="form">
         <label>Kind ${kindSelect(`${p}.species`, comp.species, data.familiar)}</label>
@@ -412,7 +437,6 @@ function familiarCard(comp, i, levels, data, master, head) {
         <label>Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
       <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Variants, gear, personality…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
     </div>
-    <div>${statBlock(comp, s)}</div>
   </div></details></div>`;
 }
 

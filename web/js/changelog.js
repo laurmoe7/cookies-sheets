@@ -8,6 +8,7 @@ export const CHANGELOG = [
     items: [
       'Monster Codex: a new page under the Compendium with about 1,850 creatures. Search by name, pick a type or CR, read the stat block, and take one as a companion.',
       'Companions: “＋ From creature list…” takes any creature as a companion, with hit points to track, attack and skill rolls, a picture and notes.',
+      'Companions: everything from the stat block is in the cards now (hit dice, special qualities, what the master gains, a creature’s abilities, space and reach). The old stat block moved to a 📋 Stat block button on each card that opens it in the side panel.',
       'Adding a spell lets you pick whose spell list to look through (your own class is the default), for the times you can learn another class’s spells.',
       'Level up: prepared casters (clerics, druids, wizards...) can choose any spells they like, with no limit, so the ones they use most are on the Spells tab ready to prepare.',
       'Spell search can filter by wizard school, including the elemental schools (Air, Earth, Fire, Water, Metal, Wood).',
