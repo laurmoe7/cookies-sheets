@@ -590,6 +590,55 @@ def fetch_gsheet(ref):
     return {'csv': text}
 
 
+_creatures = None
+
+
+def creature_list():
+    """data/creatures.json (every Bestiary-style stat block, built by tools/creatures.py), read once."""
+    global _creatures
+    if _creatures is None:
+        with open(os.path.join(DATA, 'creatures.json'), encoding='utf-8') as f:
+            _creatures = json.load(f)
+    return _creatures
+
+
+def _cr_value(cr):
+    m = re.match(r'^\s*(\d+)(?:\s*/\s*(\d+))?', str(cr or ''))
+    return (int(m.group(1)) / int(m.group(2)) if m.group(2) else int(m.group(1))) if m else -1
+
+
+def search_creatures(q='', typ='', cr='', limit=200):
+    """Rows for the creature picker: [{i, name, cr, type, size, source}] by name, and how many matched. `cr` is "low-high"."""
+    words = [w for w in re.split(r'\s+', str(q or '').lower().strip()) if w]
+    lo, hi = -1, 10 ** 6
+    m = re.match(r'^(\d+)-(\d+)$', str(cr or ''))
+    if m:
+        lo, hi = int(m.group(1)), int(m.group(2))
+    rows, total = [], 0
+    for i, e in enumerate(creature_list()):
+        name = e['name'].lower()
+        kind = (e.get('creature_type') or '').lower()
+        if words and not all(w in name or w in kind for w in words):
+            continue
+        if typ and kind != typ.lower():
+            continue
+        v = _cr_value(e.get('cr'))
+        if m and not (lo <= v <= hi):
+            continue
+        total += 1
+        if len(rows) < limit:
+            rows.append(dict(i=i, name=e['name'], cr=e.get('cr', ''), type=e.get('creature_type', ''), size=e.get('size', ''), source=e.get('source', '')))
+    return {'rows': rows, 'total': total}
+
+
+def get_creature(i):
+    lst = creature_list()
+    i = int(i)
+    if not 0 <= i < len(lst):
+        raise FileNotFoundError(i)
+    return lst[i]
+
+
 def resolve_names(body):
     """Match free-text names to compendium entries.
 
@@ -724,6 +773,10 @@ class Handler(SimpleHTTPRequestHandler):
                 self._json(updater.check(app_version()))
             elif route == ('POST', 'update-apply'):
                 self._json(updater.apply(app_version()))
+            elif route == ('GET', 'creatures'):
+                self._json(search_creatures(p.get('q', ''), p.get('type', ''), p.get('cr', ''), min(int(p.get('limit', 200)), 500)))
+            elif route == ('GET', 'creature'):
+                self._json(get_creature(p.get('i', '-1')))
             elif route == ('GET', 'gs-fetch'):
                 self._json(fetch_gsheet(p.get('id', '')))
             elif route == ('GET', 'sounds'):

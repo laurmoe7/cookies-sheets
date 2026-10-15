@@ -307,6 +307,28 @@ class HttpApi(unittest.TestCase):
         self.assertEqual(names('list:nothing'), set(), 'an unknown list matches nothing')
 
 
+class CreatureList(unittest.TestCase):
+    def test_search_and_read(self):
+        r = app.search_creatures('owlbear')
+        self.assertEqual(r['total'], len(r['rows']))
+        first = r['rows'][0]
+        self.assertEqual((first['name'], first['cr'], first['size'], first['source']), ('Owlbear', '4', 'Large', 'Bestiary'))
+        block = app.get_creature(first['i'])
+        self.assertEqual((block['hp'], block['strength']), ('47 (5d10+20)', '19'))
+
+    def test_filters(self):
+        dragons = app.search_creatures('', 'Dragon', '5-8')
+        self.assertTrue(dragons['total'] > 5)
+        self.assertTrue(all(row['type'] == 'Dragon' and 5 <= app._cr_value(row['cr']) <= 8 for row in dragons['rows']))
+        self.assertEqual(app.search_creatures('', '', '', 3)['rows'].__len__(), 3, 'limit caps the rows, total still counts them all')
+        self.assertTrue(app.search_creatures('')['total'] > 1500)
+        self.assertEqual(app._cr_value('1/2'), 0.5)
+
+    def test_missing_creature_is_not_found(self):
+        with self.assertRaises(FileNotFoundError):
+            app.get_creature(10 ** 6)
+
+
 class GoogleSheetLinks(unittest.TestCase):
     def test_link_and_tab(self):
         sid = '1DkPwfR5IdcJ0Bk9NhUnBA7iXTUF-aQl4kqaCRj50Tps'

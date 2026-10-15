@@ -42,7 +42,7 @@ export function templateNotes(hd) {
 const row = (label, v, links) => (v ? `<p><b>${label}</b> ${links ? linkTerms(v) : esc(v)}</p>` : '');
 
 /** A Pathfinder-style stat block as HTML. `template` is true when the entry takes the celestial/fiendish template. */
-export function statBlockHtml(b, { template = false, links = false } = {}) {
+export function statBlockHtml(b, { template = false, links = false, companion = false } = {}) {
   const L = v => (links ? linkTerms(v) : esc(v));
   const type = [b.size, (b.creature_type || '').toLowerCase()].filter(Boolean).join(' ') + (b.creature_subtype ? ` (${b.creature_subtype})` : '');
   const abil = [['Str', 'strength'], ['Dex', 'dexterity'], ['Con', 'constitution'], ['Int', 'intelligence'], ['Wis', 'wisdom'], ['Cha', 'charisma']]
@@ -67,7 +67,7 @@ export function statBlockHtml(b, { template = false, links = false } = {}) {
     ${(b.abilities || []).length ? `<h4>Special abilities</h4>${b.abilities.map(a => `<div><b>${esc(a.name)}.</b> ${a.html}</div>`).join('')}` : ''}
     ${tpl ? `<h4>Template</h4><p class="small">Summoned with the celestial template if you are good, the fiendish template if you are evil (either if neutral).</p>
       <p class="small">${esc(tpl.celestial)}</p><p class="small">${esc(tpl.fiendish)}</p>` : ''}
-    <p class="muted small">Augment Summoning gives +4 Str and +4 Con to every creature you summon.</p>
+    ${companion ? '' : '<p class="muted small">Augment Summoning gives +4 Str and +4 Con to every creature you summon.</p>'}
   </div>`;
 }
 

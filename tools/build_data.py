@@ -17,6 +17,7 @@ import sys
 
 import archetypes
 import companions
+import creatures
 import fcb
 import summons
 from htmltable import parse_table
@@ -27,6 +28,7 @@ OUT_DB = os.path.join(ROOT, 'data', 'pf1e.db')
 OUT_CLASSES = os.path.join(ROOT, 'data', 'classes.json')
 OUT_COMPANIONS = os.path.join(ROOT, 'data', 'companions.json')
 OUT_SUMMONS = os.path.join(ROOT, 'data', 'summons.json')
+OUT_CREATURES = os.path.join(ROOT, 'data', 'creatures.json')
 OUT_FCB = os.path.join(ROOT, 'data', 'fcb.json')
 
 # Book priority (earlier wins when the same entry appears twice)
@@ -544,6 +546,10 @@ def main():
     with open(OUT_SUMMONS, 'w', encoding='utf-8') as f:
         json.dump(summon_data, f, indent=1)
     print('wrote summons:', {k: len(v) for k, v in summon_data['families'].items()}, len(summon_data['creatures']), 'stat blocks', summon_misses or '')
+    creature_list = creatures.build(books)
+    with open(OUT_CREATURES, 'w', encoding='utf-8') as f:
+        json.dump(creature_list, f, separators=(',', ':'), ensure_ascii=False)
+    print('wrote creatures:', len(creature_list), 'stat blocks')
     print('wrote companions:', len(comp['animal']['species']), 'animals,', len(comp['familiar']['species']), 'familiars,', len(comp['eidolon']['evolutions']), 'evolutions')
 
 

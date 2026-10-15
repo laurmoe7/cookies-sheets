@@ -4,6 +4,8 @@ import { api } from '../api.js';
 import { state, changed } from '../app.js';
 import { classLevels, sign, num } from '../calc.js';
 import { computeCompanion, newCompanion, withCompanionSources, ANIMAL_SKILLS, EIDOLON_SKILLS, skillAbility } from '../companions.js';
+import { computeCreature, newCreatureCompanion } from '../creaturecomp.js';
+import { statBlockHtml } from '../summons.js';
 import { classFeatures, archetypesOf } from '../features.js';
 import { linkTerms } from '../termlinks.js';
 import { hpSegments, segsHtml } from '../bars.js';
@@ -12,7 +14,7 @@ import { playSfx } from '../sfx.js';
 import { tipText } from '../rolltip.js';
 import { event as petEvent } from '../pet/pet.js';
 import { SKILLS } from '../data.js';
-import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom } from '../ui.js';
+import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom, debounce } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
 import { renderSummons } from './summons.js';
 
@@ -46,6 +48,7 @@ export async function renderCompanions(body, c) {
       <button class="btn small" data-new="animal">＋ Animal companion</button>
       <button class="btn small" data-new="eidolon">＋ Eidolon</button>
       <button class="btn small" data-new="familiar">＋ Familiar</button>
+      <button class="btn small" data-from-creature title="Take any creature from the Bestiary and other monster books as a companion">＋ From creature list…</button>
       <button class="btn small ghost" data-new="custom">＋ Other (mount, cohort)</button></div>
     ${c.companions.length ? '' : `<section class="card"><p class="muted">No companions yet.</p>
       <p class="small muted">Animal companions come from druid, hunter, ranger (from 4th level), cavalier, samurai and paladin (divine bond) levels, the Animal domain, and the Animal Ally and Boon Companion feats; eidolons from summoner levels; familiars from wizard, sorcerer, witch and shaman levels, the arcanist’s Familiar exploit, and a few archetypes.
@@ -66,14 +69,19 @@ export async function renderCompanions(body, c) {
     if (comp && (comp.blockOpen !== false) !== d.open) { comp.blockOpen = d.open; changed(); }
   }, true);
   body.onclick = async e => {
-    const t = e.target.closest('[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
+    const t = e.target.closest('[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-from-creature],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
     if (!t) return;
     e.preventDefault();
     if (t.dataset.new) { c.companions.push(newCompanion(t.dataset.new, data)); return changed({ rerender: true }); }
+    if (t.dataset.fromCreature !== undefined) {
+      const block = await chooseCreature();
+      if (block) { c.companions.push(newCreatureCompanion(block)); changed({ rerender: true }); }
+      return;
+    }
     const i = +t.closest('[data-comp]').dataset.comp;
     const comp = c.companions[i];
     if (t.dataset.chp !== undefined) {
-      const s = computeCompanion(comp, levels, data, masterOf(c, levels));
+      const s = comp.kind === 'creature' ? computeCreature(comp) : computeCompanion(comp, levels, data, masterOf(c, levels));
       const row = t.closest('[data-comp]');
       const amt = Math.abs(num($('[data-chp-amt]', row).value));
       let cur = comp.hpCur == null || comp.hpCur === '' ? s.hp : num(comp.hpCur);
@@ -167,7 +175,7 @@ function topPanels(comp, s, p) {
   const M = a => (s.mods[a] == null ? '—' : sign(s.mods[a]));
   const rb = (n, label, parts) => `<button class="nb" data-roll-add="${n}" data-roll-label="${esc(comp.name + ' ' + label)}" data-tip="${esc(tipText(`${comp.name} ${label}`, n, parts, `Click to roll d20${sign(n)}`))}">${sign(n)}</button>`;
   // A skill's parts, worked out from the stat block; whatever they do not cover (a species' listed bonus, the master's ranks) is shown as other bonuses.
-  const skillParts = k => { const ab = skillAbility(k.name), sz = s.sizeMods || {}; return [{ label: 'Ranks', value: k.ranks || 0 }, { label: `${ab.toUpperCase()} modifier`, value: s.mods?.[ab] ?? 0 }, { label: 'Class skill', value: k.isClass && k.ranks > 0 ? 3 : 0 }, { label: 'Size', value: k.name === 'Stealth' ? sz.stealth || 0 : k.name === 'Fly' ? sz.fly || 0 : 0 }].filter(p => p.value); };
+  const skillParts = k => { if (s.kind === 'creature') return [{ label: 'Stat block', value: k.total }].filter(x => x.value); const ab = skillAbility(k.name), sz = s.sizeMods || {}; return [{ label: 'Ranks', value: k.ranks || 0 }, { label: `${ab.toUpperCase()} modifier`, value: s.mods?.[ab] ?? 0 }, { label: 'Class skill', value: k.isClass && k.ranks > 0 ? 3 : 0 }, { label: 'Size', value: k.name === 'Stealth' ? sz.stealth || 0 : k.name === 'Fly' ? sz.fly || 0 : 0 }].filter(p => p.value); };
   const stat = (label, v) => `<div class="stat"><div class="label">${label}</div><span class="big">${v}</span></div>`;
   return `<div class="grid overview-grid comp-top">
     <section class="card hp has-portrait ${state}">
@@ -187,7 +195,7 @@ function topPanels(comp, s, p) {
         <td class="big">${s.abilities[a] ?? '—'}</td><td class="big accent">${M(a)}</td></tr>`).join('')}</tbody></table></section>
     <section class="card defense"><h3>Defense</h3>
       <div class="stat-row">${stat('AC', s.ac.total)}${stat('Touch', s.ac.touch)}${stat('Flat-footed', s.ac.flat)}${stat('CMD', s.cmd)}</div>
-      <p class="small muted">AC = 10 ${[s.mods.dex ? `${sign(s.mods.dex)} Dex` : '', s.natural ? `+${s.natural} natural` : '', s.sizeMods.ac ? `${sign(s.sizeMods.ac)} size` : ''].filter(Boolean).join(' ')}</p>
+      <p class="small muted">${s.kind === 'creature' ? 'AC from the stat block' + (num(comp.acMisc) ? ` ${sign(num(comp.acMisc))} adjustment` : '') : `AC = 10 ${[s.mods.dex ? `${sign(s.mods.dex)} Dex` : '', s.natural ? `+${s.natural} natural` : '', s.sizeMods.ac ? `${sign(s.sizeMods.ac)} size` : ''].filter(Boolean).join(' ')}`}</p>
       <table class="tbl saves"><thead><tr><th>Save</th><th>Total</th></tr></thead><tbody>
         ${[['Fortitude', 'fort'], ['Reflex', 'ref'], ['Will', 'will']].map(([n, k]) => `<tr><th>${n}</th><td class="big accent">${rb(s.saves[k], n + ' save', s.bd?.[k])}</td></tr>`).join('')}</tbody></table>
       ${defenseLine(s)}
@@ -226,6 +234,7 @@ function extras(comp, s) {
 
 /** Short facts shown as chips: size and type, level, hit dice, senses, space and reach. */
 function glance(s) {
+  if (s.kind === 'creature') return [`${s.size} ${s.type}`, `CR ${s.cr || '—'}`, `${s.hd} HD`, ...(s.senses ? [s.senses] : [])];
   const type = s.kind === 'animal' ? 'animal' : s.kind === 'familiar' ? s.type : 'outsider';
   const out = [`${s.size} ${type}`, `${s.kind === 'familiar' ? 'Master level' : 'Level'} ${s.level}`, `${s.hd} HD`];
   if (s.kind === 'familiar') {
@@ -242,21 +251,77 @@ function glance(s) {
 /** Damage reduction, resistances, immunities and the like, as one line (familiars; stat-block order). */
 const defenseText = s => {
   const d = s.defense || {};
-  return [d.defensive, d.fastHealing ? `fast healing ${d.fastHealing}` : '', d.dr && `DR ${d.dr}`, d.immune && `immune ${d.immune}`, d.resist && `resist ${d.resist}`, s.sr && `SR ${s.sr}`].filter(Boolean).join('; ');
+  return [d.defensive, d.fastHealing ? `fast healing ${d.fastHealing}` : '', d.dr && `DR ${d.dr}`, d.immune && `immune ${d.immune}`, d.resist && `resist ${d.resist}`, s.sr && `SR ${s.sr}`, s.weaknesses && `weaknesses ${s.weaknesses}`].filter(Boolean).join('; ');
 };
 const defenseLine = s => (s.qualities && s.kind === 'animal' ? `<p class="small"><b>Qualities</b> ${esc(s.qualities)}</p>`
-  : s.kind === 'familiar' && defenseText(s) ? `<p class="small"><b>Defenses</b> ${linkTerms(defenseText(s))}</p>` : '');
+  : (s.kind === 'familiar' || s.kind === 'creature') && defenseText(s) ? `<p class="small"><b>Defenses</b> ${linkTerms(defenseText(s))}</p>` : '');
+
+const CREATURE_TYPES = ['Aberration', 'Animal', 'Construct', 'Dragon', 'Fey', 'Humanoid', 'Magical Beast', 'Monstrous Humanoid', 'Ooze', 'Outsider', 'Plant', 'Undead', 'Vermin'];
+const CR_RANGES = [['', 'Any CR'], ['0-1', 'CR 0 to 1'], ['2-4', 'CR 2 to 4'], ['5-8', 'CR 5 to 8'], ['9-12', 'CR 9 to 12'], ['13-20', 'CR 13 to 20'], ['21-40', 'CR 21 and up']];
+
+/** The creature list: search, filter by type and CR, read the stat block, and take one as a companion. Resolves to the full stat block, or nothing. */
+function chooseCreature() {
+  return modal('Companion from the creature list', (body, close) => {
+    body.innerHTML = `<div class="row"><input class="search grow" placeholder="Search creatures by name or type…">
+        <select data-f="type"><option value="">Any type</option>${CREATURE_TYPES.map(t => `<option>${esc(t)}</option>`).join('')}</select>
+        <select data-f="cr">${CR_RANGES.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select></div>
+      <p class="small muted" data-count></p>
+      <div class="picker"><div class="picker-list"></div><div class="picker-preview entry-body"><p class="muted">Select a creature to read its stat block. It is copied onto your sheet, so it keeps working without the list.</p></div></div>`;
+    const q = $('input', body), type = $('[data-f=type]', body), cr = $('[data-f=cr]', body), list = $('.picker-list', body), prev = $('.picker-preview', body), count = $('[data-count]', body);
+    let rows = [], seq = 0;
+    const run = debounce(async () => {
+      const my = ++seq;
+      let res;
+      try { res = await api.creatures(q.value, type.value, cr.value, 200); } catch (e) { list.innerHTML = `<p class="pad bad">${esc(e.message)}</p>`; return; }
+      if (my !== seq) return; // a newer search is already running
+      rows = res.rows;
+      count.textContent = `${res.total} creature${res.total === 1 ? '' : 's'}${res.total > rows.length ? `, showing the first ${rows.length}: narrow the search` : ''}`;
+      list.innerHTML = rows.map((r, i) => `<div class="pick-row" data-i="${i}">
+        <div><b>${esc(r.name)}</b> <span class="muted small">CR ${esc(r.cr || '—')} · ${esc(r.size)} ${esc((r.type || '').toLowerCase())}</span></div>
+        <div class="muted small">${esc(r.source)}</div><button class="btn small primary" data-pick="${i}">Add</button></div>`).join('') || '<p class="pad muted">No creatures match.</p>';
+    }, 150);
+    [q, type, cr].forEach(x => x.addEventListener('input', run));
+    list.addEventListener('click', async e => {
+      const pick = e.target.closest('[data-pick]');
+      if (pick) { close(await api.creature(rows[+pick.dataset.pick].i)); return; }
+      const row = e.target.closest('.pick-row');
+      if (!row) return;
+      $$('.pick-row.sel', list).forEach(x => x.classList.remove('sel'));
+      row.classList.add('sel');
+      const b = await api.creature(rows[+row.dataset.i].i);
+      prev.innerHTML = `<h3>${esc(b.name)}</h3>${b.description ? `<p class="small muted">${esc(b.description)}</p>` : ''}${statBlockHtml(b, { companion: true })}`;
+    });
+    run();
+    q.focus();
+  }, { wide: true });
+}
+
+/** A companion taken from the creature list: the stat block's own numbers in the same panels, plus the full stat block. */
+function creatureCard(comp, i, head) {
+  const p = `companions.${i}`;
+  const s = computeCreature(comp);
+  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<details class="block-toggle card-details" data-block="${p}" ${comp.blockOpen === false ? '' : 'open'}><summary>Adjustments, notes &amp; full stat block</summary>
+  <div class="grid two"><div>
+    <p class="small muted">Taken from the creature list (${esc(comp.creature?.source || '')}). Its numbers do not change with your level; adjust them here for gear, spells and templates.</p>
+    <h4>Adjustments</h4>
+    <div class="kv"><label title="Barding, items, spells">AC misc ${bind(`${p}.acMisc`, comp.acMisc, { type: 'num' })}</label>
+      <label>HP misc ${bind(`${p}.hpMisc`, comp.hpMisc, { type: 'num' })}</label>
+      <label title="Enhancement, buffs">Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
+    <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Gear, orders, personality, conditions…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
+  </div><div>${statBlockHtml(comp.creature || {}, { links: true, companion: true })}</div></div></details></div>`;
+}
 
 function companionCard(comp, i, levels, data, master) {
   const p = `companions.${i}`;
   const head = `<div class="row"><h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>
-    <span class="pill">${{ animal: 'Animal companion', eidolon: 'Eidolon', familiar: 'Familiar', custom: 'Companion' }[comp.kind]}</span>
+    <span class="pill">${{ animal: 'Animal companion', eidolon: 'Eidolon', familiar: 'Familiar', creature: 'Creature', custom: 'Companion' }[comp.kind]}</span>
     <button class="icon-btn" data-del-comp title="Remove">✕</button></div>`;
   if (comp.kind === 'custom') {
     return `<section class="card companion" data-comp="${i}">${head}
       <div class="grid two"><div>${picFrame(comp.image, 'lg')}<h4>Stat block</h4>${tf(`${p}.statblock`, { multiline: true, placeholder: 'Double-click to paste or type a stat block', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion stat block' } })}</div>
       <div><h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Double-click to add notes', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}</div></div></section>`;
   }
+  if (comp.kind === 'creature') return creatureCard(comp, i, head);
   if (comp.kind === 'familiar') return familiarCard(comp, i, levels, data, master, head);
   const s = computeCompanion(comp, levels, data);
   syncLevel(comp, s);
