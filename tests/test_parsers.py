@@ -6,6 +6,7 @@ import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'tools'))
 from archetypes import class_skill_changes, first_level, parse_archetype, parse_targets  # noqa: E402
 from companions import parse_abilities, parse_attacks, qualities  # noqa: E402
+from extra_entries import ENTRIES  # noqa: E402
 
 
 def names(phrase):
@@ -95,6 +96,15 @@ class CompanionParsing(unittest.TestCase):
 
     def test_footnote_removed(self):
         self.assertEqual(qualities('low-light vision, scent. *This is a secondary natural attack'), 'low-light vision, scent')
+
+
+class ExtraEntries(unittest.TestCase):
+    def test_hand_typed_entries_are_complete_and_unique(self):
+        keys = [(cat, sub, name) for cat, sub, name, source, text in ENTRIES]
+        self.assertEqual(len(keys), len(set(keys)), 'one entry per category, sub and name')
+        self.assertTrue(all(text.strip().endswith('.') for *_, text in ENTRIES), 'every entry has its full text')
+        kitsune = [name for cat, sub, name, *_ in ENTRIES if sub == 'Kitsune']
+        self.assertEqual(len(kitsune), 17, 'the alternate kitsune racial traits (Gregarious comes from the book data)')
 
 
 if __name__ == '__main__':

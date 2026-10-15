@@ -19,6 +19,7 @@ import archetypes
 import companions
 import creatures
 import equipment
+import extra_entries
 import fcb
 import summons
 from htmltable import parse_table
@@ -334,7 +335,20 @@ def merge_aon_archetypes(entries):
         text = ' '.join([meta['description']] + [(f['name'] or '') + ' ' + re.sub(r'<[^>]+>', ' ', f['html'])
                                                 for f in meta['features']])
         entries.append(dict(cat='Archetype', sub=a['cls'].lower(), name=a['name'], source=a['source'],
-                            summary='', html=body, meta=json.dumps(meta), text=text))
+                            summary='', html=body, meta=json.dumps(meta), text=text, late=True))
+        added += 1
+    return added
+
+
+def merge_extra_entries(entries):
+    """Hand-typed entries (tools/extra_entries.py), skipping any the books already have."""
+    have = {(e['cat'], e['sub'], norm(e['name'])) for e in entries}
+    added = 0
+    for cat, sub, name, source, text in extra_entries.ENTRIES:
+        if (cat, sub, norm(name)) in have:
+            continue
+        entries.append(dict(cat=cat, sub=sub, name=name, source=source, summary='', html='<p>%s</p>' % html.escape(text),
+                            meta='{}', text=name + ' ' + text, late=True))
         added += 1
     return added
 
@@ -518,7 +532,9 @@ def write_db(entries):
         -- the index for column values, snippets or highlights, so nothing is lost and the file is about a third smaller.
         create virtual table entries_fts using fts5(name, summary, text, content='', tokenize='porter unicode61');
     ''')
-    entries.sort(key=lambda e: (e['cat'], e['name'].lower()))
+    # Characters save entry ids, so entries added later (`late`) get the ids after all the others: adding one
+    # must not move the id of anything that was already there.
+    entries.sort(key=lambda e: (bool(e.get('late')), e['cat'], e['name'].lower()))
     for i, e in enumerate(entries, 1):
         db.execute('insert into entries values (?,?,?,?,?,?,?,?)',
                    (i, e['cat'], e['sub'], e['name'], e['source'], e['summary'], e['html'], e['meta']))
@@ -553,6 +569,7 @@ def main():
     print('added', added, 'spells from spreadsheet')
     # After everything else, so the ids of the entries above (saved on characters) do not move.
     print('added', merge_aon_archetypes(entries), 'archetypes from Archives of Nethys')
+    print('added', merge_extra_entries(entries), 'hand-typed entries')
     gear_list = equipment.build(books)
     stats = equipment.enrich(entries, gear_list, equipment.weapon_groups(books))
     print('combat stats added to', stats, 'weapon and armor entries')
