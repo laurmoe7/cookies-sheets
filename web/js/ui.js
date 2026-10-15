@@ -163,16 +163,18 @@ export function debounce(fn, ms = 200) {
 }
 
 /** Generic searchable picker for compendium entries. Resolves with the chosen entry summary. */
-export function pickEntry(title, cat, { extraFilter, renderRow, search, subs = null, subLabel = 'Any type' } = {}) {
+export function pickEntry(title, cat, { extraFilter, renderRow, search, subs = null, subLabel = 'Any type', races = null } = {}) {
   return modal(title, (body, close) => {
-    body.innerHTML = `<div class="row"><input class="search grow" placeholder="Search ${esc(cat || 'compendium')}…">${subs ? `<select data-f="sub"><option value="">${esc(subLabel)}</option>${subs.map(([label, v]) => `<option value="${esc(v)}">${esc(label)}</option>`).join('')}</select>` : ''}</div>
+    body.innerHTML = `<div class="row"><input class="search grow" placeholder="Search ${esc(cat || 'compendium')}…">${subs ? `<select data-f="sub"><option value="">${esc(subLabel)}</option>${subs.map(([label, v]) => `<option value="${esc(v)}">${esc(label)}</option>`).join('')}</select>` : ''}${races ? '<select data-f="race" hidden><option value="">Any race</option></select>' : ''}</div>
       <div class="picker"><div class="picker-list"></div><div class="picker-preview entry-body"><p class="muted">Select an entry to preview it.</p></div></div>`;
-    const input = $('input', body), subSel = $('[data-f=sub]', body), list = $('.picker-list', body), prev = $('.picker-preview', body);
+    const input = $('input', body), subSel = $('[data-f=sub]', body), raceSel = $('[data-f=race]', body), list = $('.picker-list', body), prev = $('.picker-preview', body);
     let rows = [], seq = 0;
     const run = debounce(async () => {
       const my = ++seq;
       const sub = subSel ? subSel.value : '';
-      let res = await (search ? search(input.value, sub) : api.search(input.value, cat, 150, 0, sub));
+      if (raceSel) raceSel.hidden = !races(sub); // the race list only applies to racial traits
+      const race = raceSel && !raceSel.hidden ? raceSel.value : '';
+      let res = await (search ? search(input.value, sub, race) : api.search(input.value, cat, 150, 0, race || sub));
       if (my !== seq) return; // a newer search is in flight
       rows = extraFilter ? res.filter(extraFilter) : res;
       list.innerHTML = rows.map((r, i) => `<div class="pick-row" data-i="${i}">
@@ -182,6 +184,8 @@ export function pickEntry(title, cat, { extraFilter, renderRow, search, subs = n
     }, 150);
     input.addEventListener('input', run);
     subSel?.addEventListener('input', run);
+    raceSel?.addEventListener('input', run);
+    if (raceSel) import('./racetraits.js').then(m => m.traitRaces()).then(l => raceSel.insertAdjacentHTML('beforeend', l.map(r => `<option>${esc(r)}</option>`).join('')));
     list.addEventListener('click', async e => {
       const pick = e.target.closest('[data-pick]');
       if (pick) { close(rows[+pick.dataset.pick]); return; }

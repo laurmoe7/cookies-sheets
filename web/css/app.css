@@ -363,6 +363,7 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .arch-feat-text { font-size: 13px; margin-top: 2px; } .arch-feat-text p { margin: 2px 0; }
 .arch-feat.advice { opacity: .7; }
 .lu-sep { margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--line); }
+.alt-note { font-size: 11.5px; color: var(--muted); font-style: italic; }
 .sub-filters { margin-top: 6px; }
 .pick-row.blocked { opacity: .55; cursor: default; }
 .features .arch-badge, .arch-badge { font-size: 10.5px; padding: 0 6px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); margin-left: 4px; white-space: nowrap; }

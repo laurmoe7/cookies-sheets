@@ -3,13 +3,15 @@ import { state, changed } from '../app.js';
 import { esc, $, $$, debounce, entryHtml, wireEntryLinks, toast } from '../ui.js';
 import { SCHOOLS, SPELL_LIST_CLASSES, FEAT_TYPES, TRAIT_CATEGORIES } from '../data.js';
 import { search as petSearch } from '../pet/pet.js';
+import { traitRaces } from '../racetraits.js';
 
 const CATS = ['Spell', 'Feat', 'Trait', 'Rules', 'Condition', 'Class', 'Archetype', 'Class Feature', 'Race', 'Racial Trait',
   'Skill', 'Magic Item', 'Affliction', 'Mythic Spell', 'Monster Ability'];
 const SPELL_CLASSES = SPELL_LIST_CLASSES;
 
 // Categories with a second filter, and its choices.
-const SUB_FILTERS = { Feat: ['Any type', FEAT_TYPES], Trait: ['Any category', TRAIT_CATEGORIES.filter(([, v]) => v !== 'Racial')] };
+const SUB_FILTERS = { Feat: ['Any type', FEAT_TYPES], Trait: ['Any category', TRAIT_CATEGORIES.filter(([, v]) => v !== 'Racial')],
+  'Racial Trait': ['Any race', []] }; // the races are filled in once they are loaded
 const st = { q: '', cat: '', cls: '', level: '', school: '', sub: '', selected: null, results: [], offset: 0 };
 
 export async function renderCompendium(main) {
@@ -47,6 +49,7 @@ export async function renderCompendium(main) {
   });
   $$('.cat', main).forEach(b => (b.onclick = () => { st.cat = b.dataset.cat; st.sub = ''; st.offset = 0; renderCompendium(main); }));
   const subSel = $('#f-sub', main);
+  if (subSel && st.cat === 'Racial Trait') traitRaces().then(l => subSel.insertAdjacentHTML('beforeend', l.map(r => `<option ${r === st.sub ? 'selected' : ''}>${esc(r)}</option>`).join('')));
   if (subSel) subSel.onchange = () => { st.sub = subSel.value; st.offset = 0; search(main); };
   for (const [id, k] of [['f-cls', 'cls'], ['f-level', 'level'], ['f-school', 'school']]) {
     $('#' + id, main).onchange = e => { st[k] = e.target.value; search(main); };

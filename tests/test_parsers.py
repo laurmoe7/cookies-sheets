@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 from archetypes import class_skill_changes, first_level, parse_archetype, parse_targets  # noqa: E402
 from companions import parse_abilities, parse_attacks, qualities  # noqa: E402
 from extra_entries import ENTRIES  # noqa: E402
+from racetraits import replaced_traits  # noqa: E402
 
 
 def names(phrase):
@@ -105,6 +106,17 @@ class ExtraEntries(unittest.TestCase):
         self.assertTrue(all(text.strip().endswith('.') for *_, text in ENTRIES), 'every entry has its full text')
         kitsune = [name for cat, sub, name, *_ in ENTRIES if sub == 'Kitsune']
         self.assertEqual(len(kitsune), 17, 'the alternate kitsune racial traits (Gregarious comes from the book data)')
+
+
+class AlternateRacialTraits(unittest.TestCase):
+    def test_what_a_trait_replaces(self):
+        self.assertEqual(replaced_traits('<p>It helps. This racial trait replaces agile.</p>'), ['agile'])
+        self.assertEqual(replaced_traits('This racial trait replaces the obsessive racial trait.'), ['obsessive'])
+        self.assertEqual(replaced_traits('This racial trait replaces agile as well as a kitsune normal languages.'), ['agile', 'kitsune normal languages'])
+        self.assertEqual(replaced_traits('This racial trait replaces keen senses and alters the halfling language racial trait.'), ['keen senses'])
+        self.assertEqual(replaced_traits('This racial trait replaces the +2 bonus to any one ability score, the bonus feat, and the skilled traits.'),
+                         ['+2 bonus to any one ability score', 'bonus feat', 'skilled'])
+        self.assertEqual(replaced_traits('A standard racial trait.'), [])
 
 
 if __name__ == '__main__':

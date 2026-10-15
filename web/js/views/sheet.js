@@ -11,6 +11,7 @@ import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
 import { chooseTraits } from './traitpicker.js';
 import { ADDITIONAL_TRAITS } from '../traits.js';
+import { replacesOf, replacedConflicts } from '../racetraits.js';
 import { summonSpell } from '../summons.js';
 import { rollBar, fillSpellRolls, SLA_KEY as SLA } from '../roller.js';
 import { chooseSummon } from './summons.js';
@@ -515,7 +516,7 @@ function feats(body, c, d) {
       ${c[key].length ? `<table class="tbl"><tbody>${c[key].map((f, i) => `<tr>
         <td class="nowrap w12">${f.id ? refId(f.id, f.name)
           : tf(`${key}.${i}.name`, { placeholder: 'Name', read: { title: f.name || 'Untitled', titlePath: `${key}.${i}.name`, cat: KIND[key], path: `${key}.${i}.notes` } })}</td>
-        <td class="muted small">${esc(f.sub || '')}${f.level && key !== 'traits' ? ` · L${f.level}` : ''}</td>
+        <td class="muted small">${esc(f.sub || '')}${f.level && key !== 'traits' ? ` · L${f.level}` : ''}${f.replaces?.length ? `<div class="alt-note" title="An alternate racial trait">replaces ${esc(f.replaces.join(', '))}</div>` : ''}</td>
         <td class="grow-cell">${tf(`${key}.${i}.notes`, { multiline: true, placeholder: f.id ? 'Add notes' : 'Add a description',
           read: { title: f.name || 'Notes', titlePath: `${key}.${i}.name`, cat: f.id ? 'Your notes' : KIND[key] } })}</td>
         <td><button class="icon-btn" data-del="${key}.${i}">✕</button></td></tr>`).join('')}</tbody></table>`
@@ -550,12 +551,15 @@ function feats(body, c, d) {
     if (p) {
       // Traits are the character traits and the racial traits, in one list.
       const isTraits = p.dataset.pick === 'traits', isFeats = p.dataset.pick === 'feats';
-      const search = isTraits ? async (q, sub) => (sub === 'Racial' ? await api.search(q, 'Racial Trait', 150)
+      const search = isTraits ? async (q, sub, race) => (sub === 'Racial' ? await api.search(q, 'Racial Trait', 150, 0, race)
         : (await Promise.all(['Trait', 'Racial Trait'].map(k => api.search(q, k, 100, 0, sub)))).flat().sort((a, b) => a.name.localeCompare(b.name))) : undefined;
       const r = await pickEntry(p.dataset.title, p.dataset.cat, { renderRow: r => r.summary || r.source, search,
-        subs: isTraits ? TRAIT_CATEGORIES : isFeats ? FEAT_TYPES : null, subLabel: isTraits ? 'Any category' : 'Any type' });
+        subs: isTraits ? TRAIT_CATEGORIES : isFeats ? FEAT_TYPES : null, subLabel: isTraits ? 'Any category' : 'Any type',
+        races: isTraits ? sub => sub === 'Racial' : null });
       if (r) {
-        c[p.dataset.pick].push({ id: r.id, name: r.name, sub: r.sub, notes: '', level: d.level });
+        const entry = { id: r.id, name: r.name, sub: r.sub, notes: '', level: d.level };
+        if (isTraits && !await addAlternate(c, entry, replacesOf(r.summary))) return;
+        c[p.dataset.pick].push(entry);
         changed({ rerender: true });
         if (p.dataset.pick === 'feats' && r.name.toLowerCase() === ADDITIONAL_TRAITS.toLowerCase()) { // the feat gives two more traits
           const got = await chooseTraits({ count: 2, have: c.traits, title: 'Additional Traits: choose two traits' });
@@ -829,6 +833,21 @@ function openSpell(cls, i, chip) {
   chip?.classList.add('on');
   if (s.id) showEntry(s.id);
   else showCustom({ name: s.name || 'New spell', cat: 'Custom spell', sub: ORD[s.level] + ' level', html: '' });
+}
+
+/**
+ * An alternate racial trait replaces a standard one: remember what it replaces, and offer to drop the replaced
+ * trait if it is on the sheet. Returns false if the player backs out (it clashes with another alternate trait).
+ */
+async function addAlternate(c, entry, replaces) {
+  if (!replaces.length) return true;
+  entry.replaces = replaces;
+  const { standard, clashes } = replacedConflicts(c.traits, replaces);
+  if (clashes.length && !await confirmBox(`${c.traits[clashes[0]].name} already replaces ${c.traits[clashes[0]].replaces.join(', ')}. A trait can only be replaced once. Add ${entry.name} anyway?`, 'Add anyway')) return false;
+  if (standard.length && await confirmBox(`${entry.name} replaces ${standard.map(i => c.traits[i].name).join(', ')}. Remove ${standard.length > 1 ? 'them' : 'it'} from your traits?`, 'Remove')) {
+    for (const i of [...standard].reverse()) c.traits.splice(i, 1);
+  }
+  return true;
 }
 
 /** Weapons and armor added from the list or as magic items remember their compendium entry; a click on the name opens it. */

@@ -20,6 +20,7 @@ import companions
 import creatures
 import equipment
 import extra_entries
+import racetraits
 import fcb
 import summons
 from htmltable import parse_table
@@ -353,6 +354,24 @@ def merge_extra_entries(entries):
     return added
 
 
+def tag_racial_traits(entries):
+    """One name per race, and for each alternate racial trait what it replaces (meta.replaces, and "Replaces X." as its summary)."""
+    tagged = 0
+    for e in entries:
+        if e['cat'] != 'Racial Trait':
+            continue
+        e['sub'] = racetraits.RACE_NAMES.get(e['sub'], e['sub'])
+        reps = racetraits.replaced_traits(e['html'])
+        if reps:
+            meta = json.loads(e['meta'] or '{}')
+            meta['replaces'] = reps
+            e['meta'] = json.dumps(meta)
+            if not e['summary']:
+                e['summary'] = 'Replaces ' + ', '.join(reps) + '.'
+            tagged += 1
+    return tagged
+
+
 def merge_tsv_spells(entries):
     path = os.path.join(SRC, 'spells.tsv')
     if not os.path.exists(path):
@@ -570,6 +589,7 @@ def main():
     # After everything else, so the ids of the entries above (saved on characters) do not move.
     print('added', merge_aon_archetypes(entries), 'archetypes from Archives of Nethys')
     print('added', merge_extra_entries(entries), 'hand-typed entries')
+    print('alternate racial traits tagged:', tag_racial_traits(entries))
     gear_list = equipment.build(books)
     stats = equipment.enrich(entries, gear_list, equipment.weapon_groups(books))
     print('combat stats added to', stats, 'weapon and armor entries')
