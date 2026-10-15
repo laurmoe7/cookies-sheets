@@ -121,6 +121,17 @@ class Compendium(unittest.TestCase):
         self.assertTrue(any(a['diminished'] for a in app.archetypes('Magus')), 'kensai and myrmidarch')
         self.assertEqual(app.archetypes('Nonexistent'), [])
 
+    def test_archetypes_from_aon(self):
+        # Ninja, Samurai and Antipaladin archetypes come from Archives of Nethys (tools/aon_archetypes.py).
+        counts = {c: len(app.archetypes(c)) for c in ('Ninja', 'Samurai', 'Antipaladin')}
+        self.assertEqual(counts, {'Ninja': 5, 'Samurai': 7, 'Antipaladin': 9})
+        frozen = {a['name']: a for a in app.archetypes('Ninja')}['Frozen Shadow']
+        feats = {f['name']: f for f in frozen['features']}
+        self.assertEqual(feats['Track Victim (Ex)']['level'], 4)
+        self.assertEqual([r['name'] for r in feats['Track Victim (Ex)']['replaces']], ['uncanny dodge'])
+        self.assertEqual(frozen['classSkills'], {'add': ['Survival'], 'remove': ['Diplomacy']})
+        self.assertNotIn('�', ' '.join(f['html'] for f in frozen['features']))
+
     def test_resolve_names(self):
         hits = app.resolve_names({'items': [
             {'variants': ['Weapon Finesse'], 'cats': ['Feat']},

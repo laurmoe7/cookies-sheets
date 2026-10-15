@@ -1,0 +1,1984 @@
+[
+ {
+  "name": "Blighted Myrmidon",
+  "cls": "Antipaladin",
+  "source": "Ultimate Wilderness",
+  "meta": {
+   "cls": "Antipaladin",
+   "description": "Blighted myrmidons carry the seed of rot in their black hearts and sap life from the natural world.",
+   "features": [
+    {
+     "name": "Smite Nature (Su)",
+     "level": null,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "smite good",
+       "text": "smite good",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>A blighted myrmidon can drain the life from a creature tied to nature. As a swift action, the blighted myrmidon chooses one target within sight to smite. Regardless of its alignment, if the target is an animal, plant, or vermin, the blighted myrmidon adds her Charisma bonus (if any) on her attack rolls and adds her blighted myrmidon level on damage rolls against the target of her smite. If the target of smite nature is an elemental, a fey, or a creature with levels of druid, hunter, ranger, or shifter, the bonus on damage on the first successful attack increases to 2 points of damage per class level the blighted myrmidon has. This ability otherwise functions as smite good. This alters smite good.</p>"
+    },
+    {
+     "name": "Corrupted Companion (Sp)",
+     "level": 5,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "fiendish boon",
+       "text": "fiendish boon",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>At 5th level, a blighted myrmidon can call upon a corrupted servant of nature. When the blighted myrmidon chooses the second fiendish boon option, it functions as a <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=summon nature's ally 1\"><i>summon nature’s ally</i></a> spell of the appropriate level. This ability otherwise functions as the standard fiendish boon antipaladin class feature. This alters fiendish boon.</p>"
+    },
+    {
+     "name": "Feed on Decay (Ex)",
+     "level": 10,
+     "replaces": [
+      {
+       "name": "use of smite good",
+       "text": "use of smite good",
+       "parts": [],
+       "levels": [
+        10
+       ]
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 10th level, a blighted myrmidon draws strength from corrupting the natural world. When the blighted myrmidon damages a creature with her smite nature ability, she gains a +1 morale bonus on attack rolls, damage rolls, and saving throws for 1 round. This replaces the use of smite good gained at 10th level.</p>"
+    },
+    {
+     "name": "Aura of Decay (Su)",
+     "level": 11,
+     "replaces": [
+      {
+       "name": "aura of vengeance",
+       "text": "aura of vengeance",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 11th level, as a free action, a blighted myrmidon can expend two uses of her smite nature ability to generate an aura of decay with a range of 10 feet for 1 minute. Living foes of the blighted myrmidon within the aura take 3d6 points of damage unless they succeed at a Fortitude save (DC = half the blighted myrmidon’s level + her Charisma modifier) for half damage. If an elemental, a fey, or a creature with levels in druid, hunter, ranger, or shifter takes damage from aura of decay, the blighted myrmidon regains a number of hit points equal to half the amount of damage the creature takes; this doesn’t stack if multiple such creatures are in the aura. This replaces aura of vengeance.</p>"
+    },
+    {
+     "name": "Enervating Touch (Su)",
+     "level": 15,
+     "replaces": [
+      {
+       "name": "cruelty",
+       "text": "cruelty",
+       "parts": [],
+       "levels": [
+        15
+       ]
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 15th level, when she damages a creature with her touch of corruption, a blighted myrmidon can suppress the vital force of her target for 1 round per level. While affected, when the target regains hit points, it regains only half the number of hit points it would otherwise receive, and it can’t gain temporary hit points. The target can attempt a Fortitude save (DC = half the blighted myrmidon’s level + her Charisma modifier) to negate this effect. This replaces the cruelty gained at 15th level.</p>"
+    },
+    {
+     "name": "Unnatural Champion (Ex)",
+     "level": 20,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "unholy champion",
+       "text": "unholy champion",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>At 20th level, when a blighted myrmidon uses smite nature and strikes an elemental or fey creature with the extraplanar subtype, the target is also subject to the effects of a <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=banishment\"><i>banishment</i></a> spell, using her blighted myrmidon level as her caster level, and her weapon and unholy symbol automatically count as objects that the subject hates. This ability otherwise functions as unholy champion. This alters unholy champion.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Dread Vanguard",
+  "cls": "Antipaladin",
+  "source": "Champions of Corruption",
+  "meta": {
+   "cls": "Antipaladin",
+   "description": "Some antipaladins serve or ally themselves with villains who are bent on earthly conquest. They care nothing for the intricacies of divine spellcasting, but malevolent energy still surrounds them. Whether alone or at the head of a marauding host, these cruel warriors bring suffering and death—but their presence also heralds the coming of a greater evil.",
+   "features": [
+    {
+     "name": "Beacon of Evil (Su)",
+     "level": 4,
+     "replaces": [
+      {
+       "name": "spell",
+       "text": "spells",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>A dread vanguard unleashes the powers of his vile masters to strengthen both himself and his allies. At 4th level and every 4 level thereafter, a dread vanguard gains one additional use of his touch of corruption ability per day. As a standard action, he can spend a use of his touch of corruption ability to manifest the darkness in his soul as an area of flickering shadows with a 30-foot radius centered on him. These shadows don’t affect visibility. The antipaladin and all allies in the area gain a +1 morale bonus to AC and on attack rolls, damage rolls, and saving throws against fear, and also ignore the first 5 points of hardness when attacking unattended inanimate objects. This lasts for 1 minute, as long as the dread vanguard is conscious. At 8th level, the aura grants fast healing 3 to the dread vanguard as well as to his allies while they remain within it. Additionally, while this aura is active, the antipaladin can use his touch of corruption ability against any targets within its radius by making a ranged touch attack. At 12th level, when he activates this ability, a dread vanguard can choose to increase the radius of one antipaladin aura he possesses to 30 feet. Also, the morale bonus granted to AC and on attack rolls, damage rolls, and saving throws against fear increases to +2. At 16th level, the fast healing granted by this ability increases to 5. Additionally, the antipaladin’s weapons and those of his allies within the aura’s radius are considered evil for the purpose of overcoming damage reduction. At 20th level, the beacon of evil’s radius increases to 60 feet, and the morale bonus granted to AC and on attack rolls, damage rolls, and saving throws against fear increases to +4. Lastly, attacks made by the dread vanguard and his allies within the aura’s radius are infused with pure unholy power, and deal an additional 1d6 points of damage. This ability replaces the spells class feature. A dread vanguard does not gain any spells or spellcasting abilities, cannot use spell trigger or spell completion magic items, and does not have a caster level from this class.</p>"
+    },
+    {
+     "name": "Dark Emissary (Sp)",
+     "level": 14,
+     "replaces": [
+      {
+       "name": "aura of sin",
+       "text": "aura of sin",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 14th level, a dread vanguard becomes a true messenger of the forces of darkness he serves. Once per day, the dread vanguard can expend two uses of his touch of corruption ability to mark one location within 60 feet with the stain of evil. This location can be any point in space, but the ability works best if placed on an altar, shrine, or other site important to a community. The location is affected as if by a <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=desecrate\"><i>desecrate</i></a> spell. Creatures approaching within 30 feet of the site must succeed at a Will save or suffer the effects of <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=crushing despair\"><i>crushing despair</i></a>. At 17th level, the dread vanguard can also mark the site with a <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=symbol of pain\"><i>symbol of pain</i></a>, and at 20th level, he adds a <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=symbol of weakness\"><i>symbol of weakness</i></a>. If available, all three of these effects overlap. Creatures must save against each effect individually, and the effects stack. The caster level for all effects is equal to the dread vanguard’s class level. The save DC is equal to 10 + 1/2 the antipaladin’s level + his Charisma modifier. A location remains marked in this way for up to 1 day per antipaladin level. During this time, the <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=crushing despair\"><i>crushing despair</i></a> and <i>symbols</i> are triggered when the first target enters each spell’s area. They remain active for 10 minutes, then can be triggered again if targets are within range. If the effects are disabled, they become inactive for 10 minutes, but then can be triggered again as normal. <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=Dispel magic\"><i>Dispel magic</i></a> and similar spells suppress the effects, and all effects of dark emissary can be removed by a <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=consecrate\"><i>consecrate</i></a> spell cast on the location by a cleric of a level equal to or higher than the dread vanguard. Allies or evil creatures who serve the same power or organization as the dread vanguard are immune to the <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=crushing despair\"><i>crushing despair</i></a> and <i>symbol</i> effects, and automatically know that the location has been marked for their masters. They can treat this location as very familiar for the purpose of <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=teleport\"><i>teleport</i></a> and similar spells and can use <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=scrying\"><i>scrying</i></a> and related spells as though they were familiar with any subject within 20 feet of it. At 14th level, a dread vanguard can have one marked site active at a time. At 17th and 20th levels, he can add one additional site that is simultaneously active. Marking a new site beyond this limit ends all effects on the oldest active site. This ability replaces aura of sin.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Fearmonger",
+  "cls": "Antipaladin",
+  "source": "Monster Codex",
+  "meta": {
+   "cls": "Antipaladin",
+   "description": "The fearmonger wants to do more than cause pain, misery, and confusion. He wishes to spread fear among his foes and infect entire populations with it. The fearmonger archetype is available only to the antipaladin alternate class.",
+   "features": [
+    {
+     "name": "Feed on Fear (Su)",
+     "level": 2,
+     "replaces": [
+      {
+       "name": "touch of corruption",
+       "text": "touch of corruption",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 2nd level, the first time in a round a creature fails a saving throw against a fear effect created by a fearmonger’s spell, spell-like ability, or supernatural ability (including any ability that causes a creature to be shaken, frightened, or panicked), the fearmonger is healed of 1 point of damage per 2 antipaladin levels. If the fearmonger is at full hit points when this ability is activated, he instead gains an equal number of temporary hit points. These temporary hit points last for 1 minute. Temporary hit points gained through multiple successful uses of this ability do not stack; the duration increases instead. The antipaladin can use this ability a number of times per day equal to 1/2 his antipaladin level plus his Charisma bonus. This ability replaces touch of corruption.</p>"
+    },
+    {
+     "name": "Frightening Cruelty (Su)",
+     "level": 12,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>The fearmonger must select shaken as his 3rd-level cruelty, dazed as his 6th-level cruelty, and frightened as his 9th-level cruelty. At 12th level, the fearmonger gains the panicked cruelty. <i>Panicked</i>: The target is panicked for 1 round per 4 class levels the antipaladin possesses. The antipaladin must have the shaken and frightened cruelties before selecting this cruelty. This class feature alters cruelty.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Insinuator",
+  "cls": "Antipaladin",
+  "source": "Agents of Evil",
+  "meta": {
+   "cls": "Antipaladin",
+   "description": "Between the selfless nobility of paladins and the chaotic menace of antipaladins, there exists a path of dedicated self-interest. Shunning the ties that bind them to a single deity, insinuators embrace whatever forces help them achieve their own agenda and glory, borrowing power to emulate divine warriors.",
+   "features": [
+    {
+     "name": "Alignment",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>Any evil.</p>"
+    },
+    {
+     "name": "Code of Conduct",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>An insinuator must always work toward his own self-interest, enrichment, or glory, and must also abide by the moral strictures of whatever outsider they have chosen to invoke that day (see invocation below). If the insinuator breaks an invoked outsider’s code, he cannot invoke outsiders of that same alignment until he seeks atonement, although outsiders of other alignments may still heed his call.</p>"
+    },
+    {
+     "name": "Invocation (Ex)",
+     "level": null,
+     "replaces": [
+      {
+       "name": "aura of evil",
+       "text": "aura of evil",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At the start of each day, an insinuator can meditate for 10 minutes to contact and barter with an outsider to empower him for a day. An insinuator can freely invoke an outsider of his own alignment. He can instead invoke an outsider within one step of his own alignment by succeeding at a Diplomacy or Knowledge (religion) skill check (DC = 15 + the insinuator’s antipaladin level). While invoking the power of an outsider, the insinuator radiates an alignment aura that matches that of the outsider’s, and becomes vulnerable to alignment-based effects that target that outsider’s alignment (such as smite evil or <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=chaos hammer\"><i>chaos hammer</i></a>). None of an insinuator’s supernatural or spell-like class abilities function unless he has invoked the power of an outsider, and the alignment of the being invoked may affect how some abilities function. This ability replaces aura of evil.</p>"
+    },
+    {
+     "name": "Detect Balance (Sp)",
+     "level": null,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "detect good",
+       "text": "detect good",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>At will, an insinuator can detect strong moral leanings. This functions as <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=detect evil\"><i>detect evil</i></a> or <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=detect good\"><i>detect good</i></a>, but does not actually reveal the target’s alignment, only whether the target is neutral (rather than good or evil) and the relative strength of that aura. This ability alters detect good.</p>"
+    },
+    {
+     "name": "Smite Impudence (Su)",
+     "level": 4,
+     "replaces": [
+      {
+       "name": "smite good",
+       "text": "smite good",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>Once per day, an insinuator can beseech the forces empowering him to punish their shared enemies. As a swift action, the insinuator chooses one target within sight to smite. An insinuator cannot use smite against a target that shares an alignment with the outsider he has invoked for the day. The insinuator adds his Charisma bonus on his attack rolls and half his insinuator level on all damage rolls made against the target of his smite. If the target is an outsider, dragon, or divine spellcaster with an alignment opposed to that of the outsider he has invoked for the day, the bonus damage on the first successful attack increases to 1 point of damage per antipaladin level the insinuator has. Regardless of the target, the smite attack automatically bypasses any damage reduction the creature might possess. In addition, each time the insinuator declares a smite, he gains a number of temporary hit points equal to his antipaladin level. The smite effect remains until the target is defeated or the next time the insinuator rests and regains his uses of this ability. At 4th level and at every 3 levels thereafter, the insinuator can use smite one additional time per day, to a maximum of seven times per day at 19th level. This ability replaces smite good.</p>"
+    },
+    {
+     "name": "Selfish Healing (Su)",
+     "level": 2,
+     "replaces": [
+      {
+       "name": "touch of corruption",
+       "text": "touch of corruption",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>Beginning at 2nd level, an insinuator can heal his wounds by touch. This is treated exactly like the <a style=\"text-decoration:underline\" href=\"ClassDisplay.aspx?ItemName=Paladin\">paladin’s lay on hands class feature</a>, except it can be used only to heal the insinuator and cannot be used on other creatures. This ability replaces touch of corruption.</p>"
+    },
+    {
+     "name": "Aura of Ego (Su)",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "aura of cowardice",
+       "text": "aura of cowardice",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 3rd level, an insinuator radiates an aura that bolsters allies and deters enemies. Each ally within 10 feet gains a +2 morale bonus on saving throws against fear effects. Enemies within 10 feet take a –2 penalty on saving throws against fear effects. This ability functions only while the insinuator is conscious, not if he is unconscious or dead. This ability replaces aura of cowardice.</p>"
+    },
+    {
+     "name": "Stubborn Health (Ex)",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "plague bringer",
+       "text": "plague bringer",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 3rd level, an insinuator takes only half damage from diseases and poisons, and none of his ability scores can be reduced below 1 by these effects. This ability replaces plague bringer.</p>"
+    },
+    {
+     "name": "Greeds (Su)",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "cruelty",
+       "text": "cruelty",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>Beginning at 3rd level, an insinuator can heal himself of certain conditions. This functions as the <a style=\"text-decoration:underline\" href=\"ClassDisplay.aspx?ItemName=Paladin\">mercy paladin class ability</a>, but these mercies can only be applied to the insinuator himself. This ability replaces cruelty.</p>"
+    },
+    {
+     "name": "Channel Energy (Su)",
+     "level": 4,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "channel negative energy",
+       "text": "channel negative energy",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>At 4th level, an insinuator can channel negative energy, treating his antipaladin level as his effective cleric level. If he invokes a neutral outsider for the day, he may instead chose during the invocation to channel positive energy, but treats his effective cleric level as half his antipaladin level. Using this ability consumes two uses of his selfish healing ability. This is a Charisma-based ability. This ability alters channel negative energy.</p>"
+    },
+    {
+     "name": "Bonus Feats",
+     "level": 4,
+     "replaces": [
+      {
+       "name": "antipaladin spell",
+       "text": "antipaladin spells",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 4th level, an insinuator gains one bonus feat, which must be selected from the list of combat feats or <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Skill Focus\">Skill Focus</a>. At 7th level and every 3 antipaladin levels thereafter, the insinuator gains one additional combat or <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Skill Focus\">Skill Focus</a> feat. This ability replaces antipaladin spells.</p>"
+    },
+    {
+     "name": "Ambitious Bond (Sp)",
+     "level": 5,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 5th level, an insinuator gains a divine bond with either a bonded weapon or an outsider servant. This functions as the antipaladin’s fiendish boon with the following modifications. <i>Bonded Weapon</i>: This functions as the antipaladin ability, except the first special ability added to a weapon must correspond to the alignment of the outsider the insinuator has invoked for that day: <a style=\"text-decoration:underline\" href=\"MagicWeaponsDisplay.aspx?ItemName=Anarchic\"><i>anarchic</i></a> (chaos), <a style=\"text-decoration:underline\" href=\"MagicWeaponsDisplay.aspx?ItemName=Axiomatic\"><i>axiomatic</i></a> (law), or <a style=\"text-decoration:underline\" href=\"MagicWeaponsDisplay.aspx?ItemName=Unholy\"><i>unholy</i></a> (evil). Additional special abilities may be applied if any equivalent bonus remains. <i>Outsider Servant</i>: This functions as the antipaladin ability, except the insinuator gains a new outsider servant each day, whose alignment must match the alignment of the outsider invoked for the day. The outsider servant functions as much as an agent for the patron invoked by the insinuator as an ally of the insinuator himself, and may turn against him if he violates his patron’s alignment or interests.</p>"
+    },
+    {
+     "name": "Aura of Ambition (Su)",
+     "level": 8,
+     "replaces": [
+      {
+       "name": "aura of despair",
+       "text": "aura of despair",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 8th level, enemies within 10 feet of an insinuator take a –1 penalty on all saving throws. All allies within 10 feet gain a +1 bonus on all saving throws. This penalty does not stack with the penalty from aura of the crusader. This ability functions only while the insinuator is conscious, not if he is unconscious or dead. This ability replaces aura of despair.</p>"
+    },
+    {
+     "name": "Aura of Glory (Su)",
+     "level": 11,
+     "replaces": [
+      {
+       "name": "aura of vengeance",
+       "text": "aura of vengeance",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 11th level, an insinuator can expend two uses of his smite impudence ability to grant the ability to smite impudence to all allies within 10 feet, using his bonuses. Allies must use this smite impudence ability before the start of the insinuator’s next turn, and the bonuses last for 1 minute. Using this ability is a free action. This ability replaces aura of vengeance.</p>"
+    },
+    {
+     "name": "Aura of Belief (Su)",
+     "level": 14,
+     "replaces": [
+      {
+       "name": "aura of sin",
+       "text": "aura of sin",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 14th level, an insinuator’s weapons are treated as chaos-aligned while he invokes a chaotic outsider, law-aligned when he invokes a lawful outsider, or evil-aligned while he invokes an evil outsider. If he invokes an outsider with more than one alignment aura, the insinuator must choose during the initial invocation which alignment his weapon radiates. This ability replaces aura of sin.</p>"
+    },
+    {
+     "name": "Aura of Indomitability (Su)",
+     "level": 17,
+     "replaces": [
+      {
+       "name": "aura of depravity",
+       "text": "aura of depravity",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 17th level, an insinuator gains DR 10 that is bypassed by the alignment opposite of the outsider he has invoked for the day, or DR 5/— while invoking a neutral outsider. This ability replaces aura of depravity.</p>"
+    },
+    {
+     "name": "Personal Champion (Su)",
+     "level": 20,
+     "replaces": [
+      {
+       "name": "unholy champion",
+       "text": "unholy champion",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 20th level, an insinuator becomes a living embodiment of his selfish desires. His damage resistance from aura of indomitability increases to 15 (or 10 while invoking a neutral outsider). Whenever he uses smite impudence, he adds twice his full Charisma bonus to the attack roll and doubles his effective bonus damage gained from the smite. In addition, he can invoke a new outsider patron by meditating for 10 minutes. This ability replaces unholy champion. <h2 class=\"title\">Ex-Insinuators</h2> An insinuator who willfully commits selfless acts or engages in violence that doesn’t further his own ends loses all class features (including his outsider servant, but not bonus feats or weapon, armor, and shield proficiencies). He can’t progress any further in levels as an insinuator. He regains his abilities and advancement potential if he atones for his faltering ambition (see the <i>atonement</i> spell). If he violates the code of conduct of his invoked outsider patron, he must similarly seek atonement from outsiders of that alignment again.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Iron Tyrant",
+  "cls": "Antipaladin",
+  "source": "Armor Master's Handbook",
+  "meta": {
+   "cls": "Antipaladin",
+   "description": "Covered from head to toe in blackened armor decorated with grotesque shapes and bristling with spikes, iron tyrants make an unmistakable impression on the battlefield. These antipaladins’ armor is an outward symbol of their inner power, and they are rarely seen without it. Iron tyrants seek the strength to rule over domains as unfettered despots, and depend on their armor as protection against those they have not yet cowed.",
+   "features": [
+    {
+     "name": "Iron Fist (Ex)",
+     "level": 2,
+     "replaces": [
+      {
+       "name": "touch of corruption",
+       "text": "touch of corruption",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 2nd level, an iron tyrant gains Improved Unarmed Strike as a bonus feat. In addition, whenever the iron tyrant makes a successful attack with a gauntlet, spiked gauntlet, or armor spikes, the weapon damage is based on his level and not the weapon type, as per the <a style=\"text-decoration:underline\" href=\"ClassDisplay.aspx?ItemName=Warpriest\">warpriest’s sacred weapon ability</a>. This ability replaces touch of corruption.</p>"
+    },
+    {
+     "name": "Bonus Feats",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "cruelty",
+       "text": "cruelty",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 3rd level and every 3 antipaladin levels thereafter, an iron tyrant gains a bonus feat in addition to those gained from normal advancement. This feat must be a <a style=\"text-decoration:underline\" href=\"Feats.aspx?Category=Combat\">combat feat</a> that relates to the iron tyrant’s armor or shield, such as <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Shield Focus\">Shield Focus</a>, or one of the <a style=\"text-decoration:underline\" href=\"Feats.aspx?Category=Armor Mastery\">armor mastery feats</a>. This ability replaces cruelty.</p>"
+    },
+    {
+     "name": "Unstoppable (Ex)",
+     "level": 4,
+     "replaces": [
+      {
+       "name": "channel negative energy",
+       "text": "channel negative energy",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 4th level, when wearing heavy armor, an iron tyrant is not slowed by terrain that halves movement (such as dense rubble, light undergrowth, and shallow bogs). Terrain that has been magically manipulated to impede motion or terrain that reduces movement by more than half still affects him. This ability replaces channel negative energy.</p>"
+    },
+    {
+     "name": "Fiendish Bond (Su)",
+     "level": 5,
+     "replaces": [
+      {
+       "name": "fiendish boon",
+       "text": "fiendish boon",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 5th level, instead of forming a fiendish bond with his weapon or a servant, an iron tyrant can form a bond with his armor. As a standard action, an iron tyrant can enhance his armor by calling upon a fiendish spirit’s aid. This bond lasts for 1 minute per antipaladin level. When called, the spirit causes the armor to shed unholy light like a torch. At 5th level, the spirit grants the armor a +1 enhancement bonus. For every 3 antipaladin levels beyond 5th, the armor gains another +1 enhancement bonus, to a maximum of +6 at 20th level. These bonuses stack with existing armor enhancement bonuses to a maximum of +5, or they can be used to add any of the following armor special abilities: <a style=\"text-decoration:underline\" href=\"MagicArmorDisplay.aspx?ItemName=Dastard\"><i>dastard</i></a>, <a style=\"text-decoration:underline\" href=\"MagicArmorDisplay.aspx?ItemName=Ghost Touch\"><i>ghost touch</i></a>, <a style=\"text-decoration:underline\" href=\"MagicArmorDisplay.aspx?ItemName=Fortification (light)\"><i>fortification (heavy, light, or medium)</i></a>, <a style=\"text-decoration:underline\" href=\"MagicArmorDisplay.aspx?ItemName=Invulnerability\"><i>invulnerability</i></a>, <a style=\"text-decoration:underline\" href=\"MagicArmorDisplay.aspx?ItemName=Spell Resistance (13)\"><i>spell resistance (13, 15, 17, or 19)</i></a>. Adding these special abilities consumes an amount of bonus equal to the special ability’s base price modifier. In addition, the iron tyrant can grant his armor the <a style=\"text-decoration:underline\" href=\"MagicArmorDisplay.aspx?ItemName=Unrighteous\"><i>unrighteous</i></a> special ability at the cost of a +4 bonus. These special abilities are added to any special abilities the armor already has, but duplicate abilities do not stack. If the armor is not magical, at least a +1 enhancement bonus must be added before any other special abilities can be added. The bonus and special abilities granted by the spirit are determined when the spirit is called and cannot be changed until the spirit is called again. The fiendish spirit imparts no bonuses if the armor is worn by anyone other than the iron tyrant, but it resumes giving bonuses if the iron tyrant dons the armor again. An iron tyrant can use this ability once per day at 5th level, and one additional time per day for every 4 levels beyond 5th, to a total of four times per day at 17th level. If a suit of bonded armor with a fiendish spirit is destroyed, the iron tyrant loses the use of this ability for 30 days, or until he gains a level, whichever comes first. During this 30-day period, the iron tyrant takes a –1 penalty on attack rolls and weapon damage rolls. This ability replaces fiendish boon.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Knight of the Sepulcher",
+  "cls": "Antipaladin",
+  "source": "Ultimate Combat",
+  "meta": {
+   "cls": "Antipaladin",
+   "description": "Not content with the antipaladin’s mere corruption of the soul, the knight of the sepulcher sacrifices mortality along with morality. The knight of the sepulcher archetype is available only to the antipaladin alternate class.",
+   "features": [
+    {
+     "name": "Touch of the Crypt (Ex)",
+     "level": 5,
+     "replaces": [
+      {
+       "name": "fiendish boon",
+       "text": "fiendish boon",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 5th level, a knight of the sepulcher gains a +2 bonus on saving throws against mind-affecting effects, death effects, and poison. He is harmed by positive energy effects and healed by negative energy effects as though he were undead, although negative energy effects that don’t heal undead (such as <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=enervation\"><i>enervation</i></a>) affect him normally. The knight of the sepulcher has a 25% chance of ignoring critical hits and the bonus damage from sneak attacks as though he were wearing <a style=\"text-decoration:underline\" href=\"MagicArmorDisplay.aspx?ItemName=Fortification (light)\"><i>armor of light fortification</i></a>. This ability replaces the fiendish boon ability.</p>"
+    },
+    {
+     "name": "Fortitude of the Crypt (Ex)",
+     "level": 8,
+     "replaces": [
+      {
+       "name": "aura of despair",
+       "text": "aura of despair",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 8th level, a knight of the sepulcher gains immunity to poison. He also gains darkvision 60 feet if he does not already possess it. This ability replaces the aura of despair ability.</p>"
+    },
+    {
+     "name": "Cloak of the Crypt (Ex)",
+     "level": 10,
+     "replaces": [
+      {
+       "name": "smite good use",
+       "text": "smite good use",
+       "parts": [],
+       "levels": [
+        10
+       ]
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 10th level, the knight of the sepulcher gains immunity to energy drain and harmful negative energy effects. His chance of ignoring critical hits and sneak attacks increases to 50%, as though he were wearing <a style=\"text-decoration:underline\" href=\"MagicArmorDisplay.aspx?ItemName=Fortification (moderate)\"><i>armor of moderate fortification</i></a>. This ability replaces the smite good use gained at 10th level.</p>"
+    },
+    {
+     "name": "Will of the Crypt (Ex)",
+     "level": 11,
+     "replaces": [
+      {
+       "name": "aura of vengeance",
+       "text": "aura of vengeance",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 11th level, a knight of the sepulcher’s bonus on saving throws against mind-affecting effects and death effects increases to +4. This ability replaces the aura of vengeance ability.</p>"
+    },
+    {
+     "name": "Weapons of Sin (Su)",
+     "level": 14,
+     "replaces": [
+      {
+       "name": "aura of sin",
+       "text": "aura of sin",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 14th level, a knight of the sepulcher’s weapons are treated as evil-aligned for the purposes of overcoming damage reduction. This ability replaces aura of sin.</p>"
+    },
+    {
+     "name": "Crypt Lord (Ex)",
+     "level": 15,
+     "replaces": [
+      {
+       "name": "cruelty",
+       "text": "cruelty",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 15th level, a knight of the sepulcher’s chance of ignoring critical hits and sneak attacks increases to 75%, as though he were wearing <a style=\"text-decoration:underline\" href=\"MagicArmorDisplay.aspx?ItemName=Fortification (heavy)\"><i>armor of heavy fortification</i></a>. He gains immunity to death effects, paralysis, sleep effects, and stunning. He no longer sleeps. The knight of the sepulcher also gains immunity to effects that cause fatigue, and effects that would cause him to become exhausted instead cause him to become fatigued. This ability replaces cruelty.</p>"
+    },
+    {
+     "name": "Soul of the Crypt (Su)",
+     "level": 17,
+     "replaces": [
+      {
+       "name": "aura of depravity",
+       "text": "aura of depravity",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 17th level, a knight of the sepulcher gains DR 5/bludgeoning and good. This ability replaces aura of depravity.</p>"
+    },
+    {
+     "name": "Undying Champion (Ex)",
+     "level": 20,
+     "replaces": [
+      {
+       "name": "unholy champion",
+       "text": "unholy champion",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 20th level, a knight of the sepulcher joins the ranks of the undead. His DR increases to 10/bludgeoning and good. His type changes to undead, and he acquires all undead traits. Although immune to disease, he can still carry and spread diseases with the antipaladin’s plague bringer ability. The undying champion no longer has a Constitution score. He uses his Charisma score for calculating hit points, Fortitude saves, and any special abilities that rely on Constitution. This ability replaces unholy champion.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Rough Rampager",
+  "cls": "Antipaladin",
+  "source": "Inner Sea Combat",
+  "meta": {
+   "cls": "Antipaladin",
+   "description": "Rough rampagers venerate Rovagug, reveling in the destruction the dark god represents. Where others seek power, wealth, or revenge, the rough rampager merely focuses on slaughter and mayhem. Because of their sheer destructive nature, most rough rampagers live short, brutal lives swathed in blood and carnage before someone puts them to the blade.",
+   "features": [
+    {
+     "name": "Aura of Blood (Su)",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "aura of cowardice",
+       "text": "aura of cowardice",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 3rd level, a rough rampager radiates a palpably daunting aura that causes all enemies within 10 feet to take a –4 penalty on Constitution or Heal checks to stop bleed damage and checks to stabilize while dying. This ability functions only while the antipaladin is conscious. This ability replaces aura of cowardice.</p>"
+    },
+    {
+     "name": "Aura of Putrefaction (Su)",
+     "level": 8,
+     "replaces": [
+      {
+       "name": "aura of despair",
+       "text": "aura of despair",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 8th level, a rough rampager radiates an aura that causes the wounds of enemies within 10 feet to weep blood. Injured enemies in the area take 1 point of bleed damage per round. This ability functions only while the antipaladin is conscious. This ability replaces aura of despair.</p>"
+    },
+    {
+     "name": "Aura of Quietus (Su)",
+     "level": 14,
+     "replaces": [
+      {
+       "name": "aura of sin",
+       "text": "aura of sin",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 14th level, a rough rampager radiates an aura that causes the failure of healing spells, spell-like abilities, and supernatural abilities used to restore enemies within 10 feet of him. This is not an antimagic field, however, and ongoing or passive effects are not affected. Casters can overcome this ability with a successful caster level check versus the rough rampager’s class level + 11. This ability replaces aura of sin.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Seal-Breaker",
+  "cls": "Antipaladin",
+  "source": "Inner Sea Combat",
+  "meta": {
+   "cls": "Antipaladin",
+   "description": "Seal-breakers are dedicated to the Whispering Tyrant and have tasked themselves with finding and destroying the seals that bind him within Gallowspire. Their ties to the Whispering Tyrant give them power over undead creatures and other dark forces.",
+   "features": [
+    {
+     "name": "Aura of the Grave (Su)",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "aura of cowardice",
+       "text": "aura of cowardice",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 3rd level, a seal-breaker is constantly surrounded by the chill of death. Mindless undead within 10 feet of the seal-breaker will not attack him unless directly ordered to, and even then only after succeeding at a Will save (DC = 10 + 1/2 the seal-breaker’s level + his Charisma modifier). This ability replaces aura of cowardice.</p>"
+    },
+    {
+     "name": "Corpse Rider (Su)",
+     "level": 5,
+     "replaces": [
+      {
+       "name": "fiendish boon",
+       "text": "fiendish boon",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>Upon reaching 5th level, a sealbreaker receives a boon from beyond the grave. This boon can take one of two forms: the seal-breaker can choose to form a bond with his weapon, or he can choose to animate an undead mount to ride. If a bonded weapon is selected, this ability works exactly like the antipaladin’s fiendish boon ability. If the undead mount ability is selected, the sealbreaker gains the ability to reanimate any Large corpse (or a Medium corpse for Small seal-breakers) as his corpse mount. If no such corpse is present, the seal-breaker cannot summon his mount. The corpse animates as a quadruped of the same size that the seal-breaker can ride, regardless of the corpse’s living form. This corpse mount functions as a <a style=\"text-decoration:underline\" href=\"ClassDisplay.aspx?ItemName=Companion\">druid’s animal companion</a> using the seal-breaker’s level as his effective druid level. The mount has the same base statistics as a heavy horse, pony, boar, camel, or dog (based on its size) with the following changes: its type changes to undead, it has a good Will save and bad Fortitude and Reflex saves, it uses the base creature’s Constitution score as its Charisma score (and likewise applies all level-based advancements to Charisma instead of Constitution), and it has an Intelligence score of at least 6. This ability otherwise functions as and replaces fiendish boon.</p>"
+    },
+    {
+     "name": "Aura of Death (Su)",
+     "level": 8,
+     "replaces": [
+      {
+       "name": "aura of despair",
+       "text": "aura of despair",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 8th level, a seal-breaker radiates an aura that causes undead creatures within 10 feet to gain a +2 profane bonus on all saving throws. This ability replaces aura of despair.</p>"
+    },
+    {
+     "name": "Aura of Rebirth (Su)",
+     "level": 11,
+     "replaces": [
+      {
+       "name": "aura of vengeance",
+       "text": "aura of vengeance",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 11th level, if a living creature is slain within 10 feet of the seal-breaker, the seal-breaker can spend two uses of his smite good ability at the start of his next turn as a standard action to summon the spirit of a dead murderer to reanimate the corpse as a mohrg. The mohrg immediately rises and attacks the seal breaker’s foes, acting under the antipaladin’s command. After 1 minute, the murderer’s soul leaves the body, which collapses, again lifeless. At 15th level, the seal-breaker can activate this ability as a move action. At 19th level, he can activate this ability as a swift action. This ability replaces aura of vengeance.</p>"
+    },
+    {
+     "name": "Code of Conduct",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>The seal-breaker is dedicated to releasing the Whispering Tyrant from his prison. If a sealbreaker willingly and altruistically commits a good act, he loses all class features except proficiencies. This doesn’t mean that a seal-breaker can’t take actions someone else might qualify as good, only that such actions must always lead toward the eventual release of the Whispering Tyrant. A seal-breaker’s code requires that he place the ultimate release of Tar-Baphon above all else, as well as impose tyranny, take advantage whenever possible, and punish the good and just (provided such actions don’t interfere with his ultimate goal).</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Tyrant",
+  "cls": "Antipaladin",
+  "source": "Ultimate Intrigue",
+  "meta": {
+   "cls": "Antipaladin",
+   "description": "Evil arises in every form imaginable, not just in hearts full of destruction and chaos. Tyrants are manipulative and lawful antipaladins, chess masters who arrange things behind the scenes to ensure that whatever happens, evil always wins, and the tyrant along with it. Unlike other antipaladins, tyrants are all too happy to associate with good creatures, the better to manipulate them into performing evil acts.",
+   "features": [
+    {
+     "name": "Tyrant’s Code",
+     "level": null,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "antipaladin's code of conduct and associated",
+       "text": "antipaladin's code of conduct and associated",
+       "parts": [
+        "antipaladin's code of conduct",
+        "associated",
+        "code of conduct and associated"
+       ],
+       "levels": []
+      },
+      {
+       "name": "as well as the section on ex-antipaladin",
+       "text": "as well as the section on ex-antipaladins",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>A tyrant must be of lawful evil alignment and loses all class features except proficiencies if he willingly and altruistically commits good acts. This does not mean the tyrant can’t take actions someone else might qualify as good, only that such actions must always be in service of his own dark ambitions. A tyrant’s code requires that he place his own sinister goals above all else, respect rightful authority even as he twists its loopholes to his own ends, impose tyranny, and punish all those who dare dissent. A tyrant can accept underlings of any alignment; he cares not who serves him, only that they are truly loyal to him. He can even work alongside good-aligned individuals, as long as he is secretly manipulating them. This alters the antipaladin’s code of conduct and associated abilities, as well as the section on ex-antipaladins.</p>"
+    },
+    {
+     "name": "Class Skills",
+     "level": null,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "antipaladin's class skill",
+       "text": "antipaladin's class skills",
+       "parts": [
+        "class skill"
+       ],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>A tyrant adds Diplomacy to his list of class skills, instead of Ride. This alters the antipaladin’s class skills.</p>"
+    },
+    {
+     "name": "Diabolic Boon (Sp)",
+     "level": 5,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "fiendish boon",
+       "text": "fiendish boon",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>At 5th level, if a tyrant chooses to gain the services of a fiendish servant with his fiendish boon ability, he must choose a fiendish animal or a creature with the lawful and evil subtypes. This ability alters fiendish boon.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [
+     "Diplomacy"
+    ],
+    "remove": [
+     "Ride"
+    ]
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Frozen Shadow",
+  "cls": "Ninja",
+  "source": "Inner Sea Intrigue",
+  "meta": {
+   "cls": "Ninja",
+   "description": "Frozen shadows belong to a rare ninja clan operating in Avistan, having migrated to the Lands of the Linnorm Kings decades ago. Most members are Tian, Ulfen, and Varki humans, and they work as thieves, power brokers, and spies loosely guided by secretive masters with unknown agendas.",
+   "features": [
+    {
+     "name": "Class Skills",
+     "level": null,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "ninja's class skill",
+       "text": "ninja's class skills",
+       "parts": [
+        "class skill"
+       ],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>A frozen shadow adds Survival to his list of class skills, instead of Diplomacy. This ability alters the ninja’s class skills.</p>"
+    },
+    {
+     "name": "Hardy Killer (Ex)",
+     "level": 2,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "ki pool",
+       "text": "ki pool",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>At 2nd level, a frozen shadow has become incredibly inured to his surrounding climate. At the beginning of any day, the frozen shadow can spend 1 point from his ki pool to benefit from the effects of an <i>endure elements</i> spell. The frozen shadow does not treat any Acrobatics skill check to jump as if he had a running start, and at 10th level he cannot reduce the DC of Acrobatics skill checks made to jump by half. This ability alters ki pool.</p>"
+    },
+    {
+     "name": "Track Victim (Ex)",
+     "level": 4,
+     "replaces": [
+      {
+       "name": "uncanny dodge",
+       "text": "uncanny dodge",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>Starting at 4th level, a frozen shadow adds half his ninja level on Survival checks to follow tracks and on Perception checks to see through disguises. Additionally, if the frozen shadow sees a creature that has changed its appearance using the Disguise skill, he can always attempt a Perception check to see through the disguise, even if the disguised creature did nothing to draw attention to itself. The frozen shadow also gains a +2 bonus to Will saving throws when attempting to disbelieve an illusion affecting a creature or creatures. This ability replaces uncanny dodge.</p>"
+    },
+    {
+     "name": "Swift Tracker (Ex)",
+     "level": 8,
+     "replaces": [
+      {
+       "name": "improved uncanny dodge",
+       "text": "improved uncanny dodge",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 8th level, a frozen shadow can move at his normal speed while using Survival to follow tracks without taking the normal –5 penalty. He takes only a –10 penalty (instead of the normal –20) when moving up to twice his normal speed while tracking. Additionally, his bonus on Will saving throws to disbelieve illusions affecting a creature or creatures increases to +4. This replaces improved uncanny dodge.</p>"
+    },
+    {
+     "name": "Ninja Tricks",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": true,
+     "html": "<p>The following ninja tricks complement the frozen shadow archetype bleeding attack<sup>UC</sup>, darkvision<sup>UC</sup>, deadly range<sup>UC</sup>, fast stealth<sup>UC</sup>, hidden weapons<sup>UC</sup>, sudden disguise<sup>UC</sup>, vanishing trick<sup>UC</sup>, and wall climber<sup>UC</sup>.</p>"
+    },
+    {
+     "name": "Advanced Ninja Tricks",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": true,
+     "html": "<p>The following advanced ninja tricks complement the frozen shadow archetype assassinate<sup>UC</sup>, ghost step<sup>UC</sup>, invisible blade<sup>UC</sup>, master disguise<sup>UC</sup>, and see the unseen<sup>UC</sup>.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [
+     "Survival"
+    ],
+    "remove": [
+     "Diplomacy"
+    ]
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Gunpowder Bombardier",
+  "cls": "Ninja",
+  "source": "Heroes from the Fringe",
+  "meta": {
+   "cls": "Ninja",
+   "description": "Ratfolk assassins and other ninjas with an affinity for gunpowder demonstrate masterful control of bombs, using the explosives to inflict major damage or impair their foes.",
+   "features": [
+    {
+     "name": "Gunpowder Bomb (Ex)",
+     "level": 2,
+     "replaces": [
+      {
+       "name": "ninja trick",
+       "text": "ninja trick",
+       "parts": [],
+       "levels": [
+        2
+       ]
+      }
+     ],
+     "modifies": [
+      {
+       "name": "ki pool",
+       "text": "ki pool",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>At 2nd level, a gunpowder bombardier can expend 1 ki point to throw a gunpowder bomb at a grid intersection as a ranged attack against AC 5 with a range of 20 feet. The gunpowder bomb deals 1d6 points of bludgeoning damage to all creatures in a 10-footradius burst, which can be increased to 20 feet by spending 1 additional ki point. A creature in the bomb’s radius can attempt a Reflex save (DC = 10 + half the gunpowder bombardier’s ninja level + her Dexterity modifier) for half damage. At 5th level and every 2 levels thereafter, the bomb’s damage increases by 1d6, to a maximum of 9d6 points of bludgeoning damage at 19th level. This alters ki pool and replaces the ninja trick gained at 2nd level.</p>"
+    },
+    {
+     "name": "Explosive Impairment (Su)",
+     "level": 4,
+     "replaces": [
+      {
+       "name": "uncanny dodge",
+       "text": "uncanny dodge",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 4th level, a gunpowder bombardier can imbue her gunpowder bombs with impairing effects. By spending 1 additional ki point when she throws a gunpowder bomb, the gunpowder bombardier can cause her bomb to inflict one of the following conditions, in addition to dealing its normal damage, for a number of rounds equal to half her ninja level: dazzled, deafened, entangled, or shaken. At 8th level, she adds nauseated and stunned to the list of conditions her bombs can inflict. A creature that succeeds at the Reflex save to halve the damage also negates the condition inflicted by the gunpowder bomb. This replaces uncanny dodge.</p>"
+    },
+    {
+     "name": "Delayed Explosive (Ex)",
+     "level": 8,
+     "replaces": [
+      {
+       "name": "improved uncanny dodge",
+       "text": "improved uncanny dodge",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 8th level, a gunpowder bombardier can plant a gunpowder bomb and delay its explosion. As a standard action, the gunpowder bombardier can place a gunpowder bomb—adding effects as she would if she were throwing the gunpowder bomb, and spending the requisite ki points—and specify a number of rounds after which the bomb will detonate, up to a maximum number of rounds equal to the gunpowder bombardier’s ninja level. If the bomb is touched or moved by another creature, it detonates immediately. The gunpowder bombardier can have only one delayed explosive active at a time; planting another gunpowder bomb renders the previous bomb inert. This replaces improved uncanny dodge.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Hunting Serpent",
+  "cls": "Ninja",
+  "source": "Villain Codex",
+  "meta": {
+   "cls": "Ninja",
+   "description": "The order dispatches specially trained killers to hunt relentlessly and fight from the shadows.",
+   "features": [
+    {
+     "name": "Class Skills",
+     "level": null,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "ninja's class skill",
+       "text": "ninja's class skills",
+       "parts": [
+        "class skill"
+       ],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>A hunting serpent gains Survival as a class skill but loses Knowledge (nobility). This ability alters the ninja’s class skills.</p>"
+    },
+    {
+     "name": "Relentless Pursuit (Ex)",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "no trace",
+       "text": "no trace",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 3rd level, a hunting serpent gains a +1 bonus on Diplomacy checks to gather information and on Survival checks to identify or follow tracks. The bonus increases by 1 for every 3 ninja levels beyond 3rd. This ability replaces no trace.</p>"
+    },
+    {
+     "name": "Death Mark (Ex)",
+     "level": 4,
+     "replaces": [
+      {
+       "name": "uncanny dodge",
+       "text": "uncanny dodge",
+       "parts": [],
+       "levels": [
+        12,
+        16
+       ]
+      },
+      {
+       "name": "improved uncanny dodge",
+       "text": "improved uncanny dodge",
+       "parts": [],
+       "levels": [
+        12,
+        16
+       ]
+      },
+      {
+       "name": "ninja trick",
+       "text": "ninja tricks",
+       "parts": [],
+       "levels": [
+        12,
+        16
+       ]
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 4th level, as a swift action once per day, a hunting serpent can mark an opponent damaged by her sneak attack for death. A hunting serpent gains a +1 competence bonus on attack and damage rolls against an opponent affected by death mark as well as on Survival checks to track the marked creature. The bonuses from death mark and its number of uses per day increase by 1 at 8th, 12th, and 16th levels. The effects of death mark last for 24 hours, until the marked creature is slain, or until the hunting serpent chooses to mark another creature, whichever comes first. This ability replaces uncanny dodge, improved uncanny dodge, and the ninja tricks gained at 12th and 16th levels.</p>"
+    },
+    {
+     "name": "Certain Demise (Ex)",
+     "level": 10,
+     "replaces": [
+      {
+       "name": "ninja trick",
+       "text": "ninja trick",
+       "parts": [],
+       "levels": [
+        10
+       ]
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 10th level, the hunting serpent’s sneak attack damage applies on the first attack she makes each round against the target of her death mark ability, even if it normally wouldn’t. Other effects that trigger on a sneak attack do not apply with this ability. This ability replaces the ninja trick gained at 10th level.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [
+     "Knowledge (nobility)",
+     "Survival"
+    ],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Mask of the Living God",
+  "cls": "Ninja",
+  "source": "Disciple's Doctrine",
+  "meta": {
+   "cls": "Ninja",
+   "description": "When the Living God needs to silence the voices of those heretics who question too loudly, these enforcers are the tools he employs.",
+   "features": [
+    {
+     "name": "Weapon and Armor Proficiencies",
+     "level": null,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "mask of the living god's weapon and armor proficiency",
+       "text": "mask of the living god's weapon and armor proficiency",
+       "parts": [
+        "mask of the living god's weapon",
+        "armor proficiency"
+       ],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>In addition to having the ninja’s normal weapon and armor proficiencies, the mask of the Living God is proficient with bolas, saps, and whips. This alters the mask of the Living God’s weapon and armor proficiency.</p>"
+    },
+    {
+     "name": "Mask (Ex)",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>A mask of the Living God has a mask that is a symbol of his faith and the myriad powers invested in him. Abilities granted by this class other than undercover faith function only while the mask of the Living God is wearing his mask. Putting on or removing this mask is a move action.</p>"
+    },
+    {
+     "name": "Undercover Faith (Ex)",
+     "level": 1,
+     "replaces": [
+      {
+       "name": "poison use",
+       "text": "poison use",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 1st level, when not wearing his mask, a mask of the Living God can take on an utterly mundane identity as if he were a vigilante with the many guises social talent. While in a mundane identity, the mask of the Living God cannot wear his mask; putting it on while in a mundane identity immediately ends the mundane identity and its effects. Changing into this mundane identity takes 1 minute and must be done out of sight to preserve the mask of the Living God’s secret. The time it takes the mask of the Living God to change into a mundane identity cannot be decreased. This replaces poison use.</p>"
+    },
+    {
+     "name": "Expurgate (Sp)",
+     "level": 2,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "ki pool",
+       "text": "ki pool",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>The role of a mask of the Living God is to silence heretics and blasphemers, and he is an expert at rendering even the most glib of his foes into babbling fools. At 2nd level, when he deals damage to a target, he can expend 1 point from his ki pool to affect that target as if he had cast <i>fumbletongue</i>, using his ninja level as his caster level. The target can attempt a Will saving throw (DC = 10 + half the ninja’s level + his Charisma modifier) to negate this effect. At 6th level, the target of this ability is instead struck entirely mute for 1d4 rounds unless it succeeds at a Will saving throw. The mask of the Living God cannot spend a point from his ki pool to make an additional attack. This alters ki pool.</p>"
+    },
+    {
+     "name": "Stern Gaze (Ex)",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "no trace",
+       "text": "no trace",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>A mask of the Living God is trained to sense deception and strike fear into the hearts of his foes. At 3rd level, he gains a morale bonus equal to half his ninja level on Intimidate and Sense Motive checks. This replaces no trace.</p>"
+    },
+    {
+     "name": "Ninja Tricks",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": true,
+     "html": "<p>The following ninja tricks complement the mask of the Living God archetype: forgotten trick, kamikaze, unarmed combat training, vanishing trick, weapon training.</p>"
+    },
+    {
+     "name": "Master Tricks",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": true,
+     "html": "<p>The following master tricks complement the mask of the Living God: ghost step, see the unseen, and shadow split.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Petal Ninja",
+  "cls": "Ninja",
+  "source": "Wilderness Origins",
+  "meta": {
+   "cls": "Ninja",
+   "description": "Petal ninjas are a secretive clan of ghoran infiltrators, in touch with their plantlike nature to the point where they can change their forms, allowing them access into places that were previously impossible to reach. Petal ninja is an archetype available only to ghorans.",
+   "features": [
+    {
+     "name": "Class Skills",
+     "level": null,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "ninja's class skill",
+       "text": "ninja's class skills",
+       "parts": [
+        "class skill"
+       ],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>A petal ninja gains Heal as a class skill, but does not gain Appraise as a class skill. This alters the ninja’s class skills.</p>"
+    },
+    {
+     "name": "Blossom Shower (Ex)",
+     "level": 2,
+     "replaces": [
+      {
+       "name": "ninja trick",
+       "text": "ninja trick",
+       "parts": [],
+       "levels": [
+        2
+       ]
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 2nd level, as a standard action, a petal ninja can spend 1 ki point to create a burst of flower petals in a 15-foot radius centered on a point within 20 feet. A blossom shower lasts for a number of rounds equal to half the petal ninja’s level (minimum 1 round). When activating a blossom shower, the petal ninja forgoes a number of sneak attack dice to determine the shower’s effects, as noted below. These sneak attack dice are unavailable for the duration of the blossom shower and are regained when the effect ends. If an effect requires a saving throw, the DC is equal to 10 + twice the number of sneak attack dice expended + the petal ninja’s Charisma modifier. The petal ninja can choose to create a lesser effect even if she expends more dice than required. For example, she can expend 4 sneak attack dice, but impart the effect of 3 sneak attack dice. The shower does not affect the petal ninja herself, apart from the concealment granted by using 1 sneak attack die. <i>1 Sneak Attack Die</i>: Creatures within the radius gain concealment (20% miss chance). <i>2 Sneak Attack Dice</i>: As 1 sneak attack die, except each creature in the radius must succeed at a Will save or be dazzled for 1d6 rounds. <i>3 Sneak Attack Dice</i>: As 2 sneak attack dice, except creatures are sickened on a failed save. <i>4 Sneak Attack Dice</i>: As 2 sneak attack dice, except creatures are fascinated on a failed save. <i>5 Sneak Attack Dice</i>: As 2 sneak attack dice, except creatures are staggered on a failed save. <i>6 Sneak Attack Dice</i>: As 2 sneak attack dice, except creatures are nauseated on a failed save. This replaces the ninja trick gained at 2nd level.</p>"
+    },
+    {
+     "name": "Burst of Blossoms (Su)",
+     "level": 4,
+     "replaces": [
+      {
+       "name": "no trace",
+       "text": "no trace",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "uncanny dodge",
+       "text": "uncanny dodge",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "improved uncanny dodge",
+       "text": "improved uncanny dodge",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 4th level, a petal ninja gains the ability to transform into a cloud of blossoms as a standard action. By spending 1 point from her ki pool, a petal ninja can take the form of a cloud of blossoms, becoming insubstantial for 1 round, as <a style=\"text-decoration:underline\" href=\"SpellDisplay.aspx?ItemName=gaseous form\"><i>gaseous form</i></a>. While insubstantial she also gains a +4 circumstance bonus on Stealth checks. At 8th level, the duration increases to a number of rounds equal to 1 plus the petal ninja’s Charisma modifier. This replaces no trace, uncanny dodge, and improved uncanny dodge.</p>"
+    },
+    {
+     "name": "Sundial (Su)",
+     "level": 6,
+     "replaces": [
+      {
+       "name": "light step",
+       "text": "light steps",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 6th level, the petal ninja gains the ability to change the lighting in a 30-foot-radius emanation centered on herself as a move action. For every ki point she spends, the light levels change by one step (from darkness to dim light, normal light, and bright light, and vice versa). This change remains in effect for 1 minute. This replaces light steps.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [
+     "Heal"
+    ],
+    "remove": [
+     "Appraise"
+    ]
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Brawling Blademaster",
+  "cls": "Samurai",
+  "source": "Martial Arts Handbook",
+  "meta": {
+   "cls": "Samurai",
+   "description": "While some martial arts traditions focus on the strength of the body, most schools of combat and self-defense know the importance of using weapons as well. Brawling blademaster samurai use weapon strikes and unarmed attacks in equal measure—foes expecting to defend themselves against a dagger or a sword are often caught off guard by a brawling blademaster’s brutal kicks or punches.",
+   "features": [
+    {
+     "name": "Weapon and Armor Proficiency",
+     "level": null,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "samurai's weapon and armor proficiency",
+       "text": "samurai's weapon and armor proficiency",
+       "parts": [
+        "samurai's weapon",
+        "armor proficiency",
+        "weapon and armor proficiency"
+       ],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>Brawling blademasters are proficient with all simple and martial weapons, plus the katana and wakizashi. Brawling blademasters are proficient with light armor, but not with shields. This alters the samurai’s weapon and armor proficiency.</p>"
+    },
+    {
+     "name": "Empty Hand (Ex)",
+     "level": null,
+     "replaces": [
+      {
+       "name": "mount",
+       "text": "mount",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>A brawling blademaster gains <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Improved Unarmed Strike\">Improved Unarmed Strike</a> as a bonus feat. She uses her samurai level as her <a style=\"text-decoration:underline\" href=\"ClassDisplay.aspx?ItemName=Monk\">monk</a> level for determining the amount of damage she deals with an unarmed strike. These levels stack with monk levels to determine the brawling blademaster’s unarmed strike damage. This replaces mount.</p>"
+    },
+    {
+     "name": "Nimble (Ex)",
+     "level": 2,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 2nd level, a brawling blademaster gains the <a style=\"text-decoration:underline\" href=\"ClassDisplay.aspx?ItemName=Gunslinger\">gunslinger’s nimble class feature</a>, using her samurai level as his gunslinger level.</p>"
+    },
+    {
+     "name": "Dual Expertise (Ex)",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "weapon expertise",
+       "text": "weapon expertise",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 3rd level, a brawling blademaster gains <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Two-Weapon Fighting\">Two-Weapon Fighting</a> as a bonus feat, even if she doesn’t meet the prerequisites. Furthermore, when the brawling blademaster selects a feat with the bonus feat class feature, she can ignore any Dexterity requirements for the feat if its prerequisites include the <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Two-Weapon Fighting\">Two-Weapon Fighting</a> feat. This replaces weapon expertise.</p>"
+    },
+    {
+     "name": "Harmonious Flow (Ex)",
+     "level": 4,
+     "replaces": [
+      {
+       "name": "mounted archer",
+       "text": "mounted archer",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 4th level, the brawling blademaster becomes skilled at combining weapon attacks and unarmed strikes into a harmonious combat style. When attacking the target of her challenge, the brawling blademaster doesn’t take the usual –2 penalty on attack rolls associated with attacking with two weapons if her main-hand weapon is a light or one-handed manufactured weapon and her off-hand weapon is an unarmed strike (or vice versa). While she’s using this ability, one of her hands must be empty even if she uses another body part to make an unarmed strike. This replaces mounted archer.</p>"
+    },
+    {
+     "name": "Perfect Clarity (Ex)",
+     "level": 5,
+     "replaces": [
+      {
+       "name": "banner",
+       "text": "banner",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 5th level, the brawling blademaster sees all her foes with perfect clarity even when focused on one opponent. She no longer takes a penalty to her AC during a challenge. This ability replaces banner.</p>"
+    },
+    {
+     "name": "Superior Focus (Ex)",
+     "level": 14,
+     "replaces": [
+      {
+       "name": "greater banner",
+       "text": "greater banner",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 14th level, the brawling blademaster gains a +2 bonus on saving throws during a challenge. This replaces greater banner.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Ironbound Sword",
+  "cls": "Samurai",
+  "source": "Blood of the Ancients",
+  "meta": {
+   "cls": "Samurai",
+   "description": "The ironbound sword’s fighting style, focused on incapacitating opponents rather than killing them, is founded on a philosophy that cares both for the samurai and for her attacker. This style became prevalent during the peaceful and stable periods of Lung Wa, and reflected those values. Using these techniques, an ironbound sword can subdue a foe without causing permanent harm, leaving the soul of the samurai unstained by deaths of her enemies.",
+   "features": [
+    {
+     "name": "Merciful Combatant (Ex)",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "weapon expertise",
+       "text": "weapon expertise",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 3rd level, an ironbound sword becomes an expert at defeating foes without killing them. An ironbound sword can use any weapon to deal nonlethal damage without taking the normal –4 penalty on attack rolls. Additionally, the ironbound sword gains a +2 bonus on combat maneuvers against a target so long as the last successful attack she made against that target dealt nonlethal damage. Her samurai levels count as fighter levels and stack with fighter levels for the purposes of fighter and samurai prerequisites and class features. This replaces weapon expertise.</p>"
+    },
+    {
+     "name": "Subduing Knockout (Ex)",
+     "level": 5,
+     "replaces": [
+      {
+       "name": "banner",
+       "text": "banner",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 5th level, once per day, an ironbound sword can unleash a devastating attack that can instantly knock a target unconscious. She must announce this intent before making her attack roll. If the ironbound sword’s attack hits and the target takes damage from the blow, the target must succeed at a Fortitude saving throw (DC = 10 + half the ironbound sword’s level + the higher of the ironbound sword’s Strength or Dexterity modifier) or fall unconscious for 1d6 rounds. Each round on its turn, the unconscious target can attempt a new saving throw to end the effect as a full-round action that does not provoke attacks of opportunity. Creatures immune to critical hits or nonlethal damage are immune to this ability. At 10th level, the ironbound sword can use this ability twice per day; at 15th level, she can use it three times per day. This replaces banner.</p>"
+    },
+    {
+     "name": "Blade Reversal (Ex)",
+     "level": 14,
+     "replaces": [
+      {
+       "name": "greater banner",
+       "text": "greater banner",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 14th level, an ironbound sword can turn the force of an opponent’s attacks back against them. Whenever the ironbound sword takes a full defense action, she can expend an attack of opportunity to attempt to counter melee attacks made against her. This counter is a single attack roll at the ironbound blade’s full base attack bonus that resolves before the enemy’s attack. If the counter successfully hits the attacking enemy’s AC and if the ironbound sword’s attack roll is higher than the attacking creature’s attack roll, the ironbound sword takes no damage from the enemy’s attack and can initiate a disarm combat maneuver against the attacking enemy as a free action. If the triggering attack was made with a natural attack or unarmed strike, a successful disarm combat maneuver renders that natural attack or unarmed strike unusable until the victim spends a standard action to reset dislocated joints. In addition, the ironbound sword can spend one use of her resolve when she hits with a nonlethal attack to initiate a disarm combat maneuver against her target as a free action. This replaces greater banner.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Sovereign Blade",
+  "cls": "Samurai",
+  "source": "Legacy of Dragons",
+  "meta": {
+   "cls": "Samurai",
+   "description": "In Tian Xia, many samurai are tutored in the ways of honor using lessons that originate from sovereign dragons and their dedication to safeguarding harmony.",
+   "features": [
+    {
+     "name": "Alignment",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>A sovereign blade’s alignment must be at least partially neutral. If the sovereign blade’s alignment is not partially neutral, she is treated as if she had violated her order’s edicts each day until her alignment is again partially neutral.</p>"
+    },
+    {
+     "name": "Dogmatic Denial (Ex)",
+     "level": null,
+     "replaces": [
+      {
+       "name": "mount",
+       "text": "mount",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>A sovereign blade gains a +2 bonus on saving throws against spells with any of the following descriptors that don’t match part of the character’s own alignment: chaotic, evil, good, or lawful. This ability replaces mount.</p>"
+    },
+    {
+     "name": "Golden Armor (Su)",
+     "level": 4,
+     "replaces": [
+      {
+       "name": "mounted archer",
+       "text": "mounted archer",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 4th level, a sovereign blade can spend one use of her resolve to cause her armor to become golden for 1 round per class level, gaining energy resistance equal to 1/2 her samurai level against one energy type of her choice. This ability replaces mounted archer.</p>"
+    },
+    {
+     "name": "Sovereign Breath (Sp)",
+     "level": 6,
+     "replaces": [
+      {
+       "name": "bonus feats a samurai",
+       "text": "bonus feats a samurai",
+       "parts": [],
+       "levels": [
+        6,
+        12,
+        18
+       ]
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 6th level, the sovereign blade can issue forth an immense roar similar to the breath weapon of a sovereign dragon. This functions as <i>dragon’s breath<sup>APG</sup></i>, except it deals sonic damage in a 30-foot cone and has a caster level equal to half the sovereign blade’s samurai level. The sovereign blade can use this ability once per day, plus one additional time per day at 12th and 18th levels. This replaces the bonus feats a samurai gained at 6th, 12th, and 18th level.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Sword Saint",
+  "cls": "Samurai",
+  "source": "Dragon Empires Primer",
+  "meta": {
+   "cls": "Samurai",
+   "description": "Sword saints hail from lands where samurai are prevalent, and are often ronin who wander the world seeking new challenges to perfect their intricate style of swordplay called iaijutsu . The following benefits apply only when a sword saint is using a sword and carrying nothing in his other hand. The sword saint is an archetype of the samurai alternate class ( Ultimate Combat 18).",
+   "features": [
+    {
+     "name": "Iaijutsu Strike (Ex)",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "samurai's mount",
+       "text": "samurai's mount",
+       "parts": [
+        "mount"
+       ],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>A sword saint can perform a lightning-quick iaijutsu strike against the target of his challenge to inflict devastating wounds while drawing his sword. After the sword saint has challenged a foe but before he has attacked the target of his challenge, he may choose to use his iaijutsu strike as a full-round action, making an attack roll with his weapon as normal. In order to use this ability, the sword saint’s weapon must be sheathed at the start of his turn. If he successfully hits his opponent with an iaijutsu strike, his attack deals an additional +1d6 points of damage. This bonus damage increases by an additional +1d6 at 3rd level and every two levels thereafter to a maximum of +10d6 damage at 19th level. Any extra damage as a result of a successful iaijutsu strike is not multiplied by a critical hit. After making an iaijutsu strike, a sword saint takes a –4 penalty to his AC until his next turn, but his weapon is now drawn and he may continually to fight normally. Regardless of whether he hits his opponent with the iaijutsu strike, a sword saint cannot use this ability on the same foe more than once per day. At 10th level, a sword saint learns to focus faster and is able to make an iaijutsu strike as a standard action, and the penalty to his AC is reduced to –2. This ability replaces a samurai’s mount.</p>"
+    },
+    {
+     "name": "Brutal Slash (Ex)",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "mounted archer",
+       "text": "mounted archer",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [
+      {
+       "name": "weapon expertise",
+       "text": "weapon expertise",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>At 3rd level, a sword saint’s iaijutsu strike becomes even more deadly. If a sword saint threatens a critical hit with his iaijutsu strike, he adds a bonus equal to 1/2 his class level to the attack roll to confirm a critical hit. The sword saint may only select the katana or the wakizashi as his chosen weapon for the weapon expertise ability. This ability alters weapon expertise and replaces mounted archer.</p>"
+    },
+    {
+     "name": "Terrifying Iaijutsu (Ex)",
+     "level": 5,
+     "replaces": [
+      {
+       "name": "banner",
+       "text": "banner",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 5th level, a sword saint’s iaijutsu strike devastates the morale of foes that witness it. When a sword saint successfully hits with an iaijutsu strike, all foes within 30 feet must succeed at a Will save (DC 10 + 1/2 the sword saint’s class level + the sword saint’s Cha modifier) or become shaken for 1d4+1 rounds. This ability replaces banner.</p>"
+    },
+    {
+     "name": "Roaring Iaijutsu (Ex)",
+     "level": 14,
+     "replaces": [
+      {
+       "name": "greater banner",
+       "text": "greater banner",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 14th level, a sword saint’s iaijutsu strike deafens foes upon impact. When a sword saint successfully hits with an iaijutsu strike, all foes within 30 feet must succeed at a Fortitude save (DC 10 + 1/2 the sword saint’s class level + the sword saint’s Str modifier) or be deafened for 1d4 minutes. This ability replaces greater banner.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Ward Speaker",
+  "cls": "Samurai",
+  "source": "Disciple's Doctrine",
+  "meta": {
+   "cls": "Samurai",
+   "description": "The ward speaker draws power from simple rituals to honor the spirits found throughout the world so that he might better protect those entrusted to his care.",
+   "features": [
+    {
+     "name": "Alignment",
+     "level": null,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "samurai's alignment",
+       "text": "samurai's alignment",
+       "parts": [
+        "alignment"
+       ],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>A ward speaker must be of a nonevil alignment. This alters the samurai’s alignment.</p>"
+    },
+    {
+     "name": "Propitiation (Ex, Su, Sp)",
+     "level": 1,
+     "replaces": [
+      {
+       "name": "resolve",
+       "text": "resolve",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "greater resolve",
+       "text": "greater resolve",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "true resolve",
+       "text": "true resolve",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>A ward speaker can perform a special ritual to propitiate kami and gain a sliver of their power. This ritual must be performed at a shrine or a location warded by a specific type of kami. The propitiation takes 1 minute and involves clapping, ringing bells, bowing, and token offerings of coins, food, incense, or other gifts. The ward speaker’s propitiation must be performed uninterrupted to receive any benefits from it. At the end of this ritual, the ward speaker immediately gains a fortune depending on the type of kami he sought to propitiate. Common kami are presented beginning on page 159 of <i>Bestiary 3</i>, and the fortunes each of those kami grant are listed below. As an immediate action, the ward speaker can dismiss the fortune to reroll one d20 roll before the results of the roll are revealed; he must use the result of the second roll, even if it’s worse. If not dismissed, a fortune remains in effect until the ward speaker regains the use of his daily abilities, at which point the fortune and its benefits end. If a ward speaker dismisses a fortune to receive a benefit based on the specific kami he propitiated (see below), he does not also gain the reroll described here. The ward speaker can perform this ritual once per day at 1st level, plus one additional time per day for every 3 levels beyond 1st, to a maximum of seven times per day at 19th level. He can maintain only one fortune at a time; performing a propitiation while he already has a fortune active ends the previous fortune and its benefits. This replaces resolve, greater resolve, and true resolve. <i>Jinushigami (Ex, Sp)</i>: The ward speaker (and his mount, if he has one) gains a 10-foot enhancement bonus to base speed. At 9th level, this enhancement bonus increases to 20 feet. At 17th level, once per day, he can dismiss this fortune as an immediate action to cast <i>earthquake</i> as a spell-like ability, using his samurai level as his caster level. <i> Kodama (Su)</i>: As a standard action, the ward speaker can afflict one target that can see him with a distracting gaze. If the target fails a Will save (DC = 10 + half the ward speaker’s samurai level), it is staggered for 1d4 rounds. At 9th level, it is instead staggered for 2d4 rounds. At 17th level, it is instead staggered for 1 minute. Once a creature has been targeted by this ability, it cannot be targeted by it again for 24 hours. <i> Shikigami (Ex)</i>: The ward speaker gains Catch Off-Guard and Throw Anything as bonus feats. At 9th level, he gains Toughness and Step Up. At 17th level, he gains Following Step and Step Up and Strike, even if he does not meet the prerequisites. <i> Toshigami (Sp)</i>: The ward speaker can speak with plants, as the <i>speak with plants</i> spell. At 9th level, the ward speaker can dismiss this fortune as an immediate action to cast <i>haste</i> as a spell-like ability. Once per day at 17th level, the ward speaker can instead dismiss this fortune to cast <i>temporal stasis</i> as a spell-like ability. The ward speaker’s caster level for these spell-like abilities is equal to his samurai level. <i>Zuishin (Sp)</i>: As an immediate action, the ward speaker can dismiss this fortune to cast <i>cure light wounds</i> as a spell-like ability. At 9th level, the ward speaker can dismiss this fortune to cast <i>cure serious wounds</i>, <i>lesser restoration</i>, <i>remove curse</i>, or <i>remove disease</i>; at 17th level, he also adds <i>breath of life</i> and <i>heal</i> to this list. The ward speaker’s caster level for these spell-like abilities is equal to his samurai level.</p>"
+    },
+    {
+     "name": "Resilient Stand (Ex)",
+     "level": 11,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "honorable stand",
+       "text": "honorable stand",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>At 11th level, the spirits can bolster a ward speaker’s willpower and resolve, granting him an inner reservoir he can use when he needs it most. If a ward speaker has not expended his daily uses of propitiation, he can call upon the spirits to reroll a saving throw during an honorable stand instead of expending a use of resolve to do so. He must take the result of the second roll, even if it is worse. This expends a daily use of propitiation. This alters honorable stand.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Warrior Poet",
+  "cls": "Samurai",
+  "source": "Heroes from the Fringe",
+  "meta": {
+   "cls": "Samurai",
+   "description": "Warrior poets often study calligraphy, flower arrangement, poetry, and other courtly arts, but when called to battle, they treat combat as its own art form, fighting with beauty and grace. While these traditions first arose among the Jininese elves and are still extremely common in Jinin, the warrior poet’s art has spread to different nations and peoples in Tian Xia over centuries.",
+   "features": [
+    {
+     "name": "Dancer’s Grace (Ex)",
+     "level": null,
+     "replaces": [
+      {
+       "name": "samurai's proficiency with medium armor",
+       "text": "samurai's proficiency with medium armor",
+       "parts": [
+        "proficiency with medium armor"
+       ],
+       "levels": []
+      },
+      {
+       "name": "heavy armor",
+       "text": "heavy armor",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "shield",
+       "text": "shields",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>When wearing no armor and not using a shield, the warrior poet gains a bonus to Armor Class equal to her Charisma bonus (to a maximum of her samurai level). A warrior poet loses this bonus while flatfooted or otherwise denied her Dexterity bonus. This replaces the samurai’s proficiency with medium armor, heavy armor, and shields.</p>"
+    },
+    {
+     "name": "Flourish (Ex)",
+     "level": 1,
+     "replaces": [
+      {
+       "name": "mount",
+       "text": "mount",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "weapon expertise",
+       "text": "weapon expertise",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "banner",
+       "text": "banner",
+       "parts": [],
+       "levels": []
+      },
+      {
+       "name": "greater banner",
+       "text": "greater banner",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>The warrior poet is skilled at performing elegant moves in battle. At 1st level, the warrior poet gains a flourish of her choice from the list below. She gains another flourish at 3rd, 5th, 9th, 13th, 17th, and 20th levels. <i>Chrysanthemum’s Blooming</i>: The warrior poet gains <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Vital Strike\">Vital Strike</a> as a bonus feat and can apply its benefit when using <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Spring Attack\">Spring Attack</a>. If the warrior poet is at least 16th level and has <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Improved Vital Strike\">Improved Vital Strike</a>, she can apply that feat’s benefit instead. The warrior poet must be at least 11th level to select this flourish. <i>Exodus of Jinin</i>: As long as the warrior poet is wearing light or no armor and carrying no more than a light load, her land speed increases by 10 feet. A warrior poet can select this flourish up to three times. <i>Harmony of the Tranquil Garden</i>: The warrior poet can focus her senses as a move action to gain blindsense out to 5 feet for 1 round. For every 5 samurai levels she has, the range of this blindsense increases by 5 feet. <i>Jininsiel’s Guidance</i>: The warrior poet gains the rogue’s uncanny dodge class feature. This flourish can be selected up to twice; selecting it a second time grants the warrior poet the rogue’s improved uncanny dodge class feature. The warrior poet must be at least 4th level to select this flourish the first time and at least 8th level to select this flourish the second time. <i>Kitsune’s Mystique</i>: The warrior poet gains <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Improved Feint\">Improved Feint</a> as a bonus feat, ignoring its prerequisites. When the warrior poet uses Spring Attack or takes a move action to move, she can attempt to feint against one creature she threatens during her movement as part of her movement. <i>Petals on the Wind</i>: Whenever a foe provokes an attack of opportunity from the warrior poet, she can move 5 feet before making the attack of opportunity. This movement does not provoke attacks of opportunity. If the warrior poet takes an action to move during her next turn, she subtracts 5 feet from her total movement for each time she has used this ability since her last turn. <i>Wrath of the Heavens</i>: The warrior poet gains <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Shot on the Run\">Shot on the Run</a> as a bonus feat, ignoring its prerequisites. This replaces mount, weapon expertise, banner, and greater banner.</p>"
+    },
+    {
+     "name": "Graceful Warrior (Ex)",
+     "level": null,
+     "replaces": [],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>The warrior poet gains <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Weapon Finesse\">Weapon Finesse</a> as a bonus feat and can apply its benefits to glaives, katanas, and naginatas as if they were light weapons. This does not alter the weapons’ properties for the purposes of any other effects.</p>"
+    },
+    {
+     "name": "Skirmisher’s Challenge (Ex)",
+     "level": null,
+     "replaces": [],
+     "modifies": [
+      {
+       "name": "challenge",
+       "text": "challenge",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "advice": false,
+     "html": "<p>The warrior poet adds her samurai level to her damage rolls only on her first successful attack against a challenged target each round. This modifies challenge.</p>"
+    },
+    {
+     "name": "Graceful Strike (Ex)",
+     "level": 4,
+     "replaces": [
+      {
+       "name": "mounted archer and demanding challenge",
+       "text": "mounted archer and demanding challenge",
+       "parts": [
+        "mounted archer",
+        "demanding challenge"
+       ],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 4th level, when the warrior poet uses <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Weapon Finesse\">Weapon Finesse</a> to make a melee attack that adds her Dexterity bonus to attack rolls and her Strength bonus to damage rolls, she also adds half her samurai level to damage rolls. This replaces mounted archer and demanding challenge.</p>"
+    },
+    {
+     "name": "Battle Dance (Ex)",
+     "level": 6,
+     "replaces": [
+      {
+       "name": "samurai's bonus combat feat",
+       "text": "samurai's bonus combat feats",
+       "parts": [
+        "bonus combat feat"
+       ],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 6th level, the warrior poet gains <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Spring Attack\">Spring Attack</a> as a bonus feat. At 12th level, she gains <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Improved Spring Attack\">Improved Spring Attack</a> as a bonus feat, and at 18th level, she gains <a style=\"text-decoration:underline\" href=\"FeatDisplay.aspx?ItemName=Greater Spring Attack\">Greater Spring Attack</a> as a bonus feat. The warrior poet does not need to meet the prerequisites for these feats. This replaces the samurai’s bonus combat feats.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ },
+ {
+  "name": "Yojimbo",
+  "cls": "Samurai",
+  "source": "Armor Master's Handbook",
+  "meta": {
+   "cls": "Samurai",
+   "description": "Yojimbo are highly trained bodyguards favored by the nobles and warlords of distant Minkai. Yojimbo who follow the order of the warrior loyally guard a single master, while ronin serve whoever can pay for their protection. Yojimbo often accompany visitors to the Inner Sea region from Tian Xia; a few have chosen to stay, and some have even passed on their training to bodyguards of this region.",
+   "features": [
+    {
+     "name": "Resolute Defense (Ex)",
+     "level": 1,
+     "replaces": [
+      {
+       "name": "mount",
+       "text": "mount",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 1st level, whenever a yojimbo issues a challenge, he can select one ally as his ward for the duration of the challenge. Whenever the yojimbo is adjacent to his ward, he can use resolve, greater resolve, and true resolve on his ward rather than targeting himself. This ability replaces mount.</p>"
+    },
+    {
+     "name": "Armor Expertise (Ex)",
+     "level": 3,
+     "replaces": [
+      {
+       "name": "weapon expertise",
+       "text": "weapon expertise",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 3rd level, a yojimbo selects one type of armor, such as chain shirt or scale mail. The yojimbo gains armor training, treating his samurai level as his fighter level, when wearing the selected armor. This ability replaces weapon expertise.</p>"
+    },
+    {
+     "name": "Intercept (Ex)",
+     "level": 4,
+     "replaces": [
+      {
+       "name": "mounted archer",
+       "text": "mounted archer",
+       "parts": [],
+       "levels": []
+      }
+     ],
+     "modifies": [],
+     "advice": false,
+     "html": "<p>At 4th level, a yojimbo learns to better disrupt the attacks of his enemies. He gains Bodyguard<sup>APG</sup> as a bonus feat, even if he does not meet the prerequisite. In addition, whenever the yojimbo uses the aid another action to increase an ally’s Armor Class, the bonus to Armor Class from the aid another action increases by 1. This ability replaces mounted archer.</p>"
+    }
+   ],
+   "classSkills": {
+    "add": [],
+    "remove": []
+   },
+   "diminished": false,
+   "aon": true
+  }
+ }
+]

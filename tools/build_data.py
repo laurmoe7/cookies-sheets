@@ -318,6 +318,27 @@ def build_entries(books):
     return entries
 
 
+def merge_aon_archetypes(entries):
+    """Archetypes the PSRD books lack, parsed from Archives of Nethys by tools/aon_archetypes.py."""
+    path = os.path.join(ROOT, 'data', 'aon_archetypes.json')
+    if not os.path.exists(path):
+        return 0
+    have = {(json.loads(e['meta'])['cls'], norm(e['name'])) for e in entries if e['cat'] == 'Archetype'}
+    added = 0
+    for a in json.load(open(path, encoding='utf-8')):
+        if (a['cls'], norm(a['name'])) in have:
+            continue
+        meta = a['meta']
+        body = '<p>%s</p>' % html.escape(meta['description']) + ''.join(
+            '<h4>%s</h4>%s' % (html.escape(f['name'] or ''), f['html']) for f in meta['features'])
+        text = ' '.join([meta['description']] + [(f['name'] or '') + ' ' + re.sub(r'<[^>]+>', ' ', f['html'])
+                                                for f in meta['features']])
+        entries.append(dict(cat='Archetype', sub=a['cls'].lower(), name=a['name'], source=a['source'],
+                            summary='', html=body, meta=json.dumps(meta), text=text))
+        added += 1
+    return added
+
+
 def merge_tsv_spells(entries):
     path = os.path.join(SRC, 'spells.tsv')
     if not os.path.exists(path):
@@ -528,6 +549,7 @@ def main():
     write_ogl(books)
     print('loaded', len(books), 'books')
     entries = build_entries(books)
+    print('added', merge_aon_archetypes(entries), 'archetypes from Archives of Nethys')
     added = merge_tsv_spells(entries)
     print('added', added, 'spells from spreadsheet')
     gear_list = equipment.build(books)

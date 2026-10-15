@@ -76,7 +76,7 @@ def parse_targets(phrase):
 
 def clean_target(t, singular=True):
     """Normalised feature name; singular=False keeps the wording for display ("jack of all trades")."""
-    t = t.strip().lower()
+    t = t.strip().lower().replace(chr(0x2019), "'")
     t = re.sub(r"^(?:and|or)\s+", '', t)
     for _ in range(3):
         t = re.sub(r"^(?:the|a|an|her|his|its|their|all|standard|normal|usual|regular|existing|later|first)\s+", '', t)
