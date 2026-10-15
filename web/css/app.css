@@ -385,7 +385,10 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 /* ---------- class-skill dot ---------- */
 .skills-tbl th:first-child, .skills-tbl td:first-child { text-align: center; width: 36px; }
 .page-title { margin: 0 0 8px; }
-.comp-settings { max-width: 760px; }
+.comp-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; margin: 6px 0 10px; }
+.comp-strip label { display: flex; align-items: center; gap: 6px; }
+.comp-strip .comp-links { flex-basis: 100%; }
+.comp-strip .comp-reqs { flex-basis: 100%; margin: 0; padding-left: 18px; }
 .equip-scroll { max-height: 56vh; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
 .equip-tbl th { position: sticky; top: 0; background: var(--panel); z-index: 1; }
 .equip-tbl tbody tr { cursor: pointer; }

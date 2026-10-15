@@ -167,7 +167,7 @@ const overrideNote = (comp, s) => (num(comp.levelOverride) && num(comp.levelOver
   ? ` · overridden to <b>${s.level}</b> <a href="#" data-sync-level>use the sheet’s level</a>` : '');
 
 /** Overview-style panels for a companion: hit points with the portrait, ability scores, and defense / offense numbers. */
-function topPanels(comp, s, p) {
+function topPanels(comp, s, p, ed = {}) {
   const max = s.hp;
   const cur = comp.hpCur == null || comp.hpCur === '' ? max : num(comp.hpCur);
   const con = s.abilities.con ?? 0;
@@ -194,17 +194,18 @@ function topPanels(comp, s, p) {
           <button class="btn danger" data-chp="dmg">Damage</button><button class="btn good" data-chp="heal">Heal</button>
           <button class="btn" data-chp="full" title="Heal to full hit points"><span class="heart">♥</span> Full heal</button></div>
         <div class="kv"><label>Current ${bind(`${p}.hpCur`, comp.hpCur, { type: 'num', cls: 'w4', ph: 'max' })}</label>
-          <label>Temp ${bind(`${p}.hpTemp`, comp.hpTemp, { type: 'num', cls: 'w3' })}</label></div>
+          <label>Temp ${bind(`${p}.hpTemp`, comp.hpTemp, { type: 'num', cls: 'w3' })}</label>${ed.hp || ''}</div>
         <p class="small muted">${hpNote(s)}</p>
         <p class="small muted">${status}</p></div>
       ${portrait}
     </section>
     <section class="card abilities"><h3>Ability Scores</h3>
       <table class="tbl"><thead><tr><th></th><th>Score</th><th>Mod</th></tr></thead><tbody>${ABIL.map(a => `<tr><th>${a.toUpperCase()}</th>
-        <td class="big">${s.abilities[a] ?? '—'}</td><td class="big accent">${M(a)}</td></tr>`).join('')}</tbody></table></section>
+        <td class="big">${s.abilities[a] ?? '—'}</td><td class="big accent">${M(a)}</td></tr>`).join('')}</tbody></table>${ed.abilities || ''}</section>
     <section class="card defense"><h3>Defense</h3>
       <div class="stat-row">${stat('AC', s.ac.total)}${stat('Touch', s.ac.touch)}${stat('Flat-footed', s.ac.flat)}${stat('CMD', s.cmd)}</div>
-      <p class="small muted">${s.kind === 'creature' ? 'AC from the stat block' + (num(comp.acMisc) ? ` ${sign(num(comp.acMisc))} adjustment` : '') : `AC = 10 ${[s.mods.dex ? `${sign(s.mods.dex)} Dex` : '', s.natural ? `+${s.natural} natural` : '', s.sizeMods.ac ? `${sign(s.sizeMods.ac)} size` : ''].filter(Boolean).join(' ')}`}</p>
+      ${ed.ac || ''}
+      <p class="small muted">${s.kind === 'creature' ? 'AC from the stat block' + (num(comp.acMisc) ? ` ${sign(num(comp.acMisc))} adjustment` : '') : `AC = 10 ${[s.mods.dex ? `${sign(s.mods.dex)} Dex` : '', s.natural ? `+${s.natural} natural` : '', s.sizeMods.ac ? `${sign(s.sizeMods.ac)} size` : '', num(comp.acMisc) ? `${sign(num(comp.acMisc))} adjustment` : ''].filter(Boolean).join(' ')}`}</p>
       <table class="tbl saves"><thead><tr><th>Save</th><th>Total</th></tr></thead><tbody>
         ${[['Fortitude', 'fort'], ['Reflex', 'ref'], ['Will', 'will']].map(([n, k]) => `<tr><th>${n}</th><td class="big accent">${rb(s.saves[k], n + ' save', s.bd?.[k])}</td></tr>`).join('')}</tbody></table>
       ${s.specials?.some(x => /devotion/i.test(x)) ? '<p class="small muted">+4 vs. enchantment spells and effects (devotion)</p>' : ''}
@@ -216,15 +217,17 @@ function topPanels(comp, s, p) {
         <td>${a.count > 1 ? a.count + ' ' : ''}${linkTerms(a.name)}${a.secondary ? ' <span class="dim small">(secondary)</span>' : ''}</td><td class="big accent">${rb(a.bonus, a.name + ' attack', a.parts)}</td>
         <td>${a.dice ? `<button class="nb" data-roll-dice="${esc(a.damage)}" data-roll-label="${esc(comp.name + ' ' + a.name + ' damage')}" data-tip="${esc(`${comp.name} ${a.name} damage` + '\n' + 'Click to roll ' + a.damage)}">${esc(a.damage)}</button>${a.extra ? ' ' + linkTerms(a.extra) : ''}` : '—'}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">No natural attacks.</p>'}
       ${s.specialAttacks ? `<p><b>Special attacks</b> ${linkTerms(s.specialAttacks)}</p>` : ''}
+      ${ed.atk || ''}
     </section>
     <section class="card span2"><h3>At a glance</h3>
       <div class="chips">${glance(s).map(x => `<span class="chip on">${esc(x)}</span>`).join('')}</div>
       ${extras(comp, s)}
-      ${s.kind === 'familiar' && s.species?.masterBonus ? `<h4>Master gains</h4><p>${esc(s.species.masterBonus)}</p>` : ''}
+      ${s.kind === 'familiar' ? `<h4>Master gains</h4><p>${esc(s.species?.masterBonus || 'No bonus listed in the books for this kind. Check with your GM.')}</p>
+        <p class="small muted">Hit points are half the master’s, attacks use the master’s base attack bonus, and saves and skill ranks are the better of the familiar’s or the master’s. Feats and conditional skill bonuses (such as Skill Focus) are shown as printed. Improved Familiar kinds and the celestial, entropic, fiendish and resolute archetypes are calculated; other changes (such as the Evolved Familiar feat) aren’t, so note them below.</p>` : ''}
       ${s.abilityNotes?.length ? `<h4>Special abilities</h4>${s.abilityNotes.map(a => `<div class="small"><b>${esc(a.name)}.</b> ${a.html}</div>`).join('')}` : ''}
       ${s.specials.length ? `<h4>Special abilities</h4><div class="chips">${s.specials.map(x => `<a href="#" class="chip ref" data-entry="${esc(x.replace(/ \d+$/, ''))}" data-cat="Class Feature">${esc(x)}</a>`).join('')}</div>` : ''}
       <h4>Skills</h4><div class="stat-row">${skillTiles(s).map(k => stat(esc(k.name), rb(k.total, k.name, skillParts(k)))).join('')}</div>
-    </section></div>`;
+    </section>${ed.cards || ''}</div>`;
 }
 
 /** What the hit points are made of, from the stat block: the dice, or whose they are. */
@@ -253,8 +256,9 @@ function extras(comp, s) {
   const evo = s.kind === 'eidolon' ? [...s.free, ...(comp.evolutions || []).map(e => e.name.toLowerCase() + (e.choice ? ` (${e.choice})` : ''))] : [];
   const evasion = s.specials.filter(x => /evasion/i.test(x));
   const block = (title, items) => (items.length ? `<h4>${title}</h4><div class="chips">${items.map(x => `<span class="chip">${linkTerms(x)}</span>`).join('')}</div>` : '');
-  return block('Feats', feats) + block('Defensive abilities', evasion) + block('Evolutions', evo)
-    + (s.kind === 'animal' && comp.tricks ? `<h4>Tricks</h4><p>${esc(comp.tricks)}</p>` : '')
+  const editable = s.kind === 'animal' || s.kind === 'eidolon'; // their feats, evolutions and tricks are edited in the Build panel
+  return (editable ? '' : block('Feats', feats)) + block('Defensive abilities', evasion) + (editable ? '' : block('Evolutions', evo))
+    + (s.kind === 'animal' && comp.tricks && !editable ? `<h4>Tricks</h4><p>${esc(comp.tricks)}</p>` : '')
     + (qualitiesText(s) ? `<h4>Special qualities</h4><p>${linkTerms(qualitiesText(s))}</p>` : '');
 }
 
@@ -322,19 +326,90 @@ function chooseCreature() {
   }, { wide: true });
 }
 
-/** A companion taken from the creature list: the stat block's own numbers in the same panels, plus the full stat block. */
+/** A companion taken from the creature list: the stat block's own numbers in the same panels. */
 function creatureCard(comp, i, head) {
   const p = `companions.${i}`;
   const s = computeCreature(comp);
-  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<details class="block-toggle card-details" data-block="${p}" ${comp.blockOpen === false ? '' : 'open'}><summary>Adjustments &amp; notes</summary>
-  <div class="comp-settings"><div>
-    <p class="small muted">Taken from the creature list (${esc(comp.creature?.source || '')}). Its numbers do not change with your level; adjust them here for gear, spells and templates.</p>
-    <h4>Adjustments</h4>
-    <div class="kv"><label title="Barding, items, spells">AC misc ${bind(`${p}.acMisc`, comp.acMisc, { type: 'num' })}</label>
-      <label>HP misc ${bind(`${p}.hpMisc`, comp.hpMisc, { type: 'num' })}</label>
-      <label title="Enhancement, buffs">Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
-    <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Gear, orders, personality, conditions…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
-  </div></div></details></div>`;
+  const ed = creatureEditors(comp, p);
+  return `<div class="companion" data-comp="${i}">${head}${ed.strip}${topPanels(comp, s, p, ed)}</div>`;
+}
+
+/** The player's adjustments, one small box in each panel they change. */
+const adjust = (comp, p) => ({
+  hp: `<label>HP misc ${bind(`${p}.hpMisc`, comp.hpMisc, { type: 'num' })}</label>`,
+  ac: `<div class="kv"><label title="Barding, items">AC misc ${bind(`${p}.acMisc`, comp.acMisc, { type: 'num' })}</label></div>`,
+  atk: `<div class="kv"><label title="Amulet of mighty fists, a creature’s feats and so on">Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>`,
+});
+const notesCard = (comp, p, placeholder) => `<section class="card span2"><h3>Notes</h3>${tf(`${p}.notes`, { multiline: true, placeholder, read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}</section>`;
+
+/** The animal companion's and the eidolon's controls: species or form, level, ability increases, and a Build panel for evolutions, feats, skills and tricks. */
+function buildEditors(comp, s, p, { data, levels }) {
+  const isAnimal = comp.kind === 'animal';
+  const levelNote = s.autoLevel
+    ? `From your classes: <b>${s.autoLevel}</b>${isAnimal && levels._why?.animal ? ` · ${esc(levels._why.animal)}` : ''}${overrideNote(comp, s)}`
+    : `<span class="warn">Nothing on the sheet grants ${isAnimal ? 'an animal companion' : 'an eidolon'}; set the level here.</span>`;
+  const featsLeft = s.featSlots - s.featsUsed;
+  const ranksLeft = s.skillRanks - s.skillRanksUsed;
+  const classSkills = [...s.classSkills, ...(comp.extraClassSkills || [])];
+  const skillNames = [...new Set([...classSkills.filter(x => !x.includes('(') || x.startsWith('Knowledge')), ...Object.keys(comp.skills || {})])];
+  const strip = `<div class="comp-strip">
+      ${isAnimal
+        ? `<label>Species ${select(`${p}.species`, comp.species, data.animal.species.map(x => [x.name, `${x.name} (${x.size})`]))}</label>`
+        : `<label>Base form ${select(`${p}.form`, comp.form, data.eidolon.forms.map(x => [x.name, `${x.name} (${x.source})`]))}</label>`}
+      <label>${isAnimal ? 'Effective druid level' : 'Summoner level'} ${bind(`${p}.levelOverride`, comp.levelOverride, { type: 'num', ph: String(s.autoLevel || 1) })}</label>
+      <span class="small muted">${levelNote}</span>
+      <span class="small muted comp-links">${isAnimal
+        ? `${esc(s.species.source)} · advances at ${ord(s.species.advance?.level || 4)} level${s.advanced ? ' <b class="good">(advanced)</b>' : ''} · <a href="#" class="ref" data-entry="Animal Companion" data-cat="Rules">companion rules</a>`
+        : '<a href="#" class="ref" data-entry="Eidolon" data-cat="Rules">eidolon rules</a>'}</span></div>`;
+  const abilities = s.increases ? `<h4>Ability score increases (${s.increases})</h4><div class="row">${Array.from({ length: s.increases }, (_, k) =>
+    select(`${p}.increases.${k}`, comp.increases?.[k], [['', 'choose…'], ...ABIL.map(a => [a, '+1 ' + a.toUpperCase()])])).join('')}</div>` : '';
+  const build = `<section class="card span2"><h3>Build</h3>
+      ${!isAnimal ? evolutionsBlock(comp, s, data, p) : ''}
+      <h4>Feats <span class="pill ${featsLeft < 0 ? 'bad' : featsLeft ? 'warn' : 'good'}">${s.featsUsed} / ${s.featSlots}</span></h4>
+      <div class="chips">${(comp.feats || []).map((f, k) => `<span class="chip on">${f.id ? `<a href="#" class="ref" data-entry="${esc(f.name)}" data-entry-id="${f.id}">${esc(f.name)}</a>` : esc(f.name)} <button class="icon-btn" data-rm-feat="${k}">✕</button></span>`).join('')}
+        <button class="btn small" data-add-feat>＋ Feat</button></div>
+      ${s.bonusFeats ? `<p class="small muted">Bonus feat: ${esc(s.bonusFeats)}</p>` : ''}
+      <h4>Skill ranks <span class="pill ${ranksLeft < 0 ? 'bad' : ranksLeft ? 'warn' : 'good'}">${s.skillRanksUsed} / ${s.skillRanks} ranks</span></h4>
+      <table class="tbl mini"><tbody>${skillNames.map(name => {
+        const r = num(comp.skills?.[name]);
+        const sk = s.skills.find(x => x.name === name);
+        const isClass = classSkills.includes(name);
+        return `<tr><td>${isClass ? '●' : ''}</td><td>${esc(name)}</td><td class="dim small">${skillAbility(name).toUpperCase()}</td>
+          <td>${bind(`${p}.skills.${name}`, r || '', { type: 'num', cls: 'w2' })}</td><td><b>${sk ? sign(sk.total) : ''}</b></td></tr>`;
+      }).join('')}</tbody></table>
+      <div class="row"><select><option value="">Add another skill…</option>${SKILLS.map(x => x.name).filter(x => !skillNames.includes(x) && !['Craft', 'Perform', 'Profession'].includes(x)).map(x => `<option>${esc(x)}</option>`).join('')}</select>
+        <button class="btn small" data-add-skill>Add</button></div>
+      ${!isAnimal ? `<p class="small muted">Eidolons choose 4 more class skills at 1st level: ${(comp.extraClassSkills || []).length}/4 chosen.
+        ${select(`${p}.extraClassSkills.${(comp.extraClassSkills || []).length}`, '', [['', '＋ class skill…'], ...SKILLS.map(x => x.name).filter(x => !classSkills.includes(x)).map(x => [x, x])])}</p>` : ''}
+      ${isAnimal ? `<h4>Tricks <span class="muted small">(${s.bonusTricks} bonus tricks; Int ${s.abilities.int ?? '—'} allows ${s.abilities.int ? 3 * s.abilities.int : 0} trained tricks)</span></h4>
+        ${tf(`${p}.tricks`, { multiline: true, placeholder: 'e.g. attack, come, defend, down, guard, heel, track', read: { title: `${comp.name} tricks`, cat: 'Tricks' } })}
+        <p class="small">${'<a href="#" class="ref" data-entry="Handle Animal" data-cat="Skill">Handle Animal and tricks</a>'}</p>` : ''}
+    </section>`;
+  return { strip, abilities, ...adjust(comp, p), cards: build + notesCard(comp, p, 'Gear, personality, conditions…') };
+}
+
+/** The familiar's controls: kind, archetype, what the feat and alignment need, and the master's level. */
+function familiarEditors(comp, s, p, { data, levels }) {
+  const sp = s.species;
+  const levelNote = s.autoLevel
+    ? `From your sheet: <b>${s.autoLevel}</b>${levels._why?.familiar ? ` · ${esc(levels._why.familiar)}` : ''}${overrideNote(comp, s)}`
+    : '<span class="warn">Nothing on the sheet grants a familiar (wizard, sorcerer, witch or shaman levels, or the arcanist’s Familiar exploit); set the level here.</span>';
+  const strip = `<div class="comp-strip">
+      <label>Kind ${kindSelect(`${p}.species`, comp.species, data.familiar)}</label>
+      ${sp.improved ? '' : `<label>Archetype ${select(`${p}.template`, comp.template, [['', 'None'], ...(data.familiar.templates || []).map(t => [t.name, `${t.name} (${t.alignment})`])])}</label>`}
+      <label>Effective master level ${bind(`${p}.levelOverride`, comp.levelOverride, { type: 'num', ph: String(s.autoLevel || 1) })}</label>
+      <span class="small muted">${levelNote}</span>
+      <span class="small muted comp-links">${esc(sp.source)} · <a href="#" class="ref" data-entry="Familiar" data-cat="Rules">familiar rules</a>
+        · <a href="#" class="ref" data-entry="Improved Familiar" data-cat="Feat">Improved Familiar</a>
+        ${sp.improved ? `· <a href="#" class="ref" data-entry="${esc(sp.entry)}" data-cat="Monster">${esc(sp.entry)} stat block</a>` : ''}</span>
+      ${s.requirements.length ? `<ul class="small comp-reqs">${s.requirements.map(r => `<li class="${r.ok ? 'good' : 'warn'}">${r.ok ? '✓' : '✗'} ${esc(r.text)}</li>`).join('')}</ul>` : ''}</div>`;
+  return { strip, ...adjust(comp, p), cards: notesCard(comp, p, 'Variants, gear, personality…') };
+}
+
+/** A creature from the creature list has nothing to choose: just its adjustments and notes. */
+function creatureEditors(comp, p) {
+  return { strip: `<p class="small muted comp-strip">Taken from the creature list (${esc(comp.creature?.source || '')}). Its numbers do not change with your level; adjust them for gear, spells and templates.</p>`,
+    ...adjust(comp, p), cards: notesCard(comp, p, 'Gear, orders, personality, conditions…') };
 }
 
 function companionCard(comp, i, levels, data, master) {
@@ -352,92 +427,16 @@ function companionCard(comp, i, levels, data, master) {
   if (comp.kind === 'familiar') return familiarCard(comp, i, levels, data, master, head);
   const s = computeCompanion(comp, levels, data);
   syncLevel(comp, s);
-  const isAnimal = comp.kind === 'animal';
-  const levelNote = s.autoLevel
-    ? `From your classes: <b>${s.autoLevel}</b>${isAnimal && levels._why?.animal ? ` · ${esc(levels._why.animal)}` : ''}${overrideNote(comp, s)}`
-    : `<span class="warn">Nothing on the sheet grants ${isAnimal ? 'an animal companion' : 'an eidolon'}; set the level here.</span>`;
-  const featsLeft = s.featSlots - s.featsUsed;
-  const ranksLeft = s.skillRanks - s.skillRanksUsed;
-  const classSkills = [...s.classSkills, ...(comp.extraClassSkills || [])];
-  const skillNames = [...new Set([...classSkills.filter(x => !x.includes('(') || x.startsWith('Knowledge')), ...Object.keys(comp.skills || {})])];
-  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<details class="block-toggle card-details" data-block="${p}" ${comp.blockOpen === false ? '' : 'open'}><summary>Settings &amp; adjustments</summary>
-  <div class="comp-settings">
-    <div>
-      <div class="form">
-        ${isAnimal
-          ? `<label>Species ${select(`${p}.species`, comp.species, data.animal.species.map(x => [x.name, `${x.name} (${x.size})`]))}</label>
-             <p class="small muted">${esc(s.species.source)} · advances at ${ord(s.species.advance?.level || 4)} level${s.advanced ? ' <b class="good">(advanced)</b>' : ''}
-               · <a href="#" class="ref" data-entry="Animal Companion" data-cat="Rules">companion rules</a></p>`
-          : `<label>Base form ${select(`${p}.form`, comp.form, data.eidolon.forms.map(x => [x.name, `${x.name} (${x.source})`]))}</label>
-             <p class="small muted"><a href="#" class="ref" data-entry="Eidolon" data-cat="Rules">eidolon rules</a></p>`}
-        <label>${isAnimal ? 'Effective druid level' : 'Summoner level'} ${bind(`${p}.levelOverride`, comp.levelOverride, { type: 'num', ph: String(s.autoLevel || 1) })}
-          <span class="small muted">${levelNote}</span></label>
-      </div>
-      ${s.increases ? `<h4>Ability score increases (${s.increases})</h4><div class="row">${Array.from({ length: s.increases }, (_, k) =>
-        select(`${p}.increases.${k}`, comp.increases?.[k], [['', 'choose…'], ...ABIL.map(a => [a, '+1 ' + a.toUpperCase()])])).join('')}</div>` : ''}
-      ${!isAnimal ? evolutionsBlock(comp, s, data, p) : ''}
-      <h4>Feats <span class="pill ${featsLeft < 0 ? 'bad' : featsLeft ? 'warn' : 'good'}">${s.featsUsed} / ${s.featSlots}</span></h4>
-      <div class="chips">${(comp.feats || []).map((f, k) => `<span class="chip on">${f.id ? `<a href="#" class="ref" data-entry="${esc(f.name)}" data-entry-id="${f.id}">${esc(f.name)}</a>` : esc(f.name)} <button class="icon-btn" data-rm-feat="${k}">✕</button></span>`).join('')}
-        <button class="btn small" data-add-feat>＋ Feat</button></div>
-      ${s.bonusFeats ? `<p class="small muted">Bonus feat: ${esc(s.bonusFeats)}</p>` : ''}
-      <h4>Skills <span class="pill ${ranksLeft < 0 ? 'bad' : ranksLeft ? 'warn' : 'good'}">${s.skillRanksUsed} / ${s.skillRanks} ranks</span></h4>
-      <table class="tbl mini"><tbody>${skillNames.map(name => {
-        const r = num(comp.skills?.[name]);
-        const sk = s.skills.find(x => x.name === name);
-        const isClass = classSkills.includes(name);
-        return `<tr><td>${isClass ? '●' : ''}</td><td>${esc(name)}</td><td class="dim small">${skillAbility(name).toUpperCase()}</td>
-          <td>${bind(`${p}.skills.${name}`, r || '', { type: 'num', cls: 'w2' })}</td><td><b>${sk ? sign(sk.total) : ''}</b></td></tr>`;
-      }).join('')}</tbody></table>
-      <div class="row"><select><option value="">Add another skill…</option>${SKILLS.map(x => x.name).filter(x => !skillNames.includes(x) && !['Craft', 'Perform', 'Profession'].includes(x)).map(x => `<option>${esc(x)}</option>`).join('')}</select>
-        <button class="btn small" data-add-skill>Add</button></div>
-      ${!isAnimal ? `<p class="small muted">Eidolons choose 4 more class skills at 1st level: ${(comp.extraClassSkills || []).length}/4 chosen.
-        ${select(`${p}.extraClassSkills.${(comp.extraClassSkills || []).length}`, '', [['', '＋ class skill…'], ...SKILLS.map(x => x.name).filter(x => !classSkills.includes(x)).map(x => [x, x])])}</p>` : ''}
-      ${isAnimal ? `<h4>Tricks <span class="muted small">(${s.bonusTricks} bonus tricks; Int ${s.abilities.int ?? '—'} allows ${s.abilities.int ? 3 * s.abilities.int : 0} trained tricks)</span></h4>
-        ${tf(`${p}.tricks`, { multiline: true, placeholder: 'e.g. attack, come, defend, down, guard, heel, track', read: { title: `${comp.name} tricks`, cat: 'Tricks' } })}
-        <p class="small">${'<a href="#" class="ref" data-entry="Handle Animal" data-cat="Skill">Handle Animal and tricks</a>'}</p>` : ''}
-      <h4>Adjustments</h4>
-      <div class="kv"><label title="Barding, items">AC misc ${bind(`${p}.acMisc`, comp.acMisc, { type: 'num' })}</label>
-        <label>HP misc ${bind(`${p}.hpMisc`, comp.hpMisc, { type: 'num' })}</label>
-        <label title="Amulet of mighty fists, etc.">Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
-      <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Gear, personality, conditions…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
-    </div>
-  </div></details></div>`;
+  const ed = buildEditors(comp, s, p, { data, levels });
+  return `<div class="companion" data-comp="${i}">${head}${ed.strip}${topPanels(comp, s, p, ed)}</div>`;
 }
 
 function familiarCard(comp, i, levels, data, master, head) {
   const p = `companions.${i}`;
   const s = computeCompanion(comp, levels, data, master);
   syncLevel(comp, s);
-  const levelNote = s.autoLevel
-    ? `From your sheet: <b>${s.autoLevel}</b>${levels._why?.familiar ? ` · ${esc(levels._why.familiar)}` : ''}${overrideNote(comp, s)}`
-    : '<span class="warn">Nothing on the sheet grants a familiar (wizard, sorcerer, witch or shaman levels, or the arcanist’s Familiar exploit); set the level here.</span>';
-  const sp = s.species;
-  return `<div class="companion" data-comp="${i}">${head}${topPanels(comp, s, p)}<details class="block-toggle card-details" data-block="${p}" ${comp.blockOpen === false ? '' : 'open'}><summary>Settings &amp; adjustments</summary>
-  <div class="comp-settings">
-    <div>
-      <div class="form">
-        <label>Kind ${kindSelect(`${p}.species`, comp.species, data.familiar)}</label>
-        ${sp.improved ? '' : `<label>Archetype ${select(`${p}.template`, comp.template, [['', 'None'], ...(data.familiar.templates || []).map(t => [t.name, `${t.name} (${t.alignment})`])])}</label>`}
-        <p class="small muted">${esc(sp.source)} · <a href="#" class="ref" data-entry="Familiar" data-cat="Rules">familiar rules</a>
-          · <a href="#" class="ref" data-entry="Improved Familiar" data-cat="Feat">Improved Familiar</a>
-          ${sp.improved ? `· <a href="#" class="ref" data-entry="${esc(sp.entry)}" data-cat="Monster">${esc(sp.entry)} stat block</a>` : ''}</p>
-        ${s.requirements.length ? `<ul class="small">${s.requirements.map(r => `<li class="${r.ok ? 'good' : 'warn'}">${r.ok ? '✓' : '✗'} ${esc(r.text)}</li>`).join('')}</ul>` : ''}
-        <label>Effective master level ${bind(`${p}.levelOverride`, comp.levelOverride, { type: 'num', ph: String(s.autoLevel || 1) })}
-          <span class="small muted">${levelNote}</span></label>
-      </div>
-      <h4>Master gains</h4>
-      <p>${esc(sp.masterBonus || 'No bonus listed in the books for this kind. Check with your GM.')}</p>
-      <h4>Familiar abilities</h4>
-      <ul class="small">${s.specials.map(x => `<li><a href="#" class="ref" data-entry="${esc(x.replace(/ \d+$/, ''))}" data-cat="Class Feature">${esc(x)}</a></li>`).join('')}</ul>
-      <p class="small muted">Hit points are half the master's, attacks use the master's base attack bonus, and saves and skill ranks are the better of the familiar's or the master's.
-        Feats and conditional skill bonuses (such as Skill Focus) are shown as printed. Improved Familiar kinds and the celestial, entropic, fiendish and resolute archetypes are calculated; other changes (such as the Evolved Familiar feat) aren't, so note them below.</p>
-      <h4>Adjustments</h4>
-      <div class="kv"><label title="Barding, items">AC misc ${bind(`${p}.acMisc`, comp.acMisc, { type: 'num' })}</label>
-        <label>HP misc ${bind(`${p}.hpMisc`, comp.hpMisc, { type: 'num' })}</label>
-        <label>Attack misc ${bind(`${p}.attackMisc`, comp.attackMisc, { type: 'num' })}</label></div>
-      <h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Variants, gear, personality…', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}
-    </div>
-  </div></details></div>`;
+  const ed = familiarEditors(comp, s, p, { data, levels });
+  return `<div class="companion" data-comp="${i}">${head}${ed.strip}${topPanels(comp, s, p, ed)}</div>`;
 }
 
 /** The familiar Kind picker: the standard list, then what the Improved Familiar feat adds. */
