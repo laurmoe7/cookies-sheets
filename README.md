@@ -8,8 +8,9 @@ A standalone Windows desktop app for **Pathfinder 1st Edition** characters. It c
 - **From source:** double-click the **Run Cookie's Sheets** shortcut (needs Python 3.10+ and `pip install -r requirements.txt`). `Run Cookie's Sheets.bat` does the same thing.
   - If you move the folder, recreate the shortcut with `powershell -ExecutionPolicy Bypass -File tools\make_shortcut.ps1`. Add `-Desktop` to also put one on your desktop.
   - The icon comes from `tools/make_icon.py`.
+  - `python tools/brand.py launcher` makes `.launcher\Cookie's Sheets.exe`, a copy of Python with the app's name and icon. The shortcut uses it when it exists, so Task Manager lists the app as "Cookie's Sheets" instead of "Python".
 
-Characters save automatically, as plain `.json` files, to `Documents\Pathfinder Characters`. Deleted characters go to the `.deleted` subfolder, so you can get them back.
+Characters save automatically, as plain `.json` files, to `Documents\Pathfinder Characters` (the **Change folder…** button on the Characters page picks another folder, such as one in Dropbox or OneDrive, and copies your characters there). Deleted characters go to the `.deleted` subfolder, so you can get them back.
 
 ## Importing from charactersheet.co.uk
 
@@ -21,6 +22,12 @@ Before saving, you see a preview where you can:
 
 Feats, traits, abilities, spells, and magic items are matched to the compendium where possible. Anything without a place on this sheet goes into the character's Notes. Your account details from the site are never saved.
 
+## Importing from a Google Sheet
+
+On the **Characters** page, click **Import from Google Sheet**. Paste the link of a sheet made with the popular "Pathfinder character sheet" Google Sheets template (its sharing must be "Anyone with the link"), or choose the sheet's downloaded `.csv` (File, Download, Comma-separated values). You get the same preview as the charactersheet.co.uk import, with the numbers check.
+
+Whenever an import has to put a difference into a Misc box to make a number match the old sheet (hit points, a weapon's attack or damage), the preview says so, with both numbers and which box to clear.
+
 ## Features
 
 **Character sheet**: every number updates instantly.
@@ -31,16 +38,21 @@ Feats, traits, abilities, spells, and magic items are matched to the compendium 
 - Skills: class-skill +3, armor check penalty, size modifiers for Fly/Stealth, ranks spent vs. available, max ranks
 - Feats, traits, and racial/special abilities picked from the compendium; class features listed automatically per level
 - Spellbooks for every casting class: slots with bonus spells, spells known, save DCs, concentration, casting-defensively DCs, prepare/cast tracking, domain/school slot, and a rest button
-- Gear, money, magic items, and encumbrance
+- Gear, money, magic items, and encumbrance (with a tick to ignore encumbrance), an alphabetical sort button, and a paper doll of worn items
+- Weapons and armor: **＋ Add weapon** and **＋ Add armor/shield** open a list of about 170 weapons and 44 armors and shields to start from (or a blank row), and each weapon can use any ability for damage
+- Spell-likes & other spells: a block on the Spells tab for spells outside your class list, with uses per day, a Use button and rolls; adding a spell can search another class's spell list
+- A Notes box on every skill
 - Weapon enchantments: enhancement, masterwork, special materials and 30 special abilities that change attack, damage, threat range and critical hit damage
 - A Rest button for a night's rest (HP, ability damage, daily class pools, spell slots)
 - Archetypes: choose them when you take a class (descriptions and what each replaces). Their features replace the class features they replace, and class-skill and spellcasting changes apply automatically.
 - Portrait (Overview tab) and a small name icon (top bar), stored in the character file as downscaled images
-- Companions tab: animal companions (68 species, advancing at 4th/7th level) and eidolons (base forms, evolution points) with full stat blocks, plus familiars (26 kinds from the Bestiary, Ultimate Magic and Bestiary 3, advancing with your wizard, sorcerer and witch levels, plus 25 Improved Familiar kinds and the celestial, entropic, fiendish and resolute archetypes) and free-form entries for mounts and cohorts
+- Companions tab: any creature from the Monster Codex can be taken as a companion, with hit points to track and its full stat block; animal companions (68 species, advancing at 4th/7th level) and eidolons (base forms, evolution points) with full stat blocks, plus familiars (26 kinds from the Bestiary, Ultimate Magic and Bestiary 3, advancing with your wizard, sorcerer and witch levels, plus 25 Improved Familiar kinds and the celestial, entropic, fiendish and resolute archetypes) and free-form entries for mounts and cohorts
 - A search box in the top bar (Ctrl+F) finds anything on the open character, from skills to spells to notes, and jumps to it
 - Summons: a "Summon…" button beside Summon Monster / Summon Nature's Ally spells (and at the top of Companions) picks a creature by list level; it is tracked under Companions → Summons with its key stats, hit points, rounds left, template and stat block
 - Custom traits, feats, items and spells read like official ones: click to read the full text, double-click to edit
 - **Buffs & conditions** with correct bonus-type stacking: Power Attack, Deadly Aim, and Combat Expertise scale with your BAB. Also Rage, Haste, Bless, Heroism, Enlarge Person, Shaken, Sickened, Fatigued, Grappled, and more, plus custom modifiers.
+
+**Updating**: Options, Look has "Check for updates now" (and a switch to check at start-up, off by default). It downloads the new release from https://github.com/laurmoe7/cookies-sheets-releases, installs it and reopens the app.
 
 **Level Up wizard**: choose a class and it shows the before → after for HP, BAB, saves, CMB/CMD, and spells per day. It also handles:
 - HP: average, roll, max, or manual
@@ -53,7 +65,9 @@ Feats, traits, abilities, spells, and magic items are matched to the compendium 
 
 You can undo the last level from the Bio tab. 32 classes are supported: the 11 core classes, plus APG, Magus, Gunslinger, Ninja, Samurai, Antipaladin, and all 10 ACG hybrid classes.
 
-**Compendium** (Ctrl+K): full-text search over about 2,250 spells, 1,200 feats, 240 traits, races, classes, archetypes, class features, magic items, conditions, and the rules text. You can filter spells by class, level, and school, and add entries straight to your character.
+**Monster Codex** (under the Compendium): about 1,850 creature stat blocks from the Bestiaries, the NPC and Monster Codex and other books. Search by name, filter by type and CR, read the full stat block, and take one as a companion.
+
+**Compendium** (Ctrl+K): the weapons and armor list their combat stats (damage, critical, range, type, category, proficiency, weapon group, special). Full-text search over about 2,250 spells, 1,200 feats, 240 traits, races, classes, archetypes, class features, magic items, conditions, and the rules text. You can filter spells by class, level, and school, and add entries straight to your character.
 
 **Quick Rules**: cheat-sheet cards for casting defensively, concentration DCs, touch attacks, AoOs, combat maneuvers, grapple, cover, two-weapon fighting, dying, and more. There's also a concentration-check odds calculator and a carrying-capacity calculator.
 
@@ -67,7 +81,7 @@ python tools/build_data.py
 powershell -ExecutionPolicy Bypass -File build_exe.ps1
 ```
 
-`build_data.py` regenerates `data/pf1e.db` and `data/classes.json` from `tools/sources/`. `build_exe.ps1` rebuilds the .exe into `dist/`.
+`build_data.py` regenerates `data/pf1e.db` and the JSON files in `data/` (classes, companions, creatures, equipment, summons and racial options) from `tools/sources/`. `build_exe.ps1` rebuilds the .exe into `dist/`.
 
 ## Testing
 

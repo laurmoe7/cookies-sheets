@@ -18,18 +18,22 @@ click "Update now" and it downloads, installs and restarts by itself.
 
 WHERE ARE MY CHARACTERS?
 Characters save automatically to:  Documents\Pathfinder Characters
+(the "Change folder..." button on the Characters page picks another folder and copies them there)
 Use the Export button on the Characters page to share a character file,
 and "Import .json" to load one someone sent you.
 
-ALREADY USE charactersheet.co.uk?
+ALREADY HAVE A SHEET ELSEWHERE?
 On the Characters page, click "Import from charactersheet.co.uk" and paste
-your sheet's link.
+your sheet's link, or "Import from Google Sheet" for a Pathfinder character sheet
+in Google Sheets (sharing: anyone with the link, or choose its downloaded .csv).
 
 WHAT'S INSIDE
 - Character sheet that does all the math (AC, saves, attacks, skills, spells)
 - Buffs and conditions with correct bonus stacking
 - Level-up wizard for 32 classes
 - Searchable compendium: spells, feats, traits, races, items, rules (Ctrl+K)
+- Monster Codex: about 1,850 creature stat blocks, which can be taken as companions
+- Weapon and armor lists to start from, and combat stats on every standard weapon in the compendium
 - Quick-reference rules cards
 - Cookie, a rude little bird who comments on everything you do (Options turns down his chatter, or bleeps the swearing)
 
