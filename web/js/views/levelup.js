@@ -9,7 +9,7 @@ import { learnAllowance, favoritesAllowance, remaining, describeRemaining } from
 import { esc, $, $$, pickEntry, toast, confirmBox, warnBox, showCustom } from '../ui.js';
 import { levelWarnings } from '../levelcheck.js';
 import { pickSpell, featureLookupName } from './sheet.js';
-import { renderArchetypeChooser } from './archetypes.js';
+import { chooseArchetypes } from './archetypes.js';
 import { chooseSpells } from './spellpicker.js';
 
 let draft = null;
@@ -153,7 +153,8 @@ function detail(el, c, d, newLevel) {
   el.innerHTML = `
   ${lvBefore === 0 ? `<section class="card">
     <h3>Archetype <span class="muted small">(optional; replaces some ${esc(def.name)} features with new ones)</span></h3>
-    <div id="lu-arch"></div></section>`
+    <div class="row"><span class="grow" id="lu-arch">${draft.archetypes.length ? `<b>${esc(draft.archetypes.map(a => a.name).join(', '))}</b>` : '<span class="muted">Standard class</span>'}</span>
+      <button class="btn" data-choose-arch>${draft.archetypes.length ? 'Change archetype…' : 'Choose archetype…'}</button></div></section>`
     : draft.archetypes.length ? `<p class="small muted">Archetype: <b>${esc(draft.archetypes.map(a => a.name).join(', '))}</b> (change it on the sheet's Feats & Abilities tab).</p>` : ''}
   <div class="grid two">
     <section class="card">
@@ -262,15 +263,11 @@ function detail(el, c, d, newLevel) {
     if (r) { draft.feats.push(r); rerender(); }
   };
   $$('[data-rm-feat]', el).forEach(b => (b.onclick = () => { draft.feats.splice(+b.dataset.rmFeat, 1); rerender(); }));
-  const archEl = $('#lu-arch', el);
-  if (archEl) renderArchetypeChooser(archEl, draft.cls, draft.archetypes, sel => { draft.archetypes = sel; rerenderKeepArch(); });
-  // Re-render everything except the archetype cards (so the list doesn't jump while choosing).
-  function rerenderKeepArch() {
-    const keep = $('#lu-arch', el);
-    detail(el, c, d, newLevel);
-    const slot = $('#lu-arch', el);
-    if (keep && slot) slot.replaceWith(keep);
-  }
+  const archBtn = $('[data-choose-arch]', el);
+  if (archBtn) archBtn.onclick = async () => {
+    const picked = await chooseArchetypes(draft.cls, draft.archetypes);
+    if (picked) { draft.archetypes = picked; rerender(); }
+  };
   $$('[data-arch-feat]', el).forEach(a => (a.onclick = e => {
     e.preventDefault();
     const f = features[+a.dataset.archFeat];

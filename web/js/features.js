@@ -22,6 +22,14 @@ export function archetypesOf(c, cls) {
   return Array.isArray(a) ? a : [];
 }
 
+/** "Arcanist (White Mage) 8 / Rogue 2": each class with its level and chosen archetypes. */
+export function classLine(c, levels) {
+  return Object.entries(levels).map(([cls, n]) => {
+    const archs = archetypesOf(c, cls).map(a => a.name).filter(Boolean);
+    return `${cls}${archs.length ? ` (${archs.join(', ')})` : ''} ${n}`;
+  }).join(' / ');
+}
+
 const singular = w => (w.endsWith('ies') ? w.slice(0, -3) + 'y' : w.endsWith('s') && !w.endsWith('ss') && !w.endsWith('us') ? w.slice(0, -1) : w);
 const tidy = s => String(s || '').toLowerCase().replace(/[’']/g, "'").replace(/\([^)]*\)/g, '').replace(/-/g, ' ')
   .replace(/\b(the|a|an)\b/g, ' ').replace(/\s+/g, ' ').trim();

@@ -27,3 +27,12 @@ test('sentence fragments are noise, real feature names are not', () => {
   assert.ok(isNoise('additional class skills from her mystery'));
   assert.ok(!isNoise('trapfinding'));
 });
+
+test('the class line names the archetype after its class', async () => {
+  const { classLine } = await import('../web/js/features.js');
+  const c = { archetypes: { Arcanist: [{ name: 'White Mage' }], Fighter: [{ name: 'Archer' }, { name: 'Free Hand' }], Rogue: 'Scout' } };
+  assert.equal(classLine(c, { Arcanist: 8 }), 'Arcanist (White Mage) 8');
+  assert.equal(classLine(c, { Arcanist: 8, Fighter: 2, Wizard: 1 }), 'Arcanist (White Mage) 8 / Fighter (Archer, Free Hand) 2 / Wizard 1', 'several archetypes and a class without one');
+  assert.equal(classLine(c, { Rogue: 3 }), 'Rogue (Scout) 3', 'old saves keep archetypes as free text');
+  assert.equal(classLine({}, { Cleric: 4 }), 'Cleric 4');
+});

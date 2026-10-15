@@ -6,6 +6,7 @@ export const CHANGELOG = [
   {
     version: '1.3', next: true,
     items: [
+      'Archetypes: choosing one opens a window like the spell picker (search, read each archetype in full, see what it replaces). Your archetype now shows after the class in the top bar, on the Overview and in the character list, like “Arcanist (White Mage) 8”.',
       'Archetypes: Ninja, Samurai and Antipaladin now have their archetypes (21), taken from Archives of Nethys.',
       'Monster Codex: a new page under the Compendium with about 1,850 creatures. Search by name, pick a type or CR, read the stat block, and take one as a companion.',
       'Companions: “＋ From creature list…” takes any creature as a companion, with hit points to track, attack and skill rolls, a picture and notes.',

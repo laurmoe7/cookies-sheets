@@ -290,7 +290,13 @@ def _summary(c):
     levels = {}
     for lu in c.get('levelUps', []):
         levels[lu.get('cls')] = levels.get(lu.get('cls'), 0) + 1
-    return ' / '.join(f'{k} {v}' for k, v in levels.items()) or 'Level 0'
+    out = []
+    for k, v in levels.items():
+        a = (c.get('archetypes') or {}).get(k) or []
+        names = [x.strip() for x in a.split(',')] if isinstance(a, str) else [x.get('name') for x in a if isinstance(x, dict)]
+        names = [n for n in names if n]
+        out.append(f"{k} ({', '.join(names)}) {v}" if names else f'{k} {v}')
+    return ' / '.join(out) or 'Level 0'
 
 
 def list_characters():

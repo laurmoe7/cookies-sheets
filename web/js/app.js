@@ -1,6 +1,7 @@
 import { api } from './api.js';
 import { compute, sign } from './calc.js';
 import { newCharacter, migrate } from './model.js';
+import { classLine } from './features.js';
 import { esc, $, $$, getPath, setPath, toast, showEntry, closeDrawer, initDrawerDismiss, debounce, modal, initTextFields, initTooltips } from './ui.js';
 import { initSheetSearch } from './sheetsearch.js';
 import { initOptions, showOptions, showChangelog } from './options.js';
@@ -74,7 +75,7 @@ function updateHeader() {
   $('#char-title').textContent = c ? c.name || 'Unnamed' : 'No character loaded';
   const d = state.derived;
   $('#char-sub').textContent = c && d
-    ? `${d.race.name} · ${Object.entries(d.classLevels).map(([k, v]) => `${k} ${v}`).join(' / ') || 'Level 0'}`
+    ? `${d.race.name} · ${classLine(c, d.classLevels) || 'Level 0'}`
     : 'Create or open a character to begin';
   $('#save-state').textContent = !c ? '' : state.dirty ? 'Saving…' : 'Saved';
   const ready = c && d && d.xp.levelByXp > d.level && d.level > 0;

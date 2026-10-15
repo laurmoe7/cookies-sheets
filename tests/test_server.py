@@ -132,6 +132,11 @@ class Compendium(unittest.TestCase):
         self.assertEqual(frozen['classSkills'], {'add': ['Survival'], 'remove': ['Diplomacy']})
         self.assertNotIn('�', ' '.join(f['html'] for f in frozen['features']))
 
+    def test_character_list_summary_names_archetypes(self):
+        c = dict(levelUps=[dict(cls='Arcanist')] * 8 + [dict(cls='Rogue')], archetypes={'Arcanist': [dict(name='White Mage')], 'Rogue': 'Scout, Thug'})
+        self.assertEqual(app._summary(c), 'Arcanist (White Mage) 8 / Rogue (Scout, Thug) 1')
+        self.assertEqual(app._summary(dict(levelUps=[dict(cls='Fighter')])), 'Fighter 1')
+
     def test_resolve_names(self):
         hits = app.resolve_names({'items': [
             {'variants': ['Weapon Finesse'], 'cats': ['Feat']},
