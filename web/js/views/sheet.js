@@ -9,6 +9,8 @@ import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, tex
 import { choosePicture, repositionPicture } from '../cropper.js';
 import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
+import { chooseTraits } from './traitpicker.js';
+import { ADDITIONAL_TRAITS } from '../traits.js';
 import { summonSpell } from '../summons.js';
 import { rollBar, fillSpellRolls, SLA_KEY as SLA } from '../roller.js';
 import { chooseSummon } from './summons.js';
@@ -549,7 +551,14 @@ function feats(body, c, d) {
       // Traits are the character traits and the racial traits, in one list.
       const search = p.dataset.pick === 'traits' ? async q => (await Promise.all(['Trait', 'Racial Trait'].map(k => api.search(q, k, 100)))).flat().sort((a, b) => a.name.localeCompare(b.name)) : undefined;
       const r = await pickEntry(p.dataset.title, p.dataset.cat, { renderRow: r => r.summary || r.source, search });
-      if (r) { c[p.dataset.pick].push({ id: r.id, name: r.name, sub: r.sub, notes: '', level: d.level }); changed({ rerender: true }); }
+      if (r) {
+        c[p.dataset.pick].push({ id: r.id, name: r.name, sub: r.sub, notes: '', level: d.level });
+        changed({ rerender: true });
+        if (p.dataset.pick === 'feats' && r.name.toLowerCase() === ADDITIONAL_TRAITS.toLowerCase()) { // the feat gives two more traits
+          const got = await chooseTraits({ count: 2, have: c.traits, title: 'Additional Traits: choose two traits' });
+          if (got) { for (const t of got) c.traits.push({ id: t.id, name: t.name, sub: t.sub, notes: '' }); changed({ rerender: true }); }
+        }
+      }
     } else if (cu) {
       c[cu.dataset.custom].push({ name: '', notes: '' });
       changed({ rerender: true });

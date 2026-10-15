@@ -9,6 +9,7 @@ export function levelWarnings(x) {
   if (unspent > 0) out.push(`${plural(unspent, 'skill rank')} not assigned yet (you have ${x.rankBudget} this level and used ${x.ranksUsed}).`);
   const feats = (x.getsFeat ? 1 : 0) + (x.bonusFeat ? 1 : 0);
   if (feats > (x.featsChosen || 0)) out.push(`${plural(feats - (x.featsChosen || 0), 'feat')} not chosen yet.`);
+  if (x.traitsLeft > 0) out.push(`${plural(x.traitsLeft, 'trait')} not chosen yet.`);
   if (x.getsAbility && !x.abilityIncrease) out.push('No ability score increase chosen for this level.');
   if (x.isFav) {
     if (x.fcb === 'racial' && !x.fcbNote) out.push('Favored class bonus: no racial option picked.');
