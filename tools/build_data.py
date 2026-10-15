@@ -362,6 +362,14 @@ def tag_racial_traits(entries):
             continue
         e['sub'] = racetraits.RACE_NAMES.get(e['sub'], e['sub'])
         reps = racetraits.replaced_traits(e['html'])
+        alts = [] if reps else racetraits.altered_traits(e['html'])
+        if alts:  # an alternate trait that changes a standard one without replacing it
+            meta = json.loads(e['meta'] or '{}')
+            meta['alters'] = alts
+            e['meta'] = json.dumps(meta)
+            if not e['summary']:
+                e['summary'] = 'Alters ' + ', '.join(alts) + '.'
+            tagged += 1
         if reps:
             meta = json.loads(e['meta'] or '{}')
             meta['replaces'] = reps

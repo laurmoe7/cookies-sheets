@@ -16,6 +16,16 @@ SPLIT = re.compile(r',\s*(?:and\s+|or\s+)?|\s+(?:and|or)\s+|\s+as well as\s+', r
 TAIL = re.compile(r'\s+(?:racial\s+)?traits?$', re.I)
 
 
+ALTERS = re.compile(r'racial traits? (?:also )?alters? ([^.]*)\.', re.I)
+
+
+def altered_traits(text):
+    """What a trait that only alters (does not replace) one says it changes, e.g. ['the kitsune ability score modifiers']; [] if none."""
+    plain = re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', text or '')))
+    m = ALTERS.search(plain)
+    return [re.sub(r'^(?:the|a|an)\s+', '', p.strip(), flags=re.I) for p in SPLIT.split(m.group(1)) if p.strip()] if m else []
+
+
 def replaced_traits(text):
     """['agile'] from 'This racial trait replaces agile.'; [] when the text replaces nothing."""
     plain = re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', text or '')))

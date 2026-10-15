@@ -29,3 +29,37 @@ export function replacedConflicts(traits, replaces) {
   });
   return { standard, clashes };
 }
+
+const raceKey = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+/** The compendium's name for a character's race ("Half-Elf" is "Half Elf" there), or '' if it has no racial traits. */
+export async function compendiumRace(raceName) {
+  const k = raceKey(raceName);
+  return (await traitRaces()).find(r => raceKey(r) === k) || '';
+}
+
+/** True for an alternate racial trait: the compendium summarises it as "Replaces X." or "Alters X." */
+export const isAlternate = entry => /^(Replaces|Alters) /.test(String(entry.summary || ''));
+
+/** The racial traits that remain after the chosen alternates have replaced theirs. */
+export function remainingBaseline(baseline, chosen) {
+  const gone = new Set((chosen || []).flatMap(c => c.replaces || []).map(key));
+  return baseline.filter(b => !gone.has(key(b.name)));
+}
+
+/** The alternates that could take the place of the standard trait `name`, leaving out ones already chosen. */
+export function alternativesFor(name, alternates, chosen = []) {
+  const taken = new Set(chosen.map(c => c.name));
+  return alternates.filter(a => !taken.has(a.name) && replacesOf(a.summary).some(r => key(r) === key(name)));
+}
+
+const racialCache = new Map();
+/** {baseline, alternates} for a race, from the compendium (cached); null if the race has none. */
+export async function racialTraitsOf(raceName) {
+  const race = await compendiumRace(raceName);
+  if (!race) return null;
+  if (!racialCache.has(race)) racialCache.set(race, api.search('', 'Racial Trait', 500, 0, '=' + race).then(rows => ({
+    baseline: rows.filter(r => !isAlternate(r)), alternates: rows.filter(isAlternate),
+  })).catch(() => { racialCache.delete(race); return null; }));
+  return racialCache.get(race);
+}

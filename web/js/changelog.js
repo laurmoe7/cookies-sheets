@@ -6,6 +6,7 @@ export const CHANGELOG = [
   {
     version: '1.3', next: true,
     items: [
+      'Making a character: Traits now come before Feats, with even spacing, and your race’s standard racial traits are listed (and added to your sheet) with a Swap… button where the books give an alternate.',
       'The window opens where and how big you left it, and never under the taskbar.',
       'Add trait has two filters: the usual category, and a race filter that shows one race’s racial traits. The trait window when you make a character has the race filter too; racial traits picked there do not use up your two traits.',
       'Racial traits: filter them by race (Add trait, and the Racial Trait page in the Compendium). Alternate racial traits say what they replace, show it on your sheet, and offer to remove the standard trait they replace.',
