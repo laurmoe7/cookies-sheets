@@ -327,11 +327,11 @@ function chooseCreature() {
 }
 
 /** A companion taken from the creature list: the stat block's own numbers in the same panels. */
-function creatureCard(comp, i, head) {
+function creatureCard(comp, i, head, actions) {
   const p = `companions.${i}`;
   const s = computeCreature(comp);
   const ed = creatureEditors(comp, p);
-  return `<div class="companion" data-comp="${i}">${head}<section class="card comp-bar">${ed.strip}</section>${topPanels(comp, s, p, ed)}</div>`;
+  return `<div class="companion" data-comp="${i}">${head}<section class="card comp-bar"><div class="comp-bar-main">${ed.strip}</div><div class="comp-actions">${actions}</div></section>${topPanels(comp, s, p, ed)}</div>`;
 }
 
 /** The player's adjustments, one small box in each panel they change. */
@@ -414,29 +414,30 @@ function creatureEditors(comp, p) {
 
 function companionCard(comp, i, levels, data, master) {
   const p = `companions.${i}`;
-  const head = `<div class="row"><h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>
-    <span class="pill">${{ animal: 'Animal companion', eidolon: 'Eidolon', familiar: 'Familiar', creature: 'Creature', custom: 'Companion' }[comp.kind]}</span>
-    <button class="btn small" data-statblock title="Open the full stat block in the side panel">📋 Stat block</button>
-    <button class="icon-btn" data-del-comp title="Remove">✕</button></div>`;
+  // The kind chip, the stat block button and remove sit on the paper card under the name (a custom companion has no such card, so they stay beside its name).
+  const actions = `<span class="pill">${{ animal: 'Animal companion', eidolon: 'Eidolon', familiar: 'Familiar', creature: 'Creature', custom: 'Companion' }[comp.kind]}</span>
+    ${comp.kind === 'custom' ? '' : '<button class="pill pill-btn" data-statblock title="Open the full stat block in the side panel">📋 Stat block</button>'}
+    <button class="icon-btn" data-del-comp title="Remove">✕</button>`;
+  const head = `<div class="row"><h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>${comp.kind === 'custom' ? actions : ''}</div>`;
   if (comp.kind === 'custom') {
     return `<section class="card companion" data-comp="${i}">${head}
       <div class="grid two"><div>${picFrame(comp.image, 'lg')}<h4>Stat block</h4>${tf(`${p}.statblock`, { multiline: true, placeholder: 'Double-click to paste or type a stat block', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion stat block' } })}</div>
       <div><h4>Notes</h4>${tf(`${p}.notes`, { multiline: true, placeholder: 'Double-click to add notes', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion notes' } })}</div></div></section>`;
   }
-  if (comp.kind === 'creature') return creatureCard(comp, i, head);
-  if (comp.kind === 'familiar') return familiarCard(comp, i, levels, data, master, head);
+  if (comp.kind === 'creature') return creatureCard(comp, i, head, actions);
+  if (comp.kind === 'familiar') return familiarCard(comp, i, levels, data, master, head, actions);
   const s = computeCompanion(comp, levels, data);
   syncLevel(comp, s);
   const ed = buildEditors(comp, s, p, { data, levels });
-  return `<div class="companion" data-comp="${i}">${head}<section class="card comp-bar">${ed.strip}</section>${topPanels(comp, s, p, ed)}</div>`;
+  return `<div class="companion" data-comp="${i}">${head}<section class="card comp-bar"><div class="comp-bar-main">${ed.strip}</div><div class="comp-actions">${actions}</div></section>${topPanels(comp, s, p, ed)}</div>`;
 }
 
-function familiarCard(comp, i, levels, data, master, head) {
+function familiarCard(comp, i, levels, data, master, head, actions) {
   const p = `companions.${i}`;
   const s = computeCompanion(comp, levels, data, master);
   syncLevel(comp, s);
   const ed = familiarEditors(comp, s, p, { data, levels });
-  return `<div class="companion" data-comp="${i}">${head}<section class="card comp-bar">${ed.strip}</section>${topPanels(comp, s, p, ed)}</div>`;
+  return `<div class="companion" data-comp="${i}">${head}<section class="card comp-bar"><div class="comp-bar-main">${ed.strip}</div><div class="comp-actions">${actions}</div></section>${topPanels(comp, s, p, ed)}</div>`;
 }
 
 /** The familiar Kind picker: the standard list, then what the Improved Familiar feat adds. */
