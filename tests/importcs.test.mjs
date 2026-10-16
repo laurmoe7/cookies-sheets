@@ -256,3 +256,13 @@ test('spell-like abilities that are spells go to the Spells tab with their uses;
   assert.ok(char.specials.some(s => s.name === 'Arcane Reservoir'), 'a class pool is not a spell');
   assert.ok(!char.specials.some(s => s.name === 'Dimension Door'));
 });
+
+test('import: feats and traits that now add their own bonus do not count twice against the old sheet\'s Misc boxes', () => {
+  const src = { ...sample(), initiative: { miscModifier: '2' }, traits: [{ name: 'Reactionary' }], feats: [{ name: 'Iron Will' }] };
+  const { char, notes } = build(src);
+  assert.equal(calc(char).init, 4, 'Dex 14 (+2) plus the old sheet\'s +2 from Reactionary, once');
+  assert.equal(char.initMisc, 0, 'the +2 in Misc moved into the trait');
+  const bare = build({ ...sample(), initiative: { miscModifier: '2' } }).char;
+  assert.equal(calc(char).saves.will.total, calc(bare).saves.will.total, 'Iron Will adds +2 itself, so Misc dropped by 2 and the total is the old sheet\'s');
+  assert.ok(notes.some(n => /take?n out of the old sheet|taken out/.test(n)), 'the report says what moved');
+});

@@ -8,6 +8,8 @@ export const CHANGELOG = [
     items: [
       'CMD: the Overview lists what makes it up under the AC line, so you can see that rage’s –2 penalty to AC also counts against your CMD (the +2 from rage’s extra Strength and the –2 cancel out).',
       'Feats on your Feats list now count by themselves: Toughness, Dodge, Great Fortitude, Iron Will, Lightning Reflexes, Improved Initiative, the skill feats and Skill Focus. A buff of the same name is not counted twice.',
+      'Traits with an always-on bonus (Reactionary, Resilient, Seeker...) and racial skill bonuses (Keen Senses, Halfling Luck...) now count by themselves.',
+      'Importing takes what they now add out of the Misc boxes, so imported totals stay the same.',
     ],
   },
   {

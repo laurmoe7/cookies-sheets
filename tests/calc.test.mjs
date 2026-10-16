@@ -394,3 +394,33 @@ test('skill feats: +2 to both skills, +4 with 10 ranks; Skill Focus +3 / +6', ()
   const k = o => o.skills[Object.keys(o.skills).find(x => x.toLowerCase().includes('climb'))].total;
   assert.equal(k(calc(cs)) - k(calc(c0)), 6, 'Skill Focus: +3 doubled at 10 ranks');
 });
+
+const withTrait = (name, extra = {}) => { const c = fighter(); c.traits.push({ name, sub: '', notes: '', ...extra }); return c; };
+const skillTotal = (d, n) => d.skills[Object.keys(d.skills).find(k => k.toLowerCase().includes(n.toLowerCase()))].total;
+
+test('traits with an always-on bonus apply: Reactionary +2 initiative, Resilient +1 Fortitude, Bully +1 Intimidate and class skill', () => {
+  const base = calc(fighter());
+  assert.equal(calc(withTrait('Reactionary')).init - base.init, 2);
+  assert.equal(calc(withTrait('Resilient')).saves.fort.total - base.saves.fort.total, 1);
+  assert.equal(calc(withTrait('Resilient')).saves.ref.total, base.saves.ref.total, 'only Fortitude');
+  // Intimidate with 2 ranks: +1 trait, and the class-skill +3 if it was not one already (a fighter has Intimidate as a class skill, so only the +1 shows)
+  const c0 = fighter(), c1 = withTrait('Bully');
+  c0.skills.find(s => s.name === 'Perception').ranks = 2; c1.skills.find(s => s.name === 'Perception').ranks = 2;
+  const c2 = withTrait('Seeker'); c2.skills.find(s => s.name === 'Perception').ranks = 2;
+  assert.equal(skillTotal(calc(c2), 'Perception') - skillTotal(calc(c0), 'Perception'), 1 + 3, 'Seeker: +1 trait, and Perception becomes a class skill (+3 with a rank in it); fighter does not have it');
+});
+
+test('trait bonuses are one type: two +1 Fortitude traits give +1, Resilient and a +2 racial bonus do not clash', () => {
+  const c = withTrait('Resilient'); c.traits.push({ name: 'Life of Toil' });
+  assert.equal(calc(c).saves.fort.total - calc(fighter()).saves.fort.total, 1, 'same type, highest only');
+});
+
+test('racial bonuses: a halfling gets +1 on all saves and +2 Perception; an alternate trait that replaces Keen Senses turns the +2 off', () => {
+  const mk = (extra) => { const c = fighter(); c.race = 'Halfling'; c.raceChoice = ''; Object.assign(c, extra); return c; };
+  const plain = fighter(); plain.race = 'Halfling';
+  const withOut = calc(Object.assign(fighter(), { race: 'Human' }));
+  const h = calc(mk({}));
+  assert.equal(h.saves.will.total - withOut.saves.will.total, 1, 'Halfling Luck');
+  const rep = mk({ traits: [{ name: 'Wanderer', replaces: ['keen senses'] }] });
+  assert.equal(skillTotal(calc(mk({})), 'Perception') - skillTotal(calc(rep), 'Perception'), 2, 'Keen Senses +2 gone when replaced');
+});

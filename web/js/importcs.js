@@ -414,8 +414,27 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
   c.importedFrom = { source: src._source || CS_SOURCE, id: str(src._id), date: new Date().toISOString() };
 
   // -- second pass: HP and weapons need the computed numbers --
+  neutralizeAuto(c, classesByName, notes);
   reconcile(c, src, classesByName, notes);
   return { char: c, notes };
+}
+
+/**
+ * Feats, traits and the race now add their flat bonuses by themselves, but the old sheet's Misc boxes already hold them (people typed them in).
+ * Take that much out of each Misc box so the totals stay what the old sheet said, and so nothing is counted twice.
+ */
+function neutralizeAuto(c, classesByName, notes) {
+  const on = compute(c, classesByName), off = compute(c, classesByName, { noAuto: true });
+  const moved = [];
+  const take = (label, by, apply) => { if (by) { apply(by); moved.push(`${label} ${signed(-by)}`); } };
+  for (const k of ['fort', 'ref', 'will']) take({ fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[k], on.saves[k].total - off.saves[k].total, by => { c.saveMisc[k] -= by; });
+  take('Initiative', on.init - off.init, by => { c.initMisc -= by; });
+  take('AC', on.ac.total - off.ac.total, by => { c.ac.misc -= by; });
+  for (const s of c.skills) {
+    const k = skillKey(s);
+    take(k, (on.skills[k]?.total ?? 0) - (off.skills[k]?.total ?? 0), by => { s.misc = (Number(s.misc) || 0) - by; });
+  }
+  if (moved.length) notes.push(`Some feats, traits or racial traits now add their bonus on their own, so the same amount was taken out of the old sheet’s Misc boxes to keep the totals the same: ${moved.join(', ')}. Add the bonus back to Misc if you turn the feat or trait off.`);
 }
 
 /** A signed number for a sentence: +2, −3 (a real minus sign, so it cannot be mistaken for a dash). */
