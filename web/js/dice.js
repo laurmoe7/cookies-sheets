@@ -122,8 +122,11 @@ export const MOD_PRESETS = [
   { label: 'firing into melee', kind: 'ranged', n: -4, for: 'attack', tip: 'Ranged attack into a melee without Precise Shot: -4' },
   { label: 'attacker unseen', n: 2, for: 'attack', tip: 'Invisible, or the target cannot see you: +2' },
   { label: 'improvised weapon', spell: false, n: -4, for: 'attack', tip: 'Using something that is not a weapon: -4' },
-  { label: 'two-weapon: main hand', spell: false, n: -6, for: 'attack', tip: 'No Two-Weapon Fighting feat; -4 with a light off-hand weapon, less with the feat' },
-  { label: 'two-weapon: off hand', spell: false, n: -10, for: 'attack', tip: 'No Two-Weapon Fighting feat; -8 with a light off-hand weapon, less with the feat' },
+  // Fighting with two weapons: -6 / -10, or -4 / -8 when the off-hand weapon is light; the Two-Weapon Fighting feat makes it -4 / -4 (-2 / -2 with a light off-hand)
+  { label: 'two-weapon: main hand', spell: false, n: -6, nWith: -4, group: 'twf', for: 'attack', tip: 'Off-hand weapon is not light. Two-Weapon Fighting makes it -4' },
+  { label: 'two-weapon: off hand', spell: false, n: -10, nWith: -4, group: 'twf', for: 'attack', tip: 'Off-hand weapon is not light. Two-Weapon Fighting makes it -4' },
+  { label: 'two-weapon (light off-hand): main hand', spell: false, n: -4, nWith: -2, group: 'twf', for: 'attack', tip: 'Off-hand weapon is light. Two-Weapon Fighting makes it -2' },
+  { label: 'two-weapon (light off-hand): off hand', spell: false, n: -8, nWith: -2, group: 'twf', for: 'attack', tip: 'Off-hand weapon is light. Two-Weapon Fighting makes it -2' },
   { label: 'squeezing', n: -4, for: 'attack', tip: 'Fighting in a space too narrow for you' },
   { label: 'strong wind (ranged)', spell: false, kind: 'ranged', n: -2, for: 'attack', tip: 'Strong wind: -2 to ranged attacks (-4 in a severe wind)' },
   { label: 'aid another', n: 2, tip: 'An ally helped you' },
@@ -131,6 +134,9 @@ export const MOD_PRESETS = [
   { label: 'unfavorable conditions', n: -2, tip: 'The GM says circumstances hurt (skills and checks)' },
   { label: 'no tools', n: -2, tip: 'A skill that needs tools, done without them' },
 ];
+
+/** A preset with the Two-Weapon Fighting feat's smaller penalty when the character has it. */
+export const adjustPreset = (m, hasTwf) => (hasTwf && m.nWith != null ? { ...m, n: m.nWith } : m);
 
 /**
  * The presets that make sense for this roll: attack rolls get all of them, other d20 rolls only the general ones.

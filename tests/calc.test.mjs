@@ -453,3 +453,17 @@ test('a feat for "Bow" does not land on a Crossbow, and a plural choice still fi
   assert.equal(d.weapons[2].attack - base.weapons[2].attack, 0, 'crossbow: no');
   assert.equal(d.weapons[3].attack - base.weapons[3].attack, 1, 'shortbow: Shortbows matches; "Bow" is a different word');
 });
+
+test('Weapon Finesse: a light melee weapon on automatic uses Dex when it is better; heavy weapons, ranged ones and a set ability do not', () => {
+  const mk = feats => { const c = fighter(); c.abilities.str.base = 10; c.abilities.dex.base = 16; /* human +2 went to Str in the helper */ c.raceChoice = 'dex'; c.feats.push(...feats); c.weapons.push({ ...structuredClone(longsword), name: 'Dagger +1', tpl: 'Dagger' }, { ...structuredClone(longsword), name: 'Rapier' }); return c; };
+  const plain = calc(mk([])), fin = calc(mk([{ name: 'Weapon Finesse' }]));
+  const dex = fin.abilities.dex.score, str = fin.abilities.str.score;
+  assert.ok(Math.floor((dex - 10) / 2) > Math.floor((str - 10) / 2), 'the test character has the better Dex');
+  const gain = Math.floor((dex - 10) / 2) - Math.floor((str - 10) / 2);
+  assert.equal(fin.weapons[2].attack - plain.weapons[2].attack, gain, 'dagger: Dex instead of Str');
+  assert.equal(fin.weapons[3].attack - plain.weapons[3].attack, gain, 'rapier is named in the feat');
+  assert.equal(fin.weapons[1].attack, plain.weapons[1].attack, 'longsword is not light');
+  assert.equal(fin.weapons[2].dmgBonus, plain.weapons[2].dmgBonus, 'damage stays on Strength');
+  const c = mk([{ name: 'Weapon Finesse' }]); c.weapons[2].ability = 'str';
+  assert.equal(calc(c).weapons[2].attack, plain.weapons[2].attack, 'Str chosen on the weapon wins');
+});

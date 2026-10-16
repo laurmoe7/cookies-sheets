@@ -11,6 +11,8 @@ export const CHANGELOG = [
       'Traits with an always-on bonus (Reactionary, Resilient, Seeker...) and racial skill bonuses (Keen Senses, Halfling Luck...) now count by themselves.',
       'Importing takes what they now add out of the Misc boxes, so imported totals stay the same.',
       'Weapon Focus, Weapon Specialization (and the greater ones) and Improved Critical apply to the weapon the feat names; Spell Focus lists its schools under the Save DC row.',
+      'Weapon Finesse: light melee weapons, rapiers and whips attack with Dexterity by themselves when it is better, no matter when you took the feat.',
+      'Two-weapon fighting: the roll window has penalties for a light or heavy off-hand weapon, and Two-Weapon Fighting lowers them.',
     ],
   },
   {

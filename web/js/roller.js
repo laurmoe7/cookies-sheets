@@ -7,7 +7,7 @@
 //   data-roll-weapon="2" data-roll-kind="attack|damage|full"   a weapon row
 // The roll bar (in the buff strip) holds Advantage / Disadvantage for the next d20 roll, the Modifier chip (situational + and -, such as
 // not being proficient or shooting past a range increment), the dice box, and the Discord switch.
-import { rollMessage, rollMany, bonusText, addMods, modsLabel, MOD_PRESETS, presetsFor, sendName, parseDice, damagePresets, parseDamageMod, addDamageMods, damageLabel } from './dice.js';
+import { rollMessage, rollMany, bonusText, addMods, modsLabel, MOD_PRESETS, adjustPreset, presetsFor, sendName, parseDice, damagePresets, parseDamageMod, addDamageMods, damageLabel } from './dice.js';
 import { parseCrit } from './weaponfx.js';
 import { spellInfo } from './spellinfo.js';
 import { state, changed } from './app.js';
@@ -63,10 +63,11 @@ function syncBar() {
 const withMode = expr => { expr = addMods(expr, modsTotal()); return mode && /^d20/.test(expr) ? mode + ' ' + expr : expr; };
 const withModLabel = (label, expr) => (mods.length && /^d20/.test(expr) ? [label, modsLabel(mods)].filter(Boolean).join(' ') : label);
 /** Preset chips in two rows: bonuses, then penalties. */
-const presetGroups = list => [['Bonuses', 'plus', list.filter(m => m.n > 0)], ['Penalties', 'minus', list.filter(m => m.n < 0)]]
+const hasTwf = () => (state.char?.feats || []).some(f => /^two-weapon fighting$/i.test(String(f.name || '').replace(/\s*\(.*$/, '').trim()));
+const presetGroups = list => [['Bonuses', 'plus', list.filter(m => m.n > 0)], ['Penalties', 'minus', list.filter(m => adjustPreset(m, hasTwf()).n < 0)]]
   .filter(([, , l]) => l.length)
   .map(([head, cls, l]) => '<div class="small mod-head ' + cls + '">' + head + '</div><div class="roll-bar" style="margin:4px 0 8px">' +
-    l.map(m => '<button class="rchip ' + (mods.some(x => x.label === m.label) ? 'on' : '') + '" data-mod-preset="' + MOD_PRESETS.indexOf(m) + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(bonusText(m.n)) + '</button>').join(' ') + '</div>').join('');
+    l.map(m => '<button class="rchip ' + (mods.some(x => x.label === m.label) ? 'on' : '') + '" data-mod-preset="' + MOD_PRESETS.indexOf(m) + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(bonusText(adjustPreset(m, hasTwf()).n)) + '</button>').join(' ') + '</div>').join('');
 
 const afterRoll = () => { mode = ''; if (!keepMods) mods = []; syncBar(); };
 
@@ -108,7 +109,7 @@ function modsWindow() {
       else if (p) {
         const m = MOD_PRESETS[+p.dataset.modPreset], had = mods.some(x => x.label === m.label);
         mods = mods.filter(x => x.label !== m.label && !(m.group && x.group === m.group)); // one range increment at a time
-        if (!had) mods.push({ ...m });
+        if (!had) mods.push({ ...adjustPreset(m, hasTwf()) });
       } else if (e.target.closest('#mod-add')) add();
       else if (e.target.closest('#mod-clear')) { mods = []; mode = ''; }
       else if (e.target.closest('#mod-done')) { syncBar(); return close(); }
@@ -313,7 +314,7 @@ function rollWindow(p0, attack0, sp = null) {
       if (pr) {
         const m = MOD_PRESETS[+pr.dataset.modPreset], had = mods.some(x => x.label === m.label);
         mods = mods.filter(x => x.label !== m.label && !(m.group && x.group === m.group));
-        if (!had) mods.push({ ...m });
+        if (!had) mods.push({ ...adjustPreset(m, hasTwf()) });
       } else if (md) mode = mode === md.dataset.winMode ? '' : md.dataset.winMode;
       else if (e.target.closest('#mod-add')) add();
       else return;

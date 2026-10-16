@@ -480,8 +480,10 @@ function reconcile(c, src, classesByName, notes = []) {
     if (!s) return;
     const dw = d.weapons[i];
     if (s.attack !== null) {
-      const opts = w.ranged ? [['', dw.attack]] : [['', dw.attack], ['dex', dw.attack - M('str') + M('dex')]];
-      const [abil, base] = opts.reduce((best, o) => (Math.abs(s.attack - o[1]) < Math.abs(s.attack - best[1]) ? o : best));
+      // dw.attack already uses Dex when Weapon Finesse does it by itself, so work out each choice from the ability it used
+      const opts = w.ranged ? [['', dw.attack]] : [['str', dw.attack - M(dw.ability) + M('str')], ['dex', dw.attack - M(dw.ability) + M('dex')]];
+      let [abil, base] = opts.reduce((best, o) => (Math.abs(s.attack - o[1]) < Math.abs(s.attack - best[1]) ? o : best));
+      if (abil === 'str' && !(dw.ability === 'dex' && !w.ability)) abil = ''; // plain Strength is the automatic choice, unless the finesse feat would pick Dex
       w.ability = abil;
       w.misc = s.attack - base;
       if (w.misc) notes.push(`${w.name} attack: the old sheet says ${signed(s.attack)}, and this app works out ${signed(base)} (${abil ? 'Dexterity' : w.ranged ? 'Dexterity' : 'Strength'}), so ${signed(w.misc)} was put in the weapon's Atk+ box. ${w.misc > 0 ? 'A feat such as Weapon Focus, a magic or masterwork bonus, or a buff the old sheet had on usually explains a bonus.' : 'A penalty such as not being proficient, fatigue or a spell the old sheet had on usually explains it.'} If you do not know where it comes from, clear the box.`);

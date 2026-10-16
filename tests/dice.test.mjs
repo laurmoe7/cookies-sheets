@@ -202,3 +202,12 @@ test('on a critical hit smite, challenge, favored enemy and Vital Strike dice ar
   const flagged = damagePresets({ Paladin: 7, Rogue: 5 }, 11).map(p => [p.label, !!p.crit]);
   assert.deepEqual(flagged.filter(([l]) => /smite|sneak|Vital/.test(l)), [['sneak attack', false], ['smite evil', true], ['Vital Strike', true], ['Improved Vital Strike', true]]);
 });
+
+test('two-weapon fighting presets: -6/-10, -4/-8 with a light off hand, and the feat brings them to -4/-4 and -2/-2', async () => {
+  const { MOD_PRESETS, adjustPreset } = await import('../web/js/dice.js');
+  const f = l => MOD_PRESETS.find(m => m.label === l);
+  const got = (l, twf) => adjustPreset(f(l), twf).n;
+  assert.deepEqual(['two-weapon: main hand', 'two-weapon: off hand', 'two-weapon (light off-hand): main hand', 'two-weapon (light off-hand): off hand'].map(l => got(l, false)), [-6, -10, -4, -8]);
+  assert.deepEqual(['two-weapon: main hand', 'two-weapon: off hand', 'two-weapon (light off-hand): main hand', 'two-weapon (light off-hand): off hand'].map(l => got(l, true)), [-4, -4, -2, -2]);
+  assert.equal(adjustPreset(f('flanking'), true).n, 2, 'other presets are untouched');
+});

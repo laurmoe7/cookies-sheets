@@ -14,6 +14,15 @@ const FINESSE_ALSO = /^(rapier|whip|spiked chain|elven curve ?blade)$/i;
 /** Can Weapon Finesse put Dexterity on this weapon's attack rolls? */
 export const finesseWeapon = t => t.kind !== 'ranged' && t.kind !== 'unarmed' && (t.kind === 'light' || FINESSE_ALSO.test(t.name));
 
+/** Light melee weapons (the ones data/equipment.json marks 'light', and the unarmed strike), for Weapon Finesse on a weapon that has only a name. */
+const LIGHT_WEAPON = new RegExp('(^| )(' + ['unarmed strike', 'aklys', 'battle aspergillum', 'brass knuckles', 'butterfly sword', 'cestus', 'dagger', 'dan bong', 'dogslicer', 'emei piercer',
+  'fighting fan', 'gauntlet', 'gladius', 'handaxe', 'hand axe', 'iron brush', 'jutte', 'kama', 'kerambit', 'knuckle axe', 'kukri', 'light hammer', 'light mace', 'light pick',
+  'lungchuan tamo', 'madu', 'nunchaku', 'pata', 'punching dagger', 'quadrens', 'sai', 'sap', 'scorpion whip', 'shang gou', 'shortsword', 'short sword', 'siangham', 'sica',
+  'sickle', 'spiked gauntlet', 'starknife', 'tekko kagi', 'throwing axe', 'tonfa', 'wakizashi', 'wooden stake', 'wushu dart'].join('|') + ')( |$)');
+const nameKey = n => String(n || '').toLowerCase().replace(/\+\d+/g, ' ').replace(/[^a-z]+/g, ' ').trim();
+/** Can Weapon Finesse put Dexterity on this weapon row's attack rolls? A melee weapon that is light, or one of the four the feat names, by its name or the template it came from. */
+export const canFinesse = w => !w.ranged && [w.tpl, w.name].some(n => { const k = nameKey(n); return k && (LIGHT_WEAPON.test(k) || FINESSE_ALSO.test(k.replace(/^(masterwork|mwk) /, ''))); });
+
 /** A weapon row from a template. Damage is the dice for the wielder's size; two-handed melee weapons get the ×1½ Strength bonus.
  * `finesse` is true when the character has Weapon Finesse: then a weapon it works with attacks with Dexterity. */
 export function weaponFromTemplate(t, size = 'Medium', finesse = false) {

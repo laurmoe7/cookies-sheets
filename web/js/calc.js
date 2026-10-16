@@ -8,6 +8,7 @@ import { weaponFx, parseCrit, doubleThreat, critLabel, multiplyDice } from './we
 import { armorFx, wornFx } from './armorfx.js';
 import { wornEffects } from './itemfx.js';
 import { autoEffects } from './autofx.js';
+import { canFinesse } from './equipment.js';
 
 const SKILL_FEATS = {
   acrobatic: ['Acrobatics', 'Fly'], alertness: ['Perception', 'Sense Motive'], 'animal affinity': ['Handle Animal', 'Ride'],
@@ -300,7 +301,9 @@ export function compute(c, classesByName, opts = {}) {
 
   for (const w of c.weapons) {
     const ranged = !!w.ranged;
-    const abil = w.ability || (ranged ? 'dex' : 'str');
+    // Weapon Finesse: a light melee weapon (or rapier, whip...) left on automatic attacks with Dexterity when that is better; setting the ability on the weapon overrides it
+    const finesse = !opts.noAuto && !w.ability && !ranged && canFinesse(w) && (c.feats || []).some(f => featName(f) === 'weapon finesse') && M('dex') > M('str');
+    const abil = w.ability || (ranged || finesse ? 'dex' : 'str');
     // Weapon Focus / Specialization (and the greater ones) for this weapon; Improved Critical sets the weapon's flag
     let focusAtk = 0, specDmg = 0, impCrit = false;
     if (!opts.noAuto) for (const f of c.feats || []) {
@@ -334,7 +337,7 @@ export function compute(c, classesByName, opts = {}) {
     const critBase = crit && multiplyDice(w.damage, crit.mult);
     const critExtras = crit ? fx.critExtras(crit.mult) : [];
     d.weapons.push({
-      attack: attacks[0], attacks,
+      attack: attacks[0], attacks, ability: abil,
       attackText: attacks.map(sign).join('/'),
       damageText: `${w.damage || '—'}${dmgFlat(dmgBonus)}${extraText}`,
       dmgBonus, extras: fx.extras, fxSummary: fx.summary, fxWarn: fx.warn,
