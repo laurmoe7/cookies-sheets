@@ -353,3 +353,15 @@ test('CMD counts the -2 AC penalty from rage, so a higher Strength from rage sti
   assert.ok(raging.bd.cmd.some(p => /Rage/.test(p.label) && p.value === -2), 'and the penalty is named in them');
   assert.ok(!calm.bd.cmd.some(p => /Rage/.test(p.label)), 'no rage, no penalty');
 });
+
+test('Toughness feat adds max(3, Hit Dice) HP, and is not counted twice with the buff preset', () => {
+  const c = fighter();
+  c.feats.push({ name: 'Toughness', sub: '', notes: '' });
+  assert.equal(calc(c).hp.max, 40, '36 + max(3, 4 HD) = 40');
+});
+
+test('Toughness feat plus the Toughness buff counts once', () => {
+  const c = buff(fighter(), 'Toughness');
+  c.feats.push({ name: 'Toughness', sub: '', notes: '' });
+  assert.equal(calc(c).hp.max, 40, 'still 36 + 4');
+});

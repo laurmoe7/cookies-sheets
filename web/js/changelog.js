@@ -7,6 +7,7 @@ export const CHANGELOG = [
     version: '1.3.4', next: true,
     items: [
       'CMD: the Overview lists what makes it up under the AC line, so you can see that rage’s –2 penalty to AC also counts against your CMD (the +2 from rage’s extra Strength and the –2 cancel out).',
+      'Toughness: having the feat on your Feats list now adds its hit points (3, or one per Hit Die past 3) to your maximum HP; if the Toughness buff is also on, it is not counted twice.',
     ],
   },
   {

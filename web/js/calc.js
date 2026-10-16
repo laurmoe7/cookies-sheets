@@ -219,7 +219,11 @@ export function compute(c, classesByName) {
 
   // ---- HP ----
   const fcbHp = c.levelUps.filter(l => l.fcb === 'hp').length;
-  const hpSt = stack(listOf('hp'));
+  const hpList = listOf('hp');
+  // Toughness taken as a feat counts by itself; the Toughness buff preset (same bonus) is skipped when it is on too, so it is never counted twice
+  const toughnessOn = (c.modifiers || []).some(m => m.active && /^toughness$/i.test(m.name || ''));
+  if (!toughnessOn && (c.feats || []).some(f => /^toughness$/i.test((f.name || '').trim()))) hpList.push({ value: Math.max(3, lvl), type: 'untyped', source: 'Toughness' });
+  const hpSt = stack(hpList);
   d.hp = { max: c.levelUps.reduce((s, l) => s + num(l.hp), 0) + M('con') * lvl + fcbHp + hpSt.total + num(c.hp.misc), fcb: fcbHp };
   d.hp.current = c.hp.current == null || c.hp.current === '' ? d.hp.max : num(c.hp.current);
 
