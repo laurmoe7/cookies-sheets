@@ -253,7 +253,8 @@ export function compute(c, classesByName, opts = {}) {
   const fcbHp = c.levelUps.filter(l => l.fcb === 'hp').length;
   const hpSt = stack(listOf('hp'));
   d.hp = { max: c.levelUps.reduce((s, l) => s + num(l.hp), 0) + M('con') * lvl + fcbHp + hpSt.total + num(c.hp.misc), fcb: fcbHp };
-  d.hp.current = c.hp.current == null || c.hp.current === '' ? d.hp.max : num(c.hp.current);
+  // never above the maximum: when a Constitution buff ends the maximum drops, and what was stored for current HP can be higher than it
+  d.hp.current = c.hp.current == null || c.hp.current === '' ? d.hp.max : Math.min(d.hp.max, num(c.hp.current));
 
   // ---- saves ----
   const saveAbility = { fort: 'con', ref: 'dex', will: 'wis' };
@@ -363,10 +364,16 @@ export function compute(c, classesByName, opts = {}) {
     return b;
   };
   const humanBonus = race.bonusSkill ? 1 : 0;
+  // Skill points follow the Intelligence you have for good: base, race, level increases, enhancement and Misc. A spell such as Fox's Cunning, a temp bonus or
+  // ability damage does not hand out (or take away) ranks for every level you already have.
+  const intItems = (c.gear || []).flatMap(g => wornEffects(g)).filter(e => e.target === 'int').map(e => ({ value: evalExpr(e.value, vars), type: e.type || 'untyped' }));
+  const ib = c.abilities.int;
+  const intForRanks = mod(num(ib.base) + (race.mods.int || 0) + (increases.int || 0) + stack([...intItems, { value: num(ib.enh), type: 'enhancement' }, { value: num(ib.misc), type: 'untyped' }]).total - num(ib.drain));
+  d.skillPoints = { intMod: intForRanks };
   let available = 0;
   for (const lu of c.levelUps) {
     const cls = classesByName[lu.cls];
-    available += Math.max(1, (cls?.skill_ranks || 0) + M('int')) + humanBonus + (lu.fcb === 'skill' ? 1 : 0);
+    available += Math.max(1, (cls?.skill_ranks || 0) + intForRanks) + humanBonus + (lu.fcb === 'skill' ? 1 : 0);
   }
   let spent = 0;
   for (const s of c.skills) {
@@ -384,7 +391,7 @@ export function compute(c, classesByName, opts = {}) {
     bd[`skills.${key}.total`] = parts({ label: 'Ranks', value: ranks }, { label: ABIL_SHORT[def.ability] + ' modifier', value: M(def.ability) }, { label: 'Class skill', value: isClass && ranks > 0 ? 3 : 0 }, { label: 'Misc', value: num(s.misc) }, stackParts(listOf('skills', 'checks')), { label: 'Feats', value: featSkillBonus(s.name.replace(/ \(.*/, ''), ranks) }, stackParts(auto.skills.filter(x => x.skill === s.name.replace(/ \(.*/, ''))), { label: 'Armor (competence)', value: armorSkill }, { label: 'Armor check penalty', value: def.acp ? acp : 0 }, { label: `Size (${size})`, value: s.name === 'Stealth' ? sz.stealth : s.name === 'Fly' ? sz.fly : 0 });
     d.skills[key] = { total, isClass, ability: def.ability, trained: def.trained, untrainedBlocked: def.trained && ranks === 0, acp: def.acp, overMax: ranks > lvl };
   }
-  d.skillPoints = { available, spent, maxRanks: lvl };
+  d.skillPoints = { ...d.skillPoints, available, spent, maxRanks: lvl };
 
   // ---- feats ----
   d.featSlots = Math.ceil(lvl / 2) + (race.bonusFeat ? 1 : 0);

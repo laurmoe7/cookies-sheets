@@ -46,8 +46,21 @@ const RACES = {
   Tiefling: [{ trait: 'Skilled', skills: { Bluff: 2, Stealth: 2 } }],
   Hobgoblin: [{ trait: 'Sneaky', skills: { Stealth: 4 } }],
   Goblin: [{ trait: 'Skilled', skills: { Ride: 4, Stealth: 4 } }],
-  Kobold: [{ trait: 'Armor', ac: 1, acType: 'natural armor' }, { trait: 'Crafty', skills: { Perception: 2 } }],
+  Kobold: [{ trait: 'Armor', ac: 1, acType: 'natural armor' }, { trait: 'Crafty', skills: { Perception: 2 } }], // Craft (traps) and Profession (miner) +2 too, but those need a sub-skill
   Catfolk: [{ trait: 'Natural Hunter', skills: { Perception: 2, Stealth: 2, Survival: 2 } }],
+  Kitsune: [{ trait: 'Agile', skills: { Acrobatics: 2 } }],
+  Changeling: [{ trait: 'Natural Armor', ac: 1, acType: 'natural armor' }],
+  Dhampir: [{ trait: 'Manipulative', skills: { Bluff: 2, Perception: 2 } }],
+  Drow: [{ trait: 'Keen Senses', skills: { Perception: 2 } }],
+  Fetchling: [{ trait: 'Skilled', skills: { 'Knowledge (planes)': 2, Stealth: 2 } }],
+  Nagaji: [{ trait: 'Armored Scales', ac: 1, acType: 'natural armor' }, { trait: "Serpent's Sense", skills: { Perception: 2 } }],
+  Ratfolk: [{ trait: 'Tinker', skills: { Perception: 2, 'Use Magic Device': 2 } }],
+  Suli: [{ trait: 'Negotiator', skills: { Diplomacy: 2, 'Sense Motive': 2 } }],
+  Svirfneblin: [{ trait: 'Defensive Training', ac: 2, acType: 'dodge' }, { trait: 'Fortunate', saves: 2, type: 'racial' }, { trait: 'Skilled', skills: { Stealth: 2, Perception: 2 } }],
+  Tengu: [{ trait: 'Sneaky', skills: { Perception: 2, Stealth: 2 } }, { trait: 'Gifted Linguist', skills: { Linguistics: 4 } }],
+  Vanara: [{ trait: 'Nimble', skills: { Acrobatics: 2, Stealth: 2 } }],
+  Vishkanya: [{ trait: 'Keen Senses', skills: { Perception: 2 } }, { trait: 'Limber', skills: { 'Escape Artist': 2, Stealth: 2 } }],
+  Wayang: [{ trait: 'Lurker', skills: { Perception: 2, Stealth: 2 } }],
 };
 
 /**

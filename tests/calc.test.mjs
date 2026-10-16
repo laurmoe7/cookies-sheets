@@ -1,8 +1,8 @@
 // Rules math. Expected values are worked out by hand from the Pathfinder 1e rules, not copied from output.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mod, bonusSpells, stack, evalExpr } from '../web/js/calc.js';
-import { make, calc, buff, repeat } from './helpers.mjs';
+import { mod, bonusSpells, stack, evalExpr, compute } from '../web/js/calc.js';
+import { make, calc, buff, repeat, classesByName } from './helpers.mjs';
 
 // ---------- building blocks ----------
 
@@ -466,4 +466,34 @@ test('Weapon Finesse: a light melee weapon on automatic uses Dex when it is bett
   assert.equal(fin.weapons[2].dmgBonus, plain.weapons[2].dmgBonus, 'damage stays on Strength');
   const c = mk([{ name: 'Weapon Finesse' }]); c.weapons[2].ability = 'str';
   assert.equal(calc(c).weapons[2].attack, plain.weapons[2].attack, 'Str chosen on the weapon wins');
+});
+
+test('skill points ignore a temporary Intelligence bonus (Fox\'s Cunning) but count the permanent one', () => {
+  const mk = () => make({ race: 'Human', raceChoice: 'int', base: { int: 14 }, levels: repeat('Wizard', 3), hp: [6, 4, 4] });
+  const base = calc(mk()).skillPoints;
+  // Wizard 2 + Int mod; human adds Int +2 -> 16 = +3; 3 levels x (2+3) + 3 human bonus ranks
+  assert.equal(base.available, 3 * (2 + 3) + 3, 'Int 16: 5 a level, plus 1 a level for humans');
+  const buffed = calc(buff(mk(), "Fox's Cunning")).skillPoints;
+  assert.equal(buffed.available, base.available, "the +4 from a spell changes nothing");
+  const c = mk(); c.abilities.int.temp = 4;
+  assert.equal(calc(c).skillPoints.available, base.available, 'neither does a temp bonus');
+  const p = mk(); p.abilities.int.misc = 2; // +2 for good: Int 18 = +4
+  assert.equal(calc(p).skillPoints.available, 3 * (2 + 4) + 3, 'a permanent +2 counts');
+});
+
+test('current HP never shows above the maximum when a Constitution buff ends', () => {
+  const c = fighter(); c.hp.current = 44;
+  assert.equal(calc(c).hp.current, 36, 'stored 44, maximum is 36 now');
+});
+
+test('more racial skill bonuses: a tengu gets +2 Perception and Stealth, +4 Linguistics; a svirfneblin +2 dodge and +2 on every save', () => {
+  const tengu = fighter(); tengu.race = 'Tengu';
+  const t = compute(tengu, classesByName), t0 = compute(tengu, classesByName, { noAuto: true });
+  assert.equal(skillTotal(t, 'Perception') - skillTotal(t0, 'Perception'), 2);
+  assert.equal(skillTotal(t, 'Stealth') - skillTotal(t0, 'Stealth'), 2);
+  assert.equal(skillTotal(t, 'Linguistics') - skillTotal(t0, 'Linguistics'), 4);
+  const sv = fighter(); sv.race = 'Svirfneblin';
+  const on = compute(sv, classesByName), off = compute(sv, classesByName, { noAuto: true });
+  assert.deepEqual(['fort', 'ref', 'will'].map(k => on.saves[k].total - off.saves[k].total), [2, 2, 2], 'Fortunate: +2 racial on every save');
+  assert.equal(on.ac.total - off.ac.total, 2, 'Defensive Training: +2 dodge');
 });

@@ -13,6 +13,9 @@ export const CHANGELOG = [
       'Weapon Focus, Weapon Specialization (and the greater ones) and Improved Critical apply to the weapon the feat names; Spell Focus lists its schools under the Save DC row.',
       'Weapon Finesse: light melee weapons, rapiers and whips attack with Dexterity by themselves when it is better, no matter when you took the feat.',
       'Two-weapon fighting: the roll window has penalties for a light or heavy off-hand weapon, and Two-Weapon Fighting lowers them.',
+      'Skill points no longer swing with a temporary Intelligence bonus such as Fox’s Cunning; permanent Int still counts.',
+      'Current HP can no longer show above the maximum after a Constitution buff ends.',
+      'Racial bonuses added for Kitsune, Changeling, Dhampir, Drow, Fetchling, Nagaji, Ratfolk, Suli, Svirfneblin, Tengu, Vanara, Vishkanya and Wayang.',
     ],
   },
   {
