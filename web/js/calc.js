@@ -1,12 +1,21 @@
 // Derives every computed number on the sheet from the stored character.
 import {
-  ABILITIES, SKILL_BY_NAME, SIZES, RACES, STACKING_TYPES, NON_TOUCH_AC, CMD_AC_TYPES, carryingCapacity, XP_TRACKS,
+  ABILITIES, BUFF_PRESETS, SKILL_BY_NAME, SIZES, RACES, STACKING_TYPES, NON_TOUCH_AC, CMD_AC_TYPES, carryingCapacity, XP_TRACKS,
 } from './data.js';
 import { skillKey } from './model.js';
 import { archetypesOf } from './features.js';
 import { weaponFx, parseCrit, doubleThreat, critLabel, multiplyDice } from './weaponfx.js';
 import { armorFx, wornFx } from './armorfx.js';
 import { wornEffects } from './itemfx.js';
+
+const SKILL_FEATS = {
+  acrobatic: ['Acrobatics', 'Fly'], alertness: ['Perception', 'Sense Motive'], 'animal affinity': ['Handle Animal', 'Ride'],
+  athletic: ['Climb', 'Swim'], deceitful: ['Bluff', 'Disguise'], 'deft hands': ['Disable Device', 'Sleight of Hand'],
+  'magical aptitude': ['Spellcraft', 'Use Magic Device'], persuasive: ['Diplomacy', 'Intimidate'],
+  'self-sufficient': ['Heal', 'Survival'], stealthy: ['Escape Artist', 'Stealth'],
+};
+// The skill a Skill Focus feat names: its choice box, or the text in brackets after the name
+const skillOfFeat = f => ((f.sub || (f.name || '').match(/\((.*)\)/)?.[1] || '').trim().toLowerCase()).replace(/\s*\(.*/, '');
 
 export const mod = score => Math.floor((score - 10) / 2);
 export const sign = n => (n == null || isNaN(n) ? '—' : (n >= 0 ? '+' : '') + n);
@@ -151,6 +160,14 @@ export function compute(c, classesByName) {
     for (const e of m.effects || []) add(e.target, e.value, e.type || 'untyped', m.name, !!e.scale);
   }
   for (const g of c.gear || []) for (const e of wornEffects(g)) add(e.target, e.value, e.type || 'untyped', g.name || 'Item', !!e.scale); // worn magic items
+  // Feats on the Feats list that give a flat bonus count by themselves. A buff of the same name that is switched on wins, so nothing is counted twice.
+  const featName = f => (f.name || '').replace(/\s*\(.*$/, '').trim().toLowerCase();
+  const takenFeats = new Set((c.feats || []).map(featName));
+  const buffOn = new Set((c.modifiers || []).filter(m => m.active).map(m => (m.name || '').trim().toLowerCase()));
+  for (const p of BUFF_PRESETS) {
+    const key = p.name.toLowerCase();
+    if (p.group === 'Feat' && takenFeats.has(key) && !buffOn.has(key)) for (const e of p.effects) add(e.target, e.value, e.type || 'untyped', p.name, false);
+  }
   const listOf = (...targets) => targets.flatMap(t => mods[t] || []);
 
   // ---- ability scores ----
@@ -219,11 +236,7 @@ export function compute(c, classesByName) {
 
   // ---- HP ----
   const fcbHp = c.levelUps.filter(l => l.fcb === 'hp').length;
-  const hpList = listOf('hp');
-  // Toughness taken as a feat counts by itself; the Toughness buff preset (same bonus) is skipped when it is on too, so it is never counted twice
-  const toughnessOn = (c.modifiers || []).some(m => m.active && /^toughness$/i.test(m.name || ''));
-  if (!toughnessOn && (c.feats || []).some(f => /^toughness$/i.test((f.name || '').trim()))) hpList.push({ value: Math.max(3, lvl), type: 'untyped', source: 'Toughness' });
-  const hpSt = stack(hpList);
+  const hpSt = stack(listOf('hp'));
   d.hp = { max: c.levelUps.reduce((s, l) => s + num(l.hp), 0) + M('con') * lvl + fcbHp + hpSt.total + num(c.hp.misc), fcb: fcbHp };
   d.hp.current = c.hp.current == null || c.hp.current === '' ? d.hp.max : num(c.hp.current);
 
@@ -312,6 +325,16 @@ export function compute(c, classesByName) {
   // ---- skills ----
   const csSet = classSkillSet(c, classesByName);
   const skillSt = stack(listOf('skills', 'checks'));
+  // Skill feats: +2 to two skills (+4 once that skill has 10 ranks); Skill Focus is +3 (+6) to the skill named in its choice box
+  const featSkillBonus = (name, ranks) => {
+    let b = 0;
+    for (const f of c.feats || []) {
+      const fn = featName(f);
+      const hit = SKILL_FEATS[fn] ? SKILL_FEATS[fn].includes(name) : fn === 'skill focus' && skillOfFeat(f) === name.toLowerCase();
+      if (hit) b += (fn === 'skill focus' ? 3 : 2) * (ranks >= 10 ? 2 : 1);
+    }
+    return b;
+  };
   const humanBonus = race.bonusSkill ? 1 : 0;
   let available = 0;
   for (const lu of c.levelUps) {
@@ -326,11 +349,11 @@ export function compute(c, classesByName) {
     const ranks = num(s.ranks);
     spent += ranks;
     const armorSkill = d.armorFx.skills[s.name] || 0; // shadow, slick, silent moves: a competence bonus from what you wear
-    let total = ranks + M(def.ability) + (isClass && ranks > 0 ? 3 : 0) + num(s.misc) + skillSt.total + armorSkill;
+    let total = ranks + M(def.ability) + (isClass && ranks > 0 ? 3 : 0) + num(s.misc) + skillSt.total + armorSkill + featSkillBonus(s.name.replace(/ \(.*/, ''), ranks);
     if (def.acp) total += acp;
     if (s.name === 'Stealth') total += sz.stealth;
     if (s.name === 'Fly') total += sz.fly;
-    bd[`skills.${key}.total`] = parts({ label: 'Ranks', value: ranks }, { label: ABIL_SHORT[def.ability] + ' modifier', value: M(def.ability) }, { label: 'Class skill', value: isClass && ranks > 0 ? 3 : 0 }, { label: 'Misc', value: num(s.misc) }, stackParts(listOf('skills', 'checks')), { label: 'Armor (competence)', value: armorSkill }, { label: 'Armor check penalty', value: def.acp ? acp : 0 }, { label: `Size (${size})`, value: s.name === 'Stealth' ? sz.stealth : s.name === 'Fly' ? sz.fly : 0 });
+    bd[`skills.${key}.total`] = parts({ label: 'Ranks', value: ranks }, { label: ABIL_SHORT[def.ability] + ' modifier', value: M(def.ability) }, { label: 'Class skill', value: isClass && ranks > 0 ? 3 : 0 }, { label: 'Misc', value: num(s.misc) }, stackParts(listOf('skills', 'checks')), { label: 'Feats', value: featSkillBonus(s.name.replace(/ \(.*/, ''), ranks) }, { label: 'Armor (competence)', value: armorSkill }, { label: 'Armor check penalty', value: def.acp ? acp : 0 }, { label: `Size (${size})`, value: s.name === 'Stealth' ? sz.stealth : s.name === 'Fly' ? sz.fly : 0 });
     d.skills[key] = { total, isClass, ability: def.ability, trained: def.trained, untrainedBlocked: def.trained && ranks === 0, acp: def.acp, overMax: ranks > lvl };
   }
   d.skillPoints = { available, spent, maxRanks: lvl };

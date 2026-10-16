@@ -365,3 +365,32 @@ test('Toughness feat plus the Toughness buff counts once', () => {
   c.feats.push({ name: 'Toughness', sub: '', notes: '' });
   assert.equal(calc(c).hp.max, 40, 'still 36 + 4');
 });
+
+const withFeat = (name, sub = '') => { const c = fighter(); c.feats.push({ name, sub, notes: '' }); return c; };
+
+test('passive feats on the Feats list apply by themselves', () => {
+  const base = calc(fighter());
+  const at = (n, f) => assert.equal(f(calc(withFeat(n))) - f(base), n === 'Dodge' ? 1 : n === 'Improved Initiative' ? 4 : 2, n);
+  at('Dodge', d => d.ac.total);
+  at('Great Fortitude', d => d.saves.fort.total);
+  at('Iron Will', d => d.saves.will.total);
+  at('Lightning Reflexes', d => d.saves.ref.total);
+  at('Improved Initiative', d => d.init);
+});
+
+test('a feat and the same-named buff count once', () => {
+  const c = buff(withFeat('Iron Will'), 'Iron Will');
+  assert.equal(calc(c).saves.will.total - calc(fighter()).saves.will.total, 2, '+2 once');
+});
+
+test('skill feats: +2 to both skills, +4 with 10 ranks; Skill Focus +3 / +6', () => {
+  const skill = (c, n) => { const s = c.skills.find(x => x.name === n); return s; };
+  const c0 = fighter(), cf = withFeat('Athletic');
+  const base = calc(c0).skills[Object.keys(calc(c0).skills).find(k => k.startsWith('Climb') || k.toLowerCase().includes('climb'))];
+  const got = calc(cf).skills[Object.keys(calc(cf).skills).find(k => k.toLowerCase().includes('climb'))];
+  assert.equal(got.total - base.total, 2, 'Athletic: +2 Climb');
+  const cs = withFeat('Skill Focus', 'Climb');
+  skill(cs, 'Climb').ranks = 10; skill(c0, 'Climb').ranks = 10;
+  const k = o => o.skills[Object.keys(o.skills).find(x => x.toLowerCase().includes('climb'))].total;
+  assert.equal(k(calc(cs)) - k(calc(c0)), 6, 'Skill Focus: +3 doubled at 10 ranks');
+});
