@@ -628,6 +628,7 @@ function spells(body, c, d) {
         ${sc.kind === 'arcanist' ? `<tr><th>Prepared</th>${levels.map(l => `<td>${preparedCount(book, l)} / ${sc.prepared[l] ?? '—'}</td>`).join('')}</tr>` : ''}
         ${spont ? `<tr><th title="Slots you can still cast with today">Left</th>${levels.map(l => (l === 0 && sc.slots[0] === Infinity) || sc.slots[l] == null ? '<td class="dim">—</td>' : `<td><div class="step-row"><button class="icon-btn step" data-slot-adj="${l}" data-d="-1" title="Spend a slot (one fewer left)">−</button><b class="${slotsLeft(book, sc, l) <= 0 ? 'bad' : ''}">${slotsLeft(book, sc, l)}</b><button class="icon-btn step" data-slot-adj="${l}" data-d="1" title="Get a slot back (one more left)">＋</button></div>${spontPips(book, sc, l)}</td>`).join('')}</tr>` : ''}
         <tr><th>Save DC</th>${levels.map(l => `<td>${sc.dcs[l]}</td>`).join('')}</tr>
+        ${Object.keys(sc.focus || {}).length ? `<tr><th title="From the Spell Focus feats">School DC</th><td colspan="${levels.length}" class="small">${Object.entries(sc.focus).map(([k, v]) => `${esc(k)} +${v}`).join(', ')}</td></tr>` : ''}
         <tr><th title="Concentration DC to cast defensively: 15 + 2 × spell level">${ref('Casting Defensively', 'Rules', 'Defensive DC')}</th>${levels.map(l => `<td title="Need ${15 + 2 * l - sc.concentration} or higher on d20">${15 + 2 * l}<span class="dim small"> (${Math.max(1, Math.min(20, 15 + 2 * l - sc.concentration))}+)</span></td>`).join('')}</tr>
       </tbody></table>
       ${ci === 0 ? slaCard(c, d) : ''}

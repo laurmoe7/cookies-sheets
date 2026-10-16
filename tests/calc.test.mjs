@@ -424,3 +424,32 @@ test('racial bonuses: a halfling gets +1 on all saves and +2 Perception; an alte
   const rep = mk({ traits: [{ name: 'Wanderer', replaces: ['keen senses'] }] });
   assert.equal(skillTotal(calc(mk({})), 'Perception') - skillTotal(calc(rep), 'Perception'), 2, 'Keen Senses +2 gone when replaced');
 });
+
+test('Weapon Focus +1 attack, Specialization +2 damage, only for the weapon the feat names; Improved Critical doubles its threat range', () => {
+  const base = calc(fighter());
+  const c = fighter();
+  c.feats.push({ name: 'Weapon Focus', sub: 'Longsword' }, { name: 'Greater Weapon Focus (Longsword)' }, { name: 'Weapon Specialization', sub: 'longsword' }, { name: 'Improved Critical', sub: 'Longsword' });
+  const d = calc(c);
+  const [gs, ls] = [1, 0].map(i => i).reverse(); // weapons: [0] Greatsword, [1] Longsword
+  assert.equal(d.weapons[1].attack - base.weapons[1].attack, 2, 'Weapon Focus + Greater: +1 +1');
+  assert.equal(d.weapons[1].dmgBonus - base.weapons[1].dmgBonus, 2, 'Weapon Specialization: +2');
+  assert.equal(d.weapons[0].attack, base.weapons[0].attack, 'the greatsword gets nothing');
+  assert.equal(d.weapons[0].dmgBonus, base.weapons[0].dmgBonus);
+  assert.equal(base.weapons[1].critMin, 19, 'longsword 19-20');
+  assert.equal(d.weapons[1].critMin, 17, 'Improved Critical: 19-20 doubles to 17-20');
+});
+
+test('Spell Focus is listed by school: +1, and Greater Spell Focus makes it +2', () => {
+  const c = make({ race: 'Human', raceChoice: 'int', base: { int: 16 }, levels: repeat('Wizard', 3), hp: [6, 4, 4] });
+  c.feats.push({ name: 'Spell Focus', sub: 'Evocation' }, { name: 'Greater Spell Focus (Evocation)' });
+  assert.deepEqual(calc(c).spellcasting.Wizard.focus, { evocation: 2 });
+});
+
+test('a feat for "Bow" does not land on a Crossbow, and a plural choice still finds the weapon', () => {
+  const c = fighter();
+  c.weapons.push({ ...structuredClone(longsword), name: 'Light Crossbow' }, { ...structuredClone(longsword), name: 'Shortbow' });
+  c.feats.push({ name: 'Weapon Focus', sub: 'Shortbows' }, { name: 'Weapon Focus', sub: 'Bow' });
+  const d = calc(c), base = calc(Object.assign(structuredClone(c), { feats: [] }));
+  assert.equal(d.weapons[2].attack - base.weapons[2].attack, 0, 'crossbow: no');
+  assert.equal(d.weapons[3].attack - base.weapons[3].attack, 1, 'shortbow: Shortbows matches; "Bow" is a different word');
+});

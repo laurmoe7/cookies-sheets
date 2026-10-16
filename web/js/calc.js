@@ -18,6 +18,16 @@ const SKILL_FEATS = {
 // The skill a Skill Focus feat names: its choice box, or the text in brackets after the name
 const skillOfFeat = f => ((f.sub || (f.name || '').match(/\((.*)\)/)?.[1] || '').trim().toLowerCase()).replace(/\s*\(.*/, '');
 
+/** The choice a feat was taken for: its choice box, or the text in brackets after the name ("Weapon Focus (Longsword)"). */
+const featChoice = f => String(f.sub || (f.name || '').match(/\((.*)\)/)?.[1] || '').trim().toLowerCase();
+const singular = s => s.replace(/\+\d+\s*/g, ' ').replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim().replace(/s\b/g, '');
+/** True when a weapon on the sheet is the one a Weapon Focus-style feat names ("longsword" matches "Longsword +1"; "bow" does not match "Crossbow"). */
+const weaponIs = (w, choice) => {
+  const want = singular(choice);
+  if (!want) return false;
+  return [w.name, w.tpl].some(n => { const h = ' ' + singular(String(n || '').toLowerCase()) + ' '; return h.includes(' ' + want + ' ') || (want.includes(' ') && h.trim() === want); });
+};
+
 export const mod = score => Math.floor((score - 10) / 2);
 export const sign = n => (n == null || isNaN(n) ? '—' : (n >= 0 ? '+' : '') + n);
 export const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
@@ -291,9 +301,18 @@ export function compute(c, classesByName, opts = {}) {
   for (const w of c.weapons) {
     const ranged = !!w.ranged;
     const abil = w.ability || (ranged ? 'dex' : 'str');
-    const fx = weaponFx(w);
+    // Weapon Focus / Specialization (and the greater ones) for this weapon; Improved Critical sets the weapon's flag
+    let focusAtk = 0, specDmg = 0, impCrit = false;
+    if (!opts.noAuto) for (const f of c.feats || []) {
+      const fn = featName(f);
+      if (!['weapon focus', 'greater weapon focus', 'weapon specialization', 'greater weapon specialization', 'improved critical'].includes(fn) || !weaponIs(w, featChoice(f))) continue;
+      if (fn.endsWith('weapon focus')) focusAtk += 1;
+      else if (fn.endsWith('weapon specialization')) specDmg += 2;
+      else impCrit = true;
+    }
+    const fx = weaponFx(impCrit && !w.improvedCritical ? { ...w, improvedCritical: true } : w);
     const condAtk = fx.conds.filter(x => x.on).reduce((n, x) => n + x.atk, 0), condDmg = fx.conds.filter(x => x.on).reduce((n, x) => n + x.dmg, 0);
-    const atkBase = bab + M(abil) + sz.ac + num(w.enh) + fx.atkMasterwork + condAtk + num(w.misc) + (ranged ? rangedSt.total : meleeSt.total);
+    const atkBase = bab + M(abil) + sz.ac + num(w.enh) + fx.atkMasterwork + condAtk + num(w.misc) + focusAtk + (ranged ? rangedSt.total : meleeSt.total);
     const iters = fx.speed && !d.extraAttacks ? [d.iteratives[0], ...d.iteratives] : d.iteratives; // a speed weapon: one more attack at the best bonus (Haste does not stack with it)
     const attacks = iters.map(i => atkBase - bab + i);
     // Which ability adds to damage: Strength unless the weapon says otherwise (a ranged weapon adds nothing on "auto"; thrown weapons and composite bows are set to Str on the weapon).
@@ -302,10 +321,10 @@ export function compute(c, classesByName, opts = {}) {
     const strM = M(dAb);
     const strDmg = strM < 0 && mult > 0 ? strM : Math.floor(strM * mult);
     const scaled = ranged ? 0 : Math.floor(meleeDmgScaled.total * (mult === 1.5 ? 1.5 : mult === 0.5 ? 0.5 : 1));
-    const dmgBonus = strDmg + num(w.enh) + condDmg + fx.dmgPenalty + num(w.dmgMisc) + (ranged ? rangedDmg.total : meleeDmg.total) + scaled;
+    const dmgBonus = strDmg + num(w.enh) + condDmg + fx.dmgPenalty + num(w.dmgMisc) + specDmg + (ranged ? rangedDmg.total : meleeDmg.total) + scaled;
     const atkBuffs = stackParts(listOf('attack', ranged ? 'ranged' : 'melee'));
-    bd[`weapons.${d.weapons.length}.attack`] = parts({ label: 'Base attack bonus', value: bab }, { label: ABIL_SHORT[abil] + ' modifier', value: M(abil) }, { label: `Size (${size})`, value: sz.ac }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Masterwork', value: fx.atkMasterwork }, { label: 'Bane (enhancement against its type)', value: condAtk }, { label: 'Misc (attack)', value: num(w.misc) }, atkBuffs);
-    bd[`weapons.${d.weapons.length}.damage`] = parts({ label: mult === 1 ? ABIL_SHORT[dAb] + ' modifier' : mult === 0 ? ABIL_SHORT[dAb] + ' modifier (not added)' : `${ABIL_SHORT[dAb]} modifier (${mult === 1.5 ? 'x1.5, two-handed' : mult === 0.5 ? 'x0.5, off-hand' : 'x' + mult})`, value: strDmg }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Bane (enhancement against its type)', value: condDmg }, { label: 'Material (alchemical silver)', value: fx.dmgPenalty }, { label: 'Misc (damage)', value: num(w.dmgMisc) }, stackParts((ranged ? listOf('damage', 'rangedDamage') : listOf('damage', 'meleeDamage')).filter(m => !m.scale)), ranged ? [] : stackParts(listOf('damage', 'meleeDamage').filter(m => m.scale)), // Power Attack by name, then what two hands or the off hand change
+    bd[`weapons.${d.weapons.length}.attack`] = parts({ label: 'Base attack bonus', value: bab }, { label: ABIL_SHORT[abil] + ' modifier', value: M(abil) }, { label: `Size (${size})`, value: sz.ac }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Masterwork', value: fx.atkMasterwork }, { label: 'Bane (enhancement against its type)', value: condAtk }, { label: 'Misc (attack)', value: num(w.misc) }, { label: 'Weapon Focus', value: focusAtk }, atkBuffs);
+    bd[`weapons.${d.weapons.length}.damage`] = parts({ label: mult === 1 ? ABIL_SHORT[dAb] + ' modifier' : mult === 0 ? ABIL_SHORT[dAb] + ' modifier (not added)' : `${ABIL_SHORT[dAb]} modifier (${mult === 1.5 ? 'x1.5, two-handed' : mult === 0.5 ? 'x0.5, off-hand' : 'x' + mult})`, value: strDmg }, { label: 'Weapon enhancement', value: num(w.enh) }, { label: 'Bane (enhancement against its type)', value: condDmg }, { label: 'Material (alchemical silver)', value: fx.dmgPenalty }, { label: 'Misc (damage)', value: num(w.dmgMisc) }, { label: 'Weapon Specialization', value: specDmg }, stackParts((ranged ? listOf('damage', 'rangedDamage') : listOf('damage', 'meleeDamage')).filter(m => !m.scale)), ranged ? [] : stackParts(listOf('damage', 'meleeDamage').filter(m => m.scale)), // Power Attack by name, then what two hands or the off hand change
       { label: mult === 1.5 ? 'Two-handed (x1.5 on those)' : 'Off-hand (x0.5 on those)', value: scaled - meleeDmgScaled.total });
     // Critical hits: the threat range (doubled by keen or Improved Critical) and the multiplier come from the Crit box.
     const cr = parseCrit(w.crit);
@@ -397,8 +416,14 @@ export function compute(c, classesByName, opts = {}) {
     }
     bd[`spellcasting.${cls}.cl`] = parts({ label: `${cls} levels`, value: n }, { label: 'Class caster level adjustment', value: cast.cl_offset || 0 }, stackParts(listOf('cl')));
     bd[`spellcasting.${cls}.concentration`] = parts({ label: 'Caster level', value: cl }, { label: ABIL_SHORT[cast.stat] + ' modifier', value: statMod }, stackParts(listOf('concentration')));
+    // Spell Focus / Greater Spell Focus: +1 to the save DC of spells of that school (the DC row is per spell level, so the schools are listed beside it)
+    const focus = {};
+    if (!opts.noAuto) for (const f of c.feats || []) {
+      const fn = featName(f), school = featChoice(f);
+      if ((fn === 'spell focus' || fn === 'greater spell focus') && school) focus[school] = (focus[school] || 0) + 1;
+    }
     d.spellcasting[cls] = {
-      cl, stat: cast.stat, statMod, kind: cast.kind, lists: cast.lists, slots, known, prepared, dcs,
+      focus, cl, stat: cast.stat, statMod, kind: cast.kind, lists: cast.lists, slots, known, prepared, dcs,
       concentration: cl + statMod + concSt.total, maxLevel: cast.max_level, extracts: !!cast.extracts, hasExtraSlot: !!cast.domain,
     };
   }
