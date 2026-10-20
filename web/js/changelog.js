@@ -17,6 +17,7 @@ export const CHANGELOG = [
       'Current HP can no longer show above the maximum after a Constitution buff ends.',
       'Every level now gives at least 1 hit point, as the rules say, even with a Constitution penalty and a low roll.',
       'Flat-footed CMD keeps a Dexterity penalty; it only loses a Dexterity bonus.',
+      'A damaged or hand-edited character file still opens (a broken list or field goes back to empty instead of stopping the sheet), and one that cannot open says why.',
       'An edit made just before opening another character, deleting, exporting or going back to an earlier save is no longer lost, and closing the window right after an edit still saves it.',
       'Racial bonuses added for Kitsune, Changeling, Dhampir, Drow, Fetchling, Nagaji, Ratfolk, Suli, Svirfneblin, Tengu, Vanara, Vishkanya and Wayang.',
     ],

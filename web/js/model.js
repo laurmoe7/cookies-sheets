@@ -56,8 +56,15 @@ export function skillKey(s) {
 
 export function migrate(c) {
   const base = newCharacter();
-  for (const k of Object.keys(base)) if (c[k] === undefined) c[k] = base[k];
-  for (const a of ABILITIES) c.abilities[a] = { ...base.abilities[a], ...(c.abilities[a] || {}) };
+  const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+  for (const k of Object.keys(base)) {
+    if (c[k] === undefined) c[k] = base[k];
+    // A damaged or hand-edited file: a list or a group of fields that is null or the wrong kind would stop the sheet opening at all.
+    else if (Array.isArray(base[k])) c[k] = Array.isArray(c[k]) ? c[k].filter(isObj) : base[k]; // every list in the save holds objects
+    else if (isObj(base[k]) && !isObj(c[k])) c[k] = base[k];
+  }
+  for (const k of ['hp', 'ac', 'saveMisc', 'defenses', 'customRace']) c[k] = { ...base[k], ...c[k] };
+  for (const a of ABILITIES) c.abilities[a] = { ...base.abilities[a], ...(isObj(c.abilities[a]) ? c.abilities[a] : {}) };
   // Archetypes used to be free text ("Acrobat, Scout"); keep the names so they can be looked up again.
   for (const [cls, v] of Object.entries(c.archetypes || {})) {
     if (typeof v === 'string') c.archetypes[cls] = v.split(',').map(n => ({ name: n.trim() })).filter(x => x.name);

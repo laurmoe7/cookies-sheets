@@ -511,3 +511,13 @@ test('more racial skill bonuses: a tengu gets +2 Perception and Stealth, +4 Ling
   assert.deepEqual(['fort', 'ref', 'will'].map(k => on.saves[k].total - off.saves[k].total), [2, 2, 2], 'Fortunate: +2 racial on every save');
   assert.equal(on.ac.total - off.ac.total, 2, 'Defensive Training: +2 dodge');
 });
+
+test('a damaged save still opens: wrong-typed groups get their defaults and null list entries are dropped', async () => {
+  const { migrate } = await import('../web/js/model.js');
+  const c = make({ levels: ['Fighter'], hp: [10], feats: [{ name: 'Dodge' }, null] });
+  Object.assign(c, { weapons: null, gear: {}, hp: null, saveMisc: 'x', levelUps: [null, ...c.levelUps] });
+  const d = calc(migrate(c));
+  assert.equal(d.level, 1, 'the null level is dropped, the real one kept');
+  assert.deepEqual([c.weapons, c.gear, c.feats.map(f => f.name)], [[], [], ['Dodge']], 'nothing real is lost');
+  assert.equal(d.saves.fort.total, 2, 'saveMisc back to zeros: Fighter 1 base Fort 2 + Con 0');
+});

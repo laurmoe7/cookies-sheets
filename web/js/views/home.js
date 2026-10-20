@@ -104,7 +104,7 @@ export async function renderHome(main) {
       return;
     }
     const card = e.target.closest('.char-card');
-    if (card) openCharacter(card.dataset.id);
+    if (card) openCharacter(card.dataset.id).catch(err => toast(`Could not open this character: ${err.message}`, 'err'));
   };
 }
 
