@@ -176,20 +176,20 @@ function overview(body, c, d) {
     <section class="card abilities">
       <h3>Ability Scores</h3>
       <table class="tbl">
-        <thead><tr><th></th><th title="Base score (point buy / rolled)">Base</th><th title="Racial">Race</th><th title="Level-up increases">Lvl</th>
+        <thead><tr><th></th><th>Score</th><th>Mod</th><th title="Base score (point buy / rolled)">Base</th><th title="Racial">Race</th><th title="Level-up increases">Lvl</th>
           <th title="Enhancement bonus (belts, headbands)">Enh</th><th title="Other / temporary adjustments">Misc</th>
-          <th title="Ability damage">Dmg</th><th title="Ability drain">Drain</th><th>Score</th><th>Mod</th></tr></thead>
+          <th title="Ability damage">Dmg</th><th title="Ability drain">Drain</th></tr></thead>
         <tbody>${ABILITIES.map(a => `<tr>
           <th><a href="#" class="ref" data-entry="${ABILITY_NAMES[a]}" data-cat="Rules">${a.toUpperCase()}</a></th>
+          <td class="big">${calc(`abilities.${a}.score`)}</td>
+          <td class="big accent">${roll(`abilities.${a}.mod`, a.toUpperCase() + ' check', calc(`abilities.${a}.mod`, 'sign'))}</td>
           <td>${inp(`abilities.${a}.base`, { type: 'num', cls: 'w3' })}</td>
           <td>${calc(`abilities.${a}.racial`, 'sign', 'dim')}</td>
           <td>${calc(`abilities.${a}.increase`, 'plain', 'dim')}</td>
           <td>${inp(`abilities.${a}.enh`, { type: 'num', cls: 'w3' })}</td>
           <td>${inp(`abilities.${a}.misc`, { type: 'num', cls: 'w3' })}</td>
           <td>${inp(`abilities.${a}.damage`, { type: 'num', cls: 'w3' })}</td>
-          <td>${inp(`abilities.${a}.drain`, { type: 'num', cls: 'w3' })}</td>
-          <td class="big">${calc(`abilities.${a}.score`)}</td>
-          <td class="big accent">${roll(`abilities.${a}.mod`, a.toUpperCase() + ' check', calc(`abilities.${a}.mod`, 'sign'))}</td></tr>`).join('')}</tbody>
+          <td>${inp(`abilities.${a}.drain`, { type: 'num', cls: 'w3' })}</td></tr>`).join('')}</tbody>
       </table>
       <div class="row small muted"><span>Point buy: <b id="pointbuy"></b></span><span class="grow"></span><span>Buffs to ability scores are applied automatically.</span></div>
     </section>

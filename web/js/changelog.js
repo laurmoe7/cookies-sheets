@@ -15,6 +15,7 @@ export const CHANGELOG = [
       'Two-weapon fighting: the roll window has penalties for a light or heavy off-hand weapon, and Two-Weapon Fighting lowers them.',
       'Skill points no longer swing with a temporary Intelligence bonus such as Fox’s Cunning; permanent Int still counts.',
       'Current HP can no longer show above the maximum after a Constitution buff ends.',
+      'Ability Scores: the score and modifier now sit right beside STR, DEX and the rest, ahead of the boxes that make them up.',
       'Every level now gives at least 1 hit point, as the rules say, even with a Constitution penalty and a low roll.',
       'Flat-footed CMD keeps a Dexterity penalty; it only loses a Dexterity bonus.',
       'A damaged or hand-edited character file still opens (a broken list or field goes back to empty instead of stopping the sheet), and one that cannot open says why.',
