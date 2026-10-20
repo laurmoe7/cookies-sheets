@@ -2,7 +2,7 @@ import { api } from '../api.js';
 import { state, changed, render, go, refreshCalc } from '../app.js';
 import { sign, num, raceInfo, classLevels } from '../calc.js';
 import {
-  ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS,
+  ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS, SKILLS, targetLabel,
   BUFF_PRESETS, BUFF_GROUPS, presetsIn, SPELL_FILTERS, SPELL_LIST_CLASSES, CASTING_STAT_NAMES, FEAT_TYPES, TRAIT_CATEGORIES,
 } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, toast, confirmBox, debounce, textField, showCustom, showEntry, showEntryFromClick, closeDrawer } from '../ui.js';
@@ -1197,7 +1197,7 @@ function buffs(body, c, d) {
     ${c.modifiers.length ? c.modifiers.map((m, i) => `<div class="mod ${m.active ? 'on' : ''}">
       <div class="row"><label class="grow">${chk(`modifiers.${i}.active`, { rerender: true })} <b>${esc(m.name)}</b></label>
         <button class="icon-btn" data-edit-mod="${i}" title="Edit">✎</button><button class="icon-btn" data-del="modifiers.${i}">✕</button></div>
-      <div class="small muted">${m.effects.map(e => `${MOD_TARGETS[e.target] || e.target} ${typeof e.value === 'number' ? sign(e.value) : esc(e.value)} ${e.type !== 'untyped' ? esc(e.type) : ''}`).join(' · ')}</div>
+      <div class="small muted">${m.effects.map(e => `${esc(targetLabel(e.target))} ${typeof e.value === 'number' ? sign(e.value) : esc(e.value)} ${e.type !== 'untyped' ? esc(e.type) : ''}`).join(' · ')}</div>
       ${m.note ? `<div class="small">${esc(m.note)}</div>` : ''}</div>`).join('') : '<p class="muted">Nothing yet. Add presets from the right, or build a custom one.</p>'}
     <p class="small muted">Bonuses follow stacking rules: only the highest bonus of each type applies, except dodge, circumstance, and untyped bonuses. Penalties always stack. ${ref('Stacking', 'Rules', 'More on stacking')}</p>
   </section>
@@ -1235,7 +1235,8 @@ function editModifier(m) {
       <label class="kv-line">Note <input id="m-note" value="${esc(m.note || '')}" class="w20"></label>
       <table class="tbl"><thead><tr><th>Applies to</th><th>Value</th><th>Bonus type</th><th></th></tr></thead><tbody>
       ${m.effects.map((e, i) => `<tr>
-        <td><select data-e="${i}" data-k="target">${Object.entries(MOD_TARGETS).map(([k, l]) => `<option value="${k}" ${k === e.target ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
+        <td><select data-e="${i}" data-k="target">${Object.entries(MOD_TARGETS).map(([k, l]) => `<option value="${k}" ${k === e.target ? 'selected' : ''}>${l}</option>`).join('')}
+          <optgroup label="One skill">${SKILLS.map(sk => `<option value="${esc('skill:' + sk.name)}" ${'skill:' + sk.name === e.target ? 'selected' : ''}>${esc(sk.name)}</option>`).join('')}</optgroup></select></td>
         <td><input data-e="${i}" data-k="value" value="${esc(e.value)}" class="w6" title="Number, or formula using bab / lvl (e.g. 1+floor(bab/4))"></td>
         <td><select data-e="${i}" data-k="type">${BONUS_TYPES.map(t => `<option ${t === e.type ? 'selected' : ''}>${t}</option>`).join('')}</select></td>
         <td><button class="icon-btn" data-rm="${i}">✕</button></td></tr>`).join('')}</tbody></table>

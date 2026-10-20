@@ -358,7 +358,8 @@ export function compute(c, classesByName, opts = {}) {
 
   // ---- skills ----
   const csSet = classSkillSet(c, classesByName);
-  const skillSt = stack(listOf('skills', 'checks'));
+  // Bonuses to every skill, plus those aimed at this one by name ("skill:Stealth": a cloak of elvenkind); one stack, so two competence bonuses do not add up
+  const skillMods = s => listOf('skills', 'checks', ...new Set([s.name, skillKey(s), s.name.replace(/ \(.*/, '')].map(n => 'skill:' + n)));
   // Skill feats: +2 to two skills (+4 once that skill has 10 ranks); Skill Focus is +3 (+6) to the skill named in its choice box
   const featSkillBonus = (name, ranks) => {
     let b = 0;
@@ -408,12 +409,14 @@ export function compute(c, classesByName, opts = {}) {
     const ranks = num(s.ranks);
     spent += ranks;
     const traitSkill = stack(auto.skills.filter(x => x.skill === s.name.replace(/ \(.*/, '')));
-    const armorSkill = d.armorFx.skills[s.name] || 0; // shadow, slick, silent moves: a competence bonus from what you wear
-    let total = ranks + M(def.ability) + (isClass && ranks > 0 ? 3 : 0) + num(s.misc) + skillSt.total + armorSkill + featSkillBonus(s.name.replace(/ \(.*/, ''), ranks) + traitSkill.total;
+    // shadow, slick, silent moves: a competence bonus from the armor you wear, so it does not stack with a cloak of elvenkind's
+    const armorSkill = d.armorFx.skills[s.name] || 0;
+    const own = [...skillMods(s), { value: armorSkill, type: 'competence', source: 'Armor' }];
+    let total = ranks + M(def.ability) + (isClass && ranks > 0 ? 3 : 0) + num(s.misc) + stack(own).total + featSkillBonus(s.name.replace(/ \(.*/, ''), ranks) + traitSkill.total;
     if (def.acp) total += acp;
     if (s.name === 'Stealth') total += sz.stealth;
     if (s.name === 'Fly') total += sz.fly;
-    bd[`skills.${key}.total`] = parts({ label: 'Ranks', value: ranks }, { label: ABIL_SHORT[def.ability] + ' modifier', value: M(def.ability) }, { label: 'Class skill', value: isClass && ranks > 0 ? 3 : 0 }, { label: 'Misc', value: num(s.misc) }, stackParts(listOf('skills', 'checks')), { label: 'Feats', value: featSkillBonus(s.name.replace(/ \(.*/, ''), ranks) }, stackParts(auto.skills.filter(x => x.skill === s.name.replace(/ \(.*/, ''))), { label: 'Armor (competence)', value: armorSkill }, { label: 'Armor check penalty', value: def.acp ? acp : 0 }, { label: `Size (${size})`, value: s.name === 'Stealth' ? sz.stealth : s.name === 'Fly' ? sz.fly : 0 });
+    bd[`skills.${key}.total`] = parts({ label: 'Ranks', value: ranks }, { label: ABIL_SHORT[def.ability] + ' modifier', value: M(def.ability) }, { label: 'Class skill', value: isClass && ranks > 0 ? 3 : 0 }, { label: 'Misc', value: num(s.misc) }, stackParts(own), { label: 'Feats', value: featSkillBonus(s.name.replace(/ \(.*/, ''), ranks) }, stackParts(auto.skills.filter(x => x.skill === s.name.replace(/ \(.*/, ''))), { label: 'Armor check penalty', value: def.acp ? acp : 0 }, { label: `Size (${size})`, value: s.name === 'Stealth' ? sz.stealth : s.name === 'Fly' ? sz.fly : 0 });
     d.skills[key] = { total, isClass, ability: def.ability, trained: def.trained, untrainedBlocked: def.trained && ranks === 0, acp: def.acp, overMax: ranks > lvl };
   }
   d.skillPoints = { ...d.skillPoints, available, spent, maxRanks: lvl };

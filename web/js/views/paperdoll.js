@@ -4,6 +4,7 @@ import { SLOTS, SLOT_BY_ID, LAYOUT, slotName, wornBySlot, candidates, wear, take
 import { armorFx } from '../armorfx.js';
 import { effectsText } from '../itemfx.js';
 import { esc, modal, showEntry } from '../ui.js';
+import { checkItemBoxes } from './itemboxes.js';
 import { choosePicture, repositionPicture } from '../cropper.js';
 
 const sign = n => (n >= 0 ? '+' : '') + n;
@@ -85,6 +86,7 @@ function openSlot(id) {
       else return;
       changed({ rerender: true });
       close();
+      if (w) checkItemBoxes(); // what was just put on may also be typed in a box
     });
   });
 }

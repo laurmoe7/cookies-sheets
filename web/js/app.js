@@ -1,4 +1,5 @@
 import { api } from './api.js';
+import { checkItemBoxes } from './views/itemboxes.js';
 import { compute, sign } from './calc.js';
 import { newCharacter, migrate } from './model.js';
 import { classLine } from './features.js';
@@ -136,6 +137,7 @@ export async function openCharacter(id) {
   try { localStorage.setItem('lastChar', id); } catch { /* storage may be unavailable */ }
   go('sheet', { sheetTab: 'overview' });
   petOpened(state.char, state.derived);
+  checkItemBoxes(); // a worn item's bonus also typed in a box (an imported sheet): offer to count it once
 }
 
 export async function createCharacter() {

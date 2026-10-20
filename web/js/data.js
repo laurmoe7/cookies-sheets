@@ -121,6 +121,9 @@ export const MOD_TARGETS = {
   speed: 'Speed (ft.)', hp: 'Max HP', cl: 'Caster level', concentration: 'Concentration',
 };
 
+/** A modifier target's name: one of MOD_TARGETS, or "skill:Stealth" for a bonus to one skill (cloak of elvenkind). */
+export const targetLabel = t => MOD_TARGETS[t] || (String(t).startsWith('skill:') ? String(t).slice(6) : String(t));
+
 // Values may be expressions using: bab, lvl, floor, ceil, min, max
 export const BUFF_PRESETS = [
   { name: 'Power Attack', group: 'Combat option', effects: [{ target: 'melee', value: '-(1+floor(bab/4))', type: 'untyped' }, { target: 'meleeDamage', value: '2*(1+floor(bab/4))', type: 'untyped', scale: true }], note: 'Damage bonus is ×1.5 with two-handed weapons and ×½ off-hand (set Str dmg on the weapon).' },

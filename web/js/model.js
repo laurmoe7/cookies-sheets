@@ -1,6 +1,8 @@
 import { ABILITIES, SKILLS } from './data.js';
+import { suggestEffects } from './itemfx.js';
 
-export const MODEL_VERSION = 2; // 2: a prepared spell's "prepared" count is what is left to cast (casting uses one, resting gives them back)
+export const MODEL_VERSION = 3; // 2: a prepared spell's "prepared" count is what is left to cast (casting uses one, resting gives them back)
+// 3: items saved with no bonuses get the ones suggestEffects now knows (skill items, belts and headbands for several abilities)
 
 export function newCharacter() {
   const abilities = {};
@@ -47,6 +49,7 @@ export function newCharacter() {
     quests: [], // {name, done, notes}
     lore: [], // {name, kind, notes}: places, factions, items
     quickNotes: '', // the Notes box at the bottom of the Overview tab
+    itemBoxKeep: [], // 'item|target' pairs already settled when asked whether a worn item's bonus was also typed in a box (kept, or taken out): not asked again (views/itemboxes.js)
   };
 }
 
@@ -54,13 +57,15 @@ export function skillKey(s) {
   return s.sub ? `${s.name} (${s.sub})` : s.name;
 }
 
+const STRING_LISTS = new Set(['itemBoxKeep']); // the lists in the save that hold text rather than objects
+
 export function migrate(c) {
   const base = newCharacter();
   const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
   for (const k of Object.keys(base)) {
     if (c[k] === undefined) c[k] = base[k];
     // A damaged or hand-edited file: a list or a group of fields that is null or the wrong kind would stop the sheet opening at all.
-    else if (Array.isArray(base[k])) c[k] = Array.isArray(c[k]) ? c[k].filter(isObj) : base[k]; // every list in the save holds objects
+    else if (Array.isArray(base[k])) c[k] = !Array.isArray(c[k]) ? base[k] : c[k].filter(STRING_LISTS.has(k) ? x => typeof x === 'string' : isObj); // lists hold objects, except these
     else if (isObj(base[k]) && !isObj(c[k])) c[k] = base[k];
   }
   for (const k of ['hp', 'ac', 'saveMisc', 'defenses', 'customRace']) c[k] = { ...base[k], ...c[k] };
@@ -83,6 +88,8 @@ export function migrate(c) {
       for (const s of book.spells || []) s.prepared = Math.max(0, (parseFloat(s.prepared) || 0) - (parseFloat(s.cast) || 0));
     }
   }
+  // Items saved before their names were known carry no bonuses; give them the ones the name now says (an imported cloak of elvenkind)
+  if ((c.version || 1) < 3) for (const g of c.gear || []) if (!g.effects.length) g.effects = suggestEffects(g.name);
   // A save made by a newer build keeps its number, so an older build opening it does not stamp it as its own and re-run steps later.
   // Buffs saved before these effects existed: Haste's extra attack, and Power Attack's x1.5 two-handed damage.
   for (const m of c.modifiers || []) {
