@@ -3,7 +3,7 @@ import { compute, sign } from './calc.js';
 import { newCharacter, migrate } from './model.js';
 import { classLine } from './features.js';
 import { moveRacialTraits } from './racialtraits.js';
-import { esc, $, $$, getPath, setPath, toast, showEntry, closeDrawer, initDrawerDismiss, debounce, modal, initTextFields, initTooltips } from './ui.js';
+import { esc, $, $$, getPath, setPath, toast, showEntry, closeDrawer, initDrawerDismiss, modal, initTextFields, initTooltips } from './ui.js';
 import { initSheetSearch } from './sheetsearch.js';
 import { initOptions, showOptions, showChangelog } from './options.js';
 import { choosePicture, repositionPicture } from './cropper.js';
@@ -83,16 +83,43 @@ function updateHeader() {
   $('#nav [data-view=levelup]').classList.toggle('pulse', !!ready);
 }
 
-const saveNow = debounce(async () => {
-  if (!state.char) return;
+// Edits are saved half a second after they stop. Saves run one at a time: two at once could each give a new character its own
+// file, and an answer arriving late must set the id of the character that was sent, not of whichever one is open by then.
+let saveTimer = 0, saving = null;
+function saveNow() { clearTimeout(saveTimer); saveTimer = setTimeout(flushSave, 500); }
+
+// Closing the tab or window within half a second of an edit: send it anyway. A keepalive request outlives the page but is limited
+// to 64 KB, so a character with a large picture may not make it; the earlier saves still stand.
+addEventListener('pagehide', () => {
+  if (!state.char || !state.dirty || (saving && !state.char.id)) return; // a new character's first save is still out: no second file
   try {
-    const r = await api.saveCharacter(state.char);
-    state.char.id = r.id;
-    state.dirty = false;
-    try { localStorage.setItem('lastChar', r.id); } catch { /* storage may be unavailable */ }
-    updateHeader();
-  } catch (e) { toast('Save failed: ' + e.message, 'err'); }
-}, 500);
+    fetch('/api/character', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.char) }).catch(() => {});
+  } catch { /* too big for keepalive */ }
+});
+
+/** Saves the open character now if it has unsaved edits. Await it before opening another character, or before anything that
+ *  reads or replaces the file on disk (delete, export, going back to an earlier save), so a pending save cannot land after it. */
+export async function flushSave() {
+  clearTimeout(saveTimer);
+  while (saving) await saving;
+  const c = state.char;
+  if (!c || !state.dirty) return;
+  state.dirty = false; // an edit made while this save is on its way sets it again and saves again
+  saving = (async () => {
+    try {
+      const r = await api.saveCharacter(c);
+      c.id = r.id;
+      if (state.char === c) try { localStorage.setItem('lastChar', r.id); } catch { /* storage may be unavailable */ }
+    } catch (e) {
+      if (state.char === c) state.dirty = true;
+      toast('Save failed: ' + e.message, 'err');
+    } finally {
+      saving = null;
+      updateHeader();
+    }
+  })();
+  await saving;
+}
 
 export function changed({ rerender = false } = {}) {
   state.dirty = true;
@@ -102,6 +129,7 @@ export function changed({ rerender = false } = {}) {
 }
 
 export async function openCharacter(id) {
+  await flushSave();
   state.char = migrate(await api.character(id));
   state.dirty = false;
   try { if (await moveRacialTraits(state.char, api.resolve)) { state.dirty = true; saveNow(); } } catch { /* the compendium is unavailable; try again next time */ }
@@ -110,7 +138,8 @@ export async function openCharacter(id) {
   petOpened(state.char, state.derived);
 }
 
-export function createCharacter() {
+export async function createCharacter() {
+  await flushSave();
   state.char = newCharacter();
   state.dirty = true;
   saveNow();

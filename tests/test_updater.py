@@ -71,9 +71,10 @@ class Unpack(unittest.TestCase):
             updater.safe_extract(self.make('readme.txt'), os.path.join(self.dir, 'out'))
 
     def test_script_copies_then_restarts(self):
-        s = updater.script_text('C:\w\new', 'C:\Apps\Cookie', 'C:\w')
+        s = updater.script_text(r'C:\w\new', r'C:\Apps\Cookie', r'C:\w')
         self.assertLess(s.index('robocopy'), s.index('start ""'))
-        self.assertIn('"C:\Apps\Cookie\Cookie\'s Sheets.exe"', s)
+        self.assertIn(r'robocopy "C:\w\new" "C:\Apps\Cookie"', s)
+        self.assertIn(r'''"C:\Apps\Cookie\Cookie's Sheets.exe"''', s)
 
 
 if __name__ == '__main__':

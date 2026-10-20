@@ -1,5 +1,5 @@
 import { api } from '../api.js';
-import { state, openCharacter, createCharacter, go } from '../app.js';
+import { state, openCharacter, createCharacter, flushSave, go } from '../app.js';
 import { esc, $, confirmBox, toast } from '../ui.js';
 import { isCsCharacter } from '../importcs.js';
 import { openCsImport, openGsImport } from './csimport.js';
@@ -86,6 +86,7 @@ export async function renderHome(main) {
     if (del) {
       e.stopPropagation();
       if (await confirmBox('Delete this character? (It is moved to a .deleted folder inside the save folder, so you can recover it.)', 'Delete')) {
+        await flushSave();
         await api.deleteCharacter(del.dataset.del);
         if (state.char?.id === del.dataset.del) state.char = null;
         go('home');
@@ -94,6 +95,7 @@ export async function renderHome(main) {
     }
     if (exp) {
       e.stopPropagation();
+      await flushSave(); // export what is on screen, not the save from half a second ago
       const c = await api.character(exp.dataset.export);
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([JSON.stringify(c, null, 1)], { type: 'application/json' }));
@@ -125,6 +127,7 @@ function renderHistory(box, older) {
     const b = e.target.closest('[data-revert]');
     if (!b || !await confirmBox('Go back to this earlier save? The current one is kept in the list, so you can undo this.', 'Go back')) return;
     try {
+      await flushSave(); // or a pending save would land on top of the earlier one
       const r = await api.revertCharacter(b.dataset.revert);
       if (state.char?.id === r.id) state.char = null;
       toast('Went back', 'good');

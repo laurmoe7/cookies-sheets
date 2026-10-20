@@ -15,6 +15,7 @@ export const CHANGELOG = [
       'Two-weapon fighting: the roll window has penalties for a light or heavy off-hand weapon, and Two-Weapon Fighting lowers them.',
       'Skill points no longer swing with a temporary Intelligence bonus such as Fox’s Cunning; permanent Int still counts.',
       'Current HP can no longer show above the maximum after a Constitution buff ends.',
+      'An edit made just before opening another character, deleting, exporting or going back to an earlier save is no longer lost, and closing the window right after an edit still saves it.',
       'Racial bonuses added for Kitsune, Changeling, Dhampir, Drow, Fetchling, Nagaji, Ratfolk, Suli, Svirfneblin, Tengu, Vanara, Vishkanya and Wayang.',
     ],
   },

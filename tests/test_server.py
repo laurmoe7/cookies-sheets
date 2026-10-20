@@ -4,6 +4,7 @@ Run with:  python -m unittest discover -s tests -p "test_*.py"
 Characters are written to a temporary folder, never to Documents\\Pathfinder Characters.
 No network access is needed.
 """
+import concurrent.futures
 import json
 import os
 import shutil
@@ -243,6 +244,15 @@ class HttpApi(unittest.TestCase):
         status, r = self.call('/api/character', {'name': 'Ezren'})
         self.assertEqual(status, 200)
         self.assertEqual(self.call(f'/api/character?id={r["id"]}')[1]['name'], 'Ezren')
+
+    def test_saves_of_one_character_at_once_do_not_collide(self):
+        """Two tabs (or the save sent as a page closes) can save one character at the same moment. They used to share one .tmp file."""
+        cid = self.call('/api/character', {'name': 'Kyra'})[1]['id']
+        with concurrent.futures.ThreadPoolExecutor(8) as pool:
+            results = list(pool.map(lambda i: self.call('/api/character', {'id': cid, 'name': f'Kyra {i}', 'pad': 'x' * 20000}), range(16)))
+        self.assertEqual([s for s, _ in results], [200] * 16)
+        self.assertTrue(self.call(f'/api/character?id={cid}')[1]['name'].startswith('Kyra '))
+        self.assertEqual([f for f in os.listdir(app.CHAR_DIR) if f.endswith('.tmp')], [])
 
     def test_deleted_bin_routes(self):
         status, r = self.call('/api/character', {'name': 'Seoni'})
@@ -513,7 +523,8 @@ class DesktopWindowApi(unittest.TestCase):
     def test_the_window_is_not_reachable_from_the_js_api(self):
         """pywebview walks every attribute reachable from the js_api object. With the window among them it never finishes: the whole app froze and
         its server stopped answering. The window is kept in a separate list instead, and the object holds methods only."""
-        src = open(os.path.join(ROOT, 'app.py'), encoding='utf-8').read()
+        with open(os.path.join(ROOT, 'app.py'), encoding='utf-8') as f:
+            src = f.read()
         body = src[src.index('class WindowApi'):src.index('window_api = WindowApi()')]
         self.assertNotIn('window =', body, 'no attribute on the js_api object may hold the window')
         self.assertNotIn('self.window', body)

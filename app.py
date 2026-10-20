@@ -6,6 +6,7 @@ then opens it in a native window via pywebview.
     python app.py            # desktop window
     python app.py --browser  # serve only (open http://127.0.0.1:8765 in a browser)
 """
+import functools
 import json
 import os
 import re
@@ -138,6 +139,17 @@ TRASH_DIR = os.path.join(CHAR_DIR, '.deleted')
 HISTORY_DIR = os.path.join(CHAR_DIR, '.history')
 HISTORY_EVERY = 300   # seconds: a save is only copied to .history when the newest copy is older than this
 HISTORY_KEEP = 5      # copies kept per character
+# The server is threaded and two tabs can save one character at the same moment. On Windows a rename onto a file another rename is
+# still replacing fails, so everything that writes or moves character files takes this lock. They are all quick.
+FILES_LOCK = threading.RLock()
+
+
+def _locked(fn):
+    @functools.wraps(fn)
+    def run(*a, **kw):
+        with FILES_LOCK:
+            return fn(*a, **kw)
+    return run
 
 
 def log_error(text):
@@ -425,15 +437,23 @@ def _snapshot(cid, path, force=False):
         os.remove(os.path.join(HISTORY_DIR, fn))
 
 
+@_locked
 def save_character(c):
     os.makedirs(CHAR_DIR, exist_ok=True)
     if not c.get('id'):
         c['id'] = uuid.uuid4().hex[:12]
     c['updated'] = time.time()
     path = _char_path(c['id'])
-    tmp = path + '.tmp'
-    with open(tmp, 'w', encoding='utf-8') as f:
-        json.dump(c, f, indent=1)
+    tmp = f'{path}.{uuid.uuid4().hex[:8]}.tmp'  # its own name: the server is threaded, and two saves of one character (two tabs) must not share one
+    try:
+        with open(tmp, 'w', encoding='utf-8') as f:
+            json.dump(c, f, indent=1)
+    except BaseException:
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
+        raise
     try:
         _snapshot(c['id'], path)
     except OSError:
@@ -461,6 +481,7 @@ def list_history():
     return sorted(out, key=lambda c: -c['saved'])
 
 
+@_locked
 def revert_character(fn):
     """Puts an earlier save back. The save it replaces is copied to .history first, so going back can itself be undone."""
     m = HISTORY_FILE.match(fn or '')
@@ -480,6 +501,7 @@ def load_character(cid):
         return json.load(f)
 
 
+@_locked
 def delete_character(cid):
     """Moves the file to a .deleted folder rather than destroying it."""
     os.makedirs(TRASH_DIR, exist_ok=True)
@@ -515,6 +537,7 @@ def list_deleted():
     return sorted(out, key=lambda c: -c['deleted'])
 
 
+@_locked
 def restore_character(fn):
     """Moves a character back out of .deleted. If its id is in use again (say it was re-imported meanwhile), the restored copy
     gets a new id, so nothing is overwritten."""
@@ -532,6 +555,7 @@ def restore_character(fn):
     return r
 
 
+@_locked
 def purge_character(fn):
     """Removes a deleted character for good."""
     os.remove(_trash_path(fn))
