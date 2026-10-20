@@ -42,6 +42,17 @@ class CharacterStorage(unittest.TestCase):
         listed = {c['id']: c for c in app.list_characters()}
         self.assertEqual(listed[r['id']]['summary'], 'Fighter 2 / Rogue 1')
 
+    def test_a_hand_edited_file_does_not_break_the_list(self):
+        """One file with a bad 'updated' used to make the sort throw, so the Characters page showed nothing at all."""
+        with open(os.path.join(app.CHAR_DIR, 'handedit01.json'), 'w', encoding='utf-8') as f:
+            json.dump({'id': 'handedit01', 'name': 'Odd', 'updated': None, 'levelUps': [None, {'cls': 'Bard'}]}, f)
+        try:
+            listed = {c['id']: c for c in app.list_characters()}
+            self.assertEqual(listed['handedit01']['summary'], 'Bard 1')
+            self.assertIsInstance(listed['handedit01']['updated'], float, 'the file time stands in')
+        finally:
+            os.remove(os.path.join(app.CHAR_DIR, 'handedit01.json'))
+
     def test_delete_moves_to_trash(self):
         r = app.save_character({'name': 'Doomed'})
         app.delete_character(r['id'])

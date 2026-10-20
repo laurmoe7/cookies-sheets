@@ -380,8 +380,9 @@ def _char_path(cid):
 def _summary(c):
     """'Fighter 2 / Rogue 1' from the level-ups."""
     levels = {}
-    for lu in c.get('levelUps', []):
-        levels[lu.get('cls')] = levels.get(lu.get('cls'), 0) + 1
+    for lu in c.get('levelUps') or []:
+        if isinstance(lu, dict):
+            levels[lu.get('cls')] = levels.get(lu.get('cls'), 0) + 1
     out = []
     for k, v in levels.items():
         a = (c.get('archetypes') or {}).get(k) or []
@@ -398,10 +399,14 @@ def list_characters():
         if not fn.endswith('.json'):
             continue
         try:
-            with open(os.path.join(CHAR_DIR, fn), encoding='utf-8') as f:
+            path = os.path.join(CHAR_DIR, fn)
+            with open(path, encoding='utf-8') as f:
                 c = json.load(f)
+            updated = c.get('updated')
+            if not isinstance(updated, (int, float)):  # a hand-edited file; one bad value must not stop the whole list sorting
+                updated = os.path.getmtime(path)
             out.append(dict(id=c.get('id'), name=c.get('name') or 'Unnamed', race=c.get('race', ''),
-                            summary=_summary(c), updated=c.get('updated', 0)))
+                            summary=_summary(c), updated=updated))
         except Exception:
             continue
     return sorted(out, key=lambda c: -c['updated'])
