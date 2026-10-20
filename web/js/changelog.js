@@ -15,6 +15,7 @@ export const CHANGELOG = [
       'Two-weapon fighting: the roll window has penalties for a light or heavy off-hand weapon, and Two-Weapon Fighting lowers them.',
       'Skill points no longer swing with a temporary Intelligence bonus such as Fox’s Cunning; permanent Int still counts.',
       'Current HP can no longer show above the maximum after a Constitution buff ends.',
+      'A headband of vast intelligence (or the Int Enh box) no longer adds skill points every level; a note beside Ranks spent shows the ranks it grants in its own skill instead (your Hit Dice in one skill per +2). Int checks still use the full score.',
       'Skills: hover "Ranks spent" to see where your skill ranks come from: each class, the human and favored class bonuses, and what makes up the Int score they use.',
       'Defense: AC, touch, flat-footed and CMD each have their own misc box that changes only that number, and the explanation under them is two short lines grouped by bonus type.',
       'Ability Scores: the score and modifier now sit right beside STR, DEX and the rest, ahead of the boxes that make them up.',

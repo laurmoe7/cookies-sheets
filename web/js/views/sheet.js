@@ -477,12 +477,17 @@ function skills(body, c, d) {
     `Total: ${sp.available}`,
     '',
     `Int ${sp.intScore} (${sign(sp.intMod)}) for ranks: ${sp.intParts.map(p => p.label === 'Base' ? `base ${p.value}` : `${p.label}: ${sign(p.value)}`).join(' · ')}`,
-    'Temporary Int (spells, the Temp box) and ability damage do not change ranks.',
+    'Temporary Int (spells, the Temp box), enhancement bonuses (a headband, the Enh box) and ability damage do not change ranks.',
   ].join('\n');
+  // A headband of vast intelligence grants ranks in its own skills instead (one skill per +2, ranks equal to Hit Dice)
+  const hb = sp.headband;
+  const hbName = hb && (hb.source === 'Enh box' ? 'Headband' : hb.source);
+  const hbNote = hb ? `<span class="pill" data-tip="${esc(`${hbName} grants ${hb.ranks} ranks (your Hit Dice) in ${hb.skills === 1 ? 'one skill' : `each of ${hb.skills} skills`}, chosen when it was made (Knowledge if none were chosen). Its Int bonus does not add skill points per level.\nThese ranks do not stack with ranks you already have in that skill. Add them with the skill's Misc box.`)}">${esc(hbName)}: <b>+${hb.ranks}</b> ranks in ${hb.skills === 1 ? 'one Knowledge skill' : `${hb.skills} Knowledge skills`}</span>` : '';
   body.innerHTML = `<section class="card">
     <div class="row">
       <h3 class="grow">Skills</h3>
       <span class="pill ${sp.spent > sp.available ? 'bad' : sp.spent < sp.available ? 'warn' : 'good'}" data-tip="${esc(spTip)}">Ranks spent <b>${sp.spent}</b> / ${sp.available}</span>
+      ${hbNote}
       <span class="pill">Max ranks per skill: <b>${sp.maxRanks}</b></span>
       ${d.acp ? `<span class="pill bad">Armor check penalty ${d.acp}</span>` : ''}
       <label class="small"><input type="checkbox" id="only-trained"> Hide untrained-only skills with 0 ranks</label>

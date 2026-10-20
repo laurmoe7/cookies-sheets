@@ -518,6 +518,22 @@ test('skill points ignore a temporary Intelligence bonus (Fox\'s Cunning) but co
   assert.equal(calc(p).skillPoints.available, 3 * (2 + 4) + 3, 'a permanent +2 counts');
 });
 
+test('a headband of vast intelligence gives ranks in its own skills, not skill points per level', () => {
+  // Core Rulebook: the headband grants ranks equal to Hit Dice in one chosen skill per +2; its Int does not add skill points per level
+  const mk = () => make({ race: 'Human', raceChoice: 'int', base: { int: 14 }, levels: repeat('Wizard', 3), hp: [6, 4, 4] });
+  const base = calc(mk()).skillPoints;
+  assert.equal(base.headband, null, 'no headband, no note');
+  const worn = mk();
+  worn.gear = [{ name: 'Headband of Vast Intelligence +4', slot: 'headband', effects: [{ target: 'int', value: 4, type: 'enhancement' }] }];
+  const sp = calc(worn).skillPoints;
+  assert.equal(sp.available, base.available, 'still 3 x (2 + 3) + 3 = 18');
+  assert.deepEqual(sp.headband, { source: 'Headband of Vast Intelligence +4', bonus: 4, skills: 2, ranks: 3 }, '+4: two skills, 3 ranks each at 3 Hit Dice');
+  assert.equal(calc(worn).abilities.int.score, 20, 'the Int score itself still has the +4: 14 + 2 + 4');
+  const typed = mk(); typed.abilities.int.enh = 2;
+  assert.equal(calc(typed).skillPoints.available, base.available, 'the same for a headband typed in the Enh box');
+  assert.equal(calc(typed).skillPoints.headband.skills, 1);
+});
+
 test('current HP never shows above the maximum when a Constitution buff ends', () => {
   const c = fighter(); c.hp.current = 44;
   assert.equal(calc(c).hp.current, 36, 'stored 44, maximum is 36 now');

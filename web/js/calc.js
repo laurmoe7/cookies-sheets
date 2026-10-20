@@ -371,18 +371,23 @@ export function compute(c, classesByName, opts = {}) {
     return b;
   };
   const humanBonus = race.bonusSkill ? 1 : 0;
-  // Skill points follow the Intelligence you have for good: base, race, level increases, enhancement and Misc. A spell such as Fox's Cunning, a temp bonus or
-  // ability damage does not hand out (or take away) ranks for every level you already have.
+  // Skill points follow the Intelligence you have for good: base, race, level increases, Misc (an inherent bonus from a tome or wish) and other lasting
+  // item bonuses. A spell such as Fox's Cunning, a temp bonus or ability damage does not hand out (or take away) ranks for every level you already have.
+  // Nor does an enhancement bonus (a headband, or the Enh box): a headband of vast intelligence instead grants ranks equal to your Hit Dice in one chosen
+  // skill per +2 (Core Rulebook), listed in d.skillPoints.headband for the player to put in that skill.
   const intItems = (c.gear || []).flatMap(g => wornEffects(g).map(e => ({ ...e, item: g.name || 'Item' }))).filter(e => e.target === 'int')
     .map(e => ({ value: evalExpr(e.value, vars), type: e.type || 'untyped', source: e.item }));
   const ib = c.abilities.int;
-  const intBonuses = [...intItems, { value: num(ib.enh), type: 'enhancement', source: 'Enh box' }, { value: num(ib.misc), type: 'untyped', source: 'Misc box' }];
+  const intEnh = [...intItems.filter(e => e.type === 'enhancement'), { value: num(ib.enh), type: 'enhancement', source: 'Enh box' }].filter(e => e.value > 0)
+    .reduce((best, e) => (!best || e.value > best.value ? e : best), null); // enhancement bonuses do not stack: the best one is the one worn
+  const intBonuses = [...intItems.filter(e => e.type !== 'enhancement'), { value: num(ib.misc), type: 'untyped', source: 'Misc box' }];
   const intScoreForRanks = num(ib.base) + (race.mods.int || 0) + (increases.int || 0) + stack(intBonuses).total - num(ib.drain);
   const intForRanks = mod(intScoreForRanks);
   // Where the Int score used for ranks comes from, for the hover on "Ranks spent"
   const intParts = parts({ label: 'Base', value: num(ib.base) }, { label: 'Race', value: race.mods.int || 0 }, { label: 'Level increases', value: increases.int || 0 },
     stackParts(intBonuses).filter(p => !p.ignored).map(p => ({ ...p, label: p.label.replace(/ \(.*\)$/, '') })), { label: 'Drain', value: -num(ib.drain) });
-  d.skillPoints = { intMod: intForRanks, intScore: intScoreForRanks, intParts };
+  d.skillPoints = { intMod: intForRanks, intScore: intScoreForRanks, intParts,
+    headband: intEnh && intEnh.value >= 2 && lvl ? { source: intEnh.source, bonus: intEnh.value, skills: Math.floor(intEnh.value / 2), ranks: lvl } : null };
   let available = 0;
   const byClass = {}; // {cls: {levels, perLevel}}: each level gets the class's ranks + Int modifier (at least 1)
   for (const lu of c.levelUps) {
