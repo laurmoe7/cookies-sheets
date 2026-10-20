@@ -373,15 +373,28 @@ export function compute(c, classesByName, opts = {}) {
   const humanBonus = race.bonusSkill ? 1 : 0;
   // Skill points follow the Intelligence you have for good: base, race, level increases, enhancement and Misc. A spell such as Fox's Cunning, a temp bonus or
   // ability damage does not hand out (or take away) ranks for every level you already have.
-  const intItems = (c.gear || []).flatMap(g => wornEffects(g)).filter(e => e.target === 'int').map(e => ({ value: evalExpr(e.value, vars), type: e.type || 'untyped' }));
+  const intItems = (c.gear || []).flatMap(g => wornEffects(g).map(e => ({ ...e, item: g.name || 'Item' }))).filter(e => e.target === 'int')
+    .map(e => ({ value: evalExpr(e.value, vars), type: e.type || 'untyped', source: e.item }));
   const ib = c.abilities.int;
-  const intForRanks = mod(num(ib.base) + (race.mods.int || 0) + (increases.int || 0) + stack([...intItems, { value: num(ib.enh), type: 'enhancement' }, { value: num(ib.misc), type: 'untyped' }]).total - num(ib.drain));
-  d.skillPoints = { intMod: intForRanks };
+  const intBonuses = [...intItems, { value: num(ib.enh), type: 'enhancement', source: 'Enh box' }, { value: num(ib.misc), type: 'untyped', source: 'Misc box' }];
+  const intScoreForRanks = num(ib.base) + (race.mods.int || 0) + (increases.int || 0) + stack(intBonuses).total - num(ib.drain);
+  const intForRanks = mod(intScoreForRanks);
+  // Where the Int score used for ranks comes from, for the hover on "Ranks spent"
+  const intParts = parts({ label: 'Base', value: num(ib.base) }, { label: 'Race', value: race.mods.int || 0 }, { label: 'Level increases', value: increases.int || 0 },
+    stackParts(intBonuses).filter(p => !p.ignored).map(p => ({ ...p, label: p.label.replace(/ \(.*\)$/, '') })), { label: 'Drain', value: -num(ib.drain) });
+  d.skillPoints = { intMod: intForRanks, intScore: intScoreForRanks, intParts };
   let available = 0;
+  const byClass = {}; // {cls: {levels, perLevel}}: each level gets the class's ranks + Int modifier (at least 1)
   for (const lu of c.levelUps) {
     const cls = classesByName[lu.cls];
-    available += Math.max(1, (cls?.skill_ranks || 0) + intForRanks) + humanBonus + (lu.fcb === 'skill' ? 1 : 0);
+    const perLevel = Math.max(1, (cls?.skill_ranks || 0) + intForRanks);
+    const row = byClass[lu.cls] ||= { cls: lu.cls, levels: 0, classRanks: cls?.skill_ranks || 0, perLevel };
+    row.levels++;
+    available += perLevel + humanBonus + (lu.fcb === 'skill' ? 1 : 0);
   }
+  d.skillPoints.byClass = Object.values(byClass);
+  d.skillPoints.human = humanBonus * lvl;
+  d.skillPoints.fcb = c.levelUps.filter(l => l.fcb === 'skill').length;
   let spent = 0;
   for (const s of c.skills) {
     const def = SKILL_BY_NAME[s.name] || SKILL_BY_NAME[s.name.replace(/ \(.*/, '')] || { ability: 'int', trained: false, acp: false };

@@ -469,10 +469,20 @@ function chooseBuffPreset() {
 // =====================================================================
 function skills(body, c, d) {
   const sp = d.skillPoints;
+  // Where the ranks come from, shown on hover: per class, then the extras, then the Int score they use
+  const spTip = [
+    ...sp.byClass.map(r => `${r.cls} × ${r.levels} level${r.levels > 1 ? 's' : ''}: ${r.classRanks} ${sp.intMod < 0 ? '−' : '+'} ${Math.abs(sp.intMod)} Int = ${r.perLevel}${r.perLevel > r.classRanks + sp.intMod ? ' (at least 1)' : ''} each → ${r.perLevel * r.levels}`),
+    ...(sp.human ? [`Human bonus: +1 per level → ${sp.human}`] : []),
+    ...(sp.fcb ? [`Favored class bonus (skill): ${sp.fcb}`] : []),
+    `Total: ${sp.available}`,
+    '',
+    `Int ${sp.intScore} (${sign(sp.intMod)}) for ranks: ${sp.intParts.map(p => p.label === 'Base' ? `base ${p.value}` : `${p.label}: ${sign(p.value)}`).join(' · ')}`,
+    'Temporary Int (spells, the Temp box) and ability damage do not change ranks.',
+  ].join('\n');
   body.innerHTML = `<section class="card">
     <div class="row">
       <h3 class="grow">Skills</h3>
-      <span class="pill ${sp.spent > sp.available ? 'bad' : sp.spent < sp.available ? 'warn' : 'good'}">Ranks spent <b>${sp.spent}</b> / ${sp.available}</span>
+      <span class="pill ${sp.spent > sp.available ? 'bad' : sp.spent < sp.available ? 'warn' : 'good'}" data-tip="${esc(spTip)}">Ranks spent <b>${sp.spent}</b> / ${sp.available}</span>
       <span class="pill">Max ranks per skill: <b>${sp.maxRanks}</b></span>
       ${d.acp ? `<span class="pill bad">Armor check penalty ${d.acp}</span>` : ''}
       <label class="small"><input type="checkbox" id="only-trained"> Hide untrained-only skills with 0 ranks</label>

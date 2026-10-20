@@ -77,6 +77,17 @@ test('the misc box on each defense tile changes only that number', () => {
   assert.equal(10 + p.bab + p.str + p.dex + p.size + p.misc + p.buffs + Object.values(p.ac).reduce((a, b) => a + b, 0), d.cmd, 'the explanation adds up');
 });
 
+test('skill points say where they come from', () => {
+  // Human (Int +2 race choice), Int 14 base -> 16 (+3); Rogue 8 + 3 = 11 x 2, Fighter 2 + 3 = 5 x 1, +1 human per level x 3, one favored-class skill rank
+  const c = make({ raceChoice: 'int', base: { int: 14 }, levels: ['Rogue', 'Rogue', 'Fighter'] });
+  c.levelUps[0].fcb = 'skill';
+  const sp = calc(c).skillPoints;
+  assert.deepEqual(sp.byClass.map(r => [r.cls, r.levels, r.perLevel]), [['Rogue', 2, 11], ['Fighter', 1, 5]]);
+  assert.deepEqual([sp.human, sp.fcb, sp.intScore, sp.intMod], [3, 1, 16, 3]);
+  assert.equal(sp.available, 22 + 5 + 3 + 1, '31');
+  assert.deepEqual(sp.intParts.map(p => [p.label, p.value]), [['Base', 14], ['Race', 2]]);
+});
+
 test('every level gives at least 1 hit point, whatever the Con penalty', () => {
   // Core Rulebook: a Constitution penalty can never take a level's hit points below 1.
   const c = make({ base: { con: 6 }, levels: repeat('Wizard', 3), hp: [6, 1, 3] });
