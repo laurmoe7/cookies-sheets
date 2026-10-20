@@ -242,11 +242,13 @@ export function compute(c, classesByName, opts = {}) {
   const dexToAc = Math.min(M('dex'), effMaxDex);
   const touchBonus = Object.entries(acSt.byType).filter(([t]) => !NON_TOUCH_AC.has(t)).reduce((s, [, v]) => s + v, 0);
   const dodge = acSt.byType.dodge || 0;
+  // The *Misc boxes adjust only their own number (a feature that helps touch AC alone, say)
+  const adj = { total: num(c.ac.totalMisc), touch: num(c.ac.touchMisc), flat: num(c.ac.flatMisc) };
   d.ac = {
-    total: 10 + acSt.total + dexToAc + sz.ac,
-    touch: 10 + touchBonus + dexToAc + sz.ac,
-    flat: 10 + acSt.total - Math.max(dodge, 0) + Math.min(dexToAc, 0) + sz.ac,
-    dex: dexToAc, size: sz.ac, byType: acSt.byType,
+    total: 10 + acSt.total + dexToAc + sz.ac + adj.total,
+    touch: 10 + touchBonus + dexToAc + sz.ac + adj.touch,
+    flat: 10 + acSt.total - Math.max(dodge, 0) + Math.min(dexToAc, 0) + sz.ac + adj.flat,
+    dex: dexToAc, size: sz.ac, byType: acSt.byType, adj,
   };
 
   // ---- HP ----
@@ -294,7 +296,11 @@ export function compute(c, classesByName, opts = {}) {
   d.cmb = bab + M('str') + sz.cmb + num(c.cmbMisc) + stack(cmbList).total;
   bd.cmb = parts({ label: 'Base attack bonus', value: bab }, { label: 'Str modifier', value: M('str') }, { label: `Size (${size}, maneuvers)`, value: sz.cmb }, { label: 'Misc', value: num(c.cmbMisc) }, stackParts(cmbList));
   const cmdAc = Object.entries(acSt.byType).filter(([t]) => CMD_AC_TYPES.has(t)).reduce((s, [, v]) => s + v, 0);
-  d.cmd = 10 + bab + M('str') + M('dex') + sz.cmb + num(c.cmdMisc) + cmdAc + stack(listOf('cmd')).total;
+  const cmdBuffs = stack(listOf('cmd')).total;
+  d.cmd = 10 + bab + M('str') + M('dex') + sz.cmb + num(c.cmdMisc) + cmdAc + cmdBuffs;
+  // The same, grouped for the Defense card's explanation: the AC bonus types that count, by type
+  d.cmdParts = { bab, str: M('str'), dex: M('dex'), size: sz.cmb, misc: num(c.cmdMisc), buffs: cmdBuffs,
+    ac: Object.fromEntries(Object.entries(acSt.byType).filter(([t]) => CMD_AC_TYPES.has(t))) };
   // What the number is made of. The AC bonuses of the kinds CMD counts, and every AC penalty (rage's -2, for one), are part of it.
   bd.cmd = parts({ label: 'Base attack bonus', value: bab }, { label: 'Str modifier', value: M('str') }, { label: 'Dex modifier', value: M('dex') },
     { label: `Size (${size}, maneuvers)`, value: sz.cmb }, { label: 'Misc', value: num(c.cmdMisc) },

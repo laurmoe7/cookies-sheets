@@ -65,6 +65,18 @@ test('fighter 4: AC, touch, flat-footed, CMB, CMD', () => {
   assert.equal(d.cmd, 19, '10 + BAB 4 + Str 3 + Dex 2');
 });
 
+test('the misc box on each defense tile changes only that number', () => {
+  const c = fighter();
+  Object.assign(c.ac, { totalMisc: 2, touchMisc: -1, flatMisc: 3 });
+  c.cmdMisc = 1;
+  const d = calc(c);
+  assert.deepEqual([d.ac.total, d.ac.touch, d.ac.flat], [18, 11, 17], 'AC 16 + 2, touch 12 - 1, flat-footed 14 + 3');
+  assert.equal(d.cmd, 20, 'CMD 19 + 1');
+  assert.equal(d.cmdFlat, 18, 'flat-footed CMD: 20 - Dex 2');
+  const p = d.cmdParts;
+  assert.equal(10 + p.bab + p.str + p.dex + p.size + p.misc + p.buffs + Object.values(p.ac).reduce((a, b) => a + b, 0), d.cmd, 'the explanation adds up');
+});
+
 test('every level gives at least 1 hit point, whatever the Con penalty', () => {
   // Core Rulebook: a Constitution penalty can never take a level's hit points below 1.
   const c = make({ base: { con: 6 }, levels: repeat('Wizard', 3), hp: [6, 1, 3] });

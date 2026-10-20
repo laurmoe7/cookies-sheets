@@ -197,18 +197,17 @@ function overview(body, c, d) {
     <section class="card defense">
       <h3>Defense</h3>
       <div class="stat-row">
-        <div class="stat"><div class="label">${ref('Armor Class', 'Rules', 'AC')}</div>${calc('ac.total', 'plain', 'big')}</div>
-        <div class="stat"><div class="label">${ref('Touch Attacks', 'Rules', 'Touch')}</div>${calc('ac.touch', 'plain', 'big')}</div>
-        <div class="stat"><div class="label">${ref('Flat-Footed', 'Rules', 'Flat-footed')}</div>${calc('ac.flat', 'plain', 'big')}</div>
-        <div class="stat"><div class="label">${ref('Combat Maneuver Defense', 'Rules', 'CMD')}</div>${calc('cmd', 'plain', 'big')}</div>
+        ${[['ac.total', 'ac.totalMisc', ref('Armor Class', 'Rules', 'AC')], ['ac.touch', 'ac.touchMisc', ref('Touch Attacks', 'Rules', 'Touch')],
+    ['ac.flat', 'ac.flatMisc', ref('Flat-Footed', 'Rules', 'Flat-footed')], ['cmd', 'cmdMisc', ref('Combat Maneuver Defense', 'Rules', 'CMD')]].map(([v, misc, label]) => `
+        <div class="stat"><div class="label">${label}</div>${calc(v, 'plain', 'big')}
+          <label class="stat-misc" title="Adds to this number only">misc ${inp(misc, { type: 'num', cls: 'w3' })}</label></div>`).join('')}
       </div>
-      <div class="small muted" id="ac-breakdown"></div>
-      <div class="small muted" id="cmd-breakdown"></div>
+      <div class="breakdown" id="ac-breakdown"></div>
       <div class="kv">
         <label title="Natural armor bonus">Natural ${inp('ac.natural', { type: 'num', cls: 'w3' })}</label>
         <label title="Deflection bonus (ring of protection)">Deflect ${inp('ac.deflection', { type: 'num', cls: 'w3' })}</label>
         <label title="Dodge bonus (Dodge feat)">Dodge ${inp('ac.dodge', { type: 'num', cls: 'w3' })}</label>
-        <label title="Other untyped">Misc ${inp('ac.misc', { type: 'num', cls: 'w3' })}</label>
+        <label title="An untyped bonus: it counts for AC, touch, flat-footed and CMD. To change just one of them, use the misc box on that tile.">Untyped ${inp('ac.misc', { type: 'num', cls: 'w3' })}</label>
       </div>
       <table class="tbl saves"><thead><tr><th>Save</th><th>Total</th><th>Base</th><th>Ability</th><th>Buffs</th><th>Misc</th></tr></thead><tbody>
         ${[['fort', 'Fortitude'], ['ref', 'Reflex'], ['will', 'Will']].map(([s, n]) => `<tr>
@@ -237,7 +236,6 @@ function overview(body, c, d) {
       <div class="kv">
         <label>Init misc ${inp('initMisc', { type: 'num', cls: 'w3' })}</label>
         <label>CMB misc ${inp('cmbMisc', { type: 'num', cls: 'w3' })}</label>
-        <label>CMD misc ${inp('cmdMisc', { type: 'num', cls: 'w3' })}</label>
         <label>Speed misc ${inp('speedMisc', { type: 'num', cls: 'w3' })}</label>
       </div>
       <div class="small muted">Flat-footed CMD ${calc('cmdFlat')} · Size ${esc(d.size)} · ${ref('Attacks of Opportunity', 'Rules', 'AoO rules')} · ${ref('Combat Maneuvers', 'Rules', 'Maneuvers')}</div>
@@ -305,10 +303,20 @@ function overview(body, c, d) {
     const card = $('.card.hp', body);
     card.classList.toggle('dead', cur <= -conScore);
     card.classList.toggle('downed', cur <= 0 && cur > -conScore);
-    const t = dd.ac.byType;
-    $('#cmd-breakdown').textContent = 'CMD = 10 ' + (dd.bd.cmd || []).map(p => `${p.value >= 0 ? '+' : '−'} ${Math.abs(p.value)} ${p.label.replace('Base attack bonus', 'BAB').replace(' modifier', '')}`).join(' ');
-    $('#ac-breakdown').textContent = 'AC = 10 ' + [['Dex', dd.ac.dex], ['size', dd.ac.size], ...Object.entries(t)].filter(([, v]) => v).map(([k, v]) => `${v >= 0 ? '+' : '−'} ${Math.abs(v)} ${k}`).join(' ') +
-      (dd.maxDex != null ? ` · max Dex ${dd.maxDex}` : '') + (dd.acp ? ` · ACP ${dd.acp}` : '');
+    // What AC and CMD are made of, one chip per kind of bonus (the hover on each roll still lists every source)
+    const typeName = t => (t.startsWith('natural armor') ? 'Natural armor' : t[0].toUpperCase() + t.slice(1));
+    const chips = pairs => {
+      const sum = new Map();
+      for (const [k, v] of pairs) if (v) sum.set(k, (sum.get(k) || 0) + v);
+      return [...sum].map(([k, v]) => `<span class="part"><b>${sign(v)}</b> ${esc(k)}</span>`).join('');
+    };
+    const line = (name, total, pairs, note = '') => `<div class="bd-line"><span class="bd-what">${name} ${total}</span><span class="bd-eq">=</span><span class="part"><b>10</b></span>${chips(pairs)}${note}</div>`;
+    const byType = pairs => Object.entries(pairs).map(([k, v]) => [typeName(k), v]);
+    const p = dd.cmdParts;
+    const limits = [dd.maxDex != null ? `max Dex ${sign(dd.maxDex)}` : '', dd.acp ? `check penalty ${dd.acp}` : ''].filter(Boolean).join(' · ');
+    $('#ac-breakdown').innerHTML =
+      line('AC', dd.ac.total, [['Dex', dd.ac.dex], ['Size', dd.ac.size], ...byType(dd.ac.byType), ['Misc', dd.ac.adj.total]], limits ? `<span class="bd-note">${limits}</span>` : '') +
+      line('CMD', dd.cmd, [['BAB', p.bab], ['Str', p.str], ['Dex', p.dex], ['Size', p.size], ...byType(p.ac), ['Buffs', p.buffs], ['Misc', p.misc]]);
   };
   updateDyn();
   if (state.healFx) { hpFx($('.card.hp', body), state.healFx); state.healFx = null; }

@@ -23,7 +23,7 @@ export function newCharacter() {
     summons: [], // tracked Summon Monster / Nature's Ally creatures (top of the Companions tab)
     companions: [], // animal companions, eidolons, familiars (see companions.js)
     hp: { current: null, temp: 0, nonlethal: 0, misc: 0 },
-    ac: { natural: 0, deflection: 0, dodge: 0, misc: 0 },
+    ac: { natural: 0, deflection: 0, dodge: 0, misc: 0, totalMisc: 0, touchMisc: 0, flatMisc: 0 }, // misc: untyped bonus to all of them; the *Misc: an adjustment to that one number (CMD's is cmdMisc)
     saveMisc: { fort: 0, ref: 0, will: 0 },
     initMisc: 0, speedMisc: 0, cmbMisc: 0, cmdMisc: 0,
     defenses: { dr: '', sr: '', resist: '', immune: '' },
