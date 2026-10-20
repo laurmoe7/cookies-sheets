@@ -65,6 +65,20 @@ test('fighter 4: AC, touch, flat-footed, CMB, CMD', () => {
   assert.equal(d.cmd, 19, '10 + BAB 4 + Str 3 + Dex 2');
 });
 
+test('every level gives at least 1 hit point, whatever the Con penalty', () => {
+  // Core Rulebook: a Constitution penalty can never take a level's hit points below 1.
+  const c = make({ base: { con: 6 }, levels: repeat('Wizard', 3), hp: [6, 1, 3] });
+  assert.equal(calc(c).hp.max, 6, 'Con 6 is -2 per level: 6-2 = 4, 1-2 = -1 -> 1, 3-2 = 1; 4 + 1 + 1 = 6');
+});
+
+test('flat-footed CMD loses a Dex bonus but keeps a Dex penalty', () => {
+  const clumsy = calc(make({ raceChoice: 'wis', base: { str: 10, dex: 8 }, levels: ['Fighter'] }));
+  assert.equal(clumsy.cmd, 10, '10 + BAB 1 + Str 0 + Dex -1');
+  assert.equal(clumsy.cmdFlat, 10, 'flat-footed: no Dex bonus to lose, the -1 stays');
+  const deft = calc(make({ raceChoice: 'wis', base: { str: 10, dex: 14 }, levels: ['Fighter'] }));
+  assert.equal(deft.cmdFlat, 11, '10 + BAB 1 + Str 0, the Dex +2 is lost');
+});
+
 test('shield bonus stacks with armor, not vs touch, and both check penalties add', () => {
   const c = fighter();
   c.armor.push({ name: 'Heavy steel shield', type: 'shield', category: 'heavy', bonus: 2, enh: 1, maxDex: '', acp: -2, asf: 15, weight: 0, equipped: true });

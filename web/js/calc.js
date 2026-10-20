@@ -252,7 +252,8 @@ export function compute(c, classesByName, opts = {}) {
   // ---- HP ----
   const fcbHp = c.levelUps.filter(l => l.fcb === 'hp').length;
   const hpSt = stack(listOf('hp'));
-  d.hp = { max: c.levelUps.reduce((s, l) => s + num(l.hp), 0) + M('con') * lvl + fcbHp + hpSt.total + num(c.hp.misc), fcb: fcbHp };
+  // each level's die plus the Con modifier, never below 1 (a Con penalty cannot take a level to 0 or less)
+  d.hp = { max: c.levelUps.reduce((s, l) => s + Math.max(1, num(l.hp) + M('con')), 0) + fcbHp + hpSt.total + num(c.hp.misc), fcb: fcbHp };
   // never above the maximum: when a Constitution buff ends the maximum drops, and what was stored for current HP can be higher than it
   d.hp.current = c.hp.current == null || c.hp.current === '' ? d.hp.max : Math.min(d.hp.max, num(c.hp.current));
 
@@ -298,7 +299,7 @@ export function compute(c, classesByName, opts = {}) {
   bd.cmd = parts({ label: 'Base attack bonus', value: bab }, { label: 'Str modifier', value: M('str') }, { label: 'Dex modifier', value: M('dex') },
     { label: `Size (${size}, maneuvers)`, value: sz.cmb }, { label: 'Misc', value: num(c.cmdMisc) },
     stackParts(acList.filter(m => CMD_AC_TYPES.has(m.type || 'untyped'))).map(p => ({ ...p, label: p.label + ' (also counts for AC)' })), stackParts(listOf('cmd')));
-  d.cmdFlat = d.cmd - M('dex') - Math.max(dodge, 0);
+  d.cmdFlat = d.cmd - Math.max(M('dex'), 0) - Math.max(dodge, 0); // flat-footed loses a Dex bonus; a Dex penalty stays
 
   for (const w of c.weapons) {
     const ranged = !!w.ranged;
