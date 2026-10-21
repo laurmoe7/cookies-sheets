@@ -48,6 +48,15 @@ def screen_scale():
         return 1.0
 
 
+def minimized(r, min_size=MIN_SIZE):
+    """True for the rectangle Windows reports for a minimized window: parked far off screen (-32000, scaled) and about 160x28, smaller than
+    the window can be made. Remembering it would reopen the app at its minimum size."""
+    def bad(k, low):
+        v = r.get(k)
+        return isinstance(v, (int, float)) and not isinstance(v, bool) and v < low
+    return bad('x', -10000) or bad('y', -10000) or bad('width', min_size[0] / 2) or bad('height', min_size[1] / 2)
+
+
 def fit(saved, areas, scale=1.0, min_size=MIN_SIZE, default_size=DEFAULT_SIZE):
     """The window rectangle to open with, in logical pixels: {'x', 'y', 'width', 'height'} (x and y are None to let the system place it).
 
@@ -60,6 +69,8 @@ def fit(saved, areas, scale=1.0, min_size=MIN_SIZE, default_size=DEFAULT_SIZE):
         v = saved.get(k)
         return v if isinstance(v, (int, float)) and not isinstance(v, bool) else None
 
+    if minimized(saved):
+        saved = {}  # closed while minimized: what was stored is the taskbar button's spot, not the window
     w = num('width') or default_size[0]
     h = num('height') or default_size[1]
     w, h = max(w, min_size[0]), max(h, min_size[1])

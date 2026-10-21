@@ -52,6 +52,8 @@ def write_settings(d):
     os.replace(tmp, SETTINGS_PATH)
 
 
+BEFORE_UPDATE = []  # run before an update closes the app (it exits at once, so the window's closing event never comes)
+
 OPEN_IN = ('window', 'browser')
 
 
@@ -978,6 +980,8 @@ class Handler(SimpleHTTPRequestHandler):
             elif route == ('GET', 'update-check'):
                 self._json(updater.check(app_version()))
             elif route == ('POST', 'update-apply'):
+                for f in BEFORE_UPDATE:
+                    f()
                 self._json(updater.apply(app_version()))
             elif route == ('GET', 'equipment'):
                 with open(os.path.join(DATA, 'equipment.json'), encoding='utf-8') as f:
@@ -1182,7 +1186,8 @@ def main():
         seen = dict(geo)
 
         def remember(**kw):
-            seen.update({k: v for k, v in kw.items() if isinstance(v, int)})
+            if not windowstate.minimized(kw):  # minimizing moves the window off screen and shrinks it; keep the last real place
+                seen.update({k: v for k, v in kw.items() if isinstance(v, int)})
 
         win.events.moved += lambda x, y: remember(x=x, y=y)
         win.events.resized += lambda width, height: remember(width=width, height=height)
@@ -1196,6 +1201,7 @@ def main():
                 pass  # the position is a nicety; never stop the app closing over it
 
         win.events.closing += save_window
+        BEFORE_UPDATE.append(save_window)  # an update ends the app without closing the window
         webview.start(icon=os.path.join(WEB, 'icon.ico'), private_mode=False, storage_path=storage)
     except Exception:
         # No usable WebView2 runtime (or the window could not open): use the default browser instead, so the app still works.

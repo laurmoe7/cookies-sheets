@@ -4,7 +4,7 @@ import sys
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from windowstate import fit  # noqa: E402
+from windowstate import fit, minimized  # noqa: E402
 
 # A 1920x1080 screen whose taskbar takes the bottom 48 pixels, and a second 1280x1024 monitor to its right with no taskbar.
 MAIN = (0, 0, 1920, 1032)
@@ -44,8 +44,17 @@ class Fit(unittest.TestCase):
         self.assertEqual(r['y'], 1066 - 900)
 
     def test_bad_saved_values_fall_back(self):
-        self.assertEqual(fit(dict(x='a', y=None, width=-5, height=True), [MAIN])['width'], 1000, 'the minimum size')
+        self.assertEqual(fit(dict(x='a', y=None, width=-5, height=True), [MAIN])['width'], 1400, 'a size no window can have: the default size')
+        self.assertEqual(fit(dict(width=900, height=600), [MAIN])['width'], 1000, 'a bit under the minimum: the minimum size')
         self.assertEqual(fit(None, [MAIN])['width'], 1400)
+
+    def test_closed_while_minimized_opens_at_the_default_size_not_the_minimum(self):
+        # What Windows reports for a minimized window at 150% scaling: parked at -32000 / 1.5, the size of a taskbar button
+        r = fit(dict(x=-21333, y=-21333, width=158, height=26), [MAIN])
+        self.assertEqual(r, dict(x=(1920 - 1400) // 2, y=(1032 - 900) // 2, width=1400, height=900))
+        self.assertTrue(minimized(dict(width=158, height=26)), 'the size alone (the resized event comes on its own)')
+        self.assertTrue(minimized(dict(x=-32000, y=-32000)), 'the position alone')
+        self.assertFalse(minimized(dict(x=-8, y=-8, width=1936, height=1048)), 'a maximized window is a real place')
 
     def test_without_monitor_information_the_saved_numbers_are_used_as_they_are(self):
         self.assertEqual(fit(dict(x=10, y=20, width=1200, height=700), []), dict(x=10, y=20, width=1200, height=700))

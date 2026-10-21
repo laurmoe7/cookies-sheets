@@ -224,6 +224,19 @@ class HttpApi(unittest.TestCase):
             with e:
                 return e.code, json.loads(e.read())
 
+    def test_an_update_saves_the_window_first(self):
+        # The update ends the app at once, so the window's closing event (which saves its size and place) never comes.
+        order = []
+        real = app.updater.apply
+        app.updater.apply = lambda v: order.append('apply') or {'ok': True, 'version': '9.9'}
+        app.BEFORE_UPDATE.append(lambda: order.append('save'))
+        try:
+            self.assertEqual(self.call('/api/update-apply', {})[0], 200)
+        finally:
+            app.updater.apply = real
+            app.BEFORE_UPDATE.clear()
+        self.assertEqual(order, ['save', 'apply'])
+
     def test_serves_ui(self):
         with urllib.request.urlopen(self.base + '/', timeout=10) as r:
             self.assertIn(b'js/app.js', r.read())
