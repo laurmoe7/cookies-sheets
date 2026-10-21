@@ -4,7 +4,7 @@
 
 export const CHANGELOG = [
   {
-    version: '1.3.4', next: true,
+    version: '1.3.4', date: '2026-10-21',
     items: [
       'Overview: hover AC, touch, flat-footed, CMD, max HP, an ability score, BAB or speed to see what adds up to it (rage’s –2 to AC shows in CMD too).',
       'These feats now count by themselves: Toughness, Dodge, Great Fortitude, Iron Will, Lightning Reflexes, Improved Initiative, Skill Focus and the skill feats. A buff with the same name isn’t counted twice.',
