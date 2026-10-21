@@ -160,6 +160,7 @@ export function compute(c, classesByName, opts = {}) {
     const row = classesByName[cls]?.levels[Math.min(n, 20) - 1];
     if (!row) continue;
     bab += row.bab;
+    (bd.bab ||= []).push({ label: `${cls} ${n}`, value: row.bab });
     for (const s of ['fort', 'ref', 'will']) baseSave[s] += row[s];
   }
   d.bab = bab;
@@ -192,13 +193,15 @@ export function compute(c, classesByName, opts = {}) {
     const ab = c.abilities[a];
     const list = [
       ...listOf(a),
-      { value: num(ab.enh), type: 'enhancement' }, { value: num(ab.misc), type: 'untyped' }, { value: num(ab.temp), type: 'untyped' },
+      { value: num(ab.enh), type: 'enhancement', source: 'Enh box' }, { value: num(ab.misc), type: 'untyped', source: 'Misc box' }, { value: num(ab.temp), type: 'untyped', source: 'Temp' },
     ];
     const st = stack(list);
     const racial = race.mods[a] || 0;
     const score = num(ab.base) + racial + (increases[a] || 0) + st.total - num(ab.drain);
     const m = mod(score) - Math.floor(num(ab.damage) / 2);
     d.abilities[a] = { score, mod: m, racial, increase: increases[a] || 0, bonus: st.total, base: num(ab.base) };
+    bd[`abilities.${a}.score`] = parts({ label: 'Base', value: num(ab.base) }, { label: 'Racial', value: racial }, { label: 'Level-up increases', value: increases[a] || 0 },
+      stackParts(list), { label: 'Drain', value: -num(ab.drain) });
     bd[`abilities.${a}.mod`] = parts({ label: `${ABIL_SHORT[a]} score ${score}`, value: mod(score) }, { label: 'Ability damage', value: -Math.floor(num(ab.damage) / 2) });
   }
   const M = a => d.abilities[a].mod;
@@ -232,8 +235,8 @@ export function compute(c, classesByName, opts = {}) {
     if (!isShield && (cat === 'medium' || cat === 'heavy')) armorSlow = true;
   }
   d.armorFx = wornFx(c.armor);
-  acList.push({ value: num(c.ac.natural), type: 'natural armor' }, { value: num(c.ac.deflection), type: 'deflection' },
-    { value: num(c.ac.dodge), type: 'dodge' }, { value: num(c.ac.misc), type: 'untyped' });
+  acList.push({ value: num(c.ac.natural), type: 'natural armor', source: 'Natural box' }, { value: num(c.ac.deflection), type: 'deflection', source: 'Deflect box' },
+    { value: num(c.ac.dodge), type: 'dodge', source: 'Dodge box' }, { value: num(c.ac.misc), type: 'untyped', source: 'Untyped box' });
   const acp = Math.min(armorAcp, loadAcp);
   const effMaxDex = Math.min(maxDex, loadMaxDex);
   d.acp = acp; d.maxDex = effMaxDex === Infinity ? null : effMaxDex; d.asf = asf;
@@ -250,12 +253,22 @@ export function compute(c, classesByName, opts = {}) {
     flat: 10 + acSt.total - Math.max(dodge, 0) + Math.min(dexToAc, 0) + sz.ac + adj.flat,
     dex: dexToAc, size: sz.ac, byType: acSt.byType, adj,
   };
+  // What each AC is made of, after the base 10 (shown when hovering the number)
+  const dexAc = { label: dexToAc < M('dex') ? `Dex modifier (capped at ${dexToAc})` : 'Dex modifier', value: dexToAc };
+  const sizeAc = { label: `Size (${size})`, value: sz.ac };
+  const dodgeBonus = m => m.type === 'dodge' && m.value > 0;
+  bd['ac.total'] = parts(dexAc, sizeAc, stackParts(acList), { label: 'Misc (AC only)', value: adj.total });
+  bd['ac.touch'] = parts(dexAc, sizeAc, stackParts(acList.filter(m => !NON_TOUCH_AC.has(m.type || 'untyped'))), { label: 'Misc (touch only)', value: adj.touch });
+  bd['ac.flat'] = parts(dexToAc < 0 && dexAc, sizeAc, stackParts(acList.filter(m => !dodgeBonus(m))), { label: 'Misc (flat-footed only)', value: adj.flat });
 
   // ---- HP ----
   const fcbHp = c.levelUps.filter(l => l.fcb === 'hp').length;
   const hpSt = stack(listOf('hp'));
   // each level's die plus the Con modifier, never below 1 (a Con penalty cannot take a level to 0 or less)
-  d.hp = { max: c.levelUps.reduce((s, l) => s + Math.max(1, num(l.hp) + M('con')), 0) + fcbHp + hpSt.total + num(c.hp.misc), fcb: fcbHp };
+  const fromLevels = c.levelUps.reduce((s, l) => s + Math.max(1, num(l.hp) + M('con')), 0), dice = c.levelUps.reduce((s, l) => s + num(l.hp), 0);
+  d.hp = { max: fromLevels + fcbHp + hpSt.total + num(c.hp.misc), fcb: fcbHp };
+  bd['hp.max'] = parts({ label: `Hit dice (${lvl} level${lvl === 1 ? '' : 's'})`, value: dice }, { label: 'Con modifier each level (at least 1 HP a level)', value: fromLevels - dice },
+    { label: 'Favored class', value: fcbHp }, stackParts(listOf('hp')), { label: 'Max adj.', value: num(c.hp.misc) });
   // never above the maximum: when a Constitution buff ends the maximum drops, and what was stored for current HP can be higher than it
   d.hp.current = c.hp.current == null || c.hp.current === '' ? d.hp.max : Math.min(d.hp.max, num(c.hp.current));
 
@@ -275,6 +288,8 @@ export function compute(c, classesByName, opts = {}) {
   const dwarfLike = c.race === 'Dwarf';
   if (!dwarfLike && (armorSlow || load === 'medium' || load === 'heavy')) speed = reduceSpeed(speed);
   d.speed = speed + num(c.speedMisc) + stack(listOf('speed')).total;
+  bd.speed = parts({ label: `${race.name} base speed`, value: race.speed || 30 }, { label: armorSlow ? 'Medium or heavy armor' : `${load[0].toUpperCase() + load.slice(1)} load`, value: speed - (race.speed || 30) },
+    { label: 'Misc', value: num(c.speedMisc) }, stackParts(listOf('speed')));
 
   // ---- attacks ----
   const meleeSt = stack(listOf('attack', 'melee'));
@@ -298,14 +313,13 @@ export function compute(c, classesByName, opts = {}) {
   const cmdAc = Object.entries(acSt.byType).filter(([t]) => CMD_AC_TYPES.has(t)).reduce((s, [, v]) => s + v, 0);
   const cmdBuffs = stack(listOf('cmd')).total;
   d.cmd = 10 + bab + M('str') + M('dex') + sz.cmb + num(c.cmdMisc) + cmdAc + cmdBuffs;
-  // The same, grouped for the Defense card's explanation: the AC bonus types that count, by type
-  d.cmdParts = { bab, str: M('str'), dex: M('dex'), size: sz.cmb, misc: num(c.cmdMisc), buffs: cmdBuffs,
-    ac: Object.fromEntries(Object.entries(acSt.byType).filter(([t]) => CMD_AC_TYPES.has(t))) };
-  // What the number is made of. The AC bonuses of the kinds CMD counts, and every AC penalty (rage's -2, for one), are part of it.
-  bd.cmd = parts({ label: 'Base attack bonus', value: bab }, { label: 'Str modifier', value: M('str') }, { label: 'Dex modifier', value: M('dex') },
+  // What the number is made of, after the base 10. The AC bonuses of the kinds CMD counts, and every AC penalty (rage's -2, for one), are part of it.
+  const cmdBd = (dexOk, acOk) => parts({ label: 'Base attack bonus', value: bab }, { label: 'Str modifier', value: M('str') }, dexOk && { label: 'Dex modifier', value: M('dex') },
     { label: `Size (${size}, maneuvers)`, value: sz.cmb }, { label: 'Misc', value: num(c.cmdMisc) },
-    stackParts(acList.filter(m => CMD_AC_TYPES.has(m.type || 'untyped'))).map(p => ({ ...p, label: p.label + ' (also counts for AC)' })), stackParts(listOf('cmd')));
+    stackParts(acList.filter(m => CMD_AC_TYPES.has(m.type || 'untyped') && acOk(m))).map(p => ({ ...p, label: p.label + ' (also counts for AC)' })), stackParts(listOf('cmd')));
+  bd.cmd = cmdBd(true, () => true);
   d.cmdFlat = d.cmd - Math.max(M('dex'), 0) - Math.max(dodge, 0); // flat-footed loses a Dex bonus; a Dex penalty stays
+  bd.cmdFlat = cmdBd(M('dex') < 0, m => !dodgeBonus(m));
 
   for (const w of c.weapons) {
     const ranged = !!w.ranged;

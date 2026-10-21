@@ -14,7 +14,7 @@ import { state, changed } from './app.js';
 import { getPath, toast, esc, modal } from './ui.js';
 import { options, setOption, showOptions } from './options.js';
 import { api } from './api.js';
-import { tipText } from './rolltip.js';
+import { tipText, sumText } from './rolltip.js';
 import { sign, num } from './calc.js';
 
 const D20 = '<svg class="d20" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 2l8.5 5v10L12 22l-8.5-5V7z"/><path d="M12 2l3.5 8.5H8.5zM3.5 7l5 3.5M20.5 7l-5 3.5M8.5 10.5L12 22l3.5-11.5M3.5 17l5-6.5M20.5 17l-5-6.5"/></svg>';
@@ -167,6 +167,12 @@ function tipFor(el) {
     const v = getPath(d, ds.roll);
     if (typeof v !== 'number') return '';
     return tipText(ds.rollLabel || 'Roll', v, d.bd?.[ds.roll], `Click to roll d20${sign(v)}`);
+  }
+  if (ds.sum !== undefined) {
+    const v = getPath(d, ds.sum);
+    if (typeof v !== 'number') return '';
+    const notes = ds.sum.startsWith('ac.') ? [d.maxDex != null && `Max Dex ${sign(d.maxDex)} (armor or load)`, d.acp && `Armor check penalty ${d.acp}`] : [];
+    return sumText(ds.sumLabel || '', v, d.bd?.[ds.sum], { base: +ds.sumBase || 0, unit: ds.sumUnit || '', notes });
   }
   return '';
 }
@@ -334,7 +340,7 @@ function rollWindow(p0, attack0, sp = null) {
 export function initRoller() {
   // Sets the hover text just before the tooltip code reads it (capture phase, so this runs first).
   document.addEventListener('mouseover', e => {
-    const el = e.target.closest?.('[data-roll],[data-roll-weapon]');
+    const el = e.target.closest?.('[data-roll],[data-roll-weapon],[data-sum]');
     if (el) el.dataset.tip = tipFor(el);
   }, true);
   document.addEventListener('click', e => {

@@ -18,3 +18,19 @@ export function tipText(title, total, parts, hint) {
   if (hint) lines.push(hint);
   return lines.join('\n');
 }
+
+/**
+ * The hover text on a number that is not rolled (AC, hit points, an ability score...): the total, then what adds up to it.
+ * @param base   a starting number that is not in parts, e.g. the 10 of AC and CMD
+ * @param notes  closing lines, e.g. "Max Dex +3 (armor)"
+ */
+export function sumText(title, total, parts, { base = 0, unit = '', notes = [] } = {}) {
+  const lines = [`${title} ${total}${unit}`];
+  if (base) lines.push(`${base}  Base`);
+  const list = (parts || []).filter(p => p && p.value);
+  // the first number is where the sum starts, so it has no + (a base score, the hit dice, the race's speed)
+  list.forEach((p, i) => lines.push(`${!base && !i && p.value > 0 ? p.value : sgn(p.value)}  ${p.label}`));
+  const sum = base + list.reduce((n, p) => n + p.value, 0);
+  if (sum !== total) lines.push(`${sgn(total - sum)}  Other`);
+  return [...lines, ...notes.filter(Boolean)].join('\n');
+}

@@ -104,6 +104,8 @@ function sel(path, options, { rerender = false, cls = '' } = {}) {
 }
 const roll = (key, label, inner) => `<button class="nb" data-roll="${esc(key)}" data-roll-label="${esc(label)}">${inner}</button>`;
 const calc = (key, fmt = 'plain', cls = '') => `<span class="calc ${cls}" data-calc="${key}" data-fmt="${fmt}"></span>`;
+// A number that is not rolled but shows what adds up to it on hover (the parts are d.bd[key]; `base` is a starting number not in them, like AC's 10)
+const sum = (key, label, inner, { base = 0, unit = '' } = {}) => `<span class="sum" data-sum="${esc(key)}" data-sum-label="${esc(label)}"${base ? ` data-sum-base="${base}"` : ''}${unit ? ` data-sum-unit="${esc(unit)}"` : ''}>${inner}</span>`;
 const ref = (name, cat, label) => `<a href="#" class="ref" data-entry="${esc(name)}" ${cat ? `data-cat="${esc(cat)}"` : ''}>${esc(label ?? name)}</a>`;
 const refId = (id, label) => `<a href="#" class="ref" data-entry="${esc(label)}" data-entry-id="${id}">${esc(label)}</a>`;
 
@@ -153,7 +155,7 @@ function overview(body, c, d) {
     <section class="card hp has-portrait">
       <div class="hp-main">
       <h3>Hit Points</h3>
-      <div class="hp-big"><span class="calc" data-calc="hp.current"></span><span class="muted"> / </span>${calc('hp.max')}</div>
+      <div class="hp-big"><span class="calc" data-calc="hp.current"></span><span class="muted"> / </span>${sum('hp.max', 'Maximum HP', calc('hp.max'))}</div>
       <div class="hp-bar"><div id="hp-fill"></div>${segsHtml(hpSegments(d.hp.max))}</div>
       <div class="row">
         <input id="hp-amt" type="number" class="num w4" placeholder="0" min="0">
@@ -181,7 +183,7 @@ function overview(body, c, d) {
           <th title="Ability damage">Dmg</th><th title="Ability drain">Drain</th></tr></thead>
         <tbody>${ABILITIES.map(a => `<tr>
           <th><a href="#" class="ref" data-entry="${ABILITY_NAMES[a]}" data-cat="Rules">${a.toUpperCase()}</a></th>
-          <td class="big">${calc(`abilities.${a}.score`)}</td>
+          <td class="big">${sum(`abilities.${a}.score`, ABILITY_NAMES[a], calc(`abilities.${a}.score`))}</td>
           <td class="big accent">${roll(`abilities.${a}.mod`, a.toUpperCase() + ' check', calc(`abilities.${a}.mod`, 'sign'))}</td>
           <td>${inp(`abilities.${a}.base`, { type: 'num', cls: 'w3' })}</td>
           <td>${calc(`abilities.${a}.racial`, 'sign', 'dim')}</td>
@@ -197,12 +199,11 @@ function overview(body, c, d) {
     <section class="card defense">
       <h3>Defense</h3>
       <div class="stat-row">
-        ${[['ac.total', 'ac.totalMisc', ref('Armor Class', 'Rules', 'AC')], ['ac.touch', 'ac.touchMisc', ref('Touch Attacks', 'Rules', 'Touch')],
-    ['ac.flat', 'ac.flatMisc', ref('Flat-Footed', 'Rules', 'Flat-footed')], ['cmd', 'cmdMisc', ref('Combat Maneuver Defense', 'Rules', 'CMD')]].map(([v, misc, label]) => `
-        <div class="stat"><div class="label">${label}</div>${calc(v, 'plain', 'big')}
+        ${[['ac.total', 'ac.totalMisc', ref('Armor Class', 'Rules', 'AC'), 'AC'], ['ac.touch', 'ac.touchMisc', ref('Touch Attacks', 'Rules', 'Touch'), 'Touch AC'],
+    ['ac.flat', 'ac.flatMisc', ref('Flat-Footed', 'Rules', 'Flat-footed'), 'Flat-footed AC'], ['cmd', 'cmdMisc', ref('Combat Maneuver Defense', 'Rules', 'CMD'), 'CMD']].map(([v, misc, label, name]) => `
+        <div class="stat"><div class="label">${label}</div>${sum(v, name, calc(v, 'plain', 'big'), { base: 10 })}
           <label class="stat-misc" title="Adds to this number only">misc ${inp(misc, { type: 'num', cls: 'w3' })}</label></div>`).join('')}
       </div>
-      <div class="breakdown" id="ac-breakdown"></div>
       <div class="kv">
         <label title="Natural armor bonus">Natural ${inp('ac.natural', { type: 'num', cls: 'w3' })}</label>
         <label title="Deflection bonus (ring of protection)">Deflect ${inp('ac.deflection', { type: 'num', cls: 'w3' })}</label>
@@ -227,18 +228,18 @@ function overview(body, c, d) {
       <h3>Offense</h3>
       <div class="stat-row">
         <div class="stat"><div class="label">${ref('Initiative', 'Rules')}</div>${roll('init', 'Initiative', calc('init', 'sign', 'big'))}</div>
-        <div class="stat"><div class="label">${ref('Base Attack Bonus', 'Rules', 'BAB')}</div><span class="big" id="bab-text"></span></div>
+        <div class="stat"><div class="label">${ref('Base Attack Bonus', 'Rules', 'BAB')}</div>${sum('bab', 'Base attack bonus', '<span class="big" id="bab-text"></span>')}</div>
         <div class="stat"><div class="label">Melee</div>${roll('melee', 'Melee attack', calc('melee', 'sign', 'big'))}</div>
         <div class="stat"><div class="label">Ranged</div>${roll('ranged', 'Ranged attack', calc('ranged', 'sign', 'big'))}</div>
         <div class="stat"><div class="label">${ref('Combat Maneuver Bonus', 'Rules', 'CMB')}</div>${roll('cmb', 'CMB', calc('cmb', 'sign', 'big'))}</div>
-        <div class="stat"><div class="label">Speed</div><span class="big">${calc('speed')}<small> ft</small></span></div>
+        <div class="stat"><div class="label">Speed</div>${sum('speed', 'Speed', `<span class="big">${calc('speed')}<small> ft</small></span>`, { unit: ' ft' })}</div>
       </div>
       <div class="kv">
         <label>Init misc ${inp('initMisc', { type: 'num', cls: 'w3' })}</label>
         <label>CMB misc ${inp('cmbMisc', { type: 'num', cls: 'w3' })}</label>
         <label>Speed misc ${inp('speedMisc', { type: 'num', cls: 'w3' })}</label>
       </div>
-      <div class="small muted">Flat-footed CMD ${calc('cmdFlat')} · Size ${esc(d.size)} · ${ref('Attacks of Opportunity', 'Rules', 'AoO rules')} · ${ref('Combat Maneuvers', 'Rules', 'Maneuvers')}</div>
+      <div class="small muted">Flat-footed CMD ${sum('cmdFlat', 'Flat-footed CMD', calc('cmdFlat'), { base: 10 })} · Size ${esc(d.size)} · ${ref('Attacks of Opportunity', 'Rules', 'AoO rules')} · ${ref('Combat Maneuvers', 'Rules', 'Maneuvers')}</div>
     </section>
     <section class="card quick-notes">
       <h3>Notes</h3>
@@ -303,20 +304,6 @@ function overview(body, c, d) {
     const card = $('.card.hp', body);
     card.classList.toggle('dead', cur <= -conScore);
     card.classList.toggle('downed', cur <= 0 && cur > -conScore);
-    // What AC and CMD are made of, one chip per kind of bonus (the hover on each roll still lists every source)
-    const typeName = t => (t.startsWith('natural armor') ? 'Natural armor' : t[0].toUpperCase() + t.slice(1));
-    const chips = pairs => {
-      const sum = new Map();
-      for (const [k, v] of pairs) if (v) sum.set(k, (sum.get(k) || 0) + v);
-      return [...sum].map(([k, v]) => `<span class="part"><b>${sign(v)}</b> ${esc(k)}</span>`).join('');
-    };
-    const line = (name, total, pairs, note = '') => `<div class="bd-line"><span class="bd-what">${name} ${total}</span><span class="bd-eq">=</span><span class="part"><b>10</b></span>${chips(pairs)}${note}</div>`;
-    const byType = pairs => Object.entries(pairs).map(([k, v]) => [typeName(k), v]);
-    const p = dd.cmdParts;
-    const limits = [dd.maxDex != null ? `max Dex ${sign(dd.maxDex)}` : '', dd.acp ? `check penalty ${dd.acp}` : ''].filter(Boolean).join(' · ');
-    $('#ac-breakdown').innerHTML =
-      line('AC', dd.ac.total, [['Dex', dd.ac.dex], ['Size', dd.ac.size], ...byType(dd.ac.byType), ['Misc', dd.ac.adj.total]], limits ? `<span class="bd-note">${limits}</span>` : '') +
-      line('CMD', dd.cmd, [['BAB', p.bab], ['Str', p.str], ['Dex', p.dex], ['Size', p.size], ...byType(p.ac), ['Buffs', p.buffs], ['Misc', p.misc]]);
   };
   updateDyn();
   if (state.healFx) { hpFx($('.card.hp', body), state.healFx); state.healFx = null; }

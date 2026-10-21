@@ -73,8 +73,8 @@ test('the misc box on each defense tile changes only that number', () => {
   assert.deepEqual([d.ac.total, d.ac.touch, d.ac.flat], [18, 11, 17], 'AC 16 + 2, touch 12 - 1, flat-footed 14 + 3');
   assert.equal(d.cmd, 20, 'CMD 19 + 1');
   assert.equal(d.cmdFlat, 18, 'flat-footed CMD: 20 - Dex 2');
-  const p = d.cmdParts;
-  assert.equal(10 + p.bab + p.str + p.dex + p.size + p.misc + p.buffs + Object.values(p.ac).reduce((a, b) => a + b, 0), d.cmd, 'the explanation adds up');
+  const total = ps => 10 + ps.reduce((a, p) => a + p.value, 0);
+  assert.deepEqual([total(d.bd['ac.total']), total(d.bd['ac.touch']), total(d.bd['ac.flat']), total(d.bd.cmd), total(d.bd.cmdFlat)], [18, 11, 17, 20, 18], 'the hover text adds up, misc boxes included');
 });
 
 test('skill points say where they come from', () => {

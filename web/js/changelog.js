@@ -6,7 +6,7 @@ export const CHANGELOG = [
   {
     version: '1.3.4', next: true,
     items: [
-      'Overview: CMD shows its parts under the AC line, so you can see that rage’s –2 to AC also lowers CMD.',
+      'Overview: hover AC, touch, flat-footed, CMD, max HP, an ability score, BAB or speed to see what adds up to it (rage’s –2 to AC shows in CMD too).',
       'These feats now count by themselves: Toughness, Dodge, Great Fortitude, Iron Will, Lightning Reflexes, Improved Initiative, Skill Focus and the skill feats. A buff with the same name isn’t counted twice.',
       'Traits with an always-on bonus (Reactionary, Resilient, Seeker...) and racial skill bonuses (Keen Senses, Halfling Luck...) now count by themselves too.',
       'Importing moves those bonuses out of the Misc boxes, so imported totals don’t change.',
@@ -16,11 +16,12 @@ export const CHANGELOG = [
       'Temporary Intelligence (like Fox’s Cunning) no longer changes your skill points. Permanent Int still does.',
       'Current HP no longer shows above max when a Constitution buff ends.',
       'Double-counted bonuses: if a worn item’s bonus is also typed in a box (common on imports, like a cloak of resistance in the save Misc boxes), the sheet offers to take it out of the box.',
-      'More items give their bonuses by themselves: elvenkind cloak and boots, eyes of the eagle, gloves of swimming and climbing, rings of climbing and swimming, circlet of persuasion, goggles of minute seeing, vest of escape, boots of striding and springing, and belts and headbands that boost abilities ("Belt of Physical Might +4 (Str, Con)"). Items already on your sheet get them too.',
+      'More items give their bonuses by themselves: elvenkind cloak and boots, eyes of the eagle, gloves of swimming and climbing, rings of climbing and swimming, circlet of persuasion, goggles of minute seeing, vest of escape, and boots of striding and springing.',
+      'So do ability belts and headbands, including ones that name two abilities ("Belt of Physical Might +4 (Str, Con)"). Items already on your sheet get them too.',
       'Buffs and items can add to a single skill (the “One skill” group in the bonus editor). A competence bonus from armor no longer stacks with one from an item.',
       'A headband of vast intelligence (or the Int Enh box) no longer adds skill points each level. Instead it gives ranks in one skill (your Hit Dice per +2), shown next to Ranks spent.',
       'Skills: hover “Ranks spent” to see where your ranks come from.',
-      'Defense: AC, touch, flat-footed and CMD each have their own Misc box, and the breakdown below is shorter.',
+      'Defense: AC, touch, flat-footed and CMD each have their own Misc box.',
       'Ability Scores: the score and modifier now sit right next to each ability’s name.',
       'Every level gives at least 1 hit point, even with a Con penalty and a low roll.',
       'Flat-footed CMD keeps a Dexterity penalty and only loses a Dexterity bonus.',

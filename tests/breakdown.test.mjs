@@ -29,6 +29,25 @@ test('every roll\'s hover text adds up to the number that is rolled', () => {
   for (const [key, s] of Object.entries(d.skills)) assert.equal(sum(d.bd[`skills.${key}.total`]), s.total, key);
 });
 
+test('numbers that are not rolled (AC, CMD, HP, scores, speed, BAB) add up too', () => {
+  const c = sample();
+  c.armor = [{ name: 'Chain shirt', type: 'armor', bonus: 4, enh: 1, maxDex: 4, acp: -2, equipped: true }];
+  Object.assign(c.ac, { natural: 1, deflection: 2 });
+  c.abilities.str.enh = 2; c.abilities.con.drain = 1;
+  buff(c, 'Rage');
+  const d = calc(c);
+  for (const k of ['total', 'touch', 'flat']) assert.equal(10 + sum(d.bd[`ac.${k}`]), d.ac[k], 'AC ' + k);
+  assert.equal(10 + sum(d.bd.cmd), d.cmd, 'CMD');
+  assert.equal(10 + sum(d.bd.cmdFlat), d.cmdFlat, 'flat-footed CMD');
+  assert.equal(sum(d.bd['hp.max']), d.hp.max, 'max HP');
+  assert.equal(sum(d.bd.speed), d.speed, 'speed');
+  assert.equal(sum(d.bd.bab), d.bab, 'BAB');
+  for (const a of ['str', 'dex', 'con', 'int', 'wis', 'cha']) assert.equal(sum(d.bd[`abilities.${a}.score`]), d.abilities[a].score, a + ' score');
+  assert.ok(d.bd['ac.total'].some(p => p.label === 'Chain shirt (armor)' && p.value === 5), 'the armor is named');
+  assert.ok(!d.bd['ac.touch'].some(p => /armor/.test(p.label)), 'touch AC leaves out armor and natural armor');
+  assert.ok(!d.bd['ac.flat'].some(p => /Dex|dodge/.test(p.label)), 'flat-footed loses the Dex and dodge bonuses (Haste)');
+});
+
 test('buffs show up by name and type, as the source of a + or -', () => {
   const d = calc(sample());
   const labels = d.bd['weapons.0.attack'].map(p => p.label);

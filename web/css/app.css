@@ -168,13 +168,7 @@ input.sub { margin-left: 6px; font-size: 12px; padding: 2px 5px; }
 /* Defense tiles: a small misc box under each number, and the AC/CMD explanation as rows of chips */
 .stat-misc { display: flex; gap: 4px; align-items: center; justify-content: center; margin-top: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
 .stat-misc input { width: 40px; padding: 1px 4px; font-size: 12px; text-align: center; }
-.breakdown { display: grid; gap: 4px; margin: 4px 0 6px; font-size: 12px; color: var(--muted); }
-.bd-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
-.bd-what { font-weight: 700; color: var(--ink); min-width: 52px; }
-.bd-eq { margin-right: 2px; }
-.breakdown .part { border: 1px solid var(--line); border-radius: 99px; padding: 0 8px; white-space: nowrap; }
-.breakdown .part b { color: var(--ink); }
-.bd-note { margin-left: 6px; font-style: italic; }
+.sum { cursor: help; } /* a number whose hover lists what adds up to it */
 .stat .nb { margin-top: 6px; } /* room between a tile's label (and its underline) and the roll button */
 .icon-btn[data-prep] { border: 1px solid var(--line); border-radius: 6px; width: 21px; height: 21px; padding: 0; line-height: 1; font-size: 15px; color: var(--ink); }
 .icon-btn[data-prep]:hover { border-color: var(--accent); color: var(--accent); }
