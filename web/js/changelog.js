@@ -4,7 +4,7 @@
 
 export const CHANGELOG = [
   {
-    version: '1.3.5', next: true,
+    version: '1.3.5', date: '2026-10-21',
     items: [
       'Fixed the app getting stuck on "Loading…" on some PCs where another program had changed the .js file type.',
     ],
