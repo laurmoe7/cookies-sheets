@@ -13,6 +13,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 import urllib.error
 import urllib.request
 
@@ -303,6 +304,14 @@ class HttpApi(unittest.TestCase):
             app._snapshot(cid, app._char_path(cid), force=True)
             os.rename(os.path.join(app.HISTORY_DIR, app._history_of(cid)[0][1]), os.path.join(app.HISTORY_DIR, f'{cid}-{100 + i}.json'))
         self.assertEqual(len(app._history_of(cid)), app.HISTORY_KEEP)
+
+    def test_ui_types_ignore_the_registry(self):
+        # Windows may map .js to text/plain in the registry (mimetypes reads it); module scripts then never run.
+        with mock.patch('mimetypes.guess_type', return_value=('text/plain', None)), \
+             mock.patch('mimetypes.guess_file_type', return_value=('text/plain', None), create=True):
+            for path, want in (('/js/app.js', 'text/javascript'), ('/css/app.css', 'text/css'), ('/', 'text/html')):
+                with urllib.request.urlopen(self.base + path, timeout=10) as r:
+                    self.assertEqual(r.headers['Content-Type'].split(';')[0], want, path)
 
     def test_cache_headers(self):
         with urllib.request.urlopen(self.base + '/css/app.css', timeout=10) as r:

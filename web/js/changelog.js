@@ -4,6 +4,12 @@
 
 export const CHANGELOG = [
   {
+    version: '1.3.5', next: true,
+    items: [
+      'Fixed the app getting stuck on "Loading…" on some PCs where another program had changed the .js file type.',
+    ],
+  },
+  {
     version: '1.3.4', date: '2026-10-21',
     items: [
       'Overview: hover AC, touch, flat-footed, CMD, max HP, an ability score, BAB or speed to see what adds up to it (rage’s –2 to AC shows in CMD too).',

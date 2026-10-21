@@ -875,7 +875,13 @@ def app_version():
 # ---------------- HTTP ----------------
 
 class Handler(SimpleHTTPRequestHandler):
-    extensions_map = {**SimpleHTTPRequestHandler.extensions_map, '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg'}
+    # Fixed types for the UI files. Otherwise Python asks the Windows registry, where some programs set .js to text/plain:
+    # the browser then refuses to run the modules and the app sits on "Loading..." forever.
+    extensions_map = {**SimpleHTTPRequestHandler.extensions_map, '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg',
+                      '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
+                      '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg',
+                      '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif', '.ico': 'image/x-icon',
+                      '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.wav': 'audio/wav'}
     protocol_version = 'HTTP/1.1'  # keep-alive: far fewer connections when loading the UI
 
     def __init__(self, *a, **kw):
