@@ -730,7 +730,7 @@ function slaCard(c, d) {
   };
   return `<div class="spell-level sla-card" data-cls="${SLA}">
     <div class="sl-head"><h4>Spell-likes &amp; other spells</h4><span class="muted small">any spell, no class needed · uses per day (or at will) · Rest refills them</span><span class="grow"></span>
-      <button class="btn small ghost" data-sla-add title="Pick a spell from the compendium">＋ Add spell</button><button class="btn small ghost" data-sla-custom title="A spell or ability that is not in the compendium">＋ Custom</button></div>
+      <button class="btn small ghost" data-sla-add title="Pick a spell from the compendium">＋ Add spell</button><button class="btn small ghost" data-sla-ability title="One of your special abilities, feats or traits that works like a spell (an arcanist exploit, a racial spell-like ability)">＋ Ability</button><button class="btn small ghost" data-sla-custom title="A spell or ability that is not in the compendium">＋ Custom</button></div>
     ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>` : '<p class="muted small sl-none">None yet. For spells that are not on a class list: racial and monster spell-likes (Dimension Door 1/day), item spells, or a spell you were given. Set how many times a day, or leave it blank for at will.</p>'}
   </div>`;
 }
@@ -740,9 +740,19 @@ function wireSla(body, c) {
   if (!card) return;
   const blank = extra => ({ name: '', school: '', summary: '', notes: '', level: 1, perDay: 1, used: 0, cl: '', ability: 'cha', ...extra });
   card.onclick = async e => {
-    const t = e.target.closest('[data-sp-select],[data-sla-add],[data-sla-custom]');
+    const t = e.target.closest('[data-sp-select],[data-sla-add],[data-sla-custom],[data-sla-ability]');
     if (!t) return;
     if (t.dataset.spSelect !== undefined) return openSpell(SLA, +t.dataset.spSelect, t);
+    if (t.dataset.slaAbility !== undefined) {
+      const a = await chooseSlaAbility(c);
+      if (!a) return;
+      let summary = '';
+      if (a.id) try { summary = (await api.entry(a.id)).summary || ''; } catch { /* added without the summary */ }
+      // Abilities mostly spend a class pool (arcane reservoir, ki) rather than uses per day, so they start at will.
+      (c.spellLikes ||= []).push(blank({ ...(a.id ? { id: a.id } : {}), name: a.name, school: '', summary, notes: a.notes || '', perDay: '' }));
+      changed({ rerender: true });
+      return;
+    }
     if (t.dataset.slaCustom !== undefined) {
       (c.spellLikes ||= []).push(blank());
       changed({ rerender: true });
@@ -760,6 +770,33 @@ function wireSla(body, c) {
     (c.spellLikes ||= []).push(blank({ id: r.id, name: r.name, school: r.sub || '', summary, level }));
     changed({ rerender: true });
   };
+}
+
+/**
+ * Pick one of the character's special abilities, feats or traits to keep as a spell-like ability,
+ * or search the compendium's class features. Resolves with {id?, name, notes} or undefined.
+ */
+function chooseSlaAbility(c) {
+  const have = new Set((c.spellLikes || []).map(s => (s.id ? 'id:' + s.id : 'n:' + (s.name || '').toLowerCase())));
+  const groups = [['specials', 'Special abilities'], ['feats', 'Feats'], ['traits', 'Traits']]
+    .map(([key, label]) => [label, (c[key] || []).filter(f => f.name)]).filter(([, l]) => l.length);
+  return modal('Add an ability as spell-like', (body, close) => {
+    const rows = groups.flatMap(([, l]) => l);
+    body.innerHTML = (groups.map(([label, list]) => `<h4>${esc(label)}</h4>${list.map(f => {
+      const added = have.has(f.id ? 'id:' + f.id : 'n:' + f.name.toLowerCase());
+      return `<div class="pick-row ${added ? 'known' : ''}"><div><b>${esc(f.name)}</b> <span class="muted small">${esc(f.sub || '')}</span></div>
+        <div class="muted small">${added ? 'Already in your spell-likes' : esc((f.notes || '').slice(0, 140))}</div>
+        ${added ? '' : `<button class="btn small primary" data-pick="${rows.indexOf(f)}">Add</button>`}</div>`;
+    }).join('')}`).join('') || '<p class="muted">You have no special abilities, feats or traits yet.</p>')
+      + '<div class="row"><span class="grow"></span><button class="btn small ghost" data-search>Search the compendium…</button></div>';
+    body.addEventListener('click', async e => {
+      const p = e.target.closest('[data-pick]');
+      if (p) return close(rows[+p.dataset.pick]);
+      if (!e.target.closest('[data-search]')) return;
+      const r = await pickEntry('Add an ability as spell-like', 'Class Feature', { renderRow: r => r.summary || r.source });
+      if (r) close({ id: r.id, name: r.name });
+    });
+  });
 }
 
 /** The side panel's action area for the open spell-like ability. */
