@@ -652,7 +652,7 @@ function spells(body, c, d) {
         const chip = s => {
           const left = num(s.prepared), spent = num(s.cast);
           const pips = prepared && l > 0 ? `<span class="pips" title="${left} prepared${spent ? `, ${spent} cast` : ''}">${'<i class="pip"></i>'.repeat(Math.min(left, 9))}${'<i class="pip used"></i>'.repeat(Math.min(spent, 9))}</span>` : '';
-          return `<button class="sp-chip ${isActive(cls, s.i) ? 'on' : ''} ${prepared && l > 0 ? (left || spent ? 'ready' : 'idle') : ''}" data-sp-select="${s.i}" data-level="${l}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(cls, s.i)}"><span class="sp-n">${esc(s.name || 'New spell')}</span>${s.school ? `<span class="sp-s">${esc(s.school)}</span>` : ''}${pips}</button>`;
+          return `<button class="sp-chip ${isActive(cls, s.i) ? 'on' : ''} ${prepared && l > 0 ? (left || spent ? 'ready' : 'idle') : ''}" data-sp-select="${s.i}" data-level="${l}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(cls, s.i)}"><span class="sp-n">${esc(s.name || 'New spell')}</span>${s.school ? `<span class="sp-s">${esc(s.school)}</span>` : ''}${liveMark(s)}${pips}</button>`;
         };
         return `<div class="spell-level">
           <div class="sl-head"><h4>${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>${count}${heading}<span class="grow"></span>
@@ -726,7 +726,7 @@ function slaCard(c, d) {
     const x = d.spellLikes[i];
     const pips = x.unlimited ? '<span class="sp-s">at will</span>'
       : `<span class="pips" title="${x.left} of ${x.max} left today">${'<i class="pip"></i>'.repeat(Math.min(x.left, 9))}${'<i class="pip used"></i>'.repeat(Math.min(x.max - x.left, 9))}</span>`;
-    return `<button class="sp-chip ${isActive(SLA, i) ? 'on' : ''} ${x.unlimited || x.left ? 'ready' : 'idle'}" data-sp-select="${i}" data-level="${x.level}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(SLA, i)}"><span class="sp-n">${esc(s.name || 'New ability')}</span><span class="sp-s">${x.level ? ORD[x.level] : '0'}</span>${pips}</button>`;
+    return `<button class="sp-chip ${isActive(SLA, i) ? 'on' : ''} ${x.unlimited || x.left ? 'ready' : 'idle'}" data-sp-select="${i}" data-level="${x.level}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(SLA, i)}"><span class="sp-n">${esc(s.name || 'New ability')}</span><span class="sp-s">${x.level ? ORD[x.level] : '0'}</span>${liveMark(s)}${pips}</button>`;
   };
   return `<div class="spell-level sla-card" data-cls="${SLA}">
     <div class="sl-head"><h4>Spell-likes &amp; other spells</h4><span class="muted small">any spell, no class needed · uses per day (or at will) · Rest refills them</span><span class="grow"></span>
@@ -799,6 +799,10 @@ function chooseSlaAbility(c) {
   });
 }
 
+/** The "In play" tick for a spell that was cast and keeps going (Flaming Sphere, Spiritual Weapon): its 🎲 Roll opens on the damage and uses nothing up. */
+const liveBox = s => `<label class="sp-live-box small" title="Already cast and still going, like Flaming Sphere or Spiritual Weapon: 🎲 Roll opens on its damage and does not use a slot or a use. Rest clears it."><input type="checkbox" data-sa-live ${s.active ? 'checked' : ''}> In play</label>`;
+const liveMark = s => (s.active ? '<span class="sp-live" title="In play: rolling it uses no slot">in play</span>' : '');
+
 /** The side panel's action area for the open spell-like ability. */
 function renderSlaActions() {
   const sd = spellDrawer;
@@ -809,7 +813,7 @@ function renderSlaActions() {
   const p = k => `spellLikes.${sd.i}.${k}`;
   sd.el.dataset.cls = SLA; // the roll window finds the ability from here
   sd.el.innerHTML = `<div class="sp-actions">
-      <div class="sp-group">${s.id ? `<span data-spell-slot="${sd.i}" data-spell-id="${s.id}"></span>` : `<button class="btn" data-spell-roll="${sd.i}" title="Roll an attack, concentration or the damage for this ability">🎲 Roll</button>`}</div>
+      <div class="sp-group">${s.id ? `<span data-spell-slot="${sd.i}" data-spell-id="${s.id}"></span>` : `<button class="btn" data-spell-roll="${sd.i}" title="Roll an attack, concentration or the damage for this ability">🎲 Roll</button>`}${liveBox(s)}</div>
       <div class="sp-group">
         ${x.unlimited ? '<span class="sp-group-label">At will</span>'
     : `<span class="sp-group-label">Left today</span><b>${x.left} / ${x.max}</b>
@@ -854,6 +858,7 @@ function renderSlaActions() {
     renderSlaActions();
   };
   sd.el.onchange = e => {
+    if (e.target.matches('[data-sa-live]')) { s.active = e.target.checked; changed({ rerender: true }); return; }
     if (!e.target.matches('[data-sla-name]')) return;
     s.name = e.target.value;
     const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = s.name || 'New ability';
@@ -1003,6 +1008,7 @@ function renderSpellActions() {
   sd.el.innerHTML = `<div class="sp-actions">
       <div class="sp-group">
         ${s.id ? `<span data-spell-slot="${sd.i}" data-spell-id="${s.id}"></span>` : `<button class="btn" data-spell-roll="${sd.i}" title="Roll an attack, concentration or the damage for this spell">🎲 Roll</button>`}
+        ${liveBox(s)}
         ${summonSpell(s.name) ? `<button class="btn" data-summon="${esc(s.name)}" data-summon-cls="${esc(sd.cls)}" title="Choose a creature; it is added to Companions → Summons">✨ Summon…</button>` : ''}
       </div>
       ${prepared ? `<div class="sp-group" title="Prepared and not cast yet. Casting uses one; Rest gives them back.">
@@ -1051,6 +1057,7 @@ function renderSpellActions() {
   };
   sd.el.onchange = e => {
     if (e.target.matches('[data-sa-prep]')) s.prepared = Math.max(0, Math.round(num(e.target.value)));
+    else if (e.target.matches('[data-sa-live]')) s.active = e.target.checked;
     else if (e.target.matches('[data-sa-name]')) { s.name = e.target.value; const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = s.name || 'New spell'; }
     else if (e.target.matches('[data-sa-notes]')) s.notes = e.target.value;
     else return;

@@ -58,3 +58,12 @@ test('rest gives the uses of spell-like abilities back', () => {
   assert.equal(c.spellLikes[0].used, 0);
   assert.ok(said.includes('spell slots reset'));
 });
+
+test('rest ends spells that are in play (Flaming Sphere ticked "In play")', () => {
+  const c = newCharacter();
+  c.spellbooks.Wizard = { used: [], spells: [{ name: 'Flaming Sphere', level: 2, prepared: 0, cast: 1, active: true }] };
+  c.spellLikes = [{ name: 'Produce Flame', level: 1, used: 0, active: true }];
+  fullRest(c, { maxHp: 10, level: 3 });
+  assert.equal(c.spellbooks.Wizard.spells[0].active, false);
+  assert.equal(c.spellLikes[0].active, false);
+});

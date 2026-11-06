@@ -36,9 +36,13 @@ export function fullRest(c, { maxHp, level }) {
       if (num(s.cast)) spells = true;
       s.prepared = num(s.prepared) + num(s.cast);
       s.cast = 0;
+      if (s.active) { s.active = false; spells = true; } // spells in play (Flaming Sphere) end
     }
   }
-  for (const s of c.spellLikes || []) if (num(s.used)) { s.used = 0; spells = true; }
+  for (const s of c.spellLikes || []) {
+    if (num(s.used)) { s.used = 0; spells = true; }
+    if (s.active) { s.active = false; spells = true; }
+  }
   if (spells) said.push('spell slots reset');
   return said;
 }

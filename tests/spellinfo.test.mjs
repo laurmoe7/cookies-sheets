@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseSave, spellInfo } from '../web/js/spellinfo.js';
+import { parseSave, spellInfo, projectiles } from '../web/js/spellinfo.js';
 
 test('saving throws are read from the stored text', () => {
   assert.deepEqual(parseSave('Reflex half'), { type: 'Reflex', effect: 'half', harmless: false, label: 'Reflex half' });
@@ -12,7 +12,7 @@ test('saving throws are read from the stored text', () => {
 
 test('Fireball: damage dice, Reflex half, spell resistance, no attack roll', () => {
   const i = spellInfo({ summary: '1d6 fire damage per level, 20-ft. radius.', html: '<p>A fireball spell is an explosion of flame that detonates with a low roar.</p>', meta: { save: 'Reflex half', sr: 'yes' } }, 7);
-  assert.deepEqual(i, { dice: '7d6', kind: 'damage', attack: null, touch: false, save: parseSave('Reflex half'), sr: true });
+  assert.deepEqual(i, { dice: '7d6', kind: 'damage', attack: null, touch: false, save: parseSave('Reflex half'), sr: true, undead: null, count: 1, noun: '' });
 });
 
 test('Cure Light Wounds heals; a touch attack spell is a melee touch', () => {
@@ -24,7 +24,7 @@ test('Cure Light Wounds heals; a touch attack spell is a melee touch', () => {
 
 test('ray spells use a ranged touch attack; custom spells give nothing', () => {
   assert.equal(spellInfo({ summary: 'Ranged touch attack deals 4d6 fire damage, +1 ray/four levels (max 3).', html: '', meta: { save: 'none', sr: 'yes' } }, 9).attack, 'ranged');
-  assert.deepEqual(spellInfo(null, 9), { dice: '', kind: '', attack: null, touch: false, save: null, sr: false });
+  assert.deepEqual(spellInfo(null, 9), { dice: '', kind: '', attack: null, touch: false, save: null, sr: false, undead: null, count: 1, noun: '' });
   assert.equal(spellInfo({ summary: 'Wall of force.', html: '', meta: { save: 'none', sr: 'no' } }, 9).sr, false);
 });
 
@@ -73,4 +73,30 @@ test('a harming touch spell whose summary says "Touch deals" needs a melee touch
 test('a flat bonus beside the dice is kept: Magic Missile is 1d4+1', () => {
   const mm = spellInfo({ summary: '1d4+1 damage; +1 missile per two levels above 1st (max 5).', html: '', meta: { sr: 'yes' } }, 5);
   assert.equal(mm.dice, '1d4+1'); assert.equal(mm.kind, 'damage'); assert.equal(mm.attack, null);
+});
+
+test('rays and missiles: how many at each caster level', () => {
+  const mm = '<p>For every two caster levels beyond 1st, you gain an additional missile&mdash;two at 3rd level, three at 5th, four at 7th, and the maximum of five missiles at 9th level or higher.</p>';
+  assert.deepEqual([1, 2, 3, 4, 8, 9, 15].map(cl => projectiles(mm, cl).count), [1, 1, 2, 2, 4, 5, 5], 'Magic Missile: 1 + floor((CL - 1) / 2), max 5');
+  assert.equal(projectiles(mm, 5).noun, 'missile');
+  const sr = '<p>You blast your enemies with fiery rays. You may fire one ray, plus one additional ray for every four levels beyond 3rd (to a maximum of three rays at 11th level).</p>';
+  assert.deepEqual([3, 6, 7, 10, 11, 20].map(cl => projectiles(sr, cl).count), [1, 1, 2, 2, 3, 3], 'Scorching Ray: 1 + floor((CL - 3) / 4), max 3');
+  const fs = '<p>You call forth two fiery projectiles resembling shuriken, plus one more for every two caster levels beyond 3rd (to a maximum of eight shuriken at 15th level), which hover in front of you.</p>';
+  assert.deepEqual([3, 5, 9, 15, 20].map(cl => projectiles(fs, cl).count), [2, 3, 5, 8, 8], 'Fiery Shuriken: 8 at 15th means it starts at 8 - (15 - 3) / 2 = 2');
+  assert.equal(projectiles(fs, 9).noun, 'shuriken');
+  const cf = '<p>You may fire three rays, plus one additional ray for every four levels beyond 11th (to a maximum of five rays at 19th level).</p>';
+  assert.deepEqual([11, 15, 19].map(cl => projectiles(cf, cl).count), [3, 4, 5], 'Contagious Flame: 3 + floor((CL - 11) / 4)');
+  assert.equal(projectiles('<p>The bonus increases by 1 for every three caster levels above 3rd, to a maximum of +5 at 12th level.</p>', 12), null, 'Barkskin grows a bonus, not a number of rays');
+  const i = spellInfo({ summary: 'Ranged touch attack deals 4d6 fire damage, +1 ray/four levels (max 3).', html: sr, meta: { sr: 'yes' } }, 7);
+  assert.deepEqual([i.count, i.noun, i.dice, i.attack], [2, 'ray', '4d6', 'ranged']);
+});
+
+test('cure spells hurt undead: a melee touch attack when the range is touch', () => {
+  const csw = spellInfo({ name: 'Cure Serious Wounds', summary: 'Cures 3d8 damage + 1/level (max +15).', html: '<p>This spell functions like cure light wounds, except that it cures 3d8 points of damage + 1 point per caster level (maximum +15).</p>', meta: { range: 'touch', save: 'Will half (harmless)', sr: 'yes (harmless)' } }, 7);
+  assert.deepEqual([csw.kind, csw.dice, csw.undead, csw.attack], ['healing', '3d8+7', { touch: true }, null], '3d8 + 1 x 7 levels; no attack when healing a friend');
+  const clw = spellInfo({ summary: 'Cures 1d8 damage + 1/level (max +5).', html: '<p>Since undead are powered by negative energy, this spell deals damage to them instead of healing their wounds.</p>', meta: { range: 'touch' } }, 2);
+  assert.deepEqual(clw.undead, { touch: true });
+  const mass = spellInfo({ summary: 'Cures 1d8 damage +1/level (max +25) for many creatures.', html: '<p>Like other cure spells, it deals damage to undead in its area rather than curing them.</p>', meta: { range: 'close (25 ft. + 5 ft./2 levels)' } }, 9);
+  assert.deepEqual(mass.undead, { touch: false }, 'a ranged cure spell needs no touch attack');
+  assert.equal(spellInfo({ summary: 'Removes fatigue.', html: '<p>Undead are not affected.</p>', meta: { range: 'touch' } }, 3).undead, null, 'no healing dice, nothing to roll');
 });

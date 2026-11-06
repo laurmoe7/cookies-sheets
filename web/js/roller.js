@@ -226,6 +226,7 @@ function rollWindow(p0, attack0, sp = null) {
   let pick = sp ? sp.start : 0;
   let diceVal = sp?.dice || '';
   let castOn = !!sp?.cast?.on;
+  let countVal = Math.max(1, sp?.count || 1); // how many rays/missiles to roll for (fewer when they go at different targets)
   const wd = !sp && p0.weaponDamage; // a weapon's damage roll: critical hit switch and the damage modifiers
   let dmods = [], useCrit = !!wd?.startCrit;
   const damageRoll = () => {
@@ -243,7 +244,10 @@ function rollWindow(p0, attack0, sp = null) {
     if (wd) return { p: damageRoll(), attack: false };
     if (!sp) return { p: p0, attack: attack0 };
     const ch = sp.choices[pick];
-    return ch.dice ? { p: { expr: diceVal.trim() || '0', label: ch.label2 }, attack: false, ch } : { p: ch.p, attack: ch.attack, ch };
+    const p = ch.dice ? { expr: diceVal.trim() || '0', label: ch.label2 } : ch.p;
+    // Several rays or missiles: one roll each (an attack and a damage roll per ray), labelled "ray 1", "ray 2"...
+    const many = ch.multi && countVal > 1 ? { items: Array.from({ length: countVal }, (_, k) => ({ ...p, label: `${p.label} (${sp.noun || 'roll'} ${k + 1})` })), parts: p.parts } : p;
+    return { p: many, attack: !ch.dice && ch.attack, ch };
   };
   const title = sp ? sp.title : p0.items ? p0.items[0].label.replace(/ attack \d+\/\d+$/, '') + ' full attack' : (p0.label || 'Roll');
   const snap = { mods: mods.map(m => ({ ...m })), mode };
@@ -262,7 +266,8 @@ function rollWindow(p0, attack0, sp = null) {
             const mine = sp.choices.map((c, i) => [c, i]).filter(([c]) => c.group === g);
             return mine.length ? '<div class="sp-group-row"><span class="sp-group-lab">' + g + '</span>' + mine.map(([c, i]) => '<button class="rchip ' + (i === pick ? 'on' : '') + '" data-sp-pick="' + i + '" title="' + esc(c.tip || '') + '">' + esc(c.label) + '</button>').join(' ') + '</div>' : '';
           }).join('') + '</div>' +
-          (ch.dice ? '<div class="row" style="margin:8px 0"><input id="spell-dice" class="w12" value="' + esc(diceVal) + '" placeholder="e.g. 5d6" autocomplete="off" aria-label="Spell dice"></div>' : '') : '') +
+          (ch.dice ? '<div class="row" style="margin:8px 0"><input id="spell-dice" class="w12" value="' + esc(diceVal) + '" placeholder="e.g. 5d6" autocomplete="off" aria-label="Spell dice"></div>' : '') +
+          (ch.multi && sp.noun ? '<div class="row" style="margin:8px 0"><label class="small" title="One roll for each. Lower it when some go at another target">' + esc(sp.noun === 'shuriken' ? 'Shuriken' : sp.noun[0].toUpperCase() + sp.noun.slice(1) + 's') + ' <input id="spell-count" class="w3" type="number" min="1" max="' + sp.count + '" value="' + countVal + '" aria-label="How many"></label> <span class="small muted">of ' + sp.count + '</span></div>' : '') : '') +
         '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' + buffNote(p) + (wd ? damageBlock() : '') +
         (d20 ? '<div class="roll-bar" style="margin:8px 0"><button class="rchip ' + (mode === 'adv' ? 'on' : '') + '" data-win-mode="adv">Advantage</button><button class="rchip ' + (mode === 'dis' ? 'on' : '') + '" data-win-mode="dis">Disadvantage</button></div>' : '') +
         (presets.length ? presetGroups(presets) : '') +
@@ -294,10 +299,11 @@ function rollWindow(p0, attack0, sp = null) {
       if (await doRoll(p) && sp?.cast && castOn && sp.cast.left > 0) sp.cast.spend(); // only a roll that was made or sent counts as casting
     };
     body.oninput = e => {
-      if (e.target.id !== 'spell-dice') return;
-      diceVal = e.target.value;
-      const b = body.querySelector('.rw-expr b');
-      if (b) b.textContent = diceVal.trim() || '0';
+      if (e.target.id === 'spell-count') countVal = Math.max(1, Math.trunc(Number(e.target.value)) || 1);
+      else if (e.target.id === 'spell-dice') diceVal = e.target.value;
+      else return;
+      const b = body.querySelector('.rw-expr b'), { p } = cur(), items = p.items || [p];
+      if (b) b.textContent = withMode(items[0].expr) + (items.length > 1 ? ' … and ' + (items.length - 1) + ' more' : '');
     };
     body.onclick = e => {
       const pr = e.target.closest('[data-mod-preset]'), md = e.target.closest('[data-win-mode]'), sk = e.target.closest('[data-sp-pick]');
@@ -481,11 +487,23 @@ async function spellWindow(btn) {
     known ? (info.sr ? 'spell resistance applies' : 'ignores spell resistance') : ''].filter(Boolean);
   const what = info.kind === 'healing' ? 'healing' : info.kind === 'damage' ? 'damage' : '';
   const kindOf = t => (t.includes('ranged') ? 'ranged' : t.includes('melee') ? 'melee' : null);
+  const isHit = t => /touch attack|ranged attack|melee attack/.test(t);
   const choices = [
-    ...chips.map(ch => ({ group: /touch attack|ranged attack|melee attack/.test(ch.tip) ? 'Hit' : 'Checks', label: ch.label, tip: ch.tip, kind: kindOf(ch.tip), attack: /touch attack|ranged attack|melee attack/.test(ch.tip),
+    ...chips.map(ch => ({ group: isHit(ch.tip) ? 'Hit' : 'Checks', label: ch.label, tip: ch.tip, kind: kindOf(ch.tip), attack: isHit(ch.tip), multi: isHit(ch.tip),
       p: { expr: 'd20' + bonusText(ch.n), label: ch.name, parts: ch.parts } })),
-    { group: what === 'healing' ? 'Healing' : 'Damage', label: what ? (what === 'healing' ? 'Healing' : 'Damage') + (info.dice ? ' ' + info.dice : '') : 'Roll dice', dice: true, label2: what ? `${name} ${what}` : name, tip: 'Roll the dice of the spell (edit them first if the guess is wrong)' },
+    // A cure spell used on an undead creature: a melee touch attack (when its range is touch), then its healing dice as damage (Will half).
+    ...(info.undead?.touch && info.attack !== 'melee' ? [{ group: 'Hit', label: 'To hit: melee touch vs undead ' + (bonusText(d.melee) || '+0'), tip: 'Roll d20 melee touch attack against an undead creature', kind: 'melee', attack: true, undead: true,
+      p: { expr: 'd20' + bonusText(d.melee), label: name + ' melee touch attack (undead)', parts: d.bd?.melee } }] : []),
+    { group: what === 'healing' ? 'Healing' : 'Damage', label: what ? (what === 'healing' ? 'Healing' : 'Damage') + (info.dice ? ' ' + info.dice : '') : 'Roll dice', dice: true, multi: true, label2: what ? `${name} ${what}` : name, tip: 'Roll the dice of the spell (edit them first if the guess is wrong)' },
+    ...(info.undead ? [{ group: 'Damage', label: 'Damage to undead' + (info.dice ? ' ' + info.dice : ''), dice: true, label2: `${name} damage to undead`, tip: 'Undead take the healing as damage (Will half' + (info.sr ? ', spell resistance applies' : '') + ')' }] : []),
   ];
-  const first = choices.findIndex(ch => ch.attack);
-  rollWindow(null, false, { title: name, facts: facts.join(' · '), choices, cast: spellCast(cls, sp, sc, idx), dice: info.dice, start: first >= 0 && known ? first : (info.dice ? choices.length - 1 : 0) });
+  const first = choices.findIndex(ch => ch.attack && !ch.undead), dmg = choices.findIndex(ch => ch.dice);
+  const active = !!sp.active; // already cast and still going (Flaming Sphere, Spiritual Weapon): rolls are for its damage and use nothing up
+  if (active) facts.unshift('In play: rolling uses no slot');
+  if (info.count > 1) facts.push(`${info.count} ${info.noun === 'shuriken' ? info.noun : info.noun + 's'} at this caster level`);
+  rollWindow(null, false, {
+    title: name, facts: facts.join(' · '), choices, cast: active ? null : spellCast(cls, sp, sc, idx), dice: info.dice,
+    count: info.count, noun: info.noun,
+    start: active ? dmg : first >= 0 && known ? first : (info.dice ? dmg : 0),
+  });
 }

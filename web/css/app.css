@@ -694,6 +694,8 @@ html[data-motion="off"] .fx-spark { display: none; }
 .sp-actions .btn { padding: 6px 14px; }
 .sp-cast { font-weight: 700; min-width: 70px; justify-content: center; text-align: center; }
 .sp-cast-n { font-size: 11px; color: var(--muted); }
+.sp-live-box { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+.sp-live { font-size: 10px; padding: 0 5px; border-radius: 8px; background: var(--accent); color: var(--bg); text-transform: uppercase; letter-spacing: .04em; }
 .stepper { display: inline-flex; align-items: stretch; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); }
 .stepper button { all: unset; box-sizing: border-box; width: 30px; line-height: 30px; text-align: center; cursor: pointer; font-size: 18px; color: var(--ink); user-select: none; }
 .stepper button:hover { background: var(--accent-soft); color: var(--accent); }
