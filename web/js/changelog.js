@@ -8,7 +8,7 @@ export const CHANGELOG = [
     items: [
       'The window no longer opens small after it was closed while minimized, and an update keeps its size and place.',
       'Spells: “＋ Ability” adds one of your special abilities, feats or traits (an arcanist exploit, say) to Spell-likes & other spells.',
-      'Spells: tick “In play” on a spell you already cast (Flaming Sphere, Spiritual Weapon) and 🎲 Roll goes straight to its damage without using a slot. Rest clears it.',
+      'Spells: tick “In play” (in the side panel or the roll window) on a spell you already cast (Flaming Sphere, Spiritual Weapon) and 🎲 Roll goes straight to its damage without using a slot. Rest clears it.',
       'Spells: Magic Missile, Scorching Ray and other ray or missile spells roll once per missile or ray for your caster level (you can lower the number).',
       'Spells: cure spells have a melee touch attack and a “Damage to undead” roll.',
     ],
