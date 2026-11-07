@@ -12,7 +12,7 @@ test('saving throws are read from the stored text', () => {
 
 test('Fireball: damage dice, Reflex half, spell resistance, no attack roll', () => {
   const i = spellInfo({ summary: '1d6 fire damage per level, 20-ft. radius.', html: '<p>A fireball spell is an explosion of flame that detonates with a low roar.</p>', meta: { save: 'Reflex half', sr: 'yes' } }, 7);
-  assert.deepEqual(i, { dice: '7d6', kind: 'damage', attack: null, touch: false, save: parseSave('Reflex half'), sr: true, undead: null, count: 1, noun: '' });
+  assert.deepEqual(i, { dice: '7d6', kind: 'damage', attack: null, touch: false, save: parseSave('Reflex half'), sr: true, undead: null, count: 1, noun: '', lasting: false });
 });
 
 test('Cure Light Wounds heals; a touch attack spell is a melee touch', () => {
@@ -24,7 +24,7 @@ test('Cure Light Wounds heals; a touch attack spell is a melee touch', () => {
 
 test('ray spells use a ranged touch attack; custom spells give nothing', () => {
   assert.equal(spellInfo({ summary: 'Ranged touch attack deals 4d6 fire damage, +1 ray/four levels (max 3).', html: '', meta: { save: 'none', sr: 'yes' } }, 9).attack, 'ranged');
-  assert.deepEqual(spellInfo(null, 9), { dice: '', kind: '', attack: null, touch: false, save: null, sr: false, undead: null, count: 1, noun: '' });
+  assert.deepEqual(spellInfo(null, 9), { dice: '', kind: '', attack: null, touch: false, save: null, sr: false, undead: null, count: 1, noun: '', lasting: false });
   assert.equal(spellInfo({ summary: 'Wall of force.', html: '', meta: { save: 'none', sr: 'no' } }, 9).sr, false);
 });
 
@@ -99,4 +99,12 @@ test('cure spells hurt undead: a melee touch attack when the range is touch', ()
   const mass = spellInfo({ summary: 'Cures 1d8 damage +1/level (max +25) for many creatures.', html: '<p>Like other cure spells, it deals damage to undead in its area rather than curing them.</p>', meta: { range: 'close (25 ft. + 5 ft./2 levels)' } }, 9);
   assert.deepEqual(mass.undead, { touch: false }, 'a ranged cure spell needs no touch attack');
   assert.equal(spellInfo({ summary: 'Removes fatigue.', html: '<p>Undead are not affected.</p>', meta: { range: 'touch' } }, 3).undead, null, 'no healing dice, nothing to roll');
+});
+
+test('a damage spell with a duration lasts (it goes in play when cast); instantaneous ones do not', () => {
+  const info = (summary, duration) => spellInfo({ summary, html: '', meta: { duration } }, 5);
+  assert.equal(info('Ball of fire deals 3d6 fire damage.', '1 round/level').lasting, true, 'Flaming Sphere');
+  assert.equal(info('1d6 damage + 1/level, touch or thrown.', '1 min./level (D)').lasting, true, 'Produce Flame');
+  assert.equal(info('1d6 fire damage per level, 20-ft. radius.', 'instantaneous').lasting, false, 'Fireball');
+  assert.equal(info('Grants +2 (or higher) enhancement to natural armor.', '10 min./level').lasting, false, 'Barkskin rolls nothing');
 });

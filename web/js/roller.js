@@ -225,7 +225,7 @@ function askRoll(p, el, shift) {
 function rollWindow(p0, attack0, sp = null) {
   let pick = sp ? sp.start : 0;
   let diceVal = sp?.dice || '';
-  let castOn = !!sp?.cast?.on && !sp?.live?.on; // a spell already in play is not cast again
+  let castOn = !!sp?.cast?.on && !sp?.inPlay; // a spell already in play is not cast again unless you tick it
   let countVal = Math.max(1, sp?.count || 1); // how many rays/missiles to roll for (fewer when they go at different targets)
   const wd = !sp && p0.weaponDamage; // a weapon's damage roll: critical hit switch and the damage modifiers
   let dmods = [], useCrit = !!wd?.startCrit;
@@ -275,8 +275,9 @@ function rollWindow(p0, attack0, sp = null) {
         '<div class="row" style="margin:8px 0"><input id="mod-n" class="' + (wd ? 'w5' : 'w3') + '" type="' + (wd ? 'text' : 'number') + '" placeholder="' + (wd ? '2d6 or ±' : '±') + '" aria-label="Modifier" ' + (wd ? 'title="A number, or dice such as 2d6 for precision or other extra damage"' : '') + '><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>' +
         (d20 && mods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b></div>' : '') +
         (d20 ? '<label class="small"><input type="checkbox" id="mod-keep" ' + (keepMods ? 'checked' : '') + '> Keep these modifiers for my next rolls</label>' : '') +
-        (sp?.live ? '<label class="small" style="display:block;margin:6px 0" title="Already cast and still going, like Flaming Sphere: later rolls open on its damage and use no slot. Rest clears it."><input type="checkbox" id="sp-live" ' + (sp.live.on ? 'checked' : '') + '> In play: keep it going, later rolls use no slot</label>' : '') +
-        (sp?.cast ? '<label class="small" style="display:block;margin:6px 0" title="Rolling counts as casting the spell. Untick it if you already cast it or are only checking a number."><input type="checkbox" id="sp-cast" ' + (castOn ? 'checked' : '') + (sp.cast.left <= 0 ? ' disabled' : '') + '> ' + esc(sp.cast.label) + (sp.cast.left <= 0 ? ' (none left)' : sp.cast.recent ? ' (counted already for the roll you just made)' : sp.cast.left === Infinity ? '' : ' (' + sp.cast.left + ' left)') + '</label>' : '') +
+        (sp?.cast ? '<label class="small" style="display:block;margin:6px 0" title="Rolling counts as casting the spell. Untick it if you already cast it or are only checking a number."><input type="checkbox" id="sp-cast" ' + (castOn ? 'checked' : '') + (sp.cast.left <= 0 ? ' disabled' : '') + '> ' + esc(sp.inPlay ? sp.cast.label.replace(/^Cast it/, 'Cast it again') : sp.cast.label) + (sp.cast.left <= 0 ? ' (none left)' : sp.cast.recent ? ' (counted already for the roll you just made)' : sp.cast.left === Infinity ? '' : ' (' + sp.cast.left + ' left)') + '</label>' +
+          (sp.inPlay ? '<p class="small muted" style="margin:0 0 6px">It is in play, so rolling its damage uses no slot. Rest ends it, or untick In play in the side panel.</p>'
+            : sp.lasting ? '<p class="small muted" style="margin:0 0 6px">It lasts, so once cast it stays in play: later rolls use no slot.</p>' : '') : '') +
         '<div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn small" id="win-cancel">Cancel</button>' +
         '<button class="rchip go" data-win-go="roll">🎲 Roll</button>' +
         '<button class="' + discordClass() + '" id="win-discord" title="Post this roll to your Discord channel, or keep it on the sheet">' + esc(discordLabel()) + '</button></div>';
@@ -336,10 +337,6 @@ function rollWindow(p0, attack0, sp = null) {
     body.onchange = e => {
       if (e.target.id === 'mod-keep') keepMods = e.target.checked;
       else if (e.target.id === 'sp-cast') castOn = e.target.checked;
-      else if (e.target.id === 'sp-live') {
-        sp.live.set(e.target.checked);
-        if (e.target.checked && sp.cast?.recent) { castOn = false; draw(); } // it was cast by the roll just made: rolling again is only its damage
-      }
     };
     body.onkeydown = e => {
       if (e.key === 'Enter' && e.target.id === 'spell-dice') { e.preventDefault(); go(); }
@@ -505,10 +502,15 @@ async function spellWindow(btn) {
   const first = choices.findIndex(ch => ch.attack && !ch.undead), dmg = choices.findIndex(ch => ch.dice);
   const active = !!sp.active; // already cast and still going (Flaming Sphere, Spiritual Weapon): rolls are for its damage and use nothing up
   if (active) facts.unshift('In play: rolling uses no slot');
+  const lasting = info.lasting && !active, cast = spellCast(cls, sp, sc, idx);
+  if (cast && lasting) { // casting a spell that lasts (Flaming Sphere) puts it in play, so the next rounds' rolls use no slot
+    const spend = cast.spend;
+    cast.spend = () => { sp.active = true; spend(); };
+  }
   if (info.count > 1) facts.push(`${info.count} ${info.noun === 'shuriken' ? info.noun : info.noun + 's'} at this caster level`);
   rollWindow(null, false, {
-    title: name, facts: facts.join(' · '), choices, cast: spellCast(cls, sp, sc, idx), dice: info.dice,
-    live: { on: active, set(v) { sp.active = v; changed({ rerender: true }); document.dispatchEvent(new Event('spell-changed')); } },
+    title: name, facts: facts.join(' · '), choices, cast, dice: info.dice,
+    inPlay: active, lasting: lasting && !!cast,
     count: info.count, noun: info.noun,
     start: active ? dmg : first >= 0 && known ? first : (info.dice ? dmg : 0),
   });
