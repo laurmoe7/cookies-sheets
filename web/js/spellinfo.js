@@ -76,10 +76,10 @@ export function projectiles(html, cl) {
 /**
  * @param entry {summary, html, meta:{save, sr}} from /api/entry, or null for a custom spell
  * @param cl    caster level
- * @returns {dice, kind: 'damage'|'healing'|'', attack: 'ranged'|'melee'|null, touch (the attack is a touch attack), save, sr, undead, count, noun, lasting}
+ * @returns {dice, kind: 'damage'|'healing'|'', attack: 'ranged'|'melee'|null, touch (the attack is a touch attack), save, sr, undead, count, noun}
  */
 export function spellInfo(entry, cl) {
-  if (!entry) return { dice: '', kind: '', attack: null, touch: false, save: null, sr: false, undead: null, count: 1, noun: '', lasting: false };
+  if (!entry) return { dice: '', kind: '', attack: null, touch: false, save: null, sr: false, undead: null, count: 1, noun: '' };
   const summary = entry.summary || '', meta = entry.meta || {};
   const { attack, touch } = attackInfo(summary, entry.html);
   const body = plain(entry.html), healing = /\b(cures?|cured|heals?|restores?)\b/i;
@@ -100,7 +100,5 @@ export function spellInfo(entry, cl) {
     dice, kind, attack: harms ? 'melee' : attack, touch: harms ? true : touch, save, sr: /^yes/i.test(String(meta.sr ?? '').trim()),
     undead: undead ? { touch: /^touch\b/i.test(String(meta.range ?? '').trim()) } : null,
     count: shots?.count ?? 1, noun: shots?.noun ?? '',
-    // It keeps dealing damage after the casting round (Flaming Sphere, Spiritual Weapon, Produce Flame): casting it puts it "in play".
-    lasting: !!(kind === 'damage' || attack || harms) && !!String(meta.duration ?? '').trim() && !/^(instantaneous|see text)/i.test(String(meta.duration).trim()),
   };
 }
