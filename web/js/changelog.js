@@ -4,7 +4,7 @@
 
 export const CHANGELOG = [
   {
-    version: '1.3.6', next: true,
+    version: '1.3.6', date: '2026-11-07',
     items: [
       'The window no longer opens small after it was closed while minimized, and an update keeps its size and place.',
       'Spells: “＋ Ability” adds one of your special abilities, feats or traits (an arcanist exploit, say) to Spell-likes & other spells.',
