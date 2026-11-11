@@ -19,7 +19,7 @@ export const CHANGELOG = [
       'Companions: a paladin’s divine bond mount uses the full paladin level, as the Core Rulebook says, not paladin level − 3.',
       'Companions: a Gear card on each companion. Barding from the armor list (weight for its size, +0 to +5, ✦ Enchant) adds to its AC, caps its Dex, and slows it when medium or heavy.',
       'Companions: worn items on a companion (a cloak of resistance, an amulet of mighty fists…) add their bonuses, and barding’s check penalty applies to its Str and Dex skills.',
-      'Companions: the Gear card shows each piece as a tile with its bonuses, an on/off Worn switch (taken-off gear is dimmed) and the AC the gear adds.',
+      'Companions: the Gear card lists the gear as chips like the Inventory tab; click one (there or in your inventory) to open it in the side panel to wear, +N, enchant or remove.',
       'Level up: a trait that lets you pick a class skill, like Child of Nature, asks which one right after you choose it.',
       'Level up: What changes lists your daily pools going up (lay on hands 3 → 4, smite evil 2/day...), and a feature with options, like a paladin’s mercy or a rage power, is marked “choose one”.',
       'Level up: a level that opens a new spell level says so, and prepared casters (paladin, ranger, cleric...) are asked to choose spells whenever the Spells tab has none of a level they can cast. Apply reminds you if you leave one empty.',

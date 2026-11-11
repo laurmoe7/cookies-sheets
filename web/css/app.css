@@ -961,40 +961,10 @@ html[data-motion="off"] .fx-spark { display: none; }
 .comp-name-pen { color: var(--muted); font-size: 16px; opacity: .45; transition: opacity .15s; }
 .comp-name:hover .comp-name-pen, .comp-name:focus-within .comp-name-pen { opacity: 1; color: var(--accent); }
 
-/* A companion's Gear card: one tile per piece of gear. */
-.cg-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-.cg-head h3 { margin: 0; }
+/* A companion's Gear card: chips like the inventory's, and the AC the gear adds. */
+.comp-gear .row { gap: 8px; margin-bottom: 8px; }
+.comp-gear h3 { margin: 0; }
 .cg-total { font-size: 12px; font-weight: 600; color: var(--good); border: 1px solid currentColor; border-radius: 999px; padding: 1px 9px; }
-.cg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 10px; }
-.cg-tile { display: flex; flex-direction: column; gap: 7px; padding: 9px 11px; border: 1px solid var(--line); border-radius: var(--radius);
-  background: color-mix(in srgb, var(--ink) 6%, transparent); transition: opacity .15s, border-color .15s; }
-.cg-tile:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
-.cg-tile.off .cg-title, .cg-tile.off .cg-pills, .cg-tile.off .cg-icon { opacity: .5; }
-.cg-top { display: flex; align-items: center; gap: 9px; }
-.cg-icon { font-size: 22px; width: 28px; text-align: center; flex: none; }
-.cg-title { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
-.cg-title b { overflow-wrap: anywhere; }
-.cg-tag { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.cg-pills { display: flex; flex-wrap: wrap; gap: 4px; }
-.cg-pill { font-size: 11.5px; border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; background: color-mix(in srgb, var(--ink) 5%, transparent); }
-.cg-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: auto; }
-/* the Worn switch: the tick box is hidden, its label is the pill */
-.cg-worn { position: relative; flex: none; }
-.cg-worn input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
-.cg-worn span { display: inline-block; font-size: 11.5px; font-weight: 600; cursor: pointer; border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; color: var(--muted); user-select: none; }
-.cg-worn.on span { color: var(--good); border-color: currentColor; background: color-mix(in srgb, var(--good) 14%, transparent); }
-.cg-worn span:hover { border-color: var(--accent); }
-.cg-worn input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 2px; }
-/* +0…+5 as one segmented control */
-.cg-seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
-.cg-seg button { font: inherit; font-size: 12px; cursor: pointer; background: transparent; color: var(--ink); border: 0; border-left: 1px solid var(--line); padding: 2px 8px; }
-.cg-seg button:first-child { border-left: 0; }
-.cg-seg button:hover { background: color-mix(in srgb, var(--accent) 15%, transparent); }
-.cg-seg button.on { background: var(--accent); color: var(--accent-ink); }
-.cg-empty { font: inherit; color: var(--muted); cursor: pointer; flex-direction: row; align-items: center; gap: 9px; text-align: left; border-style: dashed; background: transparent; min-height: 64px; }
-.cg-empty b { color: var(--ink); display: block; }
-.cg-empty small { font-size: 11.5px; }
-.cg-empty:hover { color: var(--ink); border-color: var(--accent); }
 .inv-weapons { gap: 6px; flex-wrap: wrap; margin: 6px 0; }
 
 .inv-chips .sp-chip .sp-n, .inv-chips .sp-chip.ready .sp-n, .inv-chips .sp-chip.idle .sp-n { font-weight: 400; }

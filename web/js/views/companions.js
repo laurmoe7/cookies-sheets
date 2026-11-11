@@ -18,7 +18,7 @@ import { SKILLS } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom, debounce, toast } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
 import { renderSummons, summonsView } from './summons.js';
-import { gearCard, gearClick, gearChange } from './compgear.js';
+import { gearCard, gearClick } from './compgear.js';
 
 const PIC = { w: 3, h: 4, out: 800 };
 
@@ -71,17 +71,13 @@ export async function renderCompanions(body, c) {
     if (card) hpFx(card, fx);
   }
 
-  body.onchange = e => { // the Gear card's Worn tick boxes
-    const host = e.target.closest('.comp-gear')?.closest('[data-comp]');
-    if (host) gearChange(e, c.companions[+host.dataset.comp]);
-  };
   body.onclick = async e => {
     const tab = e.target.closest('[data-comp-tab]');
     if (tab) { compTab = tab.dataset.compTab; return renderCompanions(body, c); }
     const gearHost = e.target.closest('.comp-gear')?.closest('[data-comp]');
     if (gearHost) { // the Gear card (views/compgear.js)
       const comp = c.companions[+gearHost.dataset.comp], st = computeCompanion(comp, levels, data, masterOf(c, levels));
-      if (await gearClick(e, comp, st?.size || 'Large')) return;
+      if (await gearClick(e, comp, st?.size || 'Large', +gearHost.dataset.comp)) return;
     }
     const t = e.target.closest('[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-from-creature],[data-statblock],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
     if (!t) return;
@@ -410,7 +406,7 @@ function buildEditors(comp, s, p, { data, levels }) {
         ${tf(`${p}.tricks`, { multiline: true, placeholder: 'e.g. attack, come, defend, down, guard, heel, track', read: { title: `${comp.name} tricks`, cat: 'Tricks' } })}
         <p class="small">${'<a href="#" class="ref" data-entry="Handle Animal" data-cat="Skill">Handle Animal and tricks</a>'}</p>` : ''}
     </section>`;
-  return { strip, abilities: abilities + uc, ...adjust(comp, p), cards: build + gearCard(comp, s) + notesCard(comp, p, 'Personality, conditions…') };
+  return { strip, abilities: abilities + uc, ...adjust(comp, p), cards: build + gearCard(comp, s, +p.split(".")[1]) + notesCard(comp, p, 'Personality, conditions…') };
 }
 
 /** The familiar's controls: kind, archetype, what the feat and alignment need, and the master's level. */
@@ -428,7 +424,7 @@ function familiarEditors(comp, s, p, { data, levels }) {
         · <a href="#" class="ref" data-entry="Improved Familiar" data-cat="Feat">Improved Familiar</a>
         ${sp.improved ? `· <a href="#" class="ref" data-entry="${esc(sp.entry)}" data-cat="Monster">${esc(sp.entry)} stat block</a>` : ''}</span>${STAT_BTN}</div>
       ${s.requirements.length ? `<ul class="small comp-reqs">${s.requirements.map(r => `<li class="${r.ok ? 'good' : 'warn'}">${r.ok ? '✓' : '✗'} ${esc(r.text)}</li>`).join('')}</ul>` : ''}</div>`;
-  return { strip, ...adjust(comp, p), cards: gearCard(comp, s) + notesCard(comp, p, 'Variants, personality…') };
+  return { strip, ...adjust(comp, p), cards: gearCard(comp, s, +p.split(".")[1]) + notesCard(comp, p, 'Variants, personality…') };
 }
 
 /** A creature from the creature list has nothing to choose: just its adjustments and notes. */

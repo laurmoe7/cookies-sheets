@@ -1,89 +1,159 @@
-// The Gear card on a companion (Companions tab): barding and worn items. The rules are in ../compgear.js.
-import { changed } from '../app.js';
+// The Gear card on a companion (Companions tab): barding and worn items, drawn as chips like the Inventory tab's.
+// Clicking one opens it in the side panel with its controls, as the inventory does. The rules are in ../compgear.js.
+import { state, changed } from '../app.js';
 import { num, sign } from '../calc.js';
-import { esc, $, modal, pickEntry, confirmBox } from '../ui.js';
+import { esc, $, modal, pickEntry, confirmBox, showEntry, showCustom, closeDrawer } from '../ui.js';
 import { suggestEffects, effectsText } from '../itemfx.js';
+import { armorFx } from '../armorfx.js';
 import { bardingFromTemplate } from '../compgear.js';
 import { setArmorPlus, blankArmor } from '../equipment.js';
 import { chooseArmor } from './equipment.js';
 import { editArmorFx } from './armorfx.js';
 import { editModifier } from './sheet.js';
 
-/** An icon for an item tile, from its name. */
-function itemIcon(name) {
-  const n = String(name || '').toLowerCase();
-  return /amulet|necklace|periapt|pendant|medallion/.test(n) ? '📿' : /saddle|bridle|bit\b|harness|reins|stirrup/.test(n) ? '🐎' : /ring\b/.test(n) ? '💍'
-    : /cloak|cape|blanket|caparison/.test(n) ? '🧣' : /collar|torc|choker/.test(n) ? '⭕' : /bag|pack|pouch|saddlebag/.test(n) ? '🎒' : '✦';
-}
+// The piece of companion gear shown in the side panel: {ci, kind: 'barding' | 'item', k, armed, id, el}.
+let compDrawer = null;
+const isOpen = (ci, kind, k = 0) => compDrawer?.ci === ci && compDrawer.kind === kind && (kind === 'barding' || compDrawer.k === k);
+const pieceOf = d => { const comp = state.char?.companions?.[d?.ci]; return !comp ? null : d.kind === 'barding' ? comp.barding : comp.items?.[d.k]; };
 
-/** The Worn switch: a tick box drawn as an on/off pill (gearChange reads the tick box). */
-const wornSwitch = (attr, on) => `<label class="cg-worn ${on ? 'on' : ''}" title="${on ? 'Worn, so it counts. Click to take it off' : 'Taken off, so it does not count. Click to put it on'}">
-  <input type="checkbox" ${attr} ${on ? 'checked' : ''}><span>${on ? '● Worn' : '○ Off'}</span></label>`;
-
-const pills = list => list.filter(Boolean).map(x => `<span class="cg-pill">${esc(x)}</span>`).join('');
-
-/** The card: `comp` the companion, `s` its computed stat block. Every piece of gear is a tile; worn ones count, taken-off ones are dimmed. */
-export function gearCard(comp, s) {
-  const b = comp.barding, bd = s.gear?.barding, bOn = b && b.equipped !== false;
-  const plus = b ? [0, 1, 2, 3, 4, 5].map(n => `<button class="${n === num(b.enh) ? 'on' : ''}" data-cg-plus="${n}" title="${n ? `+${n} barding: +${n} more to AC` : 'No enhancement bonus'}">+${n}</button>`).join('') : '';
-  const fxSummary = String(bd?.fx.summary || '').replace(/^\+\d+\s*/, ''); // the +N is on the picker beside it
-  const barding = b ? `<div class="cg-tile cg-barding ${bOn ? '' : 'off'}">
-      <div class="cg-top"><span class="cg-icon">🛡</span>
-        <div class="cg-title"><span class="cg-tag">Barding</span><b>${esc(b.name || 'Barding')}</b></div>
-        ${wornSwitch('data-cg-worn', bOn)}<button class="icon-btn" data-cg-del-barding title="Remove the barding">✕</button></div>
-      <div class="cg-pills">${bd ? pills([`AC +${bd.ac}`, `max Dex ${bd.maxDex == null ? '—' : sign(bd.maxDex)}`, `check ${bd.acp || 0}`, bd.slows ? 'slows' : 'full speed', `${bd.weight} lb.`]) : '<span class="small muted">Taken off: no AC, no penalties.</span>'}</div>
-      <div class="cg-tools"><span class="cg-seg" title="Enhancement bonus">${plus}</span>
-        <button class="btn small ghost" data-cg-fx title="Masterwork, special material and special abilities">✦ ${esc(fxSummary || 'Enchant')}</button></div></div>`
-    : `<button class="cg-tile cg-empty" data-cg-add-barding title="Armor for the mount: the book’s numbers, weight for its size"><span class="cg-icon">🛡</span><span><b>＋ Barding</b><small>Armor made for the mount</small></span></button>`;
+/** The card: `comp` the companion, `s` its computed stat block, `ci` its index in c.companions. */
+export function gearCard(comp, s, ci) {
+  const b = comp.barding, bOn = b && b.equipped !== false;
+  const pip = '<span class="pips"><i class="pip"></i></span>';
+  const barding = b ? `<button class="sp-chip armor-chip ${isOpen(ci, 'barding') ? 'on' : ''} ${bOn ? 'ready' : 'idle'}" data-cg-open="barding" title="${bOn ? 'Worn. ' : 'Not worn. '}Click for its numbers, +N and enchantments">
+      <span class="sp-n">🛡 ${esc(b.name || 'Barding')}</span><span class="sp-s">AC +${num(b.bonus) + num(b.enh)}</span>${bOn ? pip : ''}</button>` : '';
   const items = (comp.items || []).map((it, k) => {
     const on = it.worn !== false, fx = it.effects || [];
-    return `<div class="cg-tile ${on ? '' : 'off'}">
-      <div class="cg-top"><span class="cg-icon">${itemIcon(it.name)}</span>
-        <div class="cg-title"><span class="cg-tag">Item</span><b>${esc(it.name || 'Item')}</b></div>
-        ${wornSwitch(`data-cg-item-worn="${k}"`, on)}<button class="icon-btn" data-cg-item-del="${k}" title="Remove ${esc(it.name || 'this item')}">✕</button></div>
-      <div class="cg-pills">${fx.length ? pills(fx.map(e => effectsText([e]))) : '<span class="small muted">No bonuses</span>'}</div>
-      <div class="cg-tools"><button class="btn small ghost" data-cg-item-fx="${k}" title="What the item adds to the companion's numbers">✦ ${fx.length ? 'Edit bonuses' : 'Add bonuses'}</button></div></div>`;
+    const fxMark = fx.length ? `<span class="sp-s" title="${esc(effectsText(fx))}${on ? '' : ' (counts once worn)'}">✦</span>` : '';
+    return `<button class="sp-chip ${isOpen(ci, 'item', k) ? 'on' : ''} ${on ? 'ready' : 'idle'}" data-cg-open="${k}" title="${on ? 'Worn. ' : 'Not worn. '}Click for details">
+      <span class="sp-n">${esc(it.name || 'Item')}</span>${fxMark}${on ? pip : ''}</button>`;
   }).join('');
   const total = s.gear?.ac ? `<span class="cg-total" title="AC from the worn barding and items">AC ${sign(s.gear.ac)} from gear</span>` : '';
   return `<section class="card span2 comp-gear">
-    <div class="cg-head"><h3>Gear</h3>${total}<span class="grow"></span>
-      <button class="btn small" data-cg-magic title="A magic item from the compendium; known items get their bonuses filled in">✦ ＋ Magic item</button>
+    <div class="row"><h3>Gear</h3>${total}<span class="grow"></span>
+      <button class="btn small" data-cg-magic title="A magic item from the compendium; known items get their bonuses filled in">＋ Magic item</button>
+      ${b ? '' : '<button class="btn small" data-cg-add-barding title="Armor for the mount: the book’s numbers, weight for its size">＋ Barding</button>'}
       <button class="btn small" data-cg-item title="Anything else: a saddle, saddlebags, a collar…">＋ Item</button></div>
-    <div class="cg-grid">${barding}${items}</div></section>`;
+    ${barding || items ? `<div class="sp-chips inv-chips">${barding}${items}</div>` : '<p class="muted">Nothing worn.</p>'}</section>`;
 }
 
 /** Clicks inside a companion's Gear card. Returns true when it handled the click. */
-export async function gearClick(e, comp, size) {
-  const t = e.target.closest('[data-cg-add-barding],[data-cg-plus],[data-cg-fx],[data-cg-del-barding],[data-cg-magic],[data-cg-item],[data-cg-item-fx],[data-cg-item-del]');
+export async function gearClick(e, comp, size, ci) {
+  const t = e.target.closest('[data-cg-open],[data-cg-add-barding],[data-cg-magic],[data-cg-item]');
   if (!t) return false;
   e.preventDefault();
   const d = t.dataset;
+  if (d.cgOpen !== undefined) { openPiece(ci, d.cgOpen === 'barding' ? 'barding' : 'item', +d.cgOpen || 0); return true; }
   if (d.cgAddBarding !== undefined) {
     const pick = await chooseArmor();
     if (!pick) return true;
-    comp.barding = pick === 'blank' ? { ...blankArmor(), name: 'Barding' } : bardingFromTemplate(pick, size);
-  } else if (d.cgPlus !== undefined) setArmorPlus(comp.barding, +d.cgPlus);
-  else if (d.cgFx !== undefined) { await editArmorFx(-1, comp.barding); }
-  else if (d.cgDelBarding !== undefined) { if (!await confirmBox(`Remove ${comp.barding?.name || 'the barding'}?`, 'Remove')) return true; comp.barding = null; }
-  else if (d.cgMagic !== undefined) {
+    comp.barding = pick === 'blank' ? { ...blankArmor(), name: 'Barding', equipped: true } : bardingFromTemplate(pick, size);
+    changed({ rerender: true });
+    openPiece(ci, 'barding');
+    return true;
+  }
+  if (d.cgMagic !== undefined) {
     const r = await pickEntry('Add a magic item to the companion', 'Magic Item');
     if (!r) return true;
     (comp.items ||= []).push({ id: r.id, name: r.name, worn: true, effects: suggestEffects(r.name), notes: '' });
-  } else if (d.cgItem !== undefined) {
+  } else {
     const name = await askName();
     if (!name) return true;
     (comp.items ||= []).push({ name, worn: true, effects: suggestEffects(name), notes: '' });
-  } else if (d.cgItemFx !== undefined) {
-    const it = comp.items[+d.cgItemFx];
-    const m = await editModifier({ name: it.name || 'Item', note: '', active: true, effects: structuredClone(it.effects || []).concat(it.effects?.length ? [] : [{ target: 'ac', value: 1, type: 'untyped' }]) });
-    if (m) it.effects = m.effects;
-  } else if (d.cgItemDel !== undefined) {
-    const it = comp.items[+d.cgItemDel];
-    if (!await confirmBox(`Remove ${it?.name || 'this item'}?`, 'Remove')) return true;
-    comp.items.splice(+d.cgItemDel, 1);
   }
   changed({ rerender: true });
+  openPiece(ci, 'item', comp.items.length - 1);
   return true;
+}
+
+/** Show a piece of companion gear in the side panel: its compendium text when it has one, its controls on top. */
+export function openPiece(ci, kind, k = 0) {
+  const d = { ci, kind, k, armed: true, id: null };
+  const g = pieceOf(d);
+  if (!g) return;
+  d.id = g.id || null;
+  compDrawer = d;
+  markOpen();
+  const who = state.char.companions[ci].name || 'your companion';
+  if (g.id) showEntry(g.id);
+  else showCustom({ name: g.name || (kind === 'barding' ? 'Barding' : 'Item'), cat: kind === 'barding' ? 'Barding' : 'Companion item', sub: `on ${who}`, html: '' });
+}
+
+function markOpen() {
+  document.querySelectorAll('.comp-gear .sp-chip.on').forEach(x => x.classList.remove('on'));
+  if (!compDrawer) return;
+  document.querySelector(`[data-comp="${compDrawer.ci}"] .comp-gear [data-cg-open="${compDrawer.kind === 'barding' ? 'barding' : compDrawer.k}"]`)?.classList.add('on');
+}
+
+document.addEventListener('entry-shown', e => {
+  const d = compDrawer;
+  if (!d) return;
+  if (d.armed && (e.detail.entry.id ?? null) === d.id) { d.armed = false; d.el = e.detail.actions; renderActions(); }
+  else if (!d.armed) { compDrawer = null; markOpen(); } // the panel moved on to something else
+});
+document.addEventListener('drawer-closed', () => { compDrawer = null; markOpen(); });
+
+/** The panel's controls, the same as the inventory's item and armor panels where they apply. */
+function renderActions() {
+  const d = compDrawer;
+  if (!d?.el?.isConnected) return;
+  const g = pieceOf(d);
+  if (!g) { d.el.innerHTML = ''; return; }
+  const base = d.kind === 'barding' ? `companions.${d.ci}.barding` : `companions.${d.ci}.items.${d.k}`;
+  const field = (k, label, { numeric = false, ph = '', cls = 'w3' } = {}) => `<label><span>${label}</span><input class="${cls}${numeric ? ' num' : ''}" ${numeric ? 'type="number" data-type="num"' : 'type="text"'}
+    data-bind="${base}.${k}" value="${esc(g[k] ?? '')}" placeholder="${esc(ph)}" data-rerender></label>`;
+  const worn = d.kind === 'barding' ? g.equipped !== false : g.worn !== false;
+  const nameRow = g.id ? '' : `<label class="wide"><span>Name</span><input data-cd-name value="${esc(g.name || '')}" placeholder="${d.kind === 'barding' ? 'Barding' : 'Item name'}"></label>`;
+  const wornRow = `<label class="row" style="gap:6px"><span>Worn</span><input type="checkbox" data-cd-worn ${worn ? 'checked' : ''}></label>`;
+  const del = `<div class="wide row end"><button class="btn small danger" data-cd-del>Remove from ${esc(state.char.companions[d.ci].name || 'the companion')}</button></div>`;
+  if (d.kind === 'barding') {
+    const fx = armorFx(g).summary || '';
+    const plus = [0, 1, 2, 3, 4, 5].map(n => `<button class="btn small ${n === num(g.enh) ? 'primary' : 'ghost'}" data-cd-plus="${n}" title="${n ? `+${n} barding: +${n} more to AC` : 'No enhancement bonus'}">+${n}</button>`).join('');
+    d.el.innerHTML = `<div class="item-actions">${nameRow}${wornRow}
+      <label><span>Category</span><select data-bind="${base}.category" data-rerender>${[['light', 'Light'], ['medium', 'Medium'], ['heavy', 'Heavy']].map(([v, l]) => `<option value="${v}" ${g.category === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      ${field('bonus', 'Armor bonus', { numeric: true })}${field('maxDex', 'Max Dex', { numeric: true, ph: 'none' })}${field('acp', 'Check penalty', { numeric: true })}${field('weight', 'Weight', { numeric: true })}
+      <div class="wide row plus-row">${plus}</div>
+      <div class="wide item-fx"><div>${fx ? esc(fx) : '<span class="muted">No enchantments or special material</span>'}</div>
+        <div class="row" style="margin-top:4px"><button class="btn small" data-cd-fx title="Masterwork, special material (mithral...) and special abilities (fortification...)">✦ Enchant</button></div></div>
+      ${del}</div>`;
+  } else {
+    const fx = g.effects || [], sug = suggestEffects(g.name);
+    d.el.innerHTML = `<div class="item-actions">${nameRow}${wornRow}
+      <div class="wide item-fx">
+        <div>${fx.length ? esc(effectsText(fx)) : '<span class="muted">No bonuses</span>'}${fx.length && !worn ? ' <span class="small bad">not worn, so they do not count</span>' : ''}</div>
+        <div class="row" style="gap:6px;margin-top:4px"><button class="btn small" data-cd-fx>✦ ${fx.length ? 'Edit' : 'Add'} bonuses</button>${!fx.length && sug.length ? `<button class="btn small" data-cd-fx-auto title="Fill in what this kind of item normally gives">Use the usual: ${esc(effectsText(sug))}</button>` : ''}</div></div>
+      ${g.id ? '' : `<label class="wide"><span>Your notes</span><textarea class="item-notes-big" data-bind="${base}.notes" rows="8" placeholder="Describe the item, what it does, where you got it...">${esc(g.notes || '')}</textarea></label>`}
+      ${del}</div>`;
+    const body = d.el.parentElement?.querySelector('.entry-body'); // a compendium item has its text, so your notes go under it
+    body?.querySelector('.item-foot')?.remove();
+    if (g.id && body) body.insertAdjacentHTML('beforeend', `<div class="item-foot"><label class="small muted">Your notes</label><textarea data-bind="${base}.notes" rows="5" placeholder="Anything to remember about it">${esc(g.notes || '')}</textarea></div>`);
+  }
+  const redo = () => { changed({ rerender: true }); renderActions(); markOpen(); };
+  d.el.onchange = e => {
+    if (e.target.matches('[data-cd-name]')) { g.name = e.target.value; const h2 = $('#drawer h2'); if (h2) h2.textContent = g.name || 'Item'; redo(); }
+    else if (e.target.matches('[data-cd-worn]')) { if (d.kind === 'barding') g.equipped = e.target.checked; else g.worn = e.target.checked; redo(); }
+  };
+  d.el.onclick = async e => {
+    const pl = e.target.closest('[data-cd-plus]');
+    if (pl) { setArmorPlus(g, +pl.dataset.cdPlus); const h2 = $('#drawer h2'); if (h2) h2.textContent = g.name; return redo(); }
+    if (e.target.closest('[data-cd-fx]')) {
+      if (d.kind === 'barding') await editArmorFx(-1, g);
+      else {
+        const m = await editModifier({ name: g.name || 'Item', note: '', active: true, effects: structuredClone(g.effects || []).concat(g.effects?.length ? [] : [{ target: 'ac', value: 1, type: 'untyped' }]) });
+        if (!m) return;
+        g.effects = m.effects;
+      }
+      return redo();
+    }
+    if (e.target.closest('[data-cd-fx-auto]')) { g.effects = suggestEffects(g.name); return redo(); }
+    if (!e.target.closest('[data-cd-del]')) return;
+    if (!await confirmBox(`Remove “${g.name || 'this item'}” from ${state.char.companions[d.ci].name || 'the companion'}?`, 'Remove')) return;
+    const comp = state.char.companions[d.ci];
+    if (d.kind === 'barding') comp.barding = null; else comp.items.splice(d.k, 1);
+    compDrawer = null;
+    closeDrawer();
+    changed({ rerender: true });
+  };
 }
 
 /** A small window asking for an item's name; resolves to it, or '' when cancelled. */
@@ -98,12 +168,4 @@ function askName() {
     $('[data-yes]', body).onclick = ok;
     $('[data-no]', body).onclick = () => close('');
   }).then(v => v || '');
-}
-
-/** The Worn tick boxes. Returns true when it handled the change. */
-export function gearChange(e, comp) {
-  const t = e.target;
-  if (t.matches('[data-cg-worn]')) { comp.barding.equipped = t.checked; changed({ rerender: true }); return true; }
-  if (t.matches('[data-cg-item-worn]')) { comp.items[+t.dataset.cgItemWorn].worn = t.checked; changed({ rerender: true }); return true; }
-  return false;
 }
