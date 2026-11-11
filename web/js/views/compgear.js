@@ -9,28 +9,47 @@ import { chooseArmor } from './equipment.js';
 import { editArmorFx } from './armorfx.js';
 import { editModifier } from './sheet.js';
 
-/** The card: `comp` the companion, `s` its computed stat block, `i` its index in c.companions. */
+/** An icon for an item tile, from its name. */
+function itemIcon(name) {
+  const n = String(name || '').toLowerCase();
+  return /amulet|necklace|periapt|pendant|medallion/.test(n) ? '📿' : /saddle|bridle|bit\b|harness|reins|stirrup/.test(n) ? '🐎' : /ring\b/.test(n) ? '💍'
+    : /cloak|cape|blanket|caparison/.test(n) ? '🧣' : /collar|torc|choker/.test(n) ? '⭕' : /bag|pack|pouch|saddlebag/.test(n) ? '🎒' : '✦';
+}
+
+/** The Worn switch: a tick box drawn as an on/off pill (gearChange reads the tick box). */
+const wornSwitch = (attr, on) => `<label class="cg-worn ${on ? 'on' : ''}" title="${on ? 'Worn, so it counts. Click to take it off' : 'Taken off, so it does not count. Click to put it on'}">
+  <input type="checkbox" ${attr} ${on ? 'checked' : ''}><span>${on ? '● Worn' : '○ Off'}</span></label>`;
+
+const pills = list => list.filter(Boolean).map(x => `<span class="cg-pill">${esc(x)}</span>`).join('');
+
+/** The card: `comp` the companion, `s` its computed stat block. Every piece of gear is a tile; worn ones count, taken-off ones are dimmed. */
 export function gearCard(comp, s) {
-  const b = comp.barding, bd = s.gear?.barding;
-  const plus = b ? [0, 1, 2, 3, 4, 5].map(n => `<button class="btn small ${n === num(b.enh) ? 'primary' : 'ghost'}" data-cg-plus="${n}" title="${n ? `+${n} barding: +${n} more to AC` : 'No enhancement bonus'}">+${n}</button>`).join('') : '';
-  const barding = b ? `<div class="cg-row">
-      <label class="small"><input type="checkbox" data-cg-worn ${b.equipped !== false ? 'checked' : ''}> Worn</label>
-      <b>${esc(b.name || 'Barding')}</b>
-      <span class="small muted">${bd ? `AC +${bd.ac} · max Dex ${bd.maxDex == null ? '—' : sign(bd.maxDex)} · check ${bd.acp || 0}${bd.slows ? ' · slows' : ''} · ${bd.weight} lb.` : 'not worn'}</span>
-      <span class="grow"></span>
-      <span class="row plus-row">${plus}</span>
-      <button class="btn small" data-cg-fx title="Masterwork, special material and special abilities">✦ ${esc(bd?.fx.summary || 'Enchant')}</button>
-      <button class="icon-btn" data-cg-del-barding title="Remove">✕</button></div>`
-    : '<button class="btn small" data-cg-add-barding title="Armor for the mount: the book’s numbers, weight for its size">＋ Barding</button>';
-  const items = (comp.items || []).map((it, k) => `<div class="cg-row">
-      <label class="small"><input type="checkbox" data-cg-item-worn="${k}" ${it.worn !== false ? 'checked' : ''}> Worn</label>
-      <b>${esc(it.name || 'Item')}</b><span class="small muted">${esc(effectsText(it.effects || []))}</span><span class="grow"></span>
-      <button class="btn small ghost" data-cg-item-fx="${k}">✦ Bonuses</button>
-      <button class="icon-btn" data-cg-item-del="${k}" title="Remove">✕</button></div>`).join('');
-  return `<section class="card span2 comp-gear"><h3>Gear</h3>
-    <h4>Barding</h4>${barding}
-    <h4>Items</h4>${items || '<p class="small muted">None.</p>'}
-    <div class="row" style="gap:6px;margin-top:6px"><button class="btn small" data-cg-magic>＋ Magic item</button><button class="btn small" data-cg-item>＋ Item</button></div></section>`;
+  const b = comp.barding, bd = s.gear?.barding, bOn = b && b.equipped !== false;
+  const plus = b ? [0, 1, 2, 3, 4, 5].map(n => `<button class="${n === num(b.enh) ? 'on' : ''}" data-cg-plus="${n}" title="${n ? `+${n} barding: +${n} more to AC` : 'No enhancement bonus'}">+${n}</button>`).join('') : '';
+  const fxSummary = String(bd?.fx.summary || '').replace(/^\+\d+\s*/, ''); // the +N is on the picker beside it
+  const barding = b ? `<div class="cg-tile cg-barding ${bOn ? '' : 'off'}">
+      <div class="cg-top"><span class="cg-icon">🛡</span>
+        <div class="cg-title"><span class="cg-tag">Barding</span><b>${esc(b.name || 'Barding')}</b></div>
+        ${wornSwitch('data-cg-worn', bOn)}<button class="icon-btn" data-cg-del-barding title="Remove the barding">✕</button></div>
+      <div class="cg-pills">${bd ? pills([`AC +${bd.ac}`, `max Dex ${bd.maxDex == null ? '—' : sign(bd.maxDex)}`, `check ${bd.acp || 0}`, bd.slows ? 'slows' : 'full speed', `${bd.weight} lb.`]) : '<span class="small muted">Taken off: no AC, no penalties.</span>'}</div>
+      <div class="cg-tools"><span class="cg-seg" title="Enhancement bonus">${plus}</span>
+        <button class="btn small ghost" data-cg-fx title="Masterwork, special material and special abilities">✦ ${esc(fxSummary || 'Enchant')}</button></div></div>`
+    : `<button class="cg-tile cg-empty" data-cg-add-barding title="Armor for the mount: the book’s numbers, weight for its size"><span class="cg-icon">🛡</span><span><b>＋ Barding</b><small>Armor made for the mount</small></span></button>`;
+  const items = (comp.items || []).map((it, k) => {
+    const on = it.worn !== false, fx = it.effects || [];
+    return `<div class="cg-tile ${on ? '' : 'off'}">
+      <div class="cg-top"><span class="cg-icon">${itemIcon(it.name)}</span>
+        <div class="cg-title"><span class="cg-tag">Item</span><b>${esc(it.name || 'Item')}</b></div>
+        ${wornSwitch(`data-cg-item-worn="${k}"`, on)}<button class="icon-btn" data-cg-item-del="${k}" title="Remove ${esc(it.name || 'this item')}">✕</button></div>
+      <div class="cg-pills">${fx.length ? pills(fx.map(e => effectsText([e]))) : '<span class="small muted">No bonuses</span>'}</div>
+      <div class="cg-tools"><button class="btn small ghost" data-cg-item-fx="${k}" title="What the item adds to the companion's numbers">✦ ${fx.length ? 'Edit bonuses' : 'Add bonuses'}</button></div></div>`;
+  }).join('');
+  const total = s.gear?.ac ? `<span class="cg-total" title="AC from the worn barding and items">AC ${sign(s.gear.ac)} from gear</span>` : '';
+  return `<section class="card span2 comp-gear">
+    <div class="cg-head"><h3>Gear</h3>${total}<span class="grow"></span>
+      <button class="btn small" data-cg-magic title="A magic item from the compendium; known items get their bonuses filled in">✦ ＋ Magic item</button>
+      <button class="btn small" data-cg-item title="Anything else: a saddle, saddlebags, a collar…">＋ Item</button></div>
+    <div class="cg-grid">${barding}${items}</div></section>`;
 }
 
 /** Clicks inside a companion's Gear card. Returns true when it handled the click. */
