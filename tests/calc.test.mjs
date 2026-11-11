@@ -1,7 +1,7 @@
 // Rules math. Expected values are worked out by hand from the Pathfinder 1e rules, not copied from output.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mod, bonusSpells, stack, evalExpr, compute, advanceable } from '../web/js/calc.js';
+import { mod, bonusSpells, stack, evalExpr, compute, advanceable, castAsChoices, setCastAs } from '../web/js/calc.js';
 import { make, calc, buff, repeat, classesByName } from './helpers.mjs';
 
 // ---------- building blocks ----------
@@ -231,6 +231,31 @@ test('prestige class with its own spells: unicorn charger (Legendary Games)', ()
   assert.deepEqual(sc.known.slice(1, 3), [5, 3], 'Table 11-3 counts plus the extra ranger spell of each level');
   assert.equal(sc.dcs[1], 13, '10 + 1 + Cha 2');
   assert.deepEqual(advanceable('any', { 'Unicorn Charger': 4 }, classesByName), [], 'another prestige class does not advance it');
+});
+
+test('unicorn charger levels counted as paladin levels: one paladin spell pool', () => {
+  // Paladin 6 / Unicorn Charger 2, Cha 16 (+3), every charger level counts as a paladin level: casts as paladin 8.
+  const c = make({ raceChoice: 'cha', base: { cha: 14 }, levels: [...repeat('Paladin', 6), ...repeat('Unicorn Charger', 2)] });
+  c.spellbooks = { 'Unicorn Charger': { spells: [{ name: 'Cure Light Wounds', level: 1, prepared: 0, cast: 0 }], used: Array(10).fill(0) } };
+  assert.deepEqual(castAsChoices(c, classesByName), [{ cls: 'Unicorn Charger', options: ['Paladin'], current: '' }], 'not merged yet');
+  setCastAs(c, 'Unicorn Charger', 'Paladin');
+  const d = calc(c);
+  const sc = d.spellcasting.Paladin;
+  assert.equal(d.casterLevels.Paladin, 8, '6 paladin + 2 charger');
+  assert.equal(sc.cl, 5, 'paladin caster level is paladin level − 3: 8 − 3');
+  assert.equal(sc.slots[1], 2, 'paladin 8 table: 1 first-level + 1 bonus for Cha 16 (+3)');
+  assert.equal(sc.slots[2], 2, 'paladin 8 table: 1 second-level + 1 bonus for Cha 16 (+3)');
+  assert.equal(sc.slots[3], null, 'paladin 8 casts no 3rd-level spells');
+  assert.equal(sc.dcs[1], 14, '10 + 1 + Cha 3');
+  assert.equal(d.spellcasting['Unicorn Charger'], undefined, 'no separate charger spells: one pool');
+  assert.deepEqual(c.spellbooks.Paladin.spells.map(s => s.name), ['Cure Light Wounds'], 'the charger spells moved to the paladin book');
+  assert.equal(castAsChoices(c, classesByName)[0].current, 'Paladin');
+  assert.equal(d.bab, 8, 'BAB still counts both classes: paladin 6 (+6) + charger 2 (+2)');
+
+  setCastAs(c, 'Unicorn Charger', '');
+  const d2 = calc(c);
+  assert.equal(d2.spellcasting.Paladin.slots[2], null, 'back to paladin 6: no 2nd-level spells');
+  assert.equal(d2.spellcasting['Unicorn Charger'].slots[1], 1, 'charger 2 own table: 0 first-level + 1 bonus for Cha 16');
 });
 
 test('prestige class: which base classes a level can advance', () => {

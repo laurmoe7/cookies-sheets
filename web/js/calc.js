@@ -126,10 +126,15 @@ export function classLevels(c) {
   return out;
 }
 
-/** The levels that count for each class's spellcasting: its own levels plus the prestige class levels that advance it ({cls: n}). A prestige level records the classes it advances in `advances`. */
+/** The levels that count for each class's spellcasting: its own levels plus the prestige class levels that advance it ({cls: n}). A prestige level records the classes it advances in `advances`.
+ * A level that advances another class does not count for its own class's spells as well (a unicorn charger whose levels count as paladin levels casts as a paladin, not as both). */
 export function casterLevels(c) {
   const out = classLevels(c);
-  for (const lu of c.levelUps) for (const b of lu.advances || []) if (out[b]) out[b]++;
+  for (const lu of c.levelUps) {
+    const adv = (lu.advances || []).filter(b => out[b] && b !== lu.cls);
+    for (const b of adv) out[b]++;
+    if (adv.length) out[lu.cls]--;
+  }
   return out;
 }
 
@@ -140,6 +145,33 @@ export function advanceable(kind, levels, classesByName) {
     if (!cast || classesByName[cls].prestige) return false;
     return kind === 'any' || cls === kind || cast.tradition === kind;
   });
+}
+
+/** Prestige classes with spells of their own whose levels may instead count for a base class's spells (a unicorn charger's paladin levels):
+ * [{cls, options: ['Paladin'], current: 'Paladin' | '' | 'mixed'}]. */
+export function castAsChoices(c, classesByName) {
+  const levels = classLevels(c), out = [];
+  for (const cls of Object.keys(levels)) {
+    const def = classesByName[cls];
+    if (!def?.prestige || !def.casting) continue;
+    const kind = def.levels.find(l => l.advances?.length)?.advances[0];
+    const options = kind ? advanceable(kind, levels, classesByName) : [];
+    if (!options.length) continue;
+    const picks = new Set(c.levelUps.filter(l => l.cls === cls).map(l => l.advances?.[0] || ''));
+    out.push({ cls, options, current: picks.size > 1 ? 'mixed' : [...picks][0] });
+  }
+  return out;
+}
+
+/** Make every level of prestige class `cls` count for `target`'s spells ('' = cast on its own). Spells in the prestige class's book move to the target's book (none twice). */
+export function setCastAs(c, cls, target) {
+  for (const lu of c.levelUps) if (lu.cls === cls) { if (target) lu.advances = [target]; else delete lu.advances; }
+  const from = c.spellbooks?.[cls];
+  if (!target || !from?.spells?.length) return;
+  const to = (c.spellbooks[target] ||= { spells: [], used: Array(10).fill(0), extraSlot: false });
+  const has = new Set(to.spells.map(s => `${s.level}|${(s.name || '').toLowerCase()}`));
+  for (const s of from.spells) if (!has.has(`${s.level}|${(s.name || '').toLowerCase()}`)) to.spells.push({ ...s, prepared: 0, cast: 0 });
+  from.spells = [];
 }
 
 export function classSkillSet(c, classesByName) {
@@ -472,6 +504,7 @@ export function compute(c, classesByName, opts = {}) {
     const def = classesByName[cls];
     if (!def?.casting) continue;
     const en = castLevels[cls]; // with the prestige class levels that advance this class's spellcasting
+    if (!en) continue; // every level of it counts for another class's spells
     const row = def.levels[Math.min(en, 20) - 1];
     const cast = def.casting;
     const statMod = M(cast.stat);

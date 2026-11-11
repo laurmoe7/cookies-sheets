@@ -334,12 +334,15 @@ function advanceSlots(c, def, clsLevel) {
 /** The classes a new prestige level advances unless the player picks others: the ones this prestige class advanced last time, else the first that fits. */
 function defaultAdvances(c, def) {
   if (!def?.prestige) return [];
-  const before = [...c.levelUps].reverse().find(l => l.cls === def.name && l.advances?.length)?.advances || [];
+  // A prestige class with spells of its own (unicorn charger) keeps the last level's choice, including casting on its own.
+  const before = [...c.levelUps].reverse().find(l => l.cls === def.name && (def.casting || l.advances?.length))?.advances || [];
+  if (def.casting && c.levelUps.some(l => l.cls === def.name)) return advanceSlots(c, def, (classLevels(c)[def.name] || 0) + 1).map((slot, i) => slot.options.includes(before[i]) ? before[i] : '');
   return advanceSlots(c, def, (classLevels(c)[def.name] || 0) + 1).map((slot, i) => slot.options.includes(before[i]) ? before[i] : slot.options[0] || '');
 }
 /** The spellcasting classes whose spells change with this level: the class itself, or the classes the prestige level advances. */
 function spellTargets(def) {
-  return [...new Set([...(def.casting ? [def.name] : []), ...(def.prestige ? draft.advances.filter(Boolean) : [])])]; // a prestige class may cast on its own (unicorn charger)
+  const adv = def.prestige ? draft.advances.filter(Boolean) : [];
+  return [...new Set([...(def.casting && !adv.length ? [def.name] : []), ...adv])]; // a prestige class may cast on its own (unicorn charger) unless this level counts for another class
 }
 const KIND_TEXT = { arcane: 'arcane spellcasting class', divine: 'divine spellcasting class', any: 'spellcasting class' };
 
@@ -426,10 +429,12 @@ function detail(el, c, d, newLevel) {
     <p class="small muted">The wizard does not check these. Make sure your character meets them (or your GM agrees) before taking the class.</p></section>` : ''}
   ${slots.length ? `<section class="card">
     <h3>Spellcasting this level</h3>
-    ${slots.map((slot, i) => `<p>${esc(def.name)} ${clsLevel}: +1 level of an existing ${esc(KIND_TEXT[slot.kind] || slot.kind)}.
+    ${def.casting ? slots.map((slot, i) => `<p>${slot.options.length ? `${esc(def.name)} ${clsLevel} casts <select data-advance="${i}">${slot.options.map(o => `<option value="${esc(o)}" ${draft.advances[i] === o ? 'selected' : ''}>as a ${esc(o.toLowerCase())} level (counts as a ${esc(o)} level for spellcasting)</option>`).join('')}<option value="" ${draft.advances[i] ? '' : 'selected'}>on its own (${esc(def.name)} spells)</option></select>`
+        : `${esc(def.name)} ${clsLevel} casts its own spells.`}</p>`).join('') + (!slots[0].options.length ? '' : `<p class="small muted">Keep the same choice at every ${esc(def.name)} level. Counting them as ${esc(slots[0].kind)} levels gives you the ${esc(slots[0].kind.toLowerCase())}'s spells per day, list and caster level instead of a separate ${esc(def.name)} spellbook; you can switch on the Spells tab later.</p>`)
+    : slots.map((slot, i) => `<p>${esc(def.name)} ${clsLevel}: +1 level of an existing ${esc(KIND_TEXT[slot.kind] || slot.kind)}.
       ${slot.options.length ? `<select data-advance="${i}">${slot.options.map(o => `<option ${draft.advances[i] === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}<option value="" ${draft.advances[i] ? '' : 'selected'}>None</option></select>`
-        : '<span class="warn">You have no class that fits, so this level adds no spellcasting.</span>'}</p>`).join('')}
-    <p class="small muted">The class you pick gets this level for spells per day, spells known and caster level, as if it had gained a level (its other class features do not improve).</p></section>` : ''}
+        : '<span class="warn">You have no class that fits, so this level adds no spellcasting.</span>'}</p>`).join('') + `
+    <p class="small muted">The class you pick gets this level for spells per day, spells known and caster level, as if it had gained a level (its other class features do not improve).</p>`}</section>` : ''}
   ${lvBefore === 0 && !def.prestige ? `<div class="${d.level === 0 ? 'grid two' : ''}">${d.level === 0 ? goldCard(c) : ''}<section class="card">
     <h3>Archetype <span class="muted small">(optional; replaces some ${esc(def.name)} features with new ones)</span></h3>
     <div class="row"><span class="grow" id="lu-arch">${draft.archetypes.length ? `<b>${esc(draft.archetypes.map(a => a.name).join(', '))}</b>` : '<span class="muted">Standard class</span>'}</span>

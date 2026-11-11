@@ -1,6 +1,6 @@
 import { api } from '../api.js';
 import { state, changed, render, go, refreshCalc } from '../app.js';
-import { sign, num, raceInfo, classLevels } from '../calc.js';
+import { sign, num, raceInfo, classLevels, castAsChoices, setCastAs } from '../calc.js';
 import { ROLL_METHODS } from '../statroll.js';
 import {
   ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS, SKILLS, targetLabel,
@@ -687,6 +687,23 @@ function feats(body, c, d) {
 // SPELLS
 // =====================================================================
 /** Domains / bloodline / mystery / patron / spirit for a class on the Spells tab: the choice, and a button when granted spells are missing. */
+/** For a prestige class that casts on its own but whose levels may count as another class's levels (unicorn charger as paladin): how it casts. */
+function castAsCard(c) {
+  return castAsChoices(c, state.classesByName).map(ch => `<section class="card cast-as" data-cast-as="${esc(ch.cls)}">
+    <div class="row"><b>${esc(ch.cls)} spellcasting</b>
+      <select data-cast-as-pick>${ch.current === 'mixed' ? '<option value="mixed" selected>Mixed (chosen per level)</option>' : ''}
+        ${ch.options.map(o => `<option value="${esc(o)}" ${ch.current === o ? 'selected' : ''}>Count ${esc(ch.cls)} levels as ${esc(o)} levels</option>`).join('')}
+        <option value="" ${ch.current === '' ? 'selected' : ''}>Cast as a ${esc(ch.cls)} (separate spells)</option></select></div>
+    <p class="small muted">Counting them as ${esc(ch.options[0])} levels gives you ${esc(ch.options[0].toLowerCase())} spells per day, list and caster level for your levels in both classes, instead of a separate ${esc(ch.cls)} spellbook. Switching moves the ${esc(ch.cls)} spells you have listed into the ${esc(ch.options[0])} book.</p>
+  </section>`).join('');
+}
+function wireCastAs(body, c) {
+  $$('[data-cast-as-pick]', body).forEach(s => (s.onchange = () => {
+    if (s.value === 'mixed') return;
+    setCastAs(c, s.closest('[data-cast-as]').dataset.castAs, s.value);
+    changed({ rerender: true });
+  }));
+}
 function grantRow(c, cls, d) {
   const src = sourceOf(cls);
   if (!src) return '';
@@ -736,15 +753,16 @@ const ORD = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th']
 function spells(body, c, d) {
   const casters = Object.entries(d.spellcasting);
   if (!casters.length) {
-    body.innerHTML = `${resCard(c)}<section class="card spellbook">${slaCard(c, d)}</section><section class="card"><h3>Spells</h3><p class="muted">None of your classes cast spells (yet), but you can still keep spells here: add any compendium spell or your own under <b>Spell-likes &amp; abilities</b> above. Paladins and rangers start casting at 4th level.</p>
+    body.innerHTML = `${resCard(c)}${castAsCard(c)}<section class="card spellbook">${slaCard(c, d)}</section><section class="card"><h3>Spells</h3><p class="muted">None of your classes cast spells (yet), but you can still keep spells here: add any compendium spell or your own under <b>Spell-likes &amp; abilities</b> above. Paladins and rangers start casting at 4th level.</p>
       <p>Looking something up? Try the ${'<a href="#" data-goto="compendium">Compendium</a>'} or ${'<a href="#" data-goto="rules">Quick Rules</a>'}.</p></section>`;
     $$('[data-goto]', body).forEach(a => (a.onclick = e => { e.preventDefault(); go(a.dataset.goto); }));
     wireSla(body, c);
     wireResources(body, c);
+    wireCastAs(body, c);
     if (spellDrawer?.el?.isConnected) renderSpellActions();
     return;
   }
-  body.innerHTML = resCard(c) + casters.map(([cls, sc], ci) => {
+  body.innerHTML = resCard(c) + castAsCard(c) + casters.map(([cls, sc], ci) => {
     const book = (c.spellbooks[cls] ||= { spells: [], used: Array(10).fill(0), extraSlot: false });
     book.used ||= Array(10).fill(0);
     const prepared = sc.kind === 'prepared' || sc.kind === 'arcanist';
@@ -802,6 +820,7 @@ function spells(body, c, d) {
   wireCommon(body);
   wireResources(body, c);
   wireGrants(body, c, d);
+  wireCastAs(body, c);
   if (spellDrawer?.el?.isConnected) renderSpellActions(); // the open spell's bar shows the same numbers as the tab
   body.addEventListener('click', async e => {
     const sbEl = e.target.closest('[data-cls]');

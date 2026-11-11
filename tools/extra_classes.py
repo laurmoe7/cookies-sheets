@@ -8,13 +8,15 @@ import html
 N = None
 
 
-def _levels(bab, fort, ref, will, special, per_day=None, known=None):
+def _levels(bab, fort, ref, will, special, per_day=None, known=None, advances=None):
     out = []
     for i in range(len(bab)):
         lv = dict(level=i + 1, bab=bab[i], fort=fort[i], ref=ref[i], will=will[i], special=special[i])
         if per_day:
             lv['spells_per_day'] = [N] + list(per_day[i]) + [N] * (9 - len(per_day[i]))
             lv['spells_known'] = [N] + list(known[i]) + [N] * (9 - len(known[i]))
+        if advances:
+            lv['advances'] = list(advances)
         out.append(lv)
     return out
 
@@ -25,6 +27,8 @@ POOR = [0, 1, 1, 1, 2, 2, 2, 3, 3, 3]
 # Unicorn Charger (Legendary Games), https://www.d20pfsrd.com/classes/3rd-party-prestige-classes/legendary-games/unicorn-charger-prestige-class/
 # Spells: spontaneous, paladin list, Charisma, 1st-4th level, no orisons. Table 11-3's "+r" (one more spell known of each level, from the
 # ranger list) is counted in spells_known, and the ranger list is open for it. The page gives no caster level, so it is the class level.
+# A paladin may instead count every charger level as a paladin level for spellcasting: each level offers to advance Paladin, and a
+# level that does no longer counts for the charger's own spells (casterLevels in calc.js).
 UNICORN_CHARGER = dict(
     name='Unicorn Charger', group='Prestige', prestige=True, source='Legendary Games (third party)', hit_die=10,
     alignment='Any good.', skill_ranks=2,
@@ -47,6 +51,7 @@ UNICORN_CHARGER = dict(
                  'Horn of light, smite evil 3/day', 'Forestmaster’s charge, poison immunity'],
         per_day=[(), (0,), (1,), (1, 0), (1, 1), (1, 1, 0), (1, 1, 1), (2, 1, 1, 0), (2, 2, 1, 1), (2, 2, 1, 1)],
         known=[(), (3,), (4,), (5, 3), (5, 4), (5, 4, 3), (6, 5, 4), (6, 5, 4, 3), (6, 5, 5, 4), (6, 6, 5, 4)],
+        advances=['Paladin'],
     ),
 )
 
