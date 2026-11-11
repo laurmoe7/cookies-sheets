@@ -260,3 +260,11 @@ test('Improved Familiar feat (or demonic / fiendish familiar abilities) is detec
   assert.equal(companionSources({ Wizard: 7 }, ['dodge']).improved, false);
   assert.equal(withCompanionSources({ Wizard: 7 }, { feats: [{ name: 'Improved Familiar' }] }, [], [], 7)._improved, true);
 });
+
+test('unicorn charger levels stack with the class that grants the mount', () => {
+  const s = companionSources({ Paladin: 6, 'Unicorn Charger': 2 });
+  assert.equal(s.animal, 5, 'paladin 6 − 3 = 3 for the divine bond mount, + 2 charger levels: (6 + 2) − 3 = 5');
+  assert.match(s.animalWhy, /Unicorn Charger/);
+  assert.equal(companionSources({ Cavalier: 6, 'Unicorn Charger': 3 }).animal, 9, 'cavalier mount: 6 + 3');
+  assert.equal(companionSources({ Fighter: 6, 'Unicorn Charger': 2 }).animal, 0, 'no class that grants a mount: the charger levels add nothing on their own');
+});

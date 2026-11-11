@@ -13,6 +13,7 @@ export const CHANGELOG = [
       'New race: the Ganzi (Planar Adventures), with its racial traits, all 13 oddities to choose from, and its favored class options.',
       'Level up: the 18 prestige classes of the Core Rulebook and the Advanced Player’s Guide with their requirements, plus the Unicorn Charger (Legendary Games). A level that adds spellcasting asks which class it advances.',
       'Level up: a paladin who takes Unicorn Charger can count its levels as paladin levels for spellcasting, so they cast as one paladin with one pool of spells.',
+      'Companions: Unicorn Charger levels stack with the class that grants your mount (paladin 6 / charger 2 has a 5th-level mount).',
       'Level up: a trait that lets you pick a class skill, like Child of Nature, asks which one right after you choose it.',
       'Level up: What changes lists your daily pools going up (lay on hands 3 → 4, smite evil 2/day...), and a feature with options, like a paladin’s mercy or a rage power, is marked “choose one”.',
       'Level up: a level that opens a new spell level says so, and prepared casters (paladin, ranger, cleric...) are asked to choose spells whenever the Spells tab has none of a level they can cast. Apply reminds you if you leave one empty.',
