@@ -550,8 +550,87 @@ def build_classes(books):
                      alignment=clean(cd.get('alignment')), skill_ranks=ranks,
                      class_skills=parse_class_skills(skill_text), levels=levels)
         if casting:
-            entry['casting'] = dict(casting, max_level=max_sl)
+            entry['casting'] = dict(casting, max_level=max_sl, tradition=TRADITION.get(name, 'arcane'))
         out.append(entry)
+    return out + build_prestige(books)
+
+
+# Which prestige classes can advance a base class's spellcasting: "+1 level of existing arcane spellcasting class" asks for an arcane one.
+# Alchemist and investigator extracts are not arcane or divine spells; they count only where the table says "existing class" or names the alchemist.
+TRADITION = {
+    **{n: 'arcane' for n in ('Bard', 'Sorcerer', 'Wizard', 'Witch', 'Magus', 'Summoner', 'Arcanist', 'Bloodrager', 'Skald')},
+    **{n: 'divine' for n in ('Cleric', 'Druid', 'Paladin', 'Ranger', 'Inquisitor', 'Oracle', 'Antipaladin', 'Hunter', 'Shaman', 'Warpriest')},
+    'Alchemist': 'alchemy', 'Investigator': 'alchemy',
+}
+
+PRESTIGE = [
+    ('Arcane Archer', 'cr'), ('Arcane Trickster', 'cr'), ('Assassin', 'cr'), ('Dragon Disciple', 'cr'), ('Duelist', 'cr'),
+    ('Eldritch Knight', 'cr'), ('Loremaster', 'cr'), ('Mystic Theurge', 'cr'), ('Pathfinder Chronicler', 'cr'), ('Shadowdancer', 'cr'),
+    ('Battle Herald', 'apg'), ('Holy Vindicator', 'apg'), ('Horizon Walker', 'apg'), ('Master Chymist', 'apg'), ('Master Spy', 'apg'),
+    ('Nature Warden', 'apg'), ('Rage Prophet', 'apg'), ('Stalwart Defender', 'apg'),
+]
+
+
+# Their tables say "+1 level of existing class", but the class text says an arcane spellcasting class.
+ARCANE_ONLY = {'Arcane Archer': 'arcane', 'Arcane Trickster': 'arcane'}
+
+
+def advances_of(cell):
+    """'+1 level of existing arcane spellcasting class/+1 level of existing divine spellcasting class' -> ['arcane', 'divine'].
+    Each entry is 'arcane', 'divine', 'any' (any spellcasting class) or a class name ('Alchemist'); [] for a level that advances nothing."""
+    out = []
+    for part in clean(cell).split('/'):
+        p = part.lower()
+        if 'level of' not in p:
+            continue
+        out.append('arcane' if 'arcane' in p else 'divine' if 'divine' in p else 'Alchemist' if 'alchemist' in p else 'any')
+    return out
+
+
+def build_prestige(books):
+    """The Core Rulebook and APG prestige classes: 10 levels each, the requirements as text, and which spellcasting each level advances."""
+    out = []
+    for name, book_key in PRESTIGE:
+        b, sid = find_class(books, name, book_key)
+        desc = list(descendants(b, sid))
+        main = None
+        for s in desc:
+            if s['type'] == 'table' and s['body']:
+                t = parse_table(s['body'])
+                if ' '.join(t['headers']).startswith('Level Base Attack Bonus') and len(t['rows']) >= 10:
+                    main = t
+                    break
+        if main is None:
+            print('!! no table for', name, file=sys.stderr)
+            continue
+        h = main['headers']
+        special_i = next((i for i, x in enumerate(h) if x.startswith('Special')), None)
+        spell_i = next((i for i, x in enumerate(h) if 'per Day' in x), None)
+        levels = []
+        for li, row in enumerate(main['rows'][:10]):
+            lv = dict(level=li + 1, bab=parse_int(row[1]), fort=parse_int(row[2]), ref=parse_int(row[3]), will=parse_int(row[4]),
+                      special=clean(row[special_i]).strip('�—- ') if special_i is not None else '')
+            adv = advances_of(row[spell_i]) if spell_i is not None and spell_i < len(row) else []
+            adv = [ARCANE_ONLY.get(name, a) if a == 'any' else a for a in adv]
+            if adv:
+                lv['advances'] = adv
+            levels.append(lv)
+        by_name = {s['name']: s for s in desc}
+        req = by_name.get('Requirements')
+        req_parts = []
+        if req:  # its own text is only "To qualify ... the following criteria"
+            for c in b.children.get(req['section_id'], []):
+                cs = b.sections[c]
+                text = clean(cs['description'] or '') or clean(cs['body'])
+                if cs['name'] and text:
+                    req_parts.append(f"{cs['name']}: {text}")
+        ranks_sec = next((s for s in desc if (s['name'] or '').startswith('Skill Ranks')), None)
+        skills_sec = by_name.get('Class Skills')
+        cd = b.class_details.get(sid, {})
+        out.append(dict(name=name, group='Prestige', prestige=True, source=b.sections[sid]['source'], hit_die=parse_int(cd.get('hit_die')),
+                        alignment=clean(cd.get('alignment')), skill_ranks=parse_int(clean(ranks_sec['body'] or ranks_sec['description'])) if ranks_sec else None,
+                        class_skills=parse_class_skills(skills_sec['body'] or skills_sec['description'] or '') if skills_sec else [],
+                        requirements=req_parts, levels=levels))
     return out
 
 

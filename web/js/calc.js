@@ -126,6 +126,22 @@ export function classLevels(c) {
   return out;
 }
 
+/** The levels that count for each class's spellcasting: its own levels plus the prestige class levels that advance it ({cls: n}). A prestige level records the classes it advances in `advances`. */
+export function casterLevels(c) {
+  const out = classLevels(c);
+  for (const lu of c.levelUps) for (const b of lu.advances || []) if (out[b]) out[b]++;
+  return out;
+}
+
+/** The base spellcasting classes a prestige level's "+1 level of existing ... class" can advance: kind is 'arcane', 'divine', 'any' or a class name. */
+export function advanceable(kind, levels, classesByName) {
+  return Object.keys(levels).filter(cls => {
+    const cast = classesByName[cls]?.casting;
+    if (!cast || classesByName[cls].prestige) return false;
+    return kind === 'any' || cls === kind || cast.tradition === kind;
+  });
+}
+
 export function classSkillSet(c, classesByName) {
   const set = new Set();
   for (const cls of Object.keys(classLevels(c))) {
@@ -148,8 +164,10 @@ export function compute(c, classesByName, opts = {}) {
   const sz = SIZES[size] || SIZES.Medium;
   const lvl = c.levelUps.length;
   const levels = classLevels(c);
+  const castLevels = casterLevels(c);
   d.level = lvl;
   d.classLevels = levels;
+  d.casterLevels = castLevels;
   d.race = race;
   d.size = size;
 
@@ -157,7 +175,8 @@ export function compute(c, classesByName, opts = {}) {
   let bab = 0;
   const baseSave = { fort: 0, ref: 0, will: 0 };
   for (const [cls, n] of Object.entries(levels)) {
-    const row = classesByName[cls]?.levels[Math.min(n, 20) - 1];
+    const table = classesByName[cls]?.levels || [];
+    const row = table[Math.min(n, table.length) - 1]; // a prestige class has 10 levels
     if (!row) continue;
     bab += row.bab;
     (bd.bab ||= []).push({ label: `${cls} ${n}`, value: row.bab });
@@ -449,12 +468,13 @@ export function compute(c, classesByName, opts = {}) {
   for (const [cls, n] of Object.entries(levels)) {
     const def = classesByName[cls];
     if (!def?.casting) continue;
-    const row = def.levels[Math.min(n, 20) - 1];
+    const en = castLevels[cls]; // with the prestige class levels that advance this class's spellcasting
+    const row = def.levels[Math.min(en, 20) - 1];
     const cast = def.casting;
     const statMod = M(cast.stat);
     // Diminished Spellcasting archetypes (e.g. kensai): one fewer spell per day of each level.
     const diminished = archetypesOf(c, cls).some(a => a.diminished);
-    const cl = Math.max(0, n + (cast.cl_offset || 0)) + clSt.total;
+    const cl = Math.max(0, en + (cast.cl_offset || 0)) + clSt.total;
     const book = c.spellbooks?.[cls] || {};
     const slots = [], known = [], dcs = [], prepared = [];
     for (let sl = 0; sl <= 9; sl++) {
@@ -466,7 +486,7 @@ export function compute(c, classesByName, opts = {}) {
       prepared.push(row.spells_prepared?.[sl] ?? null);
       dcs.push(10 + sl + statMod);
     }
-    bd[`spellcasting.${cls}.cl`] = parts({ label: `${cls} levels`, value: n }, { label: 'Class caster level adjustment', value: cast.cl_offset || 0 }, stackParts(listOf('cl')));
+    bd[`spellcasting.${cls}.cl`] = parts({ label: `${cls} levels`, value: n }, { label: 'Prestige class levels', value: en - n }, { label: 'Class caster level adjustment', value: cast.cl_offset || 0 }, stackParts(listOf('cl')));
     bd[`spellcasting.${cls}.concentration`] = parts({ label: 'Caster level', value: cl }, { label: ABIL_SHORT[cast.stat] + ' modifier', value: statMod }, stackParts(listOf('concentration')));
     // Spell Focus / Greater Spell Focus: +1 to the save DC of spells of that school (the DC row is per spell level, so the schools are listed beside it)
     const focus = {};

@@ -4,6 +4,13 @@
 
 export const CHANGELOG = [
   {
+    version: '1.3.7', next: true,
+    items: [
+      'Characters: a graveyard for characters who died or retired, with the date and a line for their headstone. Open them any time, or bring them back.',
+      'Level up: the 18 prestige classes of the Core Rulebook and the Advanced Player’s Guide, with their requirements. A level that adds spellcasting asks which of your classes it advances.',
+    ],
+  },
+  {
     version: '1.3.6', date: '2026-11-07',
     items: [
       'The window no longer opens small after it was closed while minimized, and an update keeps its size and place.',

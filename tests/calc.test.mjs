@@ -1,7 +1,7 @@
 // Rules math. Expected values are worked out by hand from the Pathfinder 1e rules, not copied from output.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mod, bonusSpells, stack, evalExpr, compute } from '../web/js/calc.js';
+import { mod, bonusSpells, stack, evalExpr, compute, advanceable } from '../web/js/calc.js';
 import { make, calc, buff, repeat, classesByName } from './helpers.mjs';
 
 // ---------- building blocks ----------
@@ -187,6 +187,45 @@ test('wizard 1: slots, bonus spell, school slot, DCs, concentration', () => {
   sc = calc(c).spellcasting.Wizard;
   assert.equal(sc.slots[1], 3, 'specialist school slot');
   assert.equal(sc.slots[0], 3, 'no extra cantrip');
+});
+
+test('prestige class: eldritch knight adds its BAB and saves and advances wizard spellcasting', () => {
+  // Wizard 5 / Eldritch Knight 3; EK 1st level advances nothing, 2nd and 3rd advance the wizard.
+  const c = make({ raceChoice: 'int', base: { int: 16 }, levels: [...repeat('Wizard', 5), ...repeat('Eldritch Knight', 3)] });
+  c.levelUps[6].advances = ['Wizard'];
+  c.levelUps[7].advances = ['Wizard'];
+  const d = calc(c);
+  assert.equal(d.bab, 5, 'wizard 5 gives +2 (half), eldritch knight 3 gives +3 (full): 2 + 3');
+  assert.equal(d.saves.fort.total, 3, 'wizard 5 poor Fort +1, EK 3 good Fort +2, Con 10');
+  assert.equal(d.saves.will.total, 5, 'wizard 5 good Will +4, EK 3 poor Will +1');
+  assert.deepEqual(d.casterLevels.Wizard, 7, '5 wizard levels + 2 advancing EK levels');
+  const sc = d.spellcasting.Wizard;
+  assert.equal(sc.cl, 7);
+  assert.equal(sc.slots[1], 5, 'wizard 7 table: 4 first-level + 1 bonus for Int 18');
+  assert.equal(sc.slots[4], 2, 'wizard 7 table: 1 fourth-level + 1 bonus for Int 18');
+  assert.equal(sc.slots[5], null, 'wizard 7 has no 5th-level spells');
+  assert.deepEqual(d.bd['spellcasting.Wizard.cl'].map(p => [p.label, p.value]), [['Wizard levels', 5], ['Prestige class levels', 2]]);
+});
+
+test('prestige class: mystic theurge advances an arcane and a divine class at once', () => {
+  const c = make({ raceChoice: 'int', base: { int: 16, wis: 16 }, levels: [...repeat('Cleric', 3), ...repeat('Wizard', 3), ...repeat('Mystic Theurge', 2)] });
+  for (const i of [6, 7]) c.levelUps[i].advances = ['Wizard', 'Cleric'];
+  const d = calc(c);
+  assert.equal(d.spellcasting.Wizard.cl, 5, '3 wizard + 2 theurge');
+  assert.equal(d.spellcasting.Cleric.cl, 5, '3 cleric + 2 theurge');
+  assert.equal(d.spellcasting.Cleric.slots[3], 2, 'cleric 5 table: 1 third-level + 1 bonus for Wis 16 (+3)');
+  assert.equal(d.spellcasting['Mystic Theurge'], undefined, 'the prestige class casts nothing of its own');
+});
+
+test('prestige class: which base classes a level can advance', () => {
+  const lv = { Wizard: 3, Cleric: 3, Alchemist: 1, Fighter: 2, 'Mystic Theurge': 1 };
+  assert.deepEqual(advanceable('arcane', lv, classesByName), ['Wizard']);
+  assert.deepEqual(advanceable('divine', lv, classesByName), ['Cleric']);
+  assert.deepEqual(advanceable('any', lv, classesByName), ['Wizard', 'Cleric', 'Alchemist'], 'any spellcasting class, never a fighter or another prestige class');
+  assert.deepEqual(advanceable('Alchemist', lv, classesByName), ['Alchemist'], 'the master chymist names the alchemist');
+  const c = make({ levels: ['Fighter', 'Fighter'] });
+  c.levelUps[1].advances = ['Wizard'];
+  assert.equal(calc(c).casterLevels.Wizard, undefined, 'a level cannot advance a class the character does not have');
 });
 
 test('casting stat too low means no slots of that level', () => {

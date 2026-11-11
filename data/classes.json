@@ -867,7 +867,8 @@
     "Bard"
    ],
    "cl_offset": 0,
-   "max_level": 6
+   "max_level": 6,
+   "tradition": "arcane"
   }
  },
  {
@@ -1302,7 +1303,8 @@
    ],
    "cl_offset": 0,
    "domain": true,
-   "max_level": 9
+   "max_level": 9,
+   "tradition": "divine"
   }
  },
  {
@@ -1737,7 +1739,8 @@
    ],
    "cl_offset": 0,
    "domain": true,
-   "max_level": 9
+   "max_level": 9,
+   "tradition": "divine"
   }
  },
  {
@@ -2536,7 +2539,8 @@
     "Paladin"
    ],
    "cl_offset": -3,
-   "max_level": 4
+   "max_level": 4,
+   "tradition": "divine"
   }
  },
  {
@@ -2972,7 +2976,8 @@
     "Ranger"
    ],
    "cl_offset": -3,
-   "max_level": 4
+   "max_level": 4,
+   "tradition": "divine"
   }
  },
  {
@@ -3836,7 +3841,8 @@
     "Wizard"
    ],
    "cl_offset": 0,
-   "max_level": 9
+   "max_level": 9,
+   "tradition": "arcane"
   }
  },
  {
@@ -4275,7 +4281,8 @@
    ],
    "cl_offset": 0,
    "domain": true,
-   "max_level": 9
+   "max_level": 9,
+   "tradition": "arcane"
   }
  },
  {
@@ -4710,7 +4717,8 @@
    ],
    "cl_offset": 0,
    "extracts": true,
-   "max_level": 6
+   "max_level": 6,
+   "tradition": "alchemy"
   }
  },
  {
@@ -5573,7 +5581,8 @@
     "Inquisitor"
    ],
    "cl_offset": 0,
-   "max_level": 6
+   "max_level": 6,
+   "tradition": "divine"
   }
  },
  {
@@ -6244,7 +6253,8 @@
     "Cleric"
    ],
    "cl_offset": 0,
-   "max_level": 9
+   "max_level": 9,
+   "tradition": "divine"
   }
  },
  {
@@ -6923,7 +6933,8 @@
     "Summoner"
    ],
    "cl_offset": 0,
-   "max_level": 6
+   "max_level": 6,
+   "tradition": "arcane"
   }
  },
  {
@@ -7356,7 +7367,8 @@
    ],
    "cl_offset": 0,
    "domain": true,
-   "max_level": 9
+   "max_level": 9,
+   "tradition": "arcane"
   }
  },
  {
@@ -7789,7 +7801,8 @@
     "Magus"
    ],
    "cl_offset": 0,
-   "max_level": 6
+   "max_level": 6,
+   "tradition": "arcane"
   }
  },
  {
@@ -8783,7 +8796,8 @@
     "Antipaladin"
    ],
    "cl_offset": -3,
-   "max_level": 4
+   "max_level": 4,
+   "tradition": "divine"
   }
  },
  {
@@ -9463,7 +9477,8 @@
     "Sorcerer"
    ],
    "cl_offset": 0,
-   "max_level": 9
+   "max_level": 9,
+   "tradition": "arcane"
   }
  },
  {
@@ -10135,7 +10150,8 @@
     "Bloodrager"
    ],
    "cl_offset": -3,
-   "max_level": 4
+   "max_level": 4,
+   "tradition": "arcane"
   }
  },
  {
@@ -10998,7 +11014,8 @@
     "Ranger"
    ],
    "cl_offset": 0,
-   "max_level": 6
+   "max_level": 6,
+   "tradition": "divine"
   }
  },
  {
@@ -11451,7 +11468,8 @@
    ],
    "cl_offset": 0,
    "extracts": true,
-   "max_level": 6
+   "max_level": 6,
+   "tradition": "alchemy"
   }
  },
  {
@@ -11885,7 +11903,8 @@
    ],
    "cl_offset": 0,
    "domain": true,
-   "max_level": 9
+   "max_level": 9,
+   "tradition": "divine"
   }
  },
  {
@@ -12575,7 +12594,8 @@
     "Bard"
    ],
    "cl_offset": 0,
-   "max_level": 6
+   "max_level": 6,
+   "tradition": "arcane"
   }
  },
  {
@@ -13388,7 +13408,2236 @@
     "Cleric"
    ],
    "cl_offset": 0,
-   "max_level": 6
+   "max_level": 6,
+   "tradition": "divine"
   }
+ },
+ {
+  "name": "Arcane Archer",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Core Rulebook",
+  "hit_die": 10,
+  "alignment": "Arcane archers can be of any alignment. Elf or half-elf arcane arches tend to be free-spirited and are rarely lawful. Similarly, it is uncommon for elven arcane archers to be evil, and overall the path of the arcane archer is more often pursued by good or neutral characters.",
+  "skill_ranks": 4,
+  "class_skills": [
+   "Perception",
+   "Ride",
+   "Stealth",
+   "Survival"
+  ],
+  "requirements": [
+   "Base Attack Bonus: +6.",
+   "Feats: Point Blank Shot, Precise Shot, Weapon Focus (longbow or shortbow).",
+   "Spells: Ability to cast 1st-level arcane spells."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 0,
+    "special": "Enhance arrows (magic)"
+   },
+   {
+    "level": 2,
+    "bab": 2,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Imbue arrow",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 3,
+    "bab": 3,
+    "fort": 2,
+    "ref": 2,
+    "will": 1,
+    "special": "Enhance arrows (elemental)",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 4,
+    "bab": 4,
+    "fort": 2,
+    "ref": 2,
+    "will": 1,
+    "special": "Seeker arrow",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 5,
+    "bab": 5,
+    "fort": 3,
+    "ref": 3,
+    "will": 2,
+    "special": "Enhance arrows (distance)"
+   },
+   {
+    "level": 6,
+    "bab": 6,
+    "fort": 3,
+    "ref": 3,
+    "will": 2,
+    "special": "Phase arrow",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 7,
+    "bab": 7,
+    "fort": 4,
+    "ref": 4,
+    "will": 2,
+    "special": "Enhance arrows (elemental burst)",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 8,
+    "bab": 8,
+    "fort": 4,
+    "ref": 4,
+    "will": 3,
+    "special": "Hail of arrows",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 9,
+    "bab": 9,
+    "fort": 5,
+    "ref": 5,
+    "will": 3,
+    "special": "Enhance arrows (aligned)"
+   },
+   {
+    "level": 10,
+    "bab": 10,
+    "fort": 5,
+    "ref": 5,
+    "will": 3,
+    "special": "Arrow of death",
+    "advances": [
+     "arcane"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Arcane Trickster",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Core Rulebook",
+  "hit_die": 6,
+  "alignment": "All arcane tricksters have a penchant for mischief and thievery, and are therefore never lawful. Although they sometimes acquire their magical abilities through the studious path of wizardry, their magical aptitude more often stems from a sorcerous bloodline. As such, many arcane tricksters are of a chaotic alignment.",
+  "skill_ranks": 4,
+  "class_skills": [
+   "Acrobatics",
+   "Appraise",
+   "Bluff",
+   "Climb",
+   "Diplomacy",
+   "Disable Device",
+   "Disguise",
+   "Escape Artist",
+   "Knowledge (arcana)",
+   "Knowledge (dungeoneering)",
+   "Knowledge (engineering)",
+   "Knowledge (geography)",
+   "Knowledge (history)",
+   "Knowledge (local)",
+   "Knowledge (nature)",
+   "Knowledge (nobility)",
+   "Knowledge (planes)",
+   "Knowledge (religion)",
+   "Perception",
+   "Sense Motive",
+   "Sleight of Hand",
+   "Spellcraft",
+   "Stealth",
+   "Swim"
+  ],
+  "requirements": [
+   "Alignment: Any nonlawful.",
+   "Skills: Disable Device 4 ranks, Escape Artist 4 ranks, Knowledge (arcana) 4 ranks.",
+   "Spells: Ability to cast mage hand and at least one arcane spell of 2nd level or higher.",
+   "Special: Sneak attack +2d6."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 0,
+    "fort": 0,
+    "ref": 1,
+    "will": 1,
+    "special": "Ranged legerdemain",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 2,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Sneak attack +1d6",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 3,
+    "bab": 1,
+    "fort": 1,
+    "ref": 2,
+    "will": 2,
+    "special": "Impromptu sneak attack 1/day",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 4,
+    "bab": 2,
+    "fort": 1,
+    "ref": 2,
+    "will": 2,
+    "special": "Sneak attack +2d6",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 5,
+    "bab": 2,
+    "fort": 2,
+    "ref": 3,
+    "will": 3,
+    "special": "Tricky spells 3/day",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 6,
+    "bab": 3,
+    "fort": 2,
+    "ref": 3,
+    "will": 3,
+    "special": "Sneak attack +3d6",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 7,
+    "bab": 3,
+    "fort": 2,
+    "ref": 4,
+    "will": 4,
+    "special": "Impromptu sneak attack 2/day, Tricky spells 4/day",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 8,
+    "bab": 4,
+    "fort": 3,
+    "ref": 4,
+    "will": 4,
+    "special": "Sneak attack +4d6",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 9,
+    "bab": 4,
+    "fort": 3,
+    "ref": 5,
+    "will": 5,
+    "special": "Invisible thief, Tricky spells 5/day",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 10,
+    "bab": 5,
+    "fort": 3,
+    "ref": 5,
+    "will": 5,
+    "special": "Sneak attack +5d6, surprise spells",
+    "advances": [
+     "arcane"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Assassin",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Core Rulebook",
+  "hit_die": 8,
+  "alignment": "Due to its necessary selfishness and callous indifference toward taking lives, the assassin class attracts those with evil alignments more than any others. Because the profession requires a degree of self-discipline, chaotic characters are ill suited to becoming these shadowy killers. Neutral characters sometimes become assassins, frequently thinking of themselves as simple professionals performing a job, yet the nature of their duties inevitably pushes them toward an evil alignment.",
+  "skill_ranks": 4,
+  "class_skills": [
+   "Acrobatics",
+   "Bluff",
+   "Climb",
+   "Diplomacy",
+   "Disable Device",
+   "Disguise",
+   "Escape Artist",
+   "Intimidate",
+   "Linguistics",
+   "Perception",
+   "Sense Motive",
+   "Sleight of Hand",
+   "Stealth",
+   "Swim",
+   "Use Magic Device"
+  ],
+  "requirements": [
+   "Alignment: Any evil.",
+   "Skills: Disguise 2 ranks, Stealth 5 ranks.",
+   "Special: The character must kill someone for no other reason than to become an assassin."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 0,
+    "fort": 0,
+    "ref": 1,
+    "will": 0,
+    "special": "Sneak attack +1d6, death attack, poison use"
+   },
+   {
+    "level": 2,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "+1 save bonus against poison,uncanny dodge"
+   },
+   {
+    "level": 3,
+    "bab": 2,
+    "fort": 1,
+    "ref": 2,
+    "will": 1,
+    "special": "Sneak attack +2d6"
+   },
+   {
+    "level": 4,
+    "bab": 3,
+    "fort": 1,
+    "ref": 2,
+    "will": 1,
+    "special": "+2 save bonus against poison, hidden weapons, true death"
+   },
+   {
+    "level": 5,
+    "bab": 3,
+    "fort": 2,
+    "ref": 3,
+    "will": 2,
+    "special": "Improved uncannydodge, Sneak attack +3d6"
+   },
+   {
+    "level": 6,
+    "bab": 4,
+    "fort": 2,
+    "ref": 3,
+    "will": 2,
+    "special": "+3 save bonus against poison,quiet death"
+   },
+   {
+    "level": 7,
+    "bab": 5,
+    "fort": 2,
+    "ref": 4,
+    "will": 2,
+    "special": "Sneak attack +4d6"
+   },
+   {
+    "level": 8,
+    "bab": 6,
+    "fort": 3,
+    "ref": 4,
+    "will": 3,
+    "special": "+4 save bonus against poison,hide in plain sight"
+   },
+   {
+    "level": 9,
+    "bab": 6,
+    "fort": 3,
+    "ref": 5,
+    "will": 3,
+    "special": "Sneak attack +5d6, swift death"
+   },
+   {
+    "level": 10,
+    "bab": 7,
+    "fort": 3,
+    "ref": 5,
+    "will": 3,
+    "special": "+5 save bonus against poison,angel of death"
+   }
+  ]
+ },
+ {
+  "name": "Dragon Disciple",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Core Rulebook",
+  "hit_die": 12,
+  "alignment": "Dragon disciples can be of any alignment, although they tend to be more chaotic than lawful. Those dragon disciples that assume the traits of chromatic dragons, such as bestial white and fearsome red dragons, have a proclivity for evil. Conversely, those that take after the metallic dragons, such as stoic brass and chivalric gold dragons, are often of good alignments.",
+  "skill_ranks": 2,
+  "class_skills": [
+   "Diplomacy",
+   "Escape Artist",
+   "Fly",
+   "Knowledge (arcana)",
+   "Knowledge (dungeoneering)",
+   "Knowledge (engineering)",
+   "Knowledge (geography)",
+   "Knowledge (history)",
+   "Knowledge (local)",
+   "Knowledge (nature)",
+   "Knowledge (nobility)",
+   "Knowledge (planes)",
+   "Knowledge (religion)",
+   "Perception",
+   "Spellcraft"
+  ],
+  "requirements": [
+   "Race: Any nondragon.",
+   "Skills: Knowledge (arcana) 5 ranks.",
+   "Languages: Draconic.",
+   "Spellcasting: Ability to cast 1st-level arcane spells without preparation. If the character has sorcerer levels, he must have the draconic bloodline. If the character gains levels of sorcerer after taking this class, he must take the draconic bloodline."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 0,
+    "fort": 1,
+    "ref": 0,
+    "will": 1,
+    "special": "Blood of dragons, natural armor increase (+1)"
+   },
+   {
+    "level": 2,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Ability boost (Str +2), bloodline feat, dragon bite",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 3,
+    "bab": 2,
+    "fort": 2,
+    "ref": 1,
+    "will": 2,
+    "special": "Breath weapon",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 4,
+    "bab": 3,
+    "fort": 2,
+    "ref": 1,
+    "will": 2,
+    "special": "Ability boost (Str +2), natural armor increase (+1)",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 5,
+    "bab": 3,
+    "fort": 3,
+    "ref": 2,
+    "will": 3,
+    "special": "Blindsense 30 ft., bloodline feat"
+   },
+   {
+    "level": 6,
+    "bab": 4,
+    "fort": 3,
+    "ref": 2,
+    "will": 3,
+    "special": "Ability boost (Con +2)",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 7,
+    "bab": 5,
+    "fort": 4,
+    "ref": 2,
+    "will": 4,
+    "special": "Dragon form (1/day), natural armor increase (+1)",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 8,
+    "bab": 6,
+    "fort": 4,
+    "ref": 3,
+    "will": 4,
+    "special": "Ability boost (Int +2), bloodline feat",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 9,
+    "bab": 6,
+    "fort": 5,
+    "ref": 3,
+    "will": 5,
+    "special": "Wings"
+   },
+   {
+    "level": 10,
+    "bab": 7,
+    "fort": 5,
+    "ref": 3,
+    "will": 5,
+    "special": "Blindsense 60 ft., Dragon form (2/day)",
+    "advances": [
+     "arcane"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Duelist",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Core Rulebook",
+  "hit_die": 10,
+  "alignment": "Duelists can be of any alignment, although since most hail from backgrounds as rogues or bards, they tend to eschew lawful behavior. Lawful duelists are not unheard of, however, and such duelists often adhere to a strict code of honor, refusing to attack unarmed or obviously inferior opponents.",
+  "skill_ranks": 4,
+  "class_skills": [
+   "Acrobatics",
+   "Bluff",
+   "Escape Artist",
+   "Perception",
+   "Perform",
+   "Sense Motive"
+  ],
+  "requirements": [
+   "Base Attack Bonus: +6.",
+   "Skills: Acrobatics 2 ranks, Perform 2 ranks.",
+   "Feats: Dodge, Mobility, Weapon Finesse."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 1,
+    "fort": 0,
+    "ref": 1,
+    "will": 0,
+    "special": "Canny defense, precise strike"
+   },
+   {
+    "level": 2,
+    "bab": 2,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Improved reaction +2, parry"
+   },
+   {
+    "level": 3,
+    "bab": 3,
+    "fort": 1,
+    "ref": 2,
+    "will": 1,
+    "special": "Enhanced mobility"
+   },
+   {
+    "level": 4,
+    "bab": 4,
+    "fort": 1,
+    "ref": 2,
+    "will": 1,
+    "special": "Combat Reflexes, grace"
+   },
+   {
+    "level": 5,
+    "bab": 5,
+    "fort": 2,
+    "ref": 3,
+    "will": 2,
+    "special": "Riposte"
+   },
+   {
+    "level": 6,
+    "bab": 6,
+    "fort": 2,
+    "ref": 3,
+    "will": 2,
+    "special": "Acrobatic charge"
+   },
+   {
+    "level": 7,
+    "bab": 7,
+    "fort": 2,
+    "ref": 4,
+    "will": 2,
+    "special": "Elaborate defense"
+   },
+   {
+    "level": 8,
+    "bab": 8,
+    "fort": 3,
+    "ref": 4,
+    "will": 3,
+    "special": "Improved reaction +4"
+   },
+   {
+    "level": 9,
+    "bab": 9,
+    "fort": 3,
+    "ref": 5,
+    "will": 3,
+    "special": "Deflect Arrows, no retreat"
+   },
+   {
+    "level": 10,
+    "bab": 10,
+    "fort": 3,
+    "ref": 5,
+    "will": 3,
+    "special": "Crippling critical"
+   }
+  ]
+ },
+ {
+  "name": "Eldritch Knight",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Core Rulebook",
+  "hit_die": 10,
+  "alignment": "The road to becoming an eldritch knight is as varied as the paths leading to apprenticeship under a wizard or a career as a soldier, and eldritch knights can therefore be of any alignment. Maintaining a balance between studies of arcane lore and martial techniques requires great discipline, however, and for that reason many favor lawful alignments.",
+  "skill_ranks": 2,
+  "class_skills": [
+   "Climb",
+   "Knowledge (arcana)",
+   "Knowledge (nobility)",
+   "Linguistics",
+   "Ride",
+   "Sense Motive",
+   "Spellcraft",
+   "Swim"
+  ],
+  "requirements": [
+   "Weapon Proficiency: Must be proficient with all martial weapons.",
+   "Spells: Able to cast 3rd-level arcane spells."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 1,
+    "fort": 1,
+    "ref": 0,
+    "will": 0,
+    "special": "Bonus combat feat, diverse training"
+   },
+   {
+    "level": 2,
+    "bab": 2,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 3,
+    "bab": 3,
+    "fort": 2,
+    "ref": 1,
+    "will": 1,
+    "special": "",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 4,
+    "bab": 4,
+    "fort": 2,
+    "ref": 1,
+    "will": 1,
+    "special": "",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 5,
+    "bab": 5,
+    "fort": 3,
+    "ref": 2,
+    "will": 2,
+    "special": "Bonus combat feat",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 6,
+    "bab": 6,
+    "fort": 3,
+    "ref": 2,
+    "will": 2,
+    "special": "",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 7,
+    "bab": 7,
+    "fort": 4,
+    "ref": 2,
+    "will": 2,
+    "special": "",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 8,
+    "bab": 8,
+    "fort": 4,
+    "ref": 3,
+    "will": 3,
+    "special": "",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 9,
+    "bab": 9,
+    "fort": 5,
+    "ref": 3,
+    "will": 3,
+    "special": "Bonus combat feat",
+    "advances": [
+     "arcane"
+    ]
+   },
+   {
+    "level": 10,
+    "bab": 10,
+    "fort": 5,
+    "ref": 3,
+    "will": 3,
+    "special": "Spell critical",
+    "advances": [
+     "arcane"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Loremaster",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Core Rulebook",
+  "hit_die": 6,
+  "alignment": "Most loremasters cannot be bothered with distracting and pointless philosophies such as ethics, and so tend to be neutral, neutral good, or neutral evil.",
+  "skill_ranks": 4,
+  "class_skills": [
+   "Appraise",
+   "Diplomacy",
+   "Heal",
+   "Knowledge (arcana)",
+   "Knowledge (dungeoneering)",
+   "Knowledge (engineering)",
+   "Knowledge (geography)",
+   "Knowledge (history)",
+   "Knowledge (local)",
+   "Knowledge (nature)",
+   "Knowledge (nobility)",
+   "Knowledge (planes)",
+   "Knowledge (religion)",
+   "Linguistics",
+   "Perform",
+   "Spellcraft",
+   "Use Magic Device"
+  ],
+  "requirements": [
+   "Skills: Knowledge (any two) 7 ranks in each.",
+   "Feats: Any three metamagic or item creation feats, plus Skill Focus (Knowledge [any individual Knowledge skill]).",
+   "Spells: Able to cast seven different divination spells, one of which must be 3rd level or higher."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 0,
+    "fort": 0,
+    "ref": 0,
+    "will": 1,
+    "special": "Secret",
+    "advances": [
+     "any"
+    ]
+   },
+   {
+    "level": 2,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Lore",
+    "advances": [
+     "any"
+    ]
+   },
+   {
+    "level": 3,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 2,
+    "special": "Secret",
+    "advances": [
+     "any"
+    ]
+   },
+   {
+    "level": 4,
+    "bab": 2,
+    "fort": 1,
+    "ref": 1,
+    "will": 2,
+    "special": "Bonus language",
+    "advances": [
+     "any"
+    ]
+   },
+   {
+    "level": 5,
+    "bab": 2,
+    "fort": 2,
+    "ref": 2,
+    "will": 3,
+    "special": "Secret",
+    "advances": [
+     "any"
+    ]
+   },
+   {
+    "level": 6,
+    "bab": 3,
+    "fort": 2,
+    "ref": 2,
+    "will": 3,
+    "special": "Greater lore",
+    "advances": [
+     "any"
+    ]
+   },
+   {
+    "level": 7,
+    "bab": 3,
+    "fort": 2,
+    "ref": 2,
+    "will": 4,
+    "special": "Secret",
+    "advances": [
+     "any"
+    ]
+   },
+   {
+    "level": 8,
+    "bab": 4,
+    "fort": 3,
+    "ref": 3,
+    "will": 4,
+    "special": "Bonus language",
+    "advances": [
+     "any"
+    ]
+   },
+   {
+    "level": 9,
+    "bab": 4,
+    "fort": 3,
+    "ref": 3,
+    "will": 5,
+    "special": "Secret",
+    "advances": [
+     "any"
+    ]
+   },
+   {
+    "level": 10,
+    "bab": 5,
+    "fort": 3,
+    "ref": 3,
+    "will": 5,
+    "special": "True lore",
+    "advances": [
+     "any"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Mystic Theurge",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Core Rulebook",
+  "hit_die": 6,
+  "alignment": "The motivations of a mystic theurge rarely stem from a sense of altruism or philanthropy, so most tend to be neutral, neutral good, or neutral evil. Lawful mystic theurges, whether good, neutral, or evil, are rarer, and often use their powers for either the benefit\u2014or control\u2014of society. Chaotic mystic theurges are rarer still, as the calling generally requires great personal discipline.",
+  "skill_ranks": 2,
+  "class_skills": [
+   "Knowledge (arcana)",
+   "Knowledge (religion)",
+   "Sense Motive",
+   "Spellcraft"
+  ],
+  "requirements": [
+   "Skills: Knowledge (arcana) 3 ranks, Knowledge (religion) 3 ranks.",
+   "Spells: Able to cast 2nd-level divine spells and 2nd-level arcane spells."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 0,
+    "fort": 0,
+    "ref": 0,
+    "will": 1,
+    "special": "Combined spells (1st)",
+    "advances": [
+     "arcane",
+     "divine"
+    ]
+   },
+   {
+    "level": 2,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "",
+    "advances": [
+     "arcane",
+     "divine"
+    ]
+   },
+   {
+    "level": 3,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 2,
+    "special": "Combined spells (2nd)",
+    "advances": [
+     "arcane",
+     "divine"
+    ]
+   },
+   {
+    "level": 4,
+    "bab": 2,
+    "fort": 1,
+    "ref": 1,
+    "will": 2,
+    "special": "",
+    "advances": [
+     "arcane",
+     "divine"
+    ]
+   },
+   {
+    "level": 5,
+    "bab": 2,
+    "fort": 2,
+    "ref": 2,
+    "will": 3,
+    "special": "Combined spells (3rd)",
+    "advances": [
+     "arcane",
+     "divine"
+    ]
+   },
+   {
+    "level": 6,
+    "bab": 3,
+    "fort": 2,
+    "ref": 2,
+    "will": 3,
+    "special": "",
+    "advances": [
+     "arcane",
+     "divine"
+    ]
+   },
+   {
+    "level": 7,
+    "bab": 3,
+    "fort": 2,
+    "ref": 2,
+    "will": 4,
+    "special": "Combined spells (4th)",
+    "advances": [
+     "arcane",
+     "divine"
+    ]
+   },
+   {
+    "level": 8,
+    "bab": 4,
+    "fort": 3,
+    "ref": 3,
+    "will": 4,
+    "special": "",
+    "advances": [
+     "arcane",
+     "divine"
+    ]
+   },
+   {
+    "level": 9,
+    "bab": 4,
+    "fort": 3,
+    "ref": 3,
+    "will": 5,
+    "special": "Combined spells (5th)",
+    "advances": [
+     "arcane",
+     "divine"
+    ]
+   },
+   {
+    "level": 10,
+    "bab": 5,
+    "fort": 3,
+    "ref": 3,
+    "will": 5,
+    "special": "Spell synthesis",
+    "advances": [
+     "arcane",
+     "divine"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Pathfinder Chronicler",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Core Rulebook",
+  "hit_die": 8,
+  "alignment": "A Pathfinder chronicler's alignment largely determines her motivations. Good characters tend to view their missions as noble ventures, neutral characters seek to preserve knowledge for knowledge's sake, and evil characters are driven by an urge to accumulate wealth and add to their own glory.",
+  "skill_ranks": 8,
+  "class_skills": [
+   "Appraise",
+   "Bluff",
+   "Diplomacy",
+   "Disguise",
+   "Escape Artist",
+   "Intimidate",
+   "Knowledge (arcana)",
+   "Knowledge (dungeoneering)",
+   "Knowledge (engineering)",
+   "Knowledge (geography)",
+   "Knowledge (history)",
+   "Knowledge (local)",
+   "Knowledge (nature)",
+   "Knowledge (nobility)",
+   "Knowledge (planes)",
+   "Knowledge (religion)",
+   "Linguistics",
+   "Perception",
+   "Perform",
+   "Ride",
+   "Sense Motive",
+   "Sleight of Hand",
+   "Survival",
+   "Use Magic Device"
+  ],
+  "requirements": [
+   "Skills: Linguistics 3 ranks, Perform (oratory) 5 ranks, Profession (scribe) 5 ranks.",
+   "Special: Must have authored or scribed something (other than a magical scroll or other device) for which another person (not a PC) paid at least 50 gp."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 0,
+    "fort": 0,
+    "ref": 1,
+    "will": 1,
+    "special": "Bardic knowledge, deep pockets, master scribe"
+   },
+   {
+    "level": 2,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Live to tell the tale, pathfinding"
+   },
+   {
+    "level": 3,
+    "bab": 2,
+    "fort": 1,
+    "ref": 2,
+    "will": 2,
+    "special": "Bardic music, improved aid"
+   },
+   {
+    "level": 4,
+    "bab": 3,
+    "fort": 1,
+    "ref": 2,
+    "will": 2,
+    "special": "Epic tales"
+   },
+   {
+    "level": 5,
+    "bab": 3,
+    "fort": 2,
+    "ref": 3,
+    "will": 3,
+    "special": "Whispering campaign"
+   },
+   {
+    "level": 6,
+    "bab": 4,
+    "fort": 2,
+    "ref": 3,
+    "will": 3,
+    "special": "Inspired action (move)"
+   },
+   {
+    "level": 7,
+    "bab": 5,
+    "fort": 2,
+    "ref": 4,
+    "will": 4,
+    "special": "Call down the legends"
+   },
+   {
+    "level": 8,
+    "bab": 6,
+    "fort": 3,
+    "ref": 4,
+    "will": 4,
+    "special": "Greater epic tales"
+   },
+   {
+    "level": 9,
+    "bab": 6,
+    "fort": 3,
+    "ref": 5,
+    "will": 5,
+    "special": "Inspired action (standard)"
+   },
+   {
+    "level": 10,
+    "bab": 7,
+    "fort": 3,
+    "ref": 5,
+    "will": 5,
+    "special": "Lay of the exalted dead"
+   }
+  ]
+ },
+ {
+  "name": "Shadowdancer",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Core Rulebook",
+  "hit_die": 8,
+  "alignment": "Because of their nature as visually duplicitous tricksters, shadowdancers do not fit comfortably into the lawful category, as many use their talents to avoid the eyes of legitimate authority. Yet though they are allies of darkness, shadowdancers are neither inherently evil nor predisposed to good. To them, the darkness is simply the darkness, without any of the usual moral connotations made by the unenlightened.",
+  "skill_ranks": 6,
+  "class_skills": [
+   "Acrobatics",
+   "Bluff",
+   "Diplomacy",
+   "Disguise",
+   "Escape Artist",
+   "Perception",
+   "Perform",
+   "Sleight of Hand",
+   "Stealth"
+  ],
+  "requirements": [
+   "Skills: Stealth 5 ranks, Perform (dance) 2 ranks.",
+   "Feats: Combat Reflexes, Dodge, Mobility."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 0,
+    "fort": 0,
+    "ref": 1,
+    "will": 0,
+    "special": "Hide in plain sight"
+   },
+   {
+    "level": 2,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Evasion, darkvision, uncanny dodge"
+   },
+   {
+    "level": 3,
+    "bab": 2,
+    "fort": 1,
+    "ref": 2,
+    "will": 1,
+    "special": "Rogue talent, shadow illusion, summon shadow"
+   },
+   {
+    "level": 4,
+    "bab": 3,
+    "fort": 1,
+    "ref": 2,
+    "will": 1,
+    "special": "Shadow call, shadow jump 40 ft."
+   },
+   {
+    "level": 5,
+    "bab": 3,
+    "fort": 2,
+    "ref": 3,
+    "will": 2,
+    "special": "Defensive roll, improved uncanny dodge"
+   },
+   {
+    "level": 6,
+    "bab": 4,
+    "fort": 2,
+    "ref": 3,
+    "will": 2,
+    "special": "Rogue talent, shadow jump 80 ft."
+   },
+   {
+    "level": 7,
+    "bab": 5,
+    "fort": 2,
+    "ref": 4,
+    "will": 2,
+    "special": "Slippery mind"
+   },
+   {
+    "level": 8,
+    "bab": 6,
+    "fort": 3,
+    "ref": 4,
+    "will": 3,
+    "special": "shadow jump 160 ft., shadow power"
+   },
+   {
+    "level": 9,
+    "bab": 6,
+    "fort": 3,
+    "ref": 5,
+    "will": 3,
+    "special": "Rogue talent"
+   },
+   {
+    "level": 10,
+    "bab": 7,
+    "fort": 3,
+    "ref": 5,
+    "will": 3,
+    "special": "Improved evasion, shadow jump 320 ft., shadow master"
+   }
+  ]
+ },
+ {
+  "name": "Battle Herald",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Advanced Player's Guide",
+  "hit_die": 10,
+  "alignment": "",
+  "skill_ranks": 4,
+  "class_skills": [
+   "Bluff",
+   "Craft",
+   "Diplomacy",
+   "Handle Animal",
+   "Heal",
+   "Intimidate",
+   "Knowledge (engineering)",
+   "Knowledge (history)",
+   "Knowledge (local)",
+   "Knowledge (nobility)",
+   "Perception",
+   "Profession",
+   "Ride",
+   "Sense Motive"
+  ],
+  "requirements": [
+   "Base Attack Bonus: +4.",
+   "Special: Challenge and inspire courage class features.",
+   "Skills: Diplomacy 5 ranks, Intimidate 5 ranks, Perform (oratory) 5 ranks, Profession (soldier) 2 ranks."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 1,
+    "fort": 1,
+    "ref": 0,
+    "will": 1,
+    "special": "1st inspiring command (+1), improved leadership, voice of authority"
+   },
+   {
+    "level": 2,
+    "bab": 2,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Easy march"
+   },
+   {
+    "level": 3,
+    "bab": 3,
+    "fort": 2,
+    "ref": 1,
+    "will": 2,
+    "special": "2nd inspiring command"
+   },
+   {
+    "level": 4,
+    "bab": 4,
+    "fort": 2,
+    "ref": 1,
+    "will": 2,
+    "special": "Inspiring command (+2), inspire greatness"
+   },
+   {
+    "level": 5,
+    "bab": 5,
+    "fort": 3,
+    "ref": 2,
+    "will": 3,
+    "special": "3rd inspiring command, banner"
+   },
+   {
+    "level": 6,
+    "bab": 6,
+    "fort": 3,
+    "ref": 2,
+    "will": 3,
+    "special": "Teamwork feat"
+   },
+   {
+    "level": 7,
+    "bab": 7,
+    "fort": 4,
+    "ref": 2,
+    "will": 4,
+    "special": "4th inspiring command (+3), demanding challenge"
+   },
+   {
+    "level": 8,
+    "bab": 8,
+    "fort": 4,
+    "ref": 3,
+    "will": 4,
+    "special": "Persistent commands"
+   },
+   {
+    "level": 9,
+    "bab": 9,
+    "fort": 5,
+    "ref": 3,
+    "will": 5,
+    "special": "5th inspiring command, inspire last stand"
+   },
+   {
+    "level": 10,
+    "bab": 10,
+    "fort": 5,
+    "ref": 3,
+    "will": 5,
+    "special": "Complex commands, inspiring command (+4)"
+   }
+  ]
+ },
+ {
+  "name": "Holy Vindicator",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Advanced Player's Guide",
+  "hit_die": 10,
+  "alignment": "While lawful vindicators are somewhat more common, vindicators may be of any alignment.",
+  "skill_ranks": 2,
+  "class_skills": [
+   "Climb",
+   "Heal",
+   "Intimidate",
+   "Knowledge (planes)",
+   "Knowledge (religion)",
+   "Ride",
+   "Sense Motive",
+   "Spellcraft",
+   "Swim"
+  ],
+  "requirements": [
+   "Base Attack Bonus: +5.",
+   "Special: Channel energy class feature.",
+   "Skills: Knowledge (religion) 5 ranks.",
+   "Feats: Alignment Channel or Elemental Channel.",
+   "Spells: Able to cast 1st-level divine spells."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 1,
+    "fort": 1,
+    "ref": 0,
+    "will": 1,
+    "special": "Channel energy, vindicator's shield"
+   },
+   {
+    "level": 2,
+    "bab": 2,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Stigmata",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 3,
+    "bab": 3,
+    "fort": 2,
+    "ref": 1,
+    "will": 2,
+    "special": "Faith healing (empower)",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 4,
+    "bab": 4,
+    "fort": 2,
+    "ref": 1,
+    "will": 2,
+    "special": "Divine wrath",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 5,
+    "bab": 5,
+    "fort": 3,
+    "ref": 2,
+    "will": 3,
+    "special": "Bloodfire, Channel Smite"
+   },
+   {
+    "level": 6,
+    "bab": 6,
+    "fort": 3,
+    "ref": 2,
+    "will": 3,
+    "special": "Versatile channel",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 7,
+    "bab": 7,
+    "fort": 4,
+    "ref": 2,
+    "will": 4,
+    "special": "Divine judgment",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 8,
+    "bab": 8,
+    "fort": 4,
+    "ref": 3,
+    "will": 4,
+    "special": "Faith healing (maximize)",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 9,
+    "bab": 9,
+    "fort": 5,
+    "ref": 3,
+    "will": 5,
+    "special": "Bloodrain"
+   },
+   {
+    "level": 10,
+    "bab": 10,
+    "fort": 5,
+    "ref": 3,
+    "will": 5,
+    "special": "Divine retribution",
+    "advances": [
+     "divine"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Horizon Walker",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Advanced Player's Guide",
+  "hit_die": 10,
+  "alignment": "Anyone can crave new vistas and constant travel, and thus a horizon walker can be of any alignment.",
+  "skill_ranks": 6,
+  "class_skills": [
+   "Climb",
+   "Diplomacy",
+   "Handle Animal",
+   "Knowledge (geography)",
+   "Knowledge (nature)",
+   "Knowledge (planes)",
+   "Linguistics",
+   "Perception",
+   "Stealth",
+   "Survival",
+   "Swim"
+  ],
+  "requirements": [
+   "Skills: Knowledge (geography) 6 ranks.",
+   "Feats: Endurance."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 1,
+    "fort": 1,
+    "ref": 0,
+    "will": 0,
+    "special": "Favored terrain"
+   },
+   {
+    "level": 2,
+    "bab": 2,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Favored terrain, terrain mastery"
+   },
+   {
+    "level": 3,
+    "bab": 3,
+    "fort": 2,
+    "ref": 1,
+    "will": 1,
+    "special": "Terrain dominance"
+   },
+   {
+    "level": 4,
+    "bab": 4,
+    "fort": 2,
+    "ref": 1,
+    "will": 1,
+    "special": "Favored terrain, terrain mastery"
+   },
+   {
+    "level": 5,
+    "bab": 5,
+    "fort": 3,
+    "ref": 2,
+    "will": 2,
+    "special": "Favored terrain"
+   },
+   {
+    "level": 6,
+    "bab": 6,
+    "fort": 3,
+    "ref": 2,
+    "will": 2,
+    "special": "Terrain dominance, terrain mastery"
+   },
+   {
+    "level": 7,
+    "bab": 7,
+    "fort": 4,
+    "ref": 2,
+    "will": 2,
+    "special": "Favored terrain"
+   },
+   {
+    "level": 8,
+    "bab": 8,
+    "fort": 4,
+    "ref": 3,
+    "will": 3,
+    "special": "Favored terrain, terrain mastery"
+   },
+   {
+    "level": 9,
+    "bab": 9,
+    "fort": 5,
+    "ref": 3,
+    "will": 3,
+    "special": "Terrain dominance"
+   },
+   {
+    "level": 10,
+    "bab": 10,
+    "fort": 5,
+    "ref": 3,
+    "will": 3,
+    "special": "Favored terrain, master of all lands"
+   }
+  ]
+ },
+ {
+  "name": "Master Chymist",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Advanced Player's Guide",
+  "hit_die": 10,
+  "alignment": "A master chymist actually has two alignments (see the mutagenic form ability). The only restriction on these alignments is that they cannot be exactly the same.",
+  "skill_ranks": 2,
+  "class_skills": [
+   "Acrobatics",
+   "Climb",
+   "Escape Artist",
+   "Intimidate",
+   "Knowledge (dungeoneering)",
+   "Sense Motive",
+   "Stealth",
+   "Swim"
+  ],
+  "requirements": [
+   "Spells: Ability to create 3rd-level extracts.",
+   "Special: Mutagen class feature, feral mutagen or infuse mutagen discovery."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 0,
+    "special": "Bomb-thrower, mutagenic form, mutate 2/day"
+   },
+   {
+    "level": 2,
+    "bab": 2,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Advanced mutagen",
+    "advances": [
+     "Alchemist"
+    ]
+   },
+   {
+    "level": 3,
+    "bab": 3,
+    "fort": 2,
+    "ref": 2,
+    "will": 1,
+    "special": "Brutality (+2)",
+    "advances": [
+     "Alchemist"
+    ]
+   },
+   {
+    "level": 4,
+    "bab": 4,
+    "fort": 2,
+    "ref": 2,
+    "will": 1,
+    "special": "Advanced mutagen"
+   },
+   {
+    "level": 5,
+    "bab": 5,
+    "fort": 3,
+    "ref": 3,
+    "will": 2,
+    "special": "Mutate 3/day",
+    "advances": [
+     "Alchemist"
+    ]
+   },
+   {
+    "level": 6,
+    "bab": 6,
+    "fort": 3,
+    "ref": 3,
+    "will": 2,
+    "special": "Advanced mutagen",
+    "advances": [
+     "Alchemist"
+    ]
+   },
+   {
+    "level": 7,
+    "bab": 7,
+    "fort": 4,
+    "ref": 4,
+    "will": 2,
+    "special": "Brutality (+4)",
+    "advances": [
+     "Alchemist"
+    ]
+   },
+   {
+    "level": 8,
+    "bab": 8,
+    "fort": 4,
+    "ref": 4,
+    "will": 3,
+    "special": "Advanced mutagen, mutate 4/day"
+   },
+   {
+    "level": 9,
+    "bab": 9,
+    "fort": 5,
+    "ref": 5,
+    "will": 3,
+    "special": "Brutality (+6)",
+    "advances": [
+     "Alchemist"
+    ]
+   },
+   {
+    "level": 10,
+    "bab": 10,
+    "fort": 5,
+    "ref": 5,
+    "will": 3,
+    "special": "Advanced mutagen, mutate 5/day",
+    "advances": [
+     "Alchemist"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Master Spy",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Advanced Player's Guide",
+  "hit_die": 8,
+  "alignment": "The practice of espionage demands discipline and a certain amount of moral and ethical flexibility; more master spies are neutral than lawful or chaotic.",
+  "skill_ranks": 6,
+  "class_skills": [
+   "Bluff",
+   "Diplomacy",
+   "Disable Device",
+   "Disguise",
+   "Escape Artist",
+   "Knowledge (arcana)",
+   "Knowledge (dungeoneering)",
+   "Knowledge (engineering)",
+   "Knowledge (geography)",
+   "Knowledge (history)",
+   "Knowledge (local)",
+   "Knowledge (nature)",
+   "Knowledge (nobility)",
+   "Knowledge (planes)",
+   "Knowledge (religion)",
+   "Linguistics",
+   "Perception",
+   "Sense Motive",
+   "Sleight of Hand",
+   "Stealth",
+   "Use Magic Device"
+  ],
+  "requirements": [
+   "Feats: Deceitful, Iron Will.",
+   "Skills: Bluff 7 ranks, Disguise 7 ranks, Perception 5 ranks, Sense Motive 5 ranks."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 0,
+    "fort": 0,
+    "ref": 1,
+    "will": 1,
+    "special": "Art of deception, master of disguise, sneak attack +1d6"
+   },
+   {
+    "level": 2,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Glib lie, mask alignment"
+   },
+   {
+    "level": 3,
+    "bab": 2,
+    "fort": 1,
+    "ref": 2,
+    "will": 2,
+    "special": "Nonmagical aura 2/day, superficial knowledge"
+   },
+   {
+    "level": 4,
+    "bab": 3,
+    "fort": 1,
+    "ref": 2,
+    "will": 2,
+    "special": "Concealed thoughts, quick change, sneak attack +2d6"
+   },
+   {
+    "level": 5,
+    "bab": 3,
+    "fort": 2,
+    "ref": 3,
+    "will": 3,
+    "special": "Elude detection, slippery mind"
+   },
+   {
+    "level": 6,
+    "bab": 4,
+    "fort": 2,
+    "ref": 3,
+    "will": 3,
+    "special": "Shift alignment"
+   },
+   {
+    "level": 7,
+    "bab": 5,
+    "fort": 2,
+    "ref": 4,
+    "will": 4,
+    "special": "Sneak attack +3d6"
+   },
+   {
+    "level": 8,
+    "bab": 6,
+    "fort": 3,
+    "ref": 4,
+    "will": 4,
+    "special": "Death attack, fool casting"
+   },
+   {
+    "level": 9,
+    "bab": 6,
+    "fort": 3,
+    "ref": 5,
+    "will": 5,
+    "special": "Hidden mind"
+   },
+   {
+    "level": 10,
+    "bab": 7,
+    "fort": 3,
+    "ref": 5,
+    "will": 5,
+    "special": "Assumption, sneak attack +4d6"
+   }
+  ]
+ },
+ {
+  "name": "Nature Warden",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Advanced Player's Guide",
+  "hit_die": 8,
+  "alignment": "Nature wardens tend toward nonevil alignments, as many pursue their profession out of a desire to help and protect others. Occasionally evil wardens can be found turning the bitter realities of the wild upon their enemies or guarding natural sites tainted by dark fey.",
+  "skill_ranks": 4,
+  "class_skills": [
+   "Climb",
+   "Handle Animal",
+   "Heal",
+   "Knowledge (geography)",
+   "Knowledge (nature)",
+   "Perception",
+   "Ride",
+   "Sense Motive",
+   "Survival",
+   "Swim"
+  ],
+  "requirements": [
+   "Base Attack Bonus: +4.",
+   "Special: Animal companion class feature*, favored terrain class feature, wild empathy class feature.",
+   "Skills: Handle Animal 5 ranks, Knowledge (geography) 5 ranks, Knowledge (nature) 5 ranks, Survival 5 ranks.",
+   "Spells: Able to cast 2nd-level divine spells. * An oracle of nature's bonded mount ability counts as an animal companion class ability for the purpose of this prestige class."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 0,
+    "fort": 1,
+    "ref": 0,
+    "will": 1,
+    "special": "Companion bond, natural empathy"
+   },
+   {
+    "level": 2,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Mystic harmony, wild stride",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 3,
+    "bab": 2,
+    "fort": 2,
+    "ref": 1,
+    "will": 2,
+    "special": "Animal speech",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 4,
+    "bab": 3,
+    "fort": 2,
+    "ref": 1,
+    "will": 2,
+    "special": "Silverclaw",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 5,
+    "bab": 3,
+    "fort": 3,
+    "ref": 2,
+    "will": 3,
+    "special": "Favored terrain, survivalist"
+   },
+   {
+    "level": 6,
+    "bab": 4,
+    "fort": 3,
+    "ref": 2,
+    "will": 3,
+    "special": "Woodforging",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 7,
+    "bab": 5,
+    "fort": 4,
+    "ref": 2,
+    "will": 4,
+    "special": "Companion walk, plant speech",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 8,
+    "bab": 6,
+    "fort": 4,
+    "ref": 3,
+    "will": 4,
+    "special": "Ironpaw",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 9,
+    "bab": 6,
+    "fort": 5,
+    "ref": 3,
+    "will": 5,
+    "special": "Guarded lands"
+   },
+   {
+    "level": 10,
+    "bab": 7,
+    "fort": 5,
+    "ref": 3,
+    "will": 5,
+    "special": "Companion soul, favored terrain",
+    "advances": [
+     "divine"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Rage Prophet",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Advanced Player's Guide",
+  "hit_die": 10,
+  "alignment": "Rage prophets may be of any nonlawful alignment, but chaotic alignments are more common, as they are in the barbarian tribes from which they hail. Wandering rage prophets are usually chaotic, living apart from any tribe and the tribal structure of their heritage as they take up the adventuring life.",
+  "skill_ranks": 4,
+  "class_skills": [
+   "Climb",
+   "Heal",
+   "Intimidate",
+   "Knowledge (history)",
+   "Knowledge (religion)",
+   "Sense Motive",
+   "Spellcraft",
+   "Swim"
+  ],
+  "requirements": [
+   "Base Attack Bonus: +5.",
+   "Special: Oracle's curse class feature, moment of clarity rage power.",
+   "Skills: Knowledge (religion) 5 ranks.",
+   "Spells: Able to cast 1st-level divine spells."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 0,
+    "fort": 1,
+    "ref": 0,
+    "will": 1,
+    "special": "Savage seer, spirit guide"
+   },
+   {
+    "level": 2,
+    "bab": 1,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Rage prophet mystery, raging healer",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 3,
+    "bab": 2,
+    "fort": 2,
+    "ref": 1,
+    "will": 2,
+    "special": "Indomitable caster",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 4,
+    "bab": 3,
+    "fort": 2,
+    "ref": 1,
+    "will": 2,
+    "special": "Ragecaster (caster level), rage prophet mystery",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 5,
+    "bab": 3,
+    "fort": 3,
+    "ref": 2,
+    "will": 3,
+    "special": "Spirit guardian"
+   },
+   {
+    "level": 6,
+    "bab": 4,
+    "fort": 3,
+    "ref": 2,
+    "will": 3,
+    "special": "Enduring rage, rage prophet mystery",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 7,
+    "bab": 5,
+    "fort": 4,
+    "ref": 2,
+    "will": 4,
+    "special": "Ragecaster (save DC)",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 8,
+    "bab": 6,
+    "fort": 4,
+    "ref": 3,
+    "will": 4,
+    "special": "Rage prophet mystery, raging spellstrength"
+   },
+   {
+    "level": 9,
+    "bab": 6,
+    "fort": 5,
+    "ref": 3,
+    "will": 5,
+    "special": "Spirit warrior",
+    "advances": [
+     "divine"
+    ]
+   },
+   {
+    "level": 10,
+    "bab": 7,
+    "fort": 5,
+    "ref": 3,
+    "will": 5,
+    "special": "Greater rage, rage prophet mystery",
+    "advances": [
+     "divine"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Stalwart Defender",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Advanced Player's Guide",
+  "hit_die": 12,
+  "alignment": "Anyone can be as stubborn as a rock and dedicated to holding one point no matter the cost, so stalwart defenders can be of any alignment. The dedication and practice required to learn the talents of a stalwart defender come more easily to characters with a strong respect for order and organization, however, so lawful stalwart defenders are much more common than chaotic ones.",
+  "skill_ranks": 2,
+  "class_skills": [
+   "Acrobatics",
+   "Climb",
+   "Intimidate",
+   "Perception",
+   "Sense Motive"
+  ],
+  "requirements": [
+   "Base Attack Bonus: +7.",
+   "Feats: Dodge, Endurance, Toughness.",
+   "Special: Proficiency with light and medium armor."
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "bab": 1,
+    "fort": 1,
+    "ref": 0,
+    "will": 1,
+    "special": "Defensive stance"
+   },
+   {
+    "level": 2,
+    "bab": 2,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Defensive power"
+   },
+   {
+    "level": 3,
+    "bab": 3,
+    "fort": 2,
+    "ref": 1,
+    "will": 2,
+    "special": "Uncanny dodge"
+   },
+   {
+    "level": 4,
+    "bab": 4,
+    "fort": 2,
+    "ref": 1,
+    "will": 2,
+    "special": "Defensive power"
+   },
+   {
+    "level": 5,
+    "bab": 5,
+    "fort": 3,
+    "ref": 2,
+    "will": 3,
+    "special": "Damage reduction 1/"
+   },
+   {
+    "level": 6,
+    "bab": 6,
+    "fort": 3,
+    "ref": 2,
+    "will": 3,
+    "special": "Defensive power"
+   },
+   {
+    "level": 7,
+    "bab": 7,
+    "fort": 4,
+    "ref": 2,
+    "will": 4,
+    "special": "Damage reduction 3/\u2014, improved uncanny dodge"
+   },
+   {
+    "level": 8,
+    "bab": 8,
+    "fort": 4,
+    "ref": 3,
+    "will": 4,
+    "special": "Defensive power"
+   },
+   {
+    "level": 9,
+    "bab": 9,
+    "fort": 5,
+    "ref": 3,
+    "will": 5,
+    "special": "Mobile defense"
+   },
+   {
+    "level": 10,
+    "bab": 10,
+    "fort": 5,
+    "ref": 3,
+    "will": 5,
+    "special": "Damage reduction 5/\u2014, defensive power, last word"
+   }
+  ]
  }
 ]

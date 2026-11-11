@@ -1,5 +1,5 @@
 import { state, changed, go, render } from '../app.js';
-import { compute, sign, num, classLevels, raceInfo, mod } from '../calc.js';
+import { compute, sign, num, classLevels, advanceable, raceInfo, mod } from '../calc.js';
 import { ABILITIES, ABILITY_NAMES, RACES, POINT_BUY, SKILL_BY_NAME, FEAT_TYPES } from '../data.js';
 import { skillKey } from '../model.js';
 import { api } from '../api.js';
@@ -8,7 +8,7 @@ import { featuresFor, archetypesOf } from '../features.js';
 import { learnAllowance, favoritesAllowance, remaining, describeRemaining } from '../spellrules.js';
 import { esc, $, $$, pickEntry, toast, confirmBox, warnBox, showCustom } from '../ui.js';
 import { levelWarnings } from '../levelcheck.js';
-import { pickSpell, featureLookupName } from './sheet.js';
+import { featureLookupName } from './sheet.js';
 import { chooseArchetypes } from './archetypes.js';
 import { chooseTraits } from './traitpicker.js';
 import { traitAllowance, countTraits } from '../traits.js';
@@ -21,7 +21,7 @@ const ORD = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 - 20) % 10] || ['th', 's
 
 function freshDraft(c) {
   return { forLevel: c.levelUps.length, charId: c.id, cls: null, hpMode: 'avg', hpRoll: null, hpManual: '', fcb: 'hp', fcbNote: '',
-    abilityIncrease: '', ranks: {}, feats: [], traits: [], racial: [], racialRace: '', spells: [], favs: [], archetypes: [], notes: '', budget: 20 };
+    abilityIncrease: '', ranks: {}, feats: [], traits: [], racial: [], racialRace: '', spellsBy: {}, favsBy: {}, advances: [], archetypes: [], notes: '', budget: 20 };
 }
 
 export function renderLevelUp(main) {
@@ -46,8 +46,9 @@ export function renderLevelUp(main) {
   wireBasics(main, c);
   $$('[data-pick-class]', main).forEach(b => (b.onclick = () => {
     draft.cls = b.dataset.pickClass;
-    draft.ranks = {}; draft.spells = []; draft.favs = [];
+    draft.ranks = {}; draft.spellsBy = {}; draft.favsBy = {};
     draft.archetypes = [...archetypesOf(c, draft.cls)];
+    draft.advances = defaultAdvances(c, state.classesByName[draft.cls]);
     if (newLevel === 1) draft.hpMode = 'max';
     render();
   }));
@@ -104,13 +105,34 @@ function wireBasics(main, c) {
 // ---------------------------------------------------------------- class picker
 function classPicker(c) {
   const lv = classLevels(c);
-  const groups = ['Core', 'Base', 'Hybrid', 'Alternate'];
+  const first = !c.levelUps.length;
+  const groups = ['Core', 'Base', 'Hybrid', 'Alternate', 'Prestige'];
+  const why = k => !k.prestige ? '' : first ? 'Prestige classes are taken after 1st level' : (lv[k.name] || 0) >= k.levels.length ? `${k.name} has only ${k.levels.length} levels` : '';
   return groups.map(g => `<div class="class-group"><div class="eyebrow">${g}</div><div class="chips">
-    ${state.classes.filter(k => k.group === g).map(k => `<button class="chip class-chip ${draft.cls === k.name ? 'on' : ''}" data-pick-class="${esc(k.name)}"
-      title="d${k.hit_die} · ${k.skill_ranks} + Int skill ranks${k.casting ? ' · ' + k.casting.kind + ' caster' : ''}">
+    ${state.classes.filter(k => k.group === g).map(k => `<button class="chip class-chip ${draft.cls === k.name ? 'on' : ''}" data-pick-class="${esc(k.name)}" ${why(k) ? 'disabled' : ''}
+      title="${esc(why(k) || `d${k.hit_die} · ${k.skill_ranks} + Int skill ranks${k.casting ? ' · ' + k.casting.kind + ' caster' : ''}${k.prestige ? ` · ${k.levels.length} levels` : ''}`)}">
       ${esc(k.name)}${lv[k.name] ? ` <b>${lv[k.name]}</b>` : ''}${c.favoredClass === k.name ? ' ★' : ''}</button>`).join('')}
-  </div></div>`).join('') + '<p class="small muted">★ favored class · numbers show your current levels · hover for hit die and skills. Prestige classes can be tracked in notes for now.</p>';
+  </div></div>`).join('') + '<p class="small muted">★ favored class · numbers show your current levels · hover for hit die and skills. Prestige classes have requirements to meet first; the wizard lists them when you pick one.</p>';
 }
+
+// ---------------------------------------------------------------- prestige spellcasting
+/** For a prestige level: one entry per "+1 level of existing ... class" in its Spells per Day column, with the character's classes that can take it. */
+function advanceSlots(c, def, clsLevel) {
+  const row = def?.prestige ? def.levels[clsLevel - 1] : null;
+  return (row?.advances || []).map(kind => ({ kind, options: advanceable(kind, classLevels(c), state.classesByName) }));
+}
+/** The classes a new prestige level advances unless the player picks others: the ones this prestige class advanced last time, else the first that fits. */
+function defaultAdvances(c, def) {
+  if (!def?.prestige) return [];
+  const before = [...c.levelUps].reverse().find(l => l.cls === def.name && l.advances?.length)?.advances || [];
+  return advanceSlots(c, def, (classLevels(c)[def.name] || 0) + 1).map((slot, i) => slot.options.includes(before[i]) ? before[i] : slot.options[0] || '');
+}
+/** The spellcasting classes whose spells change with this level: the class itself, or the classes the prestige level advances. */
+function spellTargets(def) {
+  if (def.prestige) return [...new Set(draft.advances.filter(Boolean))];
+  return def.casting ? [def.name] : [];
+}
+const KIND_TEXT = { arcane: 'arcane spellcasting class', divine: 'divine spellcasting class', any: 'spellcasting class' };
 
 // ---------------------------------------------------------------- the detail panels
 function applyDraft(c, dr, newLevel) {
@@ -132,8 +154,9 @@ function hpValue(dr, hd, newLevel) {
 function levelRecord(dr, c, newLevel) {
   const def = state.classesByName[dr.cls];
   const fav = c.favoredClass || (newLevel === 1 ? dr.cls : '');
+  const advances = def.prestige ? dr.advances.filter(Boolean) : [];
   return { cls: dr.cls, hp: hpValue(dr, def.hit_die, newLevel), fcb: fav === dr.cls ? dr.fcb : '', fcbNote: dr.fcbNote,
-    abilityIncrease: newLevel % 4 === 0 ? dr.abilityIncrease : '', ranks: { ...dr.ranks }, notes: dr.notes };
+    abilityIncrease: newLevel % 4 === 0 ? dr.abilityIncrease : '', ranks: { ...dr.ranks }, notes: dr.notes, ...(advances.length ? { advances } : {}) };
 }
 
 // The race's standard racial traits and the alternates for the wizard, loaded once per race.
@@ -163,8 +186,9 @@ function detail(el, c, d, newLevel) {
   const lvBefore = classLevels(c)[draft.cls] || 0;
   const clsLevel = lvBefore + 1;
   const row = def.levels[clsLevel - 1];
-  const prevRow = lvBefore ? def.levels[lvBefore - 1] : null;
   const after = compute(applyDraft(c, draft, newLevel), state.classesByName);
+  const targets = spellTargets(def).filter(t => state.classesByName[t]);
+  const slots = advanceSlots(c, def, clsLevel);
   const isFav = (c.favoredClass || (newLevel === 1 ? draft.cls : '')) === draft.cls;
   const ri = raceInfo(c);
   const rankBudget = Math.max(1, def.skill_ranks + after.abilities.int.mod) + (ri.bonusSkill ? 1 : 0) + (isFav && draft.fcb === 'skill' ? 1 : 0);
@@ -183,7 +207,17 @@ function detail(el, c, d, newLevel) {
   const delta = (a, b, f = sign) => `<span class="dim">${f(a)}</span> → <b>${f(b)}</b>${b !== a ? ` <span class="up">(${b > a ? '+' : ''}${b - a})</span>` : ''}`;
 
   el.innerHTML = `
-  ${lvBefore === 0 ? `<section class="card">
+  ${def.prestige && lvBefore === 0 ? `<section class="card">
+    <h3>Requirements for ${esc(def.name)}</h3>
+    <ul class="prestige-req">${(def.requirements || []).map(r => { const [k, ...v] = r.split(': '); return v.length ? `<li><b>${esc(k)}:</b> ${esc(v.join(': '))}</li>` : `<li>${esc(r)}</li>`; }).join('')}</ul>
+    <p class="small muted">The wizard does not check these. Make sure your character meets them (or your GM agrees) before taking the class.</p></section>` : ''}
+  ${slots.length ? `<section class="card">
+    <h3>Spellcasting this level</h3>
+    ${slots.map((slot, i) => `<p>${esc(def.name)} ${clsLevel}: +1 level of an existing ${esc(KIND_TEXT[slot.kind] || slot.kind)}.
+      ${slot.options.length ? `<select data-advance="${i}">${slot.options.map(o => `<option ${draft.advances[i] === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}<option value="" ${draft.advances[i] ? '' : 'selected'}>None</option></select>`
+        : '<span class="warn">You have no class that fits, so this level adds no spellcasting.</span>'}</p>`).join('')}
+    <p class="small muted">The class you pick gets this level for spells per day, spells known and caster level, as if it had gained a level (its other class features do not improve).</p></section>` : ''}
+  ${lvBefore === 0 && !def.prestige ? `<section class="card">
     <h3>Archetype <span class="muted small">(optional; replaces some ${esc(def.name)} features with new ones)</span></h3>
     <div class="row"><span class="grow" id="lu-arch">${draft.archetypes.length ? `<b>${esc(draft.archetypes.map(a => a.name).join(', '))}</b>` : '<span class="muted">Standard class</span>'}</span>
       <button class="btn" data-choose-arch>${draft.archetypes.length ? 'Change archetype…' : 'Choose archetype…'}</button></div></section>`
@@ -208,7 +242,7 @@ function detail(el, c, d, newLevel) {
         ? `<li><a href="#" class="ref" data-arch-feat="${i}">${esc(f.name)}</a><span class="arch-badge">${esc(f.archetype)}</span>${f.replaces.length ? ` <span class="rep">replaces ${esc(f.replaces.join(', '))}</span>` : ''}</li>`
         : `<li><a href="#" class="ref" data-entry="${esc(featureLookupName(f.name))}">${esc(f.name)}</a>${f.modified ? ` <span class="mod">modified by ${esc(f.modified.join(', '))}</span>` : ''}</li>`).join('')}</ul>`
         : '<p class="muted">No new features this level (numbers improve automatically).</p>'}
-      ${spellDiff(def, row, prevRow, after)}
+      ${targets.map(t => spellDiff(state.classesByName[t], d, after, def.prestige)).join('')}
     </section>
 
     <section class="card">
@@ -270,7 +304,7 @@ function detail(el, c, d, newLevel) {
     }).join('')}</div>
   </section>
 
-  ${spellPicks(c, def, row, prevRow, after, newLevel)}
+  ${targets.map(t => spellPicks(c, state.classesByName[t], after)).join('')}
 
   <section class="card apply">
     <label class="grow">Notes for this level <input id="lu-notes" class="full" value="${esc(draft.notes)}" placeholder="e.g. chose Weapon Training (heavy blades)"></label>
@@ -325,44 +359,49 @@ function detail(el, c, d, newLevel) {
     showCustom({ name: f.name, cat: 'Archetype feature', sub: f.archetype,
       html: (f.replaces.length ? `<p class="field"><b>Replaces:</b> ${esc(f.replaces.join(', '))}</p>` : '') + f.html });
   }));
-  $$('[data-add-lu-spell]', el).forEach(b => (b.onclick = async () => {
-    const sc = after.spellcasting[draft.cls];
-    const r = await pickSpell(draft.cls, sc, -1);
-    if (r) { draft.spells.push({ ...r }); rerender(); }
-  }));
-  const choose = $('[data-choose-spells]', el);
-  if (choose) choose.onclick = async () => {
-    const sc = after.spellcasting[draft.cls];
-    const book = c.spellbooks[draft.cls] || { spells: [] };
-    await chooseSpells({ cls: draft.cls, lists: sc.lists, allowance: spellAllowance(c, def, clsLevel, after), picks: draft.spells,
-      known: [...book.spells, ...draft.favs].map(s => s.name) });
+  $$('[data-advance]', el).forEach(s => (s.onchange = () => {
+    const was = draft.advances[+s.dataset.advance];
+    draft.advances[+s.dataset.advance] = s.value;
+    if (was && !draft.advances.includes(was)) { delete draft.spellsBy[was]; delete draft.favsBy[was]; } // the spells chosen for a class no longer advanced
     rerender();
-  };
+  }));
+  $$('[data-choose-spells]', el).forEach(b => (b.onclick = async () => {
+    const t = b.dataset.cls, sc = after.spellcasting[t];
+    const book = c.spellbooks[t] || { spells: [] };
+    await chooseSpells({ cls: t, lists: sc.lists, allowance: spellAllowance(c, state.classesByName[t], after), picks: (draft.spellsBy[t] ||= []),
+      known: [...book.spells, ...(draft.favsBy[t] || [])].map(s => s.name) });
+    rerender();
+  }));
   // Favourites: spells picked only to have them on the Spells tab (prepared casters can prepare anything on their list), with no limit.
   $$('[data-choose-favs]', el).forEach(b => (b.onclick = async () => {
-    const sc = after.spellcasting[draft.cls];
-    const book = c.spellbooks[draft.cls] || { spells: [] };
-    await chooseSpells({ cls: draft.cls, lists: sc.lists, allowance: favoritesAllowance(sc), picks: draft.favs, known: [...book.spells, ...draft.spells].map(s => s.name) });
+    const t = b.dataset.cls, sc = after.spellcasting[t];
+    const book = c.spellbooks[t] || { spells: [] };
+    await chooseSpells({ cls: t, lists: sc.lists, allowance: favoritesAllowance(sc), picks: (draft.favsBy[t] ||= []), known: [...book.spells, ...(draft.spellsBy[t] || [])].map(s => s.name) });
     rerender();
   }));
-  $$('[data-rm-fav]', el).forEach(b => (b.onclick = () => { draft.favs.splice(+b.dataset.rmFav, 1); rerender(); }));
-  $$('[data-rm-spell]', el).forEach(b => (b.onclick = () => { draft.spells.splice(+b.dataset.rmSpell, 1); rerender(); }));
-  $('[data-apply]', el).onclick = () => apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after, clsLevel);
+  $$('[data-rm-fav]', el).forEach(b => (b.onclick = () => { draft.favsBy[b.dataset.cls].splice(+b.dataset.rmFav, 1); rerender(); }));
+  $$('[data-rm-spell]', el).forEach(b => (b.onclick = () => { draft.spellsBy[b.dataset.cls].splice(+b.dataset.rmSpell, 1); rerender(); }));
+  $('[data-apply]', el).onclick = () => apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after, targets);
 }
 
-function spellAllowance(c, def, clsLevel, after) {
+/** What the spellcasting class `def` learns at this level. Its level counts the prestige levels that advance it. */
+function spellAllowance(c, def, after) {
   const book = c.spellbooks[def.name] || { spells: [] };
-  return learnAllowance(def, clsLevel, book.spells, after.spellcasting[def.name], after.abilities.int.mod);
+  return learnAllowance(def, after.casterLevels[def.name], book.spells, after.spellcasting[def.name], after.abilities.int.mod);
 }
 
 const SL = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
-function spellDiff(def, row, prevRow, after) {
+/** The spells-per-day table of the spellcasting class `def` before (d) and after this level. */
+function spellDiff(def, d, after, viaPrestige) {
   if (!def.casting) return '';
+  const lvAfter = after.casterLevels[def.name], lvBefore = d.casterLevels?.[def.name] || 0;
+  const row = def.levels[Math.min(lvAfter, 20) - 1];
+  const prevRow = lvBefore ? def.levels[Math.min(lvBefore, 20) - 1] : null;
   const sc = after.spellcasting[def.name];
   const levels = [...Array((def.casting.max_level || 0) + 1).keys()];
   const cell = (arr, l) => (arr?.[l] == null ? '—' : arr[l]);
   const changedLv = l => (prevRow?.spells_per_day?.[l] ?? null) !== (row.spells_per_day?.[l] ?? null);
-  return `<h4>Spellcasting</h4>
+  return `<h4>Spellcasting${viaPrestige ? `: ${esc(def.name)} (as ${ORD(lvAfter)} level)` : ''}</h4>
     <table class="tbl slot-tbl"><thead><tr><th></th>${levels.map(l => `<th>${SL[l]}</th>`).join('')}</tr></thead><tbody>
       <tr><th>Per day (table)</th>${levels.map(l => `<td class="${changedLv(l) ? 'up' : ''}">${cell(row.spells_per_day, l)}</td>`).join('')}</tr>
       ${sc ? `<tr><th>With bonus spells</th>${levels.map(l => `<td>${sc.slots[l] === Infinity ? '∞' : sc.slots[l] ?? '—'}</td>`).join('')}</tr>` : ''}
@@ -372,11 +411,13 @@ function spellDiff(def, row, prevRow, after) {
     ${sc ? `<p class="small muted">Caster level ${sc.cl} · concentration ${sign(sc.concentration)} · bonus spells from ${def.casting.stat.toUpperCase()} ${sign(sc.statMod)}</p>` : '<p class="small muted">Spellcasting begins at a later level.</p>'}`;
 }
 
-function spellPicks(c, def, row, prevRow, after, newLevel) {
+function spellPicks(c, def, after) {
   if (!def.casting || !after.spellcasting[def.name]) return '';
-  const clsLevel = (classLevels(c)[def.name] || 0) + 1;
-  const allowance = spellAllowance(c, def, clsLevel, after);
-  const rem = remaining(allowance, draft.spells);
+  const allowance = spellAllowance(c, def, after);
+  const picks = draft.spellsBy[def.name] || [], favs = draft.favsBy[def.name] || [];
+  const rem = remaining(allowance, picks);
+  const cls = `data-cls="${esc(def.name)}"`;
+  const of = def.name === draft.cls ? '' : ` <span class="muted small">(${esc(def.name)})</span>`;
   const word = def.casting.extracts ? 'formulae' : 'spells';
   let guidance;
   if (allowance.kind === 'known') {
@@ -389,50 +430,55 @@ function spellPicks(c, def, row, prevRow, after, newLevel) {
   } else {
     guidance = `${def.name}s prepare from their entire spell list, so there's nothing to learn. Track favourites on the Spells tab.`;
   }
-  const chips = draft.spells.map((s, i) => `<span class="chip on">${s.level === 0 ? 'Cantrip' : 'L' + s.level} ${esc(s.name)} <button class="icon-btn" data-rm-spell="${i}">✕</button></span>`).join('');
-  const favChips = draft.favs.map((s, i) => `<span class="chip on">${s.level === 0 ? 'Cantrip' : 'L' + s.level} ${esc(s.name)} <button class="icon-btn" data-rm-fav="${i}">✕</button></span>`).join('');
+  const chips = picks.map((s, i) => `<span class="chip on">${s.level === 0 ? 'Cantrip' : 'L' + s.level} ${esc(s.name)} <button class="icon-btn" ${cls} data-rm-spell="${i}">✕</button></span>`).join('');
+  const favChips = favs.map((s, i) => `<span class="chip on">${s.level === 0 ? 'Cantrip' : 'L' + s.level} ${esc(s.name)} <button class="icon-btn" ${cls} data-rm-fav="${i}">✕</button></span>`).join('');
   if (allowance.kind === 'none') {
-    return `<section class="card"><div class="row"><h3 class="grow">Spells <span class="muted small">(optional)</span></h3><button class="btn small primary" data-choose-favs>Choose spells</button></div>
+    return `<section class="card"><div class="row"><h3 class="grow">Spells${of} <span class="muted small">(optional)</span></h3><button class="btn small primary" ${cls} data-choose-favs>Choose spells</button></div>
       <p>${def.name}s prepare from their entire spell list, so you do not have to learn anything. Pick any spells you want quick access to and they are put on your Spells tab, ready to prepare. You can add more there any time.</p>
       <div class="chips">${favChips}</div></section>`;
   }
-  return `<section class="card"><div class="row"><h3 class="grow">${def.casting.extracts ? 'Formulae' : 'Spells'} to learn</h3>
+  return `<section class="card"><div class="row"><h3 class="grow">${def.casting.extracts ? 'Formulae' : 'Spells'} to learn${of}</h3>
       <span class="pill ${rem.total ? 'warn' : 'good'}">${rem.total ? `Left: <b>${esc(describeRemaining(rem))}</b>` : 'All chosen ✓'}</span>
-      <button class="btn small ${rem.total ? 'primary' : ''}" data-choose-spells ${rem.total ? '' : 'disabled'}>Choose ${word}</button></div>
+      <button class="btn small ${rem.total ? 'primary' : ''}" ${cls} data-choose-spells ${rem.total ? '' : 'disabled'}>Choose ${word}</button></div>
     <p>${guidance}</p>
     <div class="chips">${chips}</div>
-    ${allowance.kind === 'book' ? `<div class="row"><button class="btn small ghost" data-choose-favs title="Spells you want on your list for quick access, beyond the ones above">＋ More spells (optional)</button></div>
+    ${allowance.kind === 'book' ? `<div class="row"><button class="btn small ghost" ${cls} data-choose-favs title="Spells you want on your list for quick access, beyond the ones above">＋ More spells (optional)</button></div>
       <div class="chips">${favChips}</div>` : ''}
   </section>`;
 }
 
-async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after, clsLevel) {
+async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after, targets) {
   if (ranksUsed > rankBudget) { toast(`You assigned ${ranksUsed} ranks but only have ${rankBudget}.`, 'err'); return; }
   if (draft.hpMode === 'roll' && draft.hpRoll == null && newLevel > 1) { toast('Roll your hit die first (or pick another HP option).', 'err'); return; }
-  const allowance = def.casting && after.spellcasting[def.name] ? spellAllowance(c, def, clsLevel, after) : null;
-  const rem = allowance ? remaining(allowance, draft.spells) : { total: 0 };
+  // Each spellcasting class this level touches: what it may learn, and what is still left to choose.
+  const learn = targets.map(t => state.classesByName[t]).filter(t => t.casting && after.spellcasting[t.name]).map(t => {
+    const allowance = spellAllowance(c, t, after);
+    return { def: t, allowance, rem: remaining(allowance, draft.spellsBy[t.name] || []) };
+  });
+  const spellsLeft = learn.filter(l => l.rem.total).map(l => `${describeRemaining(l.rem)} ${l.def.casting.extracts ? 'formulae' : 'spells'}${learn.length > 1 || l.def !== def ? ` (${l.def.name})` : ''}`).join('; ');
   const ri = raceInfo(c);
   const spent = ABILITIES.reduce((s, a) => s + (POINT_BUY[num(c.abilities[a].base)] ?? NaN), 0);
   const warnings = levelWarnings({
     newLevel, rankBudget, ranksUsed, getsFeat: newLevel % 2 === 1, bonusFeat: newLevel === 1 && !!ri.bonusFeat, featsChosen: draft.feats.length,
     traitsLeft: Math.max(0, traitAllowance(newLevel, draft.feats) - countTraits(draft.traits)),
     getsAbility, abilityIncrease: draft.abilityIncrease, isFav: (c.favoredClass || (newLevel === 1 ? def.name : '')) === def.name, fcb: draft.fcb, fcbNote: draft.fcbNote,
-    spellsLeft: rem.total ? `${describeRemaining(rem)} ${def.casting.extracts ? 'formulae' : 'spells'}` : '',
+    spellsLeft,
     pointsLeft: isNaN(spent) ? 0 : draft.budget - spent, name: c.name,
   });
   if (warnings.length && !await warnBox(newLevel === 1 ? 'Before you finish your character' : `Before you apply ${ORD(newLevel)} level`, warnings,
     { okLabel: 'Apply anyway', backLabel: 'Go back and fix' })) return;
   // Spellbook casters start with every cantrip on their list.
-  let cantrips = [];
-  if (allowance?.allCantrips) {
+  for (const { def: t, allowance } of learn) {
+    if (!allowance.allCantrips) continue;
+    const picks = (draft.spellsBy[t.name] ||= []);
     try {
-      const known = new Set([...(c.spellbooks[def.name]?.spells || []), ...draft.spells, ...draft.favs].map(s => s.name.toLowerCase()));
-      cantrips = (await api.spells(after.spellcasting[def.name].lists.join(','), 0)).filter(s => !known.has(s.name.toLowerCase()));
+      const known = new Set([...(c.spellbooks[t.name]?.spells || []), ...picks, ...(draft.favsBy[t.name] || [])].map(s => s.name.toLowerCase()));
+      const cantrips = (await api.spells(after.spellcasting[t.name].lists.join(','), 0)).filter(s => !known.has(s.name.toLowerCase()));
+      picks.push(...cantrips.map(s => ({ id: s.id, name: s.name, level: 0, school: s.school, summary: s.summary })));
     } catch { toast('Could not load cantrips; add them on the Spells tab.', 'err'); }
   }
   if (!c.favoredClass && newLevel === 1) c.favoredClass = draft.cls;
   if (draft.archetypes.length || c.archetypes[draft.cls]) c.archetypes[draft.cls] = draft.archetypes;
-  draft.spells.push(...cantrips.map(s => ({ id: s.id, name: s.name, level: 0, school: s.school, summary: s.summary })));
   c.levelUps.push(levelRecord(draft, c, newLevel));
   for (const [key, n] of Object.entries(draft.ranks)) {
     const s = c.skills.find(x => skillKey(x) === key);
@@ -446,9 +492,11 @@ async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after
   }
   for (const t of draft.traits) c.traits.push({ id: t.id, name: t.name, sub: t.sub, notes: '', ...(t.replaces ? { replaces: t.replaces } : {}) });
   for (const f of draft.feats) c.feats.push({ id: f.id, name: f.name, sub: f.sub, notes: '', level: newLevel, addedAt: newLevel });
-  if (draft.spells.length || draft.favs.length) {
-    const book = (c.spellbooks[def.name] ||= { spells: [], used: Array(10).fill(0), extraSlot: false });
-    for (const s of [...draft.spells, ...draft.favs]) book.spells.push({ id: s.id, name: s.name, level: s.level, school: s.school, summary: s.summary, prepared: 0, cast: 0, addedAt: newLevel });
+  for (const t of targets) {
+    const add = [...(draft.spellsBy[t] || []), ...(draft.favsBy[t] || [])];
+    if (!add.length) continue;
+    const book = (c.spellbooks[t] ||= { spells: [], used: Array(10).fill(0), extraSlot: false });
+    for (const s of add) book.spells.push({ id: s.id, name: s.name, level: s.level, school: s.school, summary: s.summary, prepared: 0, cast: 0, addedAt: newLevel });
   }
   const unspent = rankBudget - ranksUsed;
   const msg = `${def.name} ${classLevels(c)[def.name]} applied!` + (unspent > 0 ? ` (${unspent} skill rank${unspent > 1 ? 's' : ''} unspent; assign them on the Skills tab)` : '');
