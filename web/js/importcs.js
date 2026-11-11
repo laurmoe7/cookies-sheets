@@ -8,6 +8,7 @@ import { compute, sign } from './calc.js';
 import { ABILITIES, SKILL_BY_NAME, MULTI_SKILLS, RACES, SIZES } from './data.js';
 import { newCharacter, skillKey } from './model.js';
 import { bakeArchetype } from './features.js';
+import { choiceKind } from './featchoice.js';
 
 export const CS_SOURCE = 'charactersheet.co.uk';
 
@@ -323,6 +324,7 @@ export function buildCharacter(src, classRows, resolved, classesByName, archetyp
       ? { id: hit.id, name: hit.name, sub: hit.sub || '', notes: [r.detail, note.length <= 200 ? note : ''].filter(Boolean).join(' · ') }
       : { name: r?.name || str(x.name), notes: [str(x.type), note].filter(Boolean).join(' · ') };
     if (hit && str(x.type) && !hit.sub) entry.sub = str(x.type);
+    if (hit && r.detail && choiceKind(hit)) entry.choice = r.detail; // "Weapon Focus (longsword)": the feat's "for" box
     lists[dest].push(entry);
   };
   (src.feats || []).forEach((x, i) => x && str(x.name) && addItem('feats', 'feats', x, i));

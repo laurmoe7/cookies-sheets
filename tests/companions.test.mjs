@@ -292,3 +292,19 @@ test('unicorn mount: gore, Int 6 and the +2s every 3 charger levels', () => {
   assert.equal(computeCompanion({ ...horse, unicornMount: 'no' }, { 'Unicorn Charger': 2, _animal: 5 }, data).attacks.some(a => a.name === 'Gore'), false);
   assert.equal(computeCompanion(horse, { Paladin: 8, _animal: 5 }, data).abilities.int, 2, 'a plain paladin mount keeps Int 2');
 });
+
+test('companion feats taken for one natural attack: Weapon Focus, Improved Natural Attack and Weapon Specialization land only on it', () => {
+  const levels = { Cavalier: 4, 'Unicorn Charger': 3 };
+  const base = computeCompanion(animal('Horse'), levels, data);
+  const at = (s, n) => s.attacks.find(a => a.name.toLowerCase() === n);
+  assert.equal(at(base, 'gore').dice, '1d8', 'unicorn mount: a Large gore is 1d8');
+  const none = computeCompanion(animal('Horse', { feats: [{ name: 'Weapon Focus' }, { name: 'Improved Natural Attack' }] }), levels, data);
+  assert.equal(at(none, 'gore').bonus, at(base, 'gore').bonus, 'nothing chosen: no bonus');
+  const s = computeCompanion(animal('Horse', { feats: [{ name: 'Weapon Focus', choice: 'Gore' }, { name: 'Improved Natural Attack', choice: 'Gore' }, { name: 'Weapon Specialization', choice: 'hooves' }] }), levels, data);
+  assert.equal(at(s, 'gore').bonus - at(base, 'gore').bonus, 1, 'Weapon Focus (gore): +1');
+  assert.equal(at(s, 'gore').dice, '2d6', 'Improved Natural Attack (gore): 1d8 one step up is 2d6');
+  assert.equal(at(s, 'bite').bonus, at(base, 'bite').bonus, 'the bite gets nothing');
+  assert.equal(at(s, 'bite').dice, '1d4');
+  const dmg = a => +(a.damage.match(/[+-]\d+$/)?.[0] || 0);
+  assert.equal(dmg(at(s, 'hoof')) - dmg(at(base, 'hoof')), 2, 'Weapon Specialization for "hooves" lands on the hoof: +2 damage');
+});

@@ -3,6 +3,7 @@
 import { mod, num, sign } from './calc.js';
 import { SIZES } from './data.js';
 import { companionGear, reducedSpeed } from './compgear.js';
+import { stepDice, featsForAttack, attackIs } from './featchoice.js';
 
 export const ANIMAL_SKILLS = ['Acrobatics', 'Climb', 'Escape Artist', 'Fly', 'Intimidate', 'Perception', 'Stealth', 'Survival', 'Swim'];
 export const EIDOLON_SKILLS = ['Bluff', 'Craft', 'Knowledge (planes)', 'Perception', 'Sense Motive', 'Stealth'];
@@ -24,15 +25,7 @@ const EVOLUTION_ATTACKS = {
   Pincers: ['pincer', 2, '1d6', true], Rake: ['rake', 2, '1d4'], Slam: ['slam', 1, '1d8'], Sting: ['sting', 1, '1d4'],
   'Tail Slap': ['tail slap', 1, '1d6', true], Tentacle: ['tentacle', 1, '1d4', true], 'Wing Buffet': ['wing', 2, '1d4', true],
 };
-const DICE_STEPS = ['1d1', '1d2', '1d3', '1d4', '1d6', '1d8', '2d6', '3d6', '4d6', '6d6', '8d6', '12d6'];
-/** Move a damage die up (+1) or down (-1) a size step. 2d4 and 1d10/1d12 map onto the nearest step. */
-export function stepDice(d, steps) {
-  const alias = { '2d4': '2d6', '1d10': '2d6', '1d12': '3d6', '2d8': '3d6' };
-  let i = DICE_STEPS.indexOf(alias[d] || d);
-  if (i < 0) return d;
-  i = Math.max(0, Math.min(DICE_STEPS.length - 1, i + steps));
-  return DICE_STEPS[i];
-}
+export { stepDice };
 
 /** Total levels that count toward an animal companion (Core Rulebook + APG/ACG classes). */
 export function animalCompanionLevel(levels) {
@@ -195,12 +188,16 @@ function finish(out, comp) {
   out.attacks = out.attacks.map(a => {
     const secondary = a.secondary ?? SECONDARY.has(a.name);
     const gearAtk = gear.stat('attack', 'melee'), gearDmg = gear.stat('damage', 'meleeDamage');
-    const bonus = out.bab + (finesse ? M('dex') : strM) + sz.ac + num(comp.attackMisc) + gearAtk - (secondary ? (multi ? 2 : 5) : 0);
+    // Weapon Focus, Weapon Specialization, Improved Natural Attack and Improved Critical taken for this attack (the feat's "for" choice)
+    const ft = featsForAttack(comp.feats, ch => attackIs(a.name, ch));
+    const dice = a.dice && ft.steps ? stepDice(a.dice, ft.steps) : a.dice;
+    const bonus = out.bab + (finesse ? M('dex') : strM) + sz.ac + num(comp.attackMisc) + gearAtk + ft.atk - (secondary ? (multi ? 2 : 5) : 0);
     const mult = totalAttacks === 1 && !secondary ? 1.5 : secondary ? 0.5 : 1;
-    const dmg = (strM < 0 ? strM : Math.floor(strM * mult)) + gearDmg;
-    const parts = P({ label: 'Base attack bonus', value: out.bab }, { label: finesse ? 'Dex modifier (Weapon Finesse)' : 'Str modifier', value: finesse ? M('dex') : strM }, { label: `Size (${out.size})`, value: sz.ac }, { label: 'Misc attack bonus', value: num(comp.attackMisc) }, { label: 'Gear', value: gearAtk }, { label: multi ? 'Secondary attack (Multiattack)' : 'Secondary attack', value: secondary ? -(multi ? 2 : 5) : 0 });
-    return { ...a, parts, secondary, bonus, damage: a.dice ? `${a.dice}${dmg ? sign(dmg) : ''}` : '',
-      text: `${a.count > 1 ? a.count + ' ' : ''}${a.count > 1 ? plural(a.name) : a.name} ${sign(bonus)} (${a.dice ? a.dice + (dmg ? sign(dmg) : '') : '—'}${a.extra ? ' ' + a.extra : ''})` };
+    const dmg = (strM < 0 ? strM : Math.floor(strM * mult)) + gearDmg + ft.dmg;
+    const parts = P({ label: 'Base attack bonus', value: out.bab }, { label: finesse ? 'Dex modifier (Weapon Finesse)' : 'Str modifier', value: finesse ? M('dex') : strM }, { label: `Size (${out.size})`, value: sz.ac }, { label: 'Misc attack bonus', value: num(comp.attackMisc) }, { label: 'Gear', value: gearAtk }, { label: 'Weapon Focus', value: ft.atk }, { label: multi ? 'Secondary attack (Multiattack)' : 'Secondary attack', value: secondary ? -(multi ? 2 : 5) : 0 });
+    const crit = ft.impCrit ? ', 19–20' : '';
+    return { ...a, dice, baseDice: a.dice, feats: ft, parts, secondary, bonus, damage: dice ? `${dice}${dmg ? sign(dmg) : ''}` : '',
+      text: `${a.count > 1 ? a.count + ' ' : ''}${a.count > 1 ? plural(a.name) : a.name} ${sign(bonus)} (${dice ? dice + (dmg ? sign(dmg) : '') : '—'}${crit}${a.extra ? ' ' + a.extra : ''})` };
   });
   // Skills
   out.skills = Object.entries(comp.skills || {}).filter(([, r]) => num(r) > 0).map(([name, r]) => {

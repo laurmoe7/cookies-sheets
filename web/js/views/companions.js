@@ -15,6 +15,7 @@ import { playSfx } from '../sfx.js';
 import { tipText } from '../rolltip.js';
 import { event as petEvent } from '../pet/pet.js';
 import { SKILLS } from '../data.js';
+import { choiceKind, attackIs } from '../featchoice.js';
 import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom, debounce, toast } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
 import { renderSummons, summonsView } from './summons.js';
@@ -155,6 +156,25 @@ export async function renderCompanions(body, c) {
   };
 }
 
+/** Under an attack: what the feats taken for it changed ("Improved Natural Attack: 1d8 → 2d6"). */
+const attackFeatNote = a => {
+  const ft = a.feats;
+  if (!ft) return '';
+  const bits = [ft.steps && `${ft.steps > 1 ? `Improved Natural Attack ×${ft.steps}` : 'Improved Natural Attack'}: ${a.baseDice} → ${a.dice}`,
+    ft.atk && `Weapon Focus +${ft.atk}`, ft.dmg && `Weapon Specialization +${ft.dmg} damage`, ft.impCrit && 'Improved Critical 19–20'].filter(Boolean);
+  return bits.length ? `<div class="dim small">${esc(bits.join(' · '))}</div>` : '';
+};
+
+/** The "for" box on a companion feat that is taken for one natural attack (Weapon Focus, Improved Natural Attack...). */
+const featForSelect = (p, k, f, s) => {
+  const kind = choiceKind(f);
+  if (kind !== 'weapon' && kind !== 'natural') return '';
+  const names = [...new Set(s.attacks.map(a => a.name[0].toUpperCase() + a.name.slice(1)))];
+  const cur = f.choice || '';
+  const opts = [['', 'for: choose…'], ...names.map(n => [n, 'for: ' + n]), ...(cur && !names.some(n => attackIs(n, cur)) ? [[cur, `for: ${cur} (not an attack now)`]] : [])];
+  return ` <span class="feat-for${cur ? '' : ' warn'}" title="Which attack this feat is for">${select(`${p}.feats.${k}.choice`, cur, opts)}</span>`;
+};
+
 const bind = (path, v, { type = 'text', cls = 'w3', rerender = true, ph = '' } = {}) =>
   `<input class="${cls}${type === 'num' ? ' num' : ''}" ${type === 'num' ? 'type="number" data-type="num"' : ''} data-bind="${path}" value="${esc(v ?? '')}" placeholder="${esc(ph)}" ${rerender ? 'data-rerender' : ''}>`;
 const select = (path, cur, options) => `<select data-bind="${path}" data-rerender>${options.map(o => {
@@ -227,7 +247,7 @@ function topPanels(comp, s, p, ed = {}) {
     <section class="card offense"><h3>Offense</h3>
       <div class="stat-row fill">${stat('Init', rb(s.init, 'initiative', s.bd?.init))}${stat('BAB', sign(s.bab))}${stat('CMB', rb(s.cmb, 'CMB', s.bd?.cmb))}${speedTile(s.speed)}</div>
       ${s.attacks.length ? `<table class="tbl"><thead><tr><th>Attack</th><th>Bonus</th><th>Damage</th></tr></thead><tbody>${s.attacks.map(a => `<tr>
-        <td>${a.count > 1 ? a.count + ' ' : ''}${linkTerms(a.name)}${a.secondary ? ' <span class="dim small">(secondary)</span>' : ''}</td><td class="big accent">${rb(a.bonus, a.name + ' attack', a.parts)}</td>
+        <td>${a.count > 1 ? a.count + ' ' : ''}${linkTerms(a.name)}${a.secondary ? ' <span class="dim small">(secondary)</span>' : ''}${attackFeatNote(a)}</td><td class="big accent">${rb(a.bonus, a.name + ' attack', a.parts)}</td>
         <td>${a.dice ? `<button class="nb" data-roll-dice="${esc(a.damage)}" data-roll-label="${esc(comp.name + ' ' + a.name + ' damage')}" data-tip="${esc(`${comp.name} ${a.name} damage` + '\n' + 'Click to roll ' + a.damage)}">${esc(a.damage)}</button>${a.extra ? ' ' + linkTerms(a.extra) : ''}` : '—'}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">No natural attacks.</p>'}
       ${s.specialAttacks ? `<p><b>Special attacks</b> ${linkTerms(s.specialAttacks)}</p>` : ''}
       ${ed.atk || ''}
@@ -387,7 +407,7 @@ function buildEditors(comp, s, p, { data, levels }) {
   const build = `<section class="card"><h3>Build</h3>
       ${!isAnimal ? evolutionsBlock(comp, s, data, p) : ''}
       <h4>Feats <span class="pill ${featsLeft < 0 ? 'bad' : featsLeft ? 'warn' : 'good'}">${s.featsUsed} / ${s.featSlots}</span></h4>
-      <div class="chips">${(comp.feats || []).map((f, k) => `<span class="chip on">${f.id ? `<a href="#" class="ref" data-entry="${esc(f.name)}" data-entry-id="${f.id}">${esc(f.name)}</a>` : esc(f.name)} <button class="icon-btn" data-rm-feat="${k}">✕</button></span>`).join('')}
+      <div class="chips">${(comp.feats || []).map((f, k) => `<span class="chip on">${f.id ? `<a href="#" class="ref" data-entry="${esc(f.name)}" data-entry-id="${f.id}">${esc(f.name)}</a>` : esc(f.name)}${featForSelect(p, k, f, s)} <button class="icon-btn" data-rm-feat="${k}">✕</button></span>`).join('')}
         <button class="btn small" data-add-feat>＋ Feat</button></div>
       ${s.bonusFeats ? `<p class="small muted">Bonus feat: ${esc(s.bonusFeats)}</p>` : ''}
       <h4>Skill ranks <span class="pill ${ranksLeft < 0 ? 'bad' : ranksLeft ? 'warn' : 'good'}">${s.skillRanksUsed} / ${s.skillRanks} ranks</span></h4>

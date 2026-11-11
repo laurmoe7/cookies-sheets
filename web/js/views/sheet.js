@@ -38,6 +38,7 @@ import { weaponFromTemplate, armorFromTemplate, blankWeapon, blankArmor, weaponT
 import { chooseWeapon, chooseArmor } from './equipment.js';
 import { openPiece as openCompGear } from './compgear.js';
 import { SLOTS, slotName, hintFromSub, sortByName } from '../paperdoll.js';
+import { choiceKind, featChoice, weaponChoiceName, SCHOOLS } from '../featchoice.js';
 
 const ICONS = {
   overview: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
@@ -92,6 +93,22 @@ document.addEventListener('options-changed', () => { if (state.view === 'sheet' 
 
 /** Read-first text bound to a character path: click to read in full, double-click to edit. */
 const tf = (path, opts = {}) => textField(path, getPath(state.char, path), opts);
+
+/** The "for" box on a feat taken for one weapon, natural attack, skill or school (Weapon Focus, Improved Natural Attack, Skill Focus, Spell Focus). */
+function featForSelect(c, f, i) {
+  const kind = choiceKind(f);
+  if (!kind) return '';
+  const names = kind === 'skill' ? c.skills.map(s => (s.sub ? `${s.name} (${s.sub})` : s.name))
+    : kind === 'school' ? SCHOOLS
+    : c.weapons.map(weaponChoiceName).filter(Boolean);
+  const opts = [...new Set(names)];
+  const cur = featChoice(f);
+  let selected = opts.find(o => o.toLowerCase() === cur) || '';
+  if (cur && !selected) { selected = f.choice || cur; opts.push(selected); }
+  const none = kind === 'skill' ? 'choose a skill…' : kind === 'school' ? 'choose a school…' : c.weapons.length ? 'choose a weapon…' : 'add the weapon or attack first';
+  return `<div class="feat-for${selected ? '' : ' warn'}" title="What this feat is taken for; its bonus goes to that ${kind === 'skill' ? 'skill' : kind === 'school' ? 'school' : 'weapon or attack'}">for <select data-bind="feats.${i}.choice" data-rerender>
+    <option value="" ${selected ? '' : 'selected'}>${esc(none)}</option>${opts.map(o => `<option value="${esc(o)}" ${o === selected ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></div>`;
+}
 
 // ---------- small template helpers ----------
 const val = p => { const v = getPath(state.char, p); return v ?? ''; };
@@ -669,7 +686,7 @@ function feats(body, c, d) {
   const listRow = (key, f, i) => `<tr>
         <td class="nowrap w12">${f.id ? refId(f.id, f.name)
           : tf(`${key}.${i}.name`, { placeholder: 'Name', read: { title: f.name || 'Untitled', titlePath: `${key}.${i}.name`, cat: KIND[key], path: `${key}.${i}.notes` } })}</td>
-        <td class="muted small"><span class="nowrap">${esc(f.sub || '')}${f.level && key !== 'traits' ? ` · L${f.level}` : ''}</span>${f.replaces?.length ? `<div class="alt-note" title="An alternate racial trait">replaces ${esc(f.replaces.join(', '))}</div>` : ''}${key === 'traits' ? (d.traitChoices || []).filter(ch => ch.index === i).map(ch => `<div class="trait-choice">${traitChoiceSelect(ch)}</div>`).join('') : ''}</td>
+        <td class="muted small"><span class="nowrap">${esc(f.sub || '')}${f.level && key !== 'traits' ? ` · L${f.level}` : ''}</span>${key === 'feats' ? featForSelect(c, f, i) : ''}${f.replaces?.length ? `<div class="alt-note" title="An alternate racial trait">replaces ${esc(f.replaces.join(', '))}</div>` : ''}${key === 'traits' ? (d.traitChoices || []).filter(ch => ch.index === i).map(ch => `<div class="trait-choice">${traitChoiceSelect(ch)}</div>`).join('') : ''}</td>
         <td class="grow-cell">${tf(`${key}.${i}.notes`, { multiline: true, placeholder: f.id ? 'Add notes' : 'Add a description',
           read: { title: f.name || 'Notes', titlePath: `${key}.${i}.name`, cat: f.id ? 'Your notes' : KIND[key] } })}</td>
         <td><button class="icon-btn" data-del="${key}.${i}">✕</button></td></tr>`;

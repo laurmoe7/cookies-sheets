@@ -9,6 +9,7 @@ import { armorFx, wornFx } from './armorfx.js';
 import { wornEffects } from './itemfx.js';
 import { autoEffects } from './autofx.js';
 import { canFinesse } from './equipment.js';
+import { featChoice, featsForAttack, stepDice } from './featchoice.js';
 
 const SKILL_FEATS = {
   acrobatic: ['Acrobatics', 'Fly'], alertness: ['Perception', 'Sense Motive'], 'animal affinity': ['Handle Animal', 'Ride'],
@@ -16,11 +17,8 @@ const SKILL_FEATS = {
   'magical aptitude': ['Spellcraft', 'Use Magic Device'], persuasive: ['Diplomacy', 'Intimidate'],
   'self-sufficient': ['Heal', 'Survival'], stealthy: ['Escape Artist', 'Stealth'],
 };
-// The skill a Skill Focus feat names: its choice box, or the text in brackets after the name
-const skillOfFeat = f => ((f.sub || (f.name || '').match(/\((.*)\)/)?.[1] || '').trim().toLowerCase()).replace(/\s*\(.*/, '');
-
-/** The choice a feat was taken for: its choice box, or the text in brackets after the name ("Weapon Focus (Longsword)"). */
-const featChoice = f => String(f.sub || (f.name || '').match(/\((.*)\)/)?.[1] || '').trim().toLowerCase();
+// The skill a Skill Focus feat names: its "for" box, or the text in brackets after the name
+const skillOfFeat = f => featChoice(f).replace(/\s*\(.*/, '');
 const singular = s => s.replace(/\+\d+\s*/g, ' ').replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim().replace(/s\b/g, '');
 /** True when a weapon on the sheet is the one a Weapon Focus-style feat names ("longsword" matches "Longsword +1"; "bow" does not match "Crossbow"). */
 const weaponIs = (w, choice) => {
@@ -374,20 +372,15 @@ export function compute(c, classesByName, opts = {}) {
   d.cmdFlat = d.cmd - Math.max(M('dex'), 0) - Math.max(dodge, 0); // flat-footed loses a Dex bonus; a Dex penalty stays
   bd.cmdFlat = cmdBd(M('dex') < 0, m => !dodgeBonus(m));
 
-  for (const w of c.weapons) {
+  for (let w of c.weapons) {
     const ranged = !!w.ranged;
     // Weapon Finesse: a light melee weapon (or rapier, whip...) left on automatic attacks with Dexterity when that is better; setting the ability on the weapon overrides it
     const finesse = !opts.noAuto && !w.ability && !ranged && canFinesse(w) && (c.feats || []).some(f => featName(f) === 'weapon finesse') && M('dex') > M('str');
     const abil = w.ability || (ranged || finesse ? 'dex' : 'str');
-    // Weapon Focus / Specialization (and the greater ones) for this weapon; Improved Critical sets the weapon's flag
-    let focusAtk = 0, specDmg = 0, impCrit = false;
-    if (!opts.noAuto) for (const f of c.feats || []) {
-      const fn = featName(f);
-      if (!['weapon focus', 'greater weapon focus', 'weapon specialization', 'greater weapon specialization', 'improved critical'].includes(fn) || !weaponIs(w, featChoice(f))) continue;
-      if (fn.endsWith('weapon focus')) focusAtk += 1;
-      else if (fn.endsWith('weapon specialization')) specDmg += 2;
-      else impCrit = true;
-    }
+    // Weapon Focus / Specialization (and the greater ones) for this weapon; Improved Critical sets the weapon's flag; Improved Natural Attack steps its dice
+    const ft = opts.noAuto ? featsForAttack([], () => false) : featsForAttack(c.feats, ch => weaponIs(w, ch));
+    const focusAtk = ft.atk, specDmg = ft.dmg, impCrit = ft.impCrit;
+    if (ft.steps && w.damage) w = { ...w, damage: stepDice(w.damage, ft.steps) };
     const fx = weaponFx(impCrit && !w.improvedCritical ? { ...w, improvedCritical: true } : w);
     const condAtk = fx.conds.filter(x => x.on).reduce((n, x) => n + x.atk, 0), condDmg = fx.conds.filter(x => x.on).reduce((n, x) => n + x.dmg, 0);
     const atkBase = bab + M(abil) + sz.ac + num(w.enh) + fx.atkMasterwork + condAtk + num(w.misc) + focusAtk + (ranged ? rangedSt.total : meleeSt.total);

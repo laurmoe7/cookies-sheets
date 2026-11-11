@@ -973,3 +973,9 @@ html[data-motion="off"] .fx-spark { display: none; }
 .doll-fig:hover .portrait-tools { opacity: 1; }
 button.doll-fig.empty { font: inherit; cursor: pointer; border: 2px dashed var(--line); background: transparent; color: var(--muted); }
 button.doll-fig.empty:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+/* The "for" box on a feat taken for one weapon, attack, skill or school (Weapon Focus, Improved Natural Attack...) */
+.feat-for { white-space: nowrap; margin-top: 3px; }
+.feat-for select { font-size: 12px; padding: 1px 4px; max-width: 14em; }
+.chip .feat-for { margin-top: 0; }
+.feat-for.warn select { border-color: var(--warn, #c80); }

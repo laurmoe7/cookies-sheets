@@ -21,6 +21,8 @@ export const CHANGELOG = [
       'Companions: worn items on a companion (a cloak of resistance, an amulet of mighty fists…) add their bonuses, and barding’s check penalty applies to its Str and Dex skills.',
       'Companions: the Gear card lists the gear as chips like the Inventory tab; click one (there or in your inventory) to open it in the side panel to wear, +N, enchant or remove.',
       'Companions: gear typed in by hand shows the compendium’s description in the side panel (a military saddle’s entry; barding shows its armor’s entry and the rules for barding).',
+      'Companions: Weapon Focus, Weapon Specialization, Improved Critical and Improved Natural Attack get a “for” box on the companion’s feat to pick the natural attack (gore, bite, hoof…), and that attack gets the +1, the +2 damage or the bigger die.',
+      'Feats: Weapon Focus and the other feats taken for one weapon, skill or school get a “for” box on the Feats tab, so a feat added from the compendium now counts. Improved Natural Attack makes the chosen attack’s die one size bigger.',
       'Level up: a trait that lets you pick a class skill, like Child of Nature, asks which one right after you choose it.',
       'Level up: What changes lists your daily pools going up (lay on hands 3 → 4, smite evil 2/day...), and a feature with options, like a paladin’s mercy or a rage power, is marked “choose one”.',
       'Level up: a level that opens a new spell level says so, and prepared casters (paladin, ranger, cleric...) are asked to choose spells whenever the Spells tab has none of a level they can cast. Apply reminds you if you leave one empty.',

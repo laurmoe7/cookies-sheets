@@ -603,6 +603,23 @@ test('a feat for "Bow" does not land on a Crossbow, and a plural choice still fi
   assert.equal(d.weapons[3].attack - base.weapons[3].attack, 1, 'shortbow: Shortbows matches; "Bow" is a different word');
 });
 
+test('a feat from the compendium takes its weapon from the "for" box, not its feat type; Improved Natural Attack steps the dice', () => {
+  const c = fighter();
+  c.weapons.push({ ...structuredClone(longsword), name: 'Gore', tpl: '', damage: '1d8', crit: 'x2' });
+  const base = calc(structuredClone(c));
+  // Picked from the compendium: sub is the feat type "Combat"; nothing is chosen yet, so nothing applies
+  c.feats.push({ id: 1, name: 'Weapon Focus', sub: 'Combat' }, { id: 2, name: 'Improved Natural Attack', sub: 'Combat' });
+  let d = calc(c);
+  assert.deepEqual(d.weapons.map(w => w.attack), base.weapons.map(w => w.attack), 'no choice yet: no bonus anywhere ("Combat" is not a weapon)');
+  c.feats[0].choice = 'Longsword';
+  c.feats[1].choice = 'Gore';
+  d = calc(c);
+  assert.equal(d.weapons[1].attack - base.weapons[1].attack, 1, 'Weapon Focus for: Longsword, +1');
+  assert.equal(d.weapons[2].attack, base.weapons[2].attack, 'the gore gets no Weapon Focus');
+  assert.match(d.weapons[2].damageText, /^2d6/, 'Improved Natural Attack: 1d8 is one step below 2d6');
+  assert.match(d.weapons[1].damageText, /^1d8/, 'the longsword keeps 1d8');
+});
+
 test('Weapon Finesse: a light melee weapon on automatic uses Dex when it is better; heavy weapons, ranged ones and a set ability do not', () => {
   const mk = feats => { const c = fighter(); c.abilities.str.base = 10; c.abilities.dex.base = 16; /* human +2 went to Str in the helper */ c.raceChoice = 'dex'; c.feats.push(...feats); c.weapons.push({ ...structuredClone(longsword), name: 'Dagger +1', tpl: 'Dagger' }, { ...structuredClone(longsword), name: 'Rapier' }); return c; };
   const plain = calc(mk([])), fin = calc(mk([{ name: 'Weapon Finesse' }]));
