@@ -10,6 +10,7 @@ export const CHANGELOG = [
       'Level up: the 18 prestige classes of the Core Rulebook and the Advanced Player’s Guide, with their requirements. A level that adds spellcasting asks which of your classes it advances.',
       'Level up: the Unicorn Charger prestige class (Legendary Games), with its own paladin spells.',
       'Nicer checkboxes everywhere, and the roll window’s In play and Cast it options are rows that light up when ticked.',
+      'Spells: touch spells get a “Deliver as” choice in the roll window: Touch, Reach Spell (a ranged touch, with the feat) or a magus’s Spellstrike with each weapon (ranged weapons for the eldritch archer).',
     ],
   },
   {

@@ -9,7 +9,7 @@
 // not being proficient or shooting past a range increment), the dice box, and the Discord switch.
 import { rollMessage, rollMany, bonusText, addMods, modsLabel, MOD_PRESETS, adjustPreset, presetsFor, sendName, parseDice, damagePresets, parseDamageMod, addDamageMods, damageLabel } from './dice.js';
 import { parseCrit } from './weaponfx.js';
-import { spellInfo } from './spellinfo.js';
+import { spellInfo, touchDeliveries } from './spellinfo.js';
 import { state, changed } from './app.js';
 import { getPath, toast, esc, modal } from './ui.js';
 import { options, setOption, showOptions } from './options.js';
@@ -262,7 +262,7 @@ function rollWindow(p0, attack0, sp = null) {
       const presets = d20 ? presetsFor(attack, sp && { kind: ch.kind }) : [];
       const sending = !!(options().webhook && options().rollSend);
       body.innerHTML = (sp ? '<p class="small muted">' + esc(sp.facts) + '.</p><div style="margin:8px 0">' +
-          ['Hit', 'Damage', 'Healing', 'Checks'].map(g => {
+          ['Hit', 'Deliver as', 'Damage', 'Healing', 'Checks'].map(g => {
             const mine = sp.choices.map((c, i) => [c, i]).filter(([c]) => c.group === g);
             return mine.length ? '<div class="sp-group-row"><span class="sp-group-lab">' + g + '</span>' + mine.map(([c, i]) => '<button class="rchip ' + (i === pick ? 'on' : '') + '" data-sp-pick="' + i + '" title="' + esc(c.tip || '') + '">' + esc(c.label) + '</button>').join(' ') + '</div>' : '';
           }).join('') + '</div>' +
@@ -476,10 +476,12 @@ async function spellWindow(btn) {
   const info = spellInfo(entry, sc.cl);
   const known = !!(entry && sp.id); // custom spells have no data, so offer every chip
   const dc = sla ? sc.dc : sc.dcs[sp.level]; // a spell-like ability's own level can be blank or odd; its DC was worked out from the clamped one
+  const delivery = known ? touchDeliveries(info, c, d) : [];
+  const deliverAs = delivery.length > 1; // Reach Spell or spellstrike can carry it: a "Deliver as" row instead of the plain melee touch
   const chip = (label, n, kind, path) => ({ label: label + ' ' + (bonusText(n) || '+0'), n, tip: 'Roll d20 ' + kind, name: name + ' ' + kind, parts: d.bd?.[path] });
   const chips = [
     ...(!known || info.attack === 'ranged' ? [chip('To hit: ranged ' + (info.touch === false ? 'attack' : 'touch'), d.ranged, 'ranged ' + (info.touch === false ? 'attack' : 'touch attack'), 'ranged')] : []),
-    ...(!known || info.attack === 'melee' ? [chip('To hit: melee ' + (info.touch === false ? 'attack' : 'touch'), d.melee, 'melee ' + (info.touch === false ? 'attack' : 'touch attack'), 'melee')] : []),
+    ...(!known || (info.attack === 'melee' && !deliverAs) ? [chip('To hit: melee ' + (info.touch === false ? 'attack' : 'touch'), d.melee, 'melee ' + (info.touch === false ? 'attack' : 'touch attack'), 'melee')] : []),
     chip('Concentration', sc.concentration, 'concentration check', `${path}.concentration`),
     chip('Cast defensively (DC ' + (15 + 2 * (Number(sp.level) || 0)) + ')', sc.concentration, 'cast defensively, DC ' + (15 + 2 * (Number(sp.level) || 0)), `${path}.concentration`),
     ...(!known || info.sr ? [chip('Caster level check', sc.cl, 'caster level check' + (info.sr ? ' to beat spell resistance' : ''), `${path}.cl`)] : []),
@@ -493,6 +495,15 @@ async function spellWindow(btn) {
   const choices = [
     ...chips.map(ch => ({ group: isHit(ch.tip) ? 'Hit' : 'Checks', label: ch.label, tip: ch.tip, kind: kindOf(ch.tip), attack: isHit(ch.tip), multi: isHit(ch.tip),
       p: { expr: 'd20' + bonusText(ch.n), label: ch.name, parts: ch.parts } })),
+    ...(deliverAs ? delivery.map(x => {
+      const how = x.id === 'touch' ? 'melee touch attack' : x.id === 'reach' ? 'ranged touch attack (Reach Spell)' : `spellstrike with ${x.label.replace(/^Spellstrike: /, '')}`;
+      const threat = x.critMin < 20 ? ` (threatens on ${x.critMin}-20)` : '';
+      return { group: 'Deliver as', label: x.label + ' ' + (bonusText(x.n) || '+0'), kind: x.kind, attack: true, multi: true,
+        tip: x.id === 'touch' ? 'Roll d20 melee touch attack against touch AC'
+          : x.id === 'reach' ? 'The spell becomes a ray: roll d20 ranged touch attack. Reach Spell uses a slot one level higher (Cast it still counts the spell’s own level).'
+          : 'One weapon attack against normal AC delivers the spell; on a critical hit the spell’s damage is doubled too' + threat,
+        p: { expr: 'd20' + bonusText(x.n), label: `${name} ${how}${threat}`, parts: d.bd?.[x.path] } };
+    }) : []),
     // A cure spell used on an undead creature: a melee touch attack (when its range is touch), then its healing dice as damage (Will half).
     ...(info.undead?.touch && info.attack !== 'melee' ? [{ group: 'Hit', label: 'To hit: melee touch vs undead ' + (bonusText(d.melee) || '+0'), tip: 'Roll d20 melee touch attack against an undead creature', kind: 'melee', attack: true, undead: true,
       p: { expr: 'd20' + bonusText(d.melee), label: name + ' melee touch attack (undead)', parts: d.bd?.melee } }] : []),

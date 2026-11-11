@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseSave, spellInfo, projectiles } from '../web/js/spellinfo.js';
+import { parseSave, spellInfo, projectiles, touchDeliveries } from '../web/js/spellinfo.js';
+import { make, calc, repeat } from './helpers.mjs';
 
 test('saving throws are read from the stored text', () => {
   assert.deepEqual(parseSave('Reflex half'), { type: 'Reflex', effect: 'half', harmless: false, label: 'Reflex half' });
@@ -101,3 +102,25 @@ test('cure spells hurt undead: a melee touch attack when the range is touch', ()
   assert.equal(spellInfo({ summary: 'Removes fatigue.', html: '<p>Undead are not affected.</p>', meta: { range: 'touch' } }, 3).undead, null, 'no healing dice, nothing to roll');
 });
 
+
+test('touch spells: Deliver as offers Reach Spell with the feat and spellstrike for a magus', () => {
+  const touch = { attack: 'melee', touch: true };
+  // Magus 5, Str 14 / Dex 14: melee touch = BAB 3 + Str 2 = +5, ranged touch = BAB 3 + Dex 2 = +5; a +1 rapier (18-20) = 3 + 2 + 1 = +6.
+  const c = make({ base: { str: 12, dex: 14 }, raceChoice: 'str', levels: repeat('Magus', 5),
+    weapons: [{ name: 'Rapier', enh: 1, damage: '1d6', crit: '18-20/x2', ability: '' }, { name: 'Longbow', ranged: true, damage: '1d8', crit: 'x3', ability: '' }] });
+  let d = calc(c);
+  let opts = touchDeliveries(touch, c, d);
+  assert.deepEqual(opts.map(o => o.label), ['Touch', 'Spellstrike: Rapier'], 'no Reach Spell without the feat; the bow cannot spellstrike');
+  assert.equal(opts[0].n, 5, 'melee touch: BAB 3 + Str 2');
+  assert.equal(opts[1].n, 6, 'rapier: BAB 3 + Str 2 + enhancement 1');
+  assert.equal(opts[1].critMin, 18, 'the weapon threat range carries the spell');
+  c.feats.push({ name: 'Reach Spell' });
+  opts = touchDeliveries(touch, c, calc(c));
+  assert.deepEqual(opts.map(o => [o.id, o.kind, o.n]), [['touch', 'melee', 5], ['reach', 'ranged', 5], ['weapon', 'melee', 6]], 'ranged touch: BAB 3 + Dex 2');
+  c.archetypes.Magus = [{ name: 'Eldritch Archer' }];
+  assert.deepEqual(touchDeliveries(touch, c, calc(c)).filter(o => o.id === 'weapon').map(o => o.label), ['Spellstrike: Longbow'], 'eldritch archer: ranged spellstrike instead');
+  const lowMagus = make({ levels: ['Magus'], weapons: [{ name: 'Rapier', damage: '1d6', crit: '18-20/x2' }] });
+  assert.deepEqual(touchDeliveries(touch, lowMagus, calc(lowMagus)).map(o => o.id), ['touch'], 'spellstrike starts at magus 2nd level');
+  assert.deepEqual(touchDeliveries({ attack: 'ranged', touch: true }, c, calc(c)), [], 'rays already roll a ranged touch');
+  assert.deepEqual(touchDeliveries({ attack: null }, c, calc(c)), [], 'no attack roll, nothing to deliver');
+});

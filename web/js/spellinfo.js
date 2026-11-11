@@ -102,3 +102,30 @@ export function spellInfo(entry, cl) {
     count: shots?.count ?? 1, noun: shots?.noun ?? '',
   };
 }
+
+/**
+ * The ways a touch spell can reach its target, for the roll window's "Deliver as" row. Empty unless the spell needs a melee touch attack.
+ *   Touch: the normal melee touch attack.
+ *   Reach Spell (the metamagic feat, when the character has it): the spell becomes a ray, so a ranged touch attack.
+ *   Spellstrike (magus 2nd level): one attack with a weapon instead, against normal AC. Its threat range is the weapon's; the spell's damage
+ *     is doubled on a critical hit. Melee weapons, or ranged weapons only for an eldritch archer (ranged spellstrike replaces spellstrike).
+ * @param info spellInfo() result
+ * @param c    the character (feats, weapons, archetypes)
+ * @param d    compute() result (melee, ranged, weapons, classLevels)
+ * @returns [{id: 'touch'|'reach'|'weapon', label, kind: 'melee'|'ranged', n, path (breakdown key in d.bd), weapon (index), critMin}]
+ */
+export function touchDeliveries(info, c, d) {
+  if (info?.attack !== 'melee' || info.touch === false) return [];
+  const out = [{ id: 'touch', label: 'Touch', kind: 'melee', n: d.melee, path: 'melee' }];
+  const feat = n => (c.feats || []).some(f => (f.name || '').replace(/\s*\(.*$/, '').trim().toLowerCase() === n);
+  if (feat('reach spell')) out.push({ id: 'reach', label: 'Reach Spell (ranged touch)', kind: 'ranged', n: d.ranged, path: 'ranged' });
+  if ((d.classLevels?.Magus || 0) >= 2) {
+    const archer = (c.archetypes?.Magus || []).some(a => /eldritch archer/i.test(typeof a === 'string' ? a : a?.name || ''));
+    (c.weapons || []).forEach((w, i) => {
+      const dw = d.weapons?.[i];
+      if (!dw || !!w.ranged !== archer) return; // the eldritch archer's ranged spellstrike replaces the melee one
+      out.push({ id: 'weapon', label: `Spellstrike: ${w.name || 'Weapon'}`, kind: w.ranged ? 'ranged' : 'melee', n: dw.attack, path: `weapons.${i}.attack`, weapon: i, critMin: dw.critMin ?? 20 });
+    });
+  }
+  return out;
+}

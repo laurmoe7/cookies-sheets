@@ -791,7 +791,7 @@ html[data-motion="off"] .fx-spark { display: none; }
 
 /* The spell roll window: what to roll, in rows (Hit, Damage or Healing, Checks) */
 .sp-group-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0; }
-.sp-group-lab { min-width: 62px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.sp-group-lab { min-width: 62px; white-space: nowrap; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 
 /* Paper doll (Gear tab): slots around a figure */
 .doll { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(200px, 1.1fr) minmax(150px, 1fr); gap: 12px; align-items: start; margin: 8px 0; }
