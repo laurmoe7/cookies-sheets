@@ -164,6 +164,38 @@ textarea { width: 100%; resize: vertical; }
 .chip:hover { border-color: var(--accent); }
 .chip.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 .class-chip b { background: var(--accent); color: #fff; border-radius: 999px; padding: 0 6px; font-size: 11px; }
+/* Rolled ability scores in the create-character wizard: tiles dragged from the pool onto an ability's slot. */
+.roll-empty { display: flex; align-items: center; gap: 12px; margin: 10px 0; padding: 14px; border: 1px dashed var(--line); border-radius: 10px; }
+.roll-empty-die { font-size: 30px; }
+.roll-pool { display: flex; flex-wrap: wrap; gap: 8px; min-height: 62px; align-items: center; padding: 8px 10px; margin: 8px 0; border: 1px dashed var(--line); border-radius: 10px; transition: background .15s, border-color .15s; }
+.roll-pool.done { min-height: 0; padding: 6px 10px; border-style: solid; border-color: var(--good); color: var(--good); }
+.roll-pool-label { min-width: 5.5em; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-right: 2px; }
+.roll-tile { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; min-width: 58px; height: 48px; padding: 0 8px; border: 1px solid var(--accent); border-radius: 8px;
+  background: var(--panel-2); cursor: grab; line-height: 1.05; touch-action: none; box-shadow: 0 1px 0 rgba(0, 0, 0, .25); transition: transform .12s, box-shadow .12s, background .12s; }
+.roll-tile b { font-size: 21px; }
+.roll-tile small { display: flex; gap: 3px; font-size: 10.5px; color: var(--muted); white-space: nowrap; }
+.roll-tile small s { opacity: .5; }
+.roll-tile small em { font-style: normal; }
+.roll-tile:hover { background: var(--accent-soft); transform: translateY(-1px); box-shadow: 0 3px 6px rgba(0, 0, 0, .25); }
+.roll-tile.picked { box-shadow: 0 0 0 2px var(--accent); background: var(--accent-soft); }
+.roll-tile.dragging { opacity: .3; transform: none; }
+.roll-tile.fresh { animation: roll-in .45s cubic-bezier(.2, .9, .3, 1.3) backwards; animation-delay: calc(var(--i) * 70ms); }
+@keyframes roll-in { from { opacity: 0; transform: translateY(-14px) rotate(-25deg) scale(.6); } }
+.roll-ghost { position: fixed; left: 0; top: 0; z-index: 1000; pointer-events: none; cursor: grabbing; box-shadow: 0 8px 18px rgba(0, 0, 0, .4); rotate: -4deg; }
+.roll-pool, .roll-table { user-select: none; }
+.roll-table th { width: 1%; white-space: nowrap; padding-right: 14px; }
+.roll-table th small { display: block; font-size: 10.5px; font-weight: normal; color: var(--muted); text-transform: none; letter-spacing: 0; }
+.roll-table td { vertical-align: middle; padding-top: 4px; padding-bottom: 4px; }
+.roll-table tr.empty th { color: var(--muted); }
+.roll-final b { font-size: 18px; }
+.roll-mod { font-weight: 700; font-size: 15px; }
+.roll-race .pill { font-size: 11px; padding: 1px 7px; }
+.roll-slot { display: flex; align-items: center; justify-content: center; width: 78px; height: 52px; border: 1px dashed var(--line); border-radius: 8px; color: var(--muted); font-size: 11px; cursor: pointer; transition: background .15s, border-color .15s; }
+.roll-slot.full { border-color: transparent; }
+.roll-pool.picking ~ .roll-table .roll-slot, .roll-dragging .roll-slot, .roll-dragging .roll-pool { border-color: var(--accent); }
+.roll-slot.over, .roll-pool.over { border-color: var(--accent); border-style: solid; background: var(--accent-soft); }
+.roll-foot { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+.roll-weak { margin: 4px 0; padding: 6px 10px; border-left: 3px solid var(--warn); color: var(--warn); background: color-mix(in srgb, var(--warn) 10%, transparent); border-radius: 4px; }
 .pill { background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
 .pill.good { border-color: var(--good); color: var(--good); } .pill.warn { border-color: var(--warn); color: var(--warn); } .pill.bad { border-color: var(--bad); color: var(--bad); }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin: 4px 0 8px; flex-wrap: wrap; }

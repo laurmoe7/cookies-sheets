@@ -716,6 +716,8 @@ def main():
     with open(OUT_COMPANIONS, 'w', encoding='utf-8') as f:
         json.dump(comp, f, indent=1)
     fcb_data = fcb.build(books)
+    for race, options in extra_entries.FCB.items():  # hand-typed ones (tools/extra_entries.py)
+        fcb_data.setdefault(race, {}).update(options)
     with open(OUT_FCB, 'w', encoding='utf-8') as f:
         json.dump(fcb_data, f, indent=1)
     print('wrote racial favored class options:', len(fcb_data), 'races,', sum(len(o) for r in fcb_data.values() for o in r.values()), 'options')

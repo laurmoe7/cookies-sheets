@@ -17,6 +17,7 @@ export function newCharacter() {
     favoredClass: '',
     retired: null, // in the graveyard: {status: 'dead' | 'retired', date: 'YYYY-MM-DD', note} (Characters page); null = still adventuring
     abilities,
+    abilityRolls: null, // scores rolled at creation, kept so the table can see them: see statroll.js; null = point buy or typed in
     levelUps: [], // {cls, hp, fcb, fcbNote, abilityIncrease, feats:[], ranks:{skillKey:n}, spells:[], features}
     archetypes: {}, // {Class: [archetype data from features.bakeArchetype]}
     portrait: '', // data URL, large picture on the Overview tab

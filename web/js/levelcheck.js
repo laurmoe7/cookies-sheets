@@ -18,6 +18,8 @@ export function levelWarnings(x) {
   if (x.spellsLeft) out.push(`${x.spellsLeft} still to choose.`);
   if (x.newLevel === 1) {
     if (x.pointsLeft > 0) out.push(`${plural(x.pointsLeft, 'ability point-buy point')} not spent.`);
+    if (x.notRolled) out.push('Ability scores are not rolled yet.');
+    if (x.rollsUnplaced > 0) out.push(`${plural(x.rollsUnplaced, 'rolled score')} not given to an ability yet.`);
     if (x.pointsLeft < 0) out.push(`Ability scores are ${plural(-x.pointsLeft, 'point')} over the point-buy budget.`);
     if (!String(x.name || '').trim() || x.name === 'New Character') out.push('The character still has the default name.');
   }

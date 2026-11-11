@@ -1,6 +1,7 @@
 import { api } from '../api.js';
 import { state, changed, render, go, refreshCalc } from '../app.js';
 import { sign, num, raceInfo, classLevels } from '../calc.js';
+import { ROLL_METHODS } from '../statroll.js';
 import {
   ABILITIES, ABILITY_NAMES, SKILL_BY_NAME, MULTI_SKILLS, RACES, ALIGNMENTS, SIZES, BONUS_TYPES, MOD_TARGETS, SKILLS, targetLabel,
   BUFF_PRESETS, BUFF_GROUPS, presetsIn, SPELL_FILTERS, SPELL_LIST_CLASSES, CASTING_STAT_NAMES, FEAT_TYPES, TRAIT_CATEGORIES,
@@ -224,7 +225,7 @@ function overview(body, c, d) {
           <td>${inp(`abilities.${a}.damage`, { type: 'num', cls: 'w3' })}</td>
           <td>${inp(`abilities.${a}.drain`, { type: 'num', cls: 'w3' })}</td></tr>`).join('')}</tbody>
       </table>
-      <div class="row small muted"><span>Point buy: <b id="pointbuy"></b></span><span class="grow"></span><span>Buffs to ability scores are applied automatically.</span></div>
+      <div class="row small muted"><span><span id="pointbuy-label">Point buy</span>: <b id="pointbuy"></b></span><span class="grow"></span><span>Buffs to ability scores are applied automatically.</span></div>
     </section>
 
     <section class="card defense">
@@ -318,7 +319,10 @@ function overview(body, c, d) {
   const updateDyn = () => {
     const dd = state.derived;
     const pb = ABILITIES.reduce((s, a) => s + (POINTS[num(c.abilities[a].base)] ?? NaN), 0);
-    $('#pointbuy').textContent = isNaN(pb) ? 'n/a (scores outside 7–18)' : pb;
+    const rs = c.abilityRolls;
+    $('#pointbuy-label').textContent = rs ? 'Rolled' : 'Point buy';
+    $('#pointbuy').textContent = rs ? `${rs.rolls.map(r => r.total).sort((x, y) => y - x).join(', ')} (${ROLL_METHODS[rs.method]?.label || rs.method}${rs.times > 1 ? `, ${rs.times} sets` : ''})`
+      : isNaN(pb) ? 'n/a (scores outside 7–18)' : pb;
     $('#bab-text').textContent = dd.iteratives.map(sign).join('/');
     const pct = Math.max(0, Math.min(100, dd.hp.current / Math.max(1, dd.hp.max) * 100));
     $('#hp-fill').style.width = pct + '%';

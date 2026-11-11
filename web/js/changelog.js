@@ -6,6 +6,8 @@ export const CHANGELOG = [
   {
     version: '1.3.7', next: true,
     items: [
+      'Create character: 🎲 Roll your ability scores (4d6 drop the lowest, 3d6 or 2d6 + 6), then drag each roll onto the ability you want it for. The sheet shows what you rolled and how many sets.',
+      'New race: the Ganzi (Planar Adventures), with its racial traits, every ganzi oddity to choose from, and its favored class options.',
       'Characters: “🪦 Lay to rest” moves a character who died or retired to the graveyard, as a headstone with the date and an epitaph. Open them any time, or bring them back.',
       'Level up: the 18 prestige classes of the Core Rulebook and the Advanced Player’s Guide, with their requirements. A level that adds spellcasting asks which of your classes it advances.',
       'Level up: the Unicorn Charger prestige class (Legendary Games), with its own paladin spells.',

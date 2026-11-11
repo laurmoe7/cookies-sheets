@@ -58,6 +58,7 @@ export const RACES = {
   'Drow': { mods: { dex: 2, cha: 2, con: -2 }, size: 'Medium', speed: 30 },
   'Duergar': { mods: { con: 2, wis: 2, cha: -4 }, size: 'Medium', speed: 20 },
   'Fetchling': { mods: { dex: 2, cha: 2, wis: -2 }, size: 'Medium', speed: 30 },
+  'Ganzi': { mods: { con: 2, cha: 2, int: -2 }, size: 'Medium', speed: 30 },
   'Gillman': { mods: { con: 2, cha: 2, wis: -2 }, size: 'Medium', speed: 30 },
   'Goblin': { mods: { dex: 4, str: -2, cha: -2 }, size: 'Small', speed: 30 },
   'Grippli': { mods: { dex: 2, wis: 2, str: -2 }, size: 'Small', speed: 30 },

@@ -44,6 +44,7 @@ const RACES = {
   Halfling: [{ trait: 'Halfling Luck', saves: 1, type: 'racial' }, { trait: 'Sure-Footed', skills: { Acrobatics: 2, Climb: 2 } }, { trait: 'Keen Senses', skills: { Perception: 2 } }],
   Aasimar: [{ trait: 'Skilled', skills: { Diplomacy: 2, Perception: 2 } }],
   Tiefling: [{ trait: 'Skilled', skills: { Bluff: 2, Stealth: 2 } }],
+  Ganzi: [{ trait: 'Skilled', skills: { 'Sense Motive': 2, Survival: 2 } }],
   Hobgoblin: [{ trait: 'Sneaky', skills: { Stealth: 4 } }],
   Goblin: [{ trait: 'Skilled', skills: { Ride: 4, Stealth: 4 } }],
   Kobold: [{ trait: 'Armor', ac: 1, acType: 'natural armor' }, { trait: 'Crafty', skills: { Perception: 2 } }], // Craft (traps) and Profession (miner) +2 too, but those need a sub-skill

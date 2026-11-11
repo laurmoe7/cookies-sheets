@@ -14,6 +14,7 @@ import { chooseTraits } from './traitpicker.js';
 import { traitAllowance, countTraits } from '../traits.js';
 import { racialTraitsOf, remainingBaseline, alternativesFor, replacesOf } from '../racetraits.js';
 import { chooseSpells } from './spellpicker.js';
+import { ROLL_METHODS, rollSet, assignRoll, rolledBases, diceText, setQuality, unplaced } from '../statroll.js';
 
 let draft = null;
 let fcbData = null; // racial favored class options, loaded once
@@ -21,7 +22,8 @@ const ORD = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 - 20) % 10] || ['th', 's
 
 function freshDraft(c) {
   return { forLevel: c.levelUps.length, charId: c.id, cls: null, hpMode: 'avg', hpRoll: null, hpManual: '', fcb: 'hp', fcbNote: '',
-    abilityIncrease: '', ranks: {}, feats: [], traits: [], racial: [], racialRace: '', spellsBy: {}, favsBy: {}, advances: [], archetypes: [], notes: '', budget: 20 };
+    abilityIncrease: '', ranks: {}, feats: [], traits: [], racial: [], racialRace: '', spellsBy: {}, favsBy: {}, advances: [], archetypes: [], notes: '', budget: 20,
+    scoreMode: c.abilityRolls ? 'roll' : 'pb', rollMethod: c.abilityRolls?.method || 'standard' };
 }
 
 export function renderLevelUp(main) {
@@ -70,7 +72,13 @@ function basicsCard(c, d) {
       </div>
       <div>
         <div class="row"><b class="grow">Ability scores</b>
-          <label class="small">Point buy <select id="pb-budget">${[10, 15, 20, 25].map(b => `<option ${b === draft.budget ? 'selected' : ''} value="${b}">${b} (${{ 10: 'low fantasy', 15: 'standard', 20: 'high fantasy', 25: 'epic' }[b]})</option>`).join('')}</select></label></div>
+          <div class="seg" role="group"><button class="seg-btn ${draft.scoreMode === 'pb' ? 'on' : ''}" data-score-mode="pb">Point buy</button><button class="seg-btn ${draft.scoreMode === 'roll' ? 'on' : ''}" data-score-mode="roll">🎲 Roll</button></div></div>
+        ${draft.scoreMode === 'roll' ? rollPanel(c) : pointBuyPanel(c, spent)}
+      </div>
+    </div></section>`;
+}
+function pointBuyPanel(c, spent) {
+  return `<div class="row"><span class="grow"></span><label class="small">Budget <select id="pb-budget">${[10, 15, 20, 25].map(b => `<option ${b === draft.budget ? 'selected' : ''} value="${b}">${b} (${{ 10: 'low fantasy', 15: 'standard', 20: 'high fantasy', 25: 'epic' }[b]})</option>`).join('')}</select></label></div>
         <table class="tbl"><thead><tr><th></th><th>Base</th><th></th><th>Cost</th><th>Racial</th><th>Final</th><th>Mod</th></tr></thead><tbody>
           ${ABILITIES.map(a => {
             const base = num(c.abilities[a].base);
@@ -82,9 +90,110 @@ function basicsCard(c, d) {
               <td><b>${base + racial}</b></td><td class="accent"><b>${sign(mod(base + racial))}</b></td></tr>`;
           }).join('')}</tbody></table>
         <div class="small ${spent > draft.budget ? 'bad' : spent === draft.budget ? 'good' : 'muted'}">Points spent: <b>${isNaN(spent) ? 'n/a' : spent}</b> / ${draft.budget}
-          ${isNaN(spent) ? '(rolled scores? Just type them in.)' : ''}</div>
-      </div>
-    </div></section>`;
+          ${isNaN(spent) ? '(rolled scores? Use 🎲 Roll above, or just type them in.)' : ''}</div>`;
+}
+function rollPanel(c) {
+  const set = c.abilityRolls;
+  const head = `<div class="row"><label class="small">Method <select id="roll-method">${Object.entries(ROLL_METHODS).map(([k, m]) => `<option value="${k}" ${k === draft.rollMethod ? 'selected' : ''}>${esc(m.label)}</option>`).join('')}</select></label>
+    <span class="grow"></span><button class="btn ${set ? '' : 'primary'}" data-roll-scores>🎲 ${set ? 'Roll a new set' : 'Roll scores'}</button></div>`;
+  if (!set) return head + `<div class="roll-empty"><span class="roll-empty-die">🎲</span><div><b>Roll six scores</b><br>
+    <span class="small muted">Then drag each roll onto the ability you want it for.</span></div></div>`;
+  const q = setQuality(set);
+  const fresh = draft.justRolled === set.times; // animate the tiles only right after a roll
+  const plus = ROLL_METHODS[set.method]?.plus;
+  const tile = (i, n = 0) => {
+    const r = set.rolls[i];
+    return `<div class="roll-tile ${pickedRoll === i ? 'picked' : ''} ${fresh ? 'fresh' : ''}" style="--i:${n}" data-roll-idx="${i}" title="${esc(diceText(r, set.method))}${pickedRoll === i ? '' : ' · drag onto an ability'}">
+      <b>${r.total}</b><small>${r.dice.map((v, j) => j === r.drop ? `<s>${v}</s>` : `<span>${v}</span>`).join('')}${plus ? `<em>+${plus}</em>` : ''}</small></div>`;
+  };
+  const pool = unplaced(set);
+  const pbAll = set.rolls.reduce((s, r) => s + (POINT_BUY[r.total] ?? NaN), 0);
+  draft.justRolled = null;
+  return head + `<div class="roll-pool ${pool.length ? '' : 'done'} ${pickedRoll != null ? 'picking' : ''}" data-roll-slot="">
+      ${pool.length ? `<span class="roll-pool-label">${pool.length === 6 ? 'Your rolls' : `${pool.length} left`}</span>${pool.map((i, n) => tile(i, n)).join('')}`
+        : '<span class="small">✓ Every roll is placed. Drag one back here to take it off.</span>'}</div>
+    <table class="tbl roll-table"><tbody>
+    ${ABILITIES.map(a => {
+      const has = set.assign[a] != null, racial = raceInfo(c).mods[a] || 0, score = num(c.abilities[a].base) + racial, m = mod(score);
+      return `<tr class="${has ? '' : 'empty'}"><th>${a.toUpperCase()}<small>${ABILITY_NAMES[a]}</small></th>
+        <td><div class="roll-slot ${has ? 'full' : ''}" data-roll-slot="${a}">${has ? tile(set.assign[a]) : '<span>drop here</span>'}</div></td>
+        <td class="roll-race">${racial ? `<span class="pill ${racial > 0 ? 'good' : 'bad'}">${sign(racial)} race</span>` : ''}</td>
+        <td class="roll-final">${has ? `<b>${score}</b>` : '<span class="dim">—</span>'}</td>
+        <td class="roll-mod">${has ? `<span class="${m > 0 ? 'good' : m < 0 ? 'bad' : 'muted'}">${sign(m)}</span>` : ''}</td></tr>`;
+    }).join('')}</tbody></table>
+    <div class="roll-foot">
+      <span class="pill">${esc(ROLL_METHODS[set.method]?.label || set.method)}</span>
+      <span class="pill" title="How many sets were rolled for this character">${set.times === 1 ? '1st set' : `set ${set.times}`}</span>
+      <span class="pill ${q.low ? 'warn' : ''}" title="The six modifiers added up, before race">mods ${sign(q.mods)}</span>
+      <span class="pill" title="What these six scores would cost in point buy">${isNaN(pbAll) ? 'beyond point buy' : `= ${pbAll}-point buy`}</span>
+    </div>
+    ${q.low ? '<div class="roll-weak small">A weak set: the Core Rulebook lets you reroll when the modifiers add up to +0 or less, or no score is above 13.</div>' : ''}
+    <div class="small muted">Drop a roll on an ability that has one to swap them, or double-click it to put it back. No mouse? Click a roll, then an ability.</div>`;
+}
+let pickedRoll = null; // a roll clicked to be placed by a click on an ability (the no-drag way)
+let lastTap = { idx: null, t: 0 };
+/**
+ * Dragging a roll tile with pointer events (mouse, pen or touch; the browser's own drag and drop does not work on touch screens).
+ * A copy of the tile follows the pointer; letting go over an ability's slot or the pool places it there. A press without moving is a click: it picks the roll.
+ */
+function wireRollTile(c, t, main) {
+  const idx = +t.dataset.rollIdx;
+  t.onpointerdown = e => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const start = { x: e.clientX, y: e.clientY }, box = t.getBoundingClientRect();
+    let ghost = null, over = null;
+    const target = ev => {
+      if (ghost) ghost.style.display = 'none';
+      const el = document.elementFromPoint(ev.clientX, ev.clientY)?.closest('[data-roll-slot]');
+      if (ghost) ghost.style.display = '';
+      return el && main.contains(el) ? el : null;
+    };
+    const move = ev => {
+      if (!ghost) {
+        if (Math.hypot(ev.clientX - start.x, ev.clientY - start.y) < 5) return;
+        ghost = t.cloneNode(true);
+        ghost.classList.add('roll-ghost');
+        Object.assign(ghost.style, { width: box.width + 'px', height: box.height + 'px' });
+        document.body.append(ghost);
+        t.classList.add('dragging');
+        main.classList.add('roll-dragging'); // lights up the places it can go
+      }
+      ghost.style.transform = `translate(${ev.clientX - (start.x - box.left)}px, ${ev.clientY - (start.y - box.top)}px)`;
+      const el = target(ev);
+      if (el !== over) { over?.classList.remove('over'); el?.classList.add('over'); over = el; }
+    };
+    const up = ev => {
+      t.removeEventListener('pointermove', move);
+      t.removeEventListener('pointerup', up);
+      t.removeEventListener('pointercancel', up);
+      over?.classList.remove('over');
+      t.classList.remove('dragging');
+      main.classList.remove('roll-dragging');
+      if (!ghost) { // a click; a second one soon after on a placed roll puts it back in the pool (the first redraws the page, so no dblclick event)
+        const now = Date.now(), again = lastTap.idx === idx && now - lastTap.t < 400;
+        lastTap = { idx, t: now };
+        if (again && !t.closest('.roll-pool')) { placeRoll(c, '', idx); return; }
+        pickedRoll = pickedRoll === idx ? null : idx;
+        render({ keepScroll: true });
+        return;
+      }
+      ghost.remove();
+      const el = ev.type === 'pointerup' ? target(ev) : null;
+      if (el) placeRoll(c, el.dataset.rollSlot, idx);
+    };
+    t.setPointerCapture(e.pointerId);
+    t.addEventListener('pointermove', move);
+    t.addEventListener('pointerup', up);
+    t.addEventListener('pointercancel', up);
+  };
+  t.onclick = e => e.stopPropagation(); // the press is handled above; don't let the slot under it also take the click
+}
+function placeRoll(c, slot, idx) {
+  pickedRoll = null;
+  c.abilityRolls = assignRoll(c.abilityRolls, slot || null, idx);
+  Object.entries(rolledBases(c.abilityRolls)).forEach(([a, v]) => (c.abilities[a].base = v));
+  changed({ rerender: true });
 }
 function raceSummary(c) {
   const ri = raceInfo(c);
@@ -95,6 +204,31 @@ function raceSummary(c) {
 function wireBasics(main, c) {
   const b = $('#pb-budget', main);
   if (b) b.onchange = () => { draft.budget = +b.value; render(); };
+  $$('[data-score-mode]', main).forEach(btn => (btn.onclick = async () => {
+    const m = btn.dataset.scoreMode;
+    if (m === draft.scoreMode) return;
+    if (m === 'pb' && c.abilityRolls) {
+      if (!await confirmBox('Switch to point buy? The rolled scores are thrown away and every score goes back to 10.', 'Use point buy')) return;
+      c.abilityRolls = null;
+      for (const a of ABILITIES) c.abilities[a].base = 10;
+      changed();
+    }
+    draft.scoreMode = m;
+    render();
+  }));
+  const rm = $('#roll-method', main);
+  if (rm) rm.onchange = () => { draft.rollMethod = rm.value; };
+  const roll = $('[data-roll-scores]', main);
+  if (roll) roll.onclick = async () => {
+    if (c.abilityRolls && !await confirmBox(`Roll a new set? These scores are replaced, and the sheet counts how many sets you rolled (${c.abilityRolls.times} so far).`, 'Roll again')) return;
+    c.abilityRolls = rollSet(draft.rollMethod, c.abilityRolls);
+    pickedRoll = null;
+    draft.justRolled = c.abilityRolls.times;
+    Object.entries(rolledBases(c.abilityRolls)).forEach(([a, v]) => (c.abilities[a].base = v));
+    changed({ rerender: true });
+  };
+  $$('[data-roll-idx]', main).forEach(t => wireRollTile(c, t, main));
+  $$('[data-roll-slot]', main).forEach(s => (s.onclick = () => { if (pickedRoll != null) placeRoll(c, s.dataset.rollSlot, pickedRoll); }));
   $$('[data-pb]', main).forEach(btn => (btn.onclick = () => {
     const a = btn.dataset.pb;
     c.abilities[a].base = Math.max(7, Math.min(18, num(c.abilities[a].base) + +btn.dataset.d));
@@ -461,7 +595,9 @@ async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after
     traitsLeft: Math.max(0, traitAllowance(newLevel, draft.feats) - countTraits(draft.traits)),
     getsAbility, abilityIncrease: draft.abilityIncrease, isFav: (c.favoredClass || (newLevel === 1 ? def.name : '')) === def.name, fcb: draft.fcb, fcbNote: draft.fcbNote,
     spellsLeft,
-    pointsLeft: isNaN(spent) ? 0 : draft.budget - spent, name: c.name,
+    pointsLeft: isNaN(spent) || draft.scoreMode === 'roll' ? 0 : draft.budget - spent, name: c.name,
+    notRolled: newLevel === 1 && draft.scoreMode === 'roll' && !c.abilityRolls,
+    rollsUnplaced: newLevel === 1 && draft.scoreMode === 'roll' && c.abilityRolls ? unplaced(c.abilityRolls).length : 0,
   });
   if (warnings.length && !await warnBox(newLevel === 1 ? 'Before you finish your character' : `Before you apply ${ORD(newLevel)} level`, warnings,
     { okLabel: 'Apply anyway', backLabel: 'Go back and fix' })) return;
