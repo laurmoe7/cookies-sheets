@@ -68,6 +68,7 @@ export async function chooseSummon({ spell = 'Summon Monster I', cls = '' } = {}
         const n = c.summons.filter(s => s.key === entry.pick).length;
         c.summons.push(newSummon({ key: entry.pick, label: n ? `${label} #${n + 1}` : label, spell: `${family} ${ROMAN[level]}`, tpl: entry.tpl === '1', block: data.creatures[entry.pick], rounds }));
         added[label] = (added[label] || 0) + 1;
+        summonsView.open = true; // the Companions tab opens on its Summons page next time
         changed();
         toast(`${label} added to Companions → Summons`);
         draw();
@@ -83,7 +84,10 @@ export async function chooseSummon({ spell = 'Summon Monster I', cls = '' } = {}
 
 const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
 
-/** The Summons section at the top of the Companions tab. */
+/** Set when a creature is summoned, so the Companions tab next opens on its Summons page. */
+export const summonsView = { open: false };
+
+/** The Summons page of the Companions tab. */
 /** A hit point reaction waiting for the next draw: {id, kind, amount, frac, from}. */
 let sumFx = null;
 
@@ -91,7 +95,6 @@ export function renderSummons(el, c) {
   c.summons ||= [];
   const list = c.summons;
   el.innerHTML = `<div class="row"><h3 class="grow" style="margin:0">Summons</h3>
-      <span class="muted small">${list.length ? `${list.length} active` : ''}</span>
       <button class="btn small" data-sm-new>＋ Summon…</button>
       ${list.length ? '<button class="btn small" data-sm-round title="Take one round off every summon">Next round</button><button class="btn small ghost" data-sm-clear>Dismiss all</button>' : ''}</div>
     ${list.length ? `<div class="summon-cards">${list.map((s, i) => summonCard(s, i)).join('')}</div>`

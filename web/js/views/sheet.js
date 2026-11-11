@@ -1262,13 +1262,14 @@ function buffs(body, c, d) {
 function editModifier(m) {
   return modal('Edit modifier', (body, close) => {
     const draw = () => {
-      body.innerHTML = `<label class="kv-line">Name <input id="m-name" value="${esc(m.name)}"></label>
-      <label class="kv-line">Note <input id="m-note" value="${esc(m.note || '')}" class="w20"></label>
-      <table class="tbl"><thead><tr><th>Applies to</th><th>Value</th><th>Bonus type</th><th></th></tr></thead><tbody>
+      body.innerHTML = `<div class="fields"><label>Name <input id="m-name" value="${esc(m.name)}"></label>
+      <label>Note <input id="m-note" value="${esc(m.note || '')}"></label></div>
+      <table class="tbl mod-effects"><colgroup><col style="width:46%"><col style="width:18%"><col><col style="width:32px"></colgroup>
+      <thead><tr><th>Applies to</th><th>Value</th><th>Bonus type</th><th></th></tr></thead><tbody>
       ${m.effects.map((e, i) => `<tr>
         <td><select data-e="${i}" data-k="target">${Object.entries(MOD_TARGETS).map(([k, l]) => `<option value="${k}" ${k === e.target ? 'selected' : ''}>${l}</option>`).join('')}
           <optgroup label="One skill">${SKILLS.map(sk => `<option value="${esc('skill:' + sk.name)}" ${'skill:' + sk.name === e.target ? 'selected' : ''}>${esc(sk.name)}</option>`).join('')}</optgroup></select></td>
-        <td><input data-e="${i}" data-k="value" value="${esc(e.value)}" class="w6" title="Number, or formula using bab / lvl (e.g. 1+floor(bab/4))"></td>
+        <td><input data-e="${i}" data-k="value" value="${esc(e.value)}" title="Number, or formula using bab / lvl (e.g. 1+floor(bab/4))"></td>
         <td><select data-e="${i}" data-k="type">${BONUS_TYPES.map(t => `<option ${t === e.type ? 'selected' : ''}>${t}</option>`).join('')}</select></td>
         <td><button class="icon-btn" data-rm="${i}">✕</button></td></tr>`).join('')}</tbody></table>
       <div class="row"><button class="btn small" id="m-add">＋ Effect</button><span class="grow"></span>

@@ -5,6 +5,8 @@ Moved out of CLAUDE.md to keep that file short. Read the bullet for the area you
 - **Bindings:** `<input data-bind="path.in.char">` binds two-way through a global listener in `app.js`.
   - Add `data-type="num"` for numbers and `data-rerender` to redraw the page on change.
   - In `sheet.js`, use the helpers `inp(path, opts)`, `chk(path)` and `sel(path, options)`.
+- **Label + box layouts:** wrap `<label>Text <input></label>` pairs in `<div class="fields">` (`cols2`/`cols3`/`cols4` for pairs per row, `compact` for the small muted look on the Overview). The labels are `display: contents`, so every label and box shares grid tracks and the boxes line up; text boxes fill their track, number boxes stop at 96px, selects keep their width. A row with extra controls is `<label>` + `<span class="ctl">`; `.span-all` and `.under` place a note across or under the boxes. Prefer this to `.kv` / `.form` for new forms.
+- **Sub-pages inside a tab:** the pill `.subtabs` / `.subtab` (Notes, Companions). Put the page's buttons on the same line with `.row.subtab-bar`.
 - **Computed values:** `<span data-calc="path.in.derived" data-fmt="sign|plain|slots">` is filled from `compute()` after every change. Use `calc(key, fmt)` in `sheet.js`.
 - **Rules links:** `data-entry="Name"` (optional `data-cat`, `data-entry-id`) makes any element open that compendium entry in the side drawer. Use `ref()` / `refId()`.
 - **Saving:** after mutating `state.char` in code, call `changed()`, or `changed({ rerender: true })` if the layout changes. Saving is debounced and automatic.

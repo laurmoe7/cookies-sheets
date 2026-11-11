@@ -298,8 +298,7 @@ function detail(el, c, d, newLevel) {
       const isCs = after.skills[key]?.isClass;
       return `<div class="skill-cell ${add ? 'on' : ''}"><span class="cs">${isCs ? '●' : ''}</span><span class="grow">${esc(key)}</span>
         <span class="dim small">${cur}${add ? `<b class="up">+${add}</b>` : ''}</span>
-        <button class="icon-btn" data-rank="${esc(key)}" data-d="-1" ${add ? '' : 'disabled'}>−</button>
-        <button class="icon-btn" data-rank="${esc(key)}" data-d="1" ${cur + add >= newLevel ? 'disabled' : ''}>＋</button></div>`;
+        <span class="stepper sm"><button data-rank="${esc(key)}" data-d="-1" ${add ? '' : 'disabled'} aria-label="One rank less">−</button><button data-rank="${esc(key)}" data-d="1" ${cur + add >= newLevel ? 'disabled' : ''} aria-label="One rank more">＋</button></span></div>`;
     }).join('')}</div>
   </section>
 

@@ -17,7 +17,7 @@ import { event as petEvent } from '../pet/pet.js';
 import { SKILLS } from '../data.js';
 import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom, debounce } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
-import { renderSummons } from './summons.js';
+import { renderSummons, summonsView } from './summons.js';
 
 const PIC = { w: 3, h: 4, out: 800 };
 
@@ -31,6 +31,8 @@ function masterOf(c, levels = {}) {
 
 let dataPromise = null;
 const loadData = () => (dataPromise ||= api.companions().catch(e => { dataPromise = null; throw e; }));
+/** Which page of the Companions tab is open: 'companions' or 'summons' (kept while the app runs). */
+let compTab = 'companions';
 const ABIL = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 const ord = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 - 20) % 10] || ['th', 'st', 'nd', 'rd'][n % 100] || 'th');
 const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
@@ -43,19 +45,24 @@ export async function renderCompanions(body, c) {
   const base = classLevels(c);
   const archs = Object.keys(base).flatMap(cls => archetypesOf(c, cls).map(a => (a.name || '').toLowerCase()));
   const levels = withCompanionSources(base, c, classFeatures(c, state.classesByName), archs, state.derived?.level || 0);
-  body.innerHTML = `
-    <section class="card summons" id="summons-card"></section>
-    <div class="row section-head"><h3 class="grow">Companions</h3>
+  c.summons ||= [];
+  // Summons are short-lived and come from spells, so they get their own page here instead of sitting above the companions.
+  if (summonsView.open) { compTab = 'summons'; summonsView.open = false; }
+  const count = n => n ? ` <span class="count">${n}</span>` : '';
+  const subtabs = `<div class="subtabs" role="tablist">${[['companions', 'Companions', c.companions.length], ['summons', 'Summons', c.summons.length]].map(([k, l, n]) =>
+    `<button class="subtab ${k === compTab ? 'active' : ''}" role="tab" data-comp-tab="${k}">${l}${count(n)}</button>`).join('')}</div>`;
+  body.innerHTML = compTab === 'summons' ? `<div class="row subtab-bar">${subtabs}</div><section class="card summons" id="summons-card"></section>` : `
+    <div class="row subtab-bar">${subtabs}<span class="grow"></span>
       <button class="btn small" data-new="animal">＋ Animal companion</button>
       <button class="btn small" data-new="eidolon">＋ Eidolon</button>
       <button class="btn small" data-new="familiar">＋ Familiar</button>
       <button class="btn small" data-from-creature title="Take any creature from the Bestiary and other monster books as a companion">＋ From creature list…</button>
       <button class="btn small ghost" data-new="custom">＋ Other (mount, cohort)</button></div>
-    ${c.companions.length ? '' : `<section class="card"><p class="muted">No companions yet.</p>
+    ${c.companions.length ? '' : `<section class="card"><h3>No companions yet</h3>
       <p class="small muted">Animal companions come from druid, hunter, ranger (from 4th level), cavalier, samurai and paladin (divine bond) levels, the Animal domain, and the Animal Ally and Boon Companion feats; eidolons from summoner levels; familiars from wizard, sorcerer, witch and shaman levels, the arcanist’s Familiar exploit, and a few archetypes.
       Levels are worked out from your classes automatically, and you can override them.</p></section>`}
     ${c.companions.map((comp, i) => companionCard(comp, i, levels, data, masterOf(c, levels))).join('')}`;
-  renderSummons($('#summons-card', body), c);
+  if (compTab === 'summons') renderSummons($('#summons-card', body), c);
   if (state.compFx) {
     const fx = state.compFx;
     state.compFx = null;
@@ -64,6 +71,8 @@ export async function renderCompanions(body, c) {
   }
 
   body.onclick = async e => {
+    const tab = e.target.closest('[data-comp-tab]');
+    if (tab) { compTab = tab.dataset.compTab; return renderCompanions(body, c); }
     const t = e.target.closest('[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-from-creature],[data-statblock],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
     if (!t) return;
     e.preventDefault();
@@ -73,7 +82,9 @@ export async function renderCompanions(body, c) {
       if (block) { c.companions.push(newCreatureCompanion(block)); changed({ rerender: true }); }
       return;
     }
-    const i = +t.closest('[data-comp]').dataset.comp;
+    const host = t.closest('[data-comp]');
+    if (!host) return; // a summon card's own buttons (pictures) are handled by the Summons page
+    const i = +host.dataset.comp;
     const comp = c.companions[i];
     if (t.dataset.statblock !== undefined) { // the classic stat block, in the side panel
       const creature = comp.kind === 'creature';
@@ -179,6 +190,8 @@ function topPanels(comp, s, p, ed = {}) {
   // A skill's parts, worked out from the stat block; whatever they do not cover (a species' listed bonus, the master's ranks) is shown as other bonuses.
   const skillParts = k => { if (s.kind === 'creature') return [{ label: 'Stat block', value: k.total }].filter(x => x.value); const ab = skillAbility(k.name), sz = s.sizeMods || {}; return [{ label: 'Ranks', value: k.ranks || 0 }, { label: `${ab.toUpperCase()} modifier`, value: s.mods?.[ab] ?? 0 }, { label: 'Class skill', value: k.isClass && k.ranks > 0 ? 3 : 0 }, { label: 'Size', value: k.name === 'Stealth' ? sz.stealth || 0 : k.name === 'Fly' ? sz.fly || 0 : 0 }].filter(p => p.value); };
   const stat = (label, v) => `<div class="stat"><div class="label">${label}</div><span class="big">${v}</span></div>`;
+  // "20 ft., climb 20 ft.": the land speed big, other movement small under it, so one long speed does not make the whole row of tiles tall
+  const speedTile = sp => { const [main, ...more] = String(sp ?? '').split(/,\s*/); return `<div class="stat"><div class="label">Speed</div><span class="big">${esc(main)}</span>${more.length ? `<div class="small muted">${esc(more.join(', '))}</div>` : ''}</div>`; };
   return `<div class="grid overview-grid comp-top">
     <section class="card hp has-portrait ${state}">
       <div class="hp-main"><h3>Hit Points</h3>
@@ -206,7 +219,7 @@ function topPanels(comp, s, p, ed = {}) {
       ${defenseLine(s)}
     </section>
     <section class="card offense"><h3>Offense</h3>
-      <div class="stat-row fill">${stat('Init', rb(s.init, 'initiative', s.bd?.init))}${stat('BAB', sign(s.bab))}${stat('CMB', rb(s.cmb, 'CMB', s.bd?.cmb))}${stat('Speed', `${esc(String(s.speed))}`)}</div>
+      <div class="stat-row fill">${stat('Init', rb(s.init, 'initiative', s.bd?.init))}${stat('BAB', sign(s.bab))}${stat('CMB', rb(s.cmb, 'CMB', s.bd?.cmb))}${speedTile(s.speed)}</div>
       ${s.attacks.length ? `<table class="tbl"><thead><tr><th>Attack</th><th>Bonus</th><th>Damage</th></tr></thead><tbody>${s.attacks.map(a => `<tr>
         <td>${a.count > 1 ? a.count + ' ' : ''}${linkTerms(a.name)}${a.secondary ? ' <span class="dim small">(secondary)</span>' : ''}</td><td class="big accent">${rb(a.bonus, a.name + ' attack', a.parts)}</td>
         <td>${a.dice ? `<button class="nb" data-roll-dice="${esc(a.damage)}" data-roll-label="${esc(comp.name + ' ' + a.name + ' damage')}" data-tip="${esc(`${comp.name} ${a.name} damage` + '\n' + 'Click to roll ' + a.damage)}">${esc(a.damage)}</button>${a.extra ? ' ' + linkTerms(a.extra) : ''}` : '—'}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">No natural attacks.</p>'}

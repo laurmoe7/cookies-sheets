@@ -179,6 +179,9 @@ textarea { width: 100%; resize: vertical; }
 .tbl tbody tr:hover { background: var(--panel-2); }
 .tbl.mini { font-size: 12.5px; margin: 6px 0; }
 .tbl.mini th { background: var(--panel-2); }
+/* the Edit modifier window: fixed columns so the boxes fill them and nothing spills out of the window */
+.tbl.mod-effects { table-layout: fixed; }
+.tbl.mod-effects select, .tbl.mod-effects input { width: 100%; min-width: 0; }
 .grow-cell { width: 100%; }
 td.big, .big { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .abilities td, .abilities th { text-align: center; }
@@ -508,6 +511,7 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .bio-text { width: 100%; min-height: 240px; resize: vertical; line-height: 1.5; }
 .notes-tab .story-text { min-height: 62vh; font-size: 1.02em; line-height: 1.5; }
 .subtabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.subtab-bar { margin: 0 0 12px; } .subtab-bar .subtabs { margin: 0; } /* sub-tabs with the page's buttons on the same line (Companions) */
 .subtab { font: inherit; cursor: pointer; padding: 6px 16px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--muted); }
 .subtab:hover { border-color: var(--accent); color: var(--accent); }
 .subtab.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
@@ -772,6 +776,10 @@ html[data-motion="off"] .fx-spark { display: none; }
 .stepper button { all: unset; box-sizing: border-box; width: 30px; line-height: 30px; text-align: center; cursor: pointer; font-size: 18px; color: var(--ink); user-select: none; }
 .stepper button:hover { background: var(--accent-soft); color: var(--accent); }
 .stepper button:active { transform: scale(.92); }
+.stepper button:disabled { opacity: .3; cursor: default; background: none; color: var(--ink); transform: none; }
+/* the small one in the level-up skill list */
+.stepper.sm button { width: 24px; line-height: 22px; font-size: 15px; }
+.stepper.sm button + button { border-left: 1px solid var(--line); }
 .stepper input, .stepper .val { box-sizing: border-box; width: 44px; height: 30px; text-align: center; font: inherit; font-weight: 700; font-size: 16px; line-height: 30px; border: 0; border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-radius: 0; background: var(--panel); color: var(--ink); padding: 0; -moz-appearance: textfield; appearance: textfield; }
 .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .stepper .val.bad { color: var(--bad); }
