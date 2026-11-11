@@ -229,15 +229,17 @@ html[data-theme] .btn.primary.discord-btn, .btn.discord-btn { background: #5865f
 html[data-theme] .btn.primary.discord-btn:hover, .btn.discord-btn:hover { background: #4752c4; border-color: #4752c4; }
 /* The roll windows: one labelled grid (what to roll, buffs, bonuses, penalties, your own number), compact toggles and the buttons in a footer. */
 .rw-intro { margin: 0 0 12px; }
-.rw-grid { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 14px; align-items: center; }
-.rw-lab { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+/* rows sit 14px apart (chips inside a row wrap 6px apart, so each category reads as its own group); a label lines up with the first line of its chips */
+.rw-grid { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 14px 16px; align-items: start; }
+.rw-lab { font-size: 11px; line-height: 22px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.rw-lab.custom { line-height: 30px; }
 .rw-lab.plus { color: var(--good); } .rw-lab.minus { color: var(--bad); }
 .rw-val { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
 .rw-val > input.grow { flex: 1; min-width: 120px; }
-.rw-rule { grid-column: 1 / -1; border-top: 1px solid var(--line); margin: 2px 0; }
+.rw-rule { grid-column: 1 / -1; border-top: 1px solid var(--line); margin: 0; }
 .rw-expr { font-size: 1.1em; margin-right: 6px; }
 .rw-modes { display: inline-flex; gap: 6px; }
-.rw-now { font-size: 12px; margin: 10px 0 0; }
+.rw-now { font-size: 12.5px; line-height: 22px; }
 .rw-note { font-size: 11.5px; color: var(--muted); margin: 10px 0 0; }
 .rw-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
 .rw-opts { display: flex; gap: 6px; flex-wrap: wrap; }

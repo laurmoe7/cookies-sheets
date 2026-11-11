@@ -74,7 +74,7 @@ const presetGroups = list => [['Bonuses', 'plus', list.filter(m => m.n > 0)], ['
 const toggle = (id, on, label, sub, tip, disabled = false) => '<label class="check-row mini" title="' + esc(tip) + '"><input type="checkbox" id="' + id + '" ' + (on ? 'checked' : '') + (disabled ? ' disabled' : '') + '><span>' + label + (sub ? ' <span class="sub">· ' + sub + '</span>' : '') + '</span></label>';
 const keepToggle = () => toggle('mod-keep', keepMods, 'Keep modifiers', '', 'Keep these modifiers for my next rolls too, until I clear them');
 const customRow = (wd = false) => rwRow('Custom', '<input id="mod-n" class="' + (wd ? 'w5' : 'w3') + '" type="' + (wd ? 'text' : 'number') + '" placeholder="' + (wd ? '2d6 or ±' : '±') + '" aria-label="Modifier" ' + (wd ? 'title="A number, or dice such as 2d6 for precision or other extra damage"' : '') + '><input id="mod-label" class="grow" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button>', 'custom');
-const nowLine = () => mods.length ? '<div class="rw-now">Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b></div>' : '';
+const nowLine = () => mods.length ? rwRow('Now', '<span class="rw-now"><b>' + esc(bonusText(modsTotal()) || '+0') + '</b> <span class="muted">from ' + esc(mods.map(m => m.label + ' ' + bonusText(m.n)).join(', ')) + '</span></span>') : '';
 const modeChips = attr => '<button class="rchip ' + (mode === 'adv' ? 'on' : '') + '" ' + attr + '="adv" title="Roll the d20 twice and keep the higher">Advantage</button><button class="rchip ' + (mode === 'dis' ? 'on' : '') + '" ' + attr + '="dis" title="Roll the d20 twice and keep the lower">Disadvantage</button>';
 const LASTING = 'Lasting effects (charging, shaken, power attack…) come from the Buffs &amp; Conditions tab by themselves.';
 
@@ -95,8 +95,7 @@ function modsWindow() {
   modal('Roll modifier', (body, close) => {
     const draw = () => {
       body.innerHTML = `<p class="small muted rw-intro">Added to your d20 rolls (attacks, saves, skills, checks) ${keepMods ? 'until you clear it' : 'for the next roll only'}.</p>
-        <div class="rw-grid">${rwRow('Roll', modeChips('data-rmode'))}${presetGroups(MOD_PRESETS)}${customRow()}</div>
-        ${nowLine() || '<div class="rw-now muted">No modifier set.</div>'}
+        <div class="rw-grid">${rwRow('Roll', modeChips('data-rmode'))}${presetGroups(MOD_PRESETS)}${customRow()}${nowLine() || rwRow('Now', '<span class="rw-now muted">No modifier set.</span>')}</div>
         <div class="rw-foot"><div class="rw-opts">${keepToggle()}</div><span class="rw-btns"><button class="btn small" id="mod-clear">Clear</button><button class="btn primary small" id="mod-done">Done</button></span></div>`;
     };
     draw();
@@ -238,7 +237,7 @@ function rollWindow(p0, attack0, sp = null) {
   };
   const sameMod = (x, m) => x.label === m.label && x.n === m.n && x.dice === m.dice && x.extraBase === m.extraBase;
   const dchip = (m, i) => '<button class="rchip ' + (dmods.some(x => sameMod(x, m)) ? 'on' : '') + '" data-dmg-preset="' + i + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(m.dice ? '+' + m.dice : m.extraBase ? '×' + (m.extraBase + 1) : bonusText(m.n)) + '</button>';
-  const dmgNow = () => dmods.length ? '<div class="rw-now">Now: ' + esc(dmods.map(m => (m.dice ? '+' + m.dice : m.extraBase ? 'weapon dice ×' + (m.extraBase * (m.crit && useCrit && wd.crit ? wd.crit.mult : 1) + 1) : bonusText(m.n * (m.crit && useCrit && wd.crit ? wd.crit.mult : 1))) + ' ' + m.label).join(', ')) + (useCrit && wd.crit && dmods.some(m => m.crit) ? ' (multiplied by the critical hit)' : '') + '</div>' : '';
+  const dmgNow = () => dmods.length ? rwRow('Now', '<span class="rw-now">' + esc(dmods.map(m => (m.dice ? '+' + m.dice : m.extraBase ? 'weapon dice ×' + (m.extraBase * (m.crit && useCrit && wd.crit ? wd.crit.mult : 1) + 1) : bonusText(m.n * (m.crit && useCrit && wd.crit ? wd.crit.mult : 1))) + ' ' + m.label).join(', ')) + (useCrit && wd.crit && dmods.some(m => m.crit) ? ' (multiplied by the critical hit)' : '') + '</span>') : '';
   const cur = () => {
     if (wd) return { p: damageRoll(), attack: false };
     if (!sp) return { p: p0, attack: attack0 };
@@ -276,8 +275,7 @@ function rollWindow(p0, attack0, sp = null) {
       body.innerHTML = (sp ? '<p class="small muted rw-intro">' + esc(sp.facts) + '.</p>' : '') +
         '<div class="rw-grid">' + spRows + (sp ? '<div class="rw-rule"></div>' : '') +
         rwRow('Roll', '<b class="rw-expr">' + esc(shown) + '</b>' + (d20 ? '<span class="rw-modes">' + modeChips('data-win-mode') + '</span>' : '')) +
-        buffNote(p) + dmgRows + (presets.length ? presetGroups(presets) : '') + customRow(wd) + '</div>' +
-        (wd ? dmgNow() : d20 ? nowLine() : '') +
+        buffNote(p) + dmgRows + (presets.length ? presetGroups(presets) : '') + customRow(wd) + (wd ? dmgNow() : d20 ? nowLine() : '') + '</div>' +
         (d20 ? '<p class="rw-note">' + LASTING + '</p>' : '') +
         '<div class="rw-foot">' + (opts ? '<div class="rw-opts">' + opts + '</div>' : '') + '<span class="rw-btns"><button class="btn small" id="win-cancel">Cancel</button>' +
         '<button class="rchip go" data-win-go="roll">🎲 Roll</button>' +
