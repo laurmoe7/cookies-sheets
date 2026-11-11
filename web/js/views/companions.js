@@ -236,7 +236,7 @@ function topPanels(comp, s, p, ed = {}) {
       ${s.specialAttacks ? `<p><b>Special attacks</b> ${linkTerms(s.specialAttacks)}</p>` : ''}
       ${ed.atk || ''}
     </section>
-    <section class="card span2"><h3>At a glance</h3>
+    <section class="card ${comp.kind === 'animal' || comp.kind === 'eidolon' ? '' : 'span2'}"><h3>At a glance</h3>
       <div class="chips">${glance(s).map(x => `<span class="chip on">${esc(x)}</span>`).join('')}</div>
       ${extras(comp, s)}
       ${s.kind === 'familiar' ? `<h4>Master gains</h4><p>${esc(s.species?.masterBonus || 'No bonus listed in the books for this kind. Check with your GM.')}</p>
@@ -388,7 +388,7 @@ function buildEditors(comp, s, p, { data, levels }) {
     <div class="row" style="gap:8px;flex-wrap:wrap">${select(`${p}.unicornMount`, comp.unicornMount || '', [['', 'This is my unicorn mount'], ['no', 'Not my unicorn mount']])}</div>
     ${s.unicorn?.count ? `<div class="row" style="gap:6px;margin-top:6px"><span class="small muted">+2 enhancement:</span>${Array.from({ length: s.unicorn.count }, (_, k) =>
       select(`${p}.unicornBoosts.${k}`, comp.unicornBoosts?.[k] || '', [['', 'choose…'], ['int', '+2 Int'], ['wis', '+2 Wis'], ['cha', '+2 Cha']])).join('')}</div>` : ''}` : '';
-  const build = `<section class="card span2"><h3>Build</h3>
+  const build = `<section class="card"><h3>Build</h3>
       ${!isAnimal ? evolutionsBlock(comp, s, data, p) : ''}
       <h4>Feats <span class="pill ${featsLeft < 0 ? 'bad' : featsLeft ? 'warn' : 'good'}">${s.featsUsed} / ${s.featSlots}</span></h4>
       <div class="chips">${(comp.feats || []).map((f, k) => `<span class="chip on">${f.id ? `<a href="#" class="ref" data-entry="${esc(f.name)}" data-entry-id="${f.id}">${esc(f.name)}</a>` : esc(f.name)} <button class="icon-btn" data-rm-feat="${k}">✕</button></span>`).join('')}
