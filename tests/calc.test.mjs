@@ -502,6 +502,38 @@ test('traits with an always-on bonus apply: Reactionary +2 initiative, Resilient
   assert.equal(skillTotal(calc(c2), 'Perception') - skillTotal(calc(c0), 'Perception'), 1 + 3, 'Seeker: +1 trait, and Perception becomes a class skill (+3 with a rank in it); fighter does not have it');
 });
 
+test('trait bonuses on Knowledge skills count: Black Sheep +1 Knowledge (local), and it becomes a class skill', () => {
+  const rank = c => { c.skills.find(s => s.name === 'Knowledge (local)').ranks = 1; return c; };
+  // a fighter does not have Knowledge (local) as a class skill: with 1 rank, +1 trait and +3 class skill
+  assert.equal(skillTotal(calc(rank(withTrait('Black Sheep'))), 'Knowledge (local)') - skillTotal(calc(rank(fighter())), 'Knowledge (local)'), 1 + 3, '+1 trait + 3 class skill = 4');
+});
+
+test('"one of these skills (your choice)" traits: the bonus always counts, the class skill only for the skill picked', () => {
+  const ranks = c => { for (const n of ['Knowledge (nature)', 'Knowledge (geography)', 'Knowledge (history)', 'Knowledge (local)']) c.skills.find(s => s.name === n).ranks = 1; return c; };
+  const base = calc(ranks(fighter())); // a fighter has none of these Knowledge skills as class skills
+  const diff = (c, n) => skillTotal(calc(ranks(c)), n) - skillTotal(base, n);
+
+  const none = withTrait('Devotee of the Green');
+  assert.deepEqual(calc(none).traitChoices.map(ch => [ch.name, ch.options, ch.chosen]), [['Devotee of the Green', ['Knowledge (geography)', 'Knowledge (nature)'], '']], 'the sheet asks which');
+  assert.equal(diff(none, 'Knowledge (nature)'), 1, 'not picked yet: +1 trait only');
+  assert.equal(diff(none, 'Knowledge (geography)'), 1, 'not picked yet: +1 trait only');
+
+  const nat = withTrait('Devotee of the Green', { choice: 'Knowledge (nature)' });
+  assert.equal(diff(nat, 'Knowledge (nature)'), 1 + 3, 'picked: +1 trait + 3 class skill');
+  assert.equal(diff(nat, 'Knowledge (geography)'), 1, 'the other one: +1 trait only');
+
+  // Child of Nature: +2 Survival only to find food and water (not counted), +1 Knowledge (nature); a fighter already has Survival as a class skill
+  assert.equal(diff(withTrait('Child of Nature', { choice: 'Survival' }), 'Knowledge (nature)'), 1, '+1 trait, not a class skill');
+  assert.equal(diff(withTrait('Child of Nature', { choice: 'Knowledge (nature)' }), 'Knowledge (nature)'), 1 + 3, '+1 trait + 3 class skill');
+
+  // Style Sage: the +1 goes only to the one picked
+  const sage = withTrait('Style Sage', { choice: 'Knowledge (history)' });
+  assert.equal(diff(sage, 'Knowledge (history)'), 1 + 3, '+1 trait + 3 class skill');
+  assert.equal(diff(sage, 'Knowledge (local)'), 0, 'nothing on the other one');
+
+  assert.equal(diff(withTrait('Devotee of the Green', { choice: 'Stealth' }), 'Knowledge (nature)'), 1, 'a pick that is not one of its skills counts as none');
+});
+
 test('trait bonuses are one type: two +1 Fortitude traits give +1, Resilient and a +2 racial bonus do not clash', () => {
   const c = withTrait('Resilient'); c.traits.push({ name: 'Life of Toil' });
   assert.equal(calc(c).saves.fort.total - calc(fighter()).saves.fort.total, 1, 'same type, highest only');

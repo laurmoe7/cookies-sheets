@@ -34,6 +34,27 @@ const TRAITS = {
   'sea souled': T({ skills: { Swim: 1 } }), 'imposing scion': T({ skills: { Intimidate: 1 } }), 'precise treatment': T({ skills: { Heal: 1 } }),
   'eldritch delver': T({ skills: { 'Knowledge (dungeoneering)': 1, 'Knowledge (history)': 1 } }), 'magic crafter': T({ skills: { Appraise: 1 } }),
 };
+// "One of these skills (your choice) is always a class skill": `choice` lists the skills, the player's pick is the trait's `choice`.
+// Bonuses that only count in some cases (Survival to find food, Diplomacy to gather information) are left out of `skills`.
+// `choiceBonus`: the bonus goes only to the skill picked (Style Sage).
+Object.assign(TRAITS, {
+  'beast bond': T({ skills: { 'Handle Animal': 1, Ride: 1 }, choice: ['Handle Animal', 'Ride'] }),
+  'calistrian courtesan': T({ skills: { 'Sense Motive': 1 }, choice: ['Sense Motive', 'Diplomacy'] }),
+  'divine courtesan': T({ skills: { 'Sense Motive': 1 }, choice: ['Sense Motive', 'Diplomacy'] }),
+  'child of nature': T({ skills: { 'Knowledge (nature)': 1 }, choice: ['Survival', 'Knowledge (nature)'] }),
+  'child of the temple': T({ skills: { 'Knowledge (nobility)': 1, 'Knowledge (religion)': 1 }, choice: ['Knowledge (nobility)', 'Knowledge (religion)'] }),
+  'devotee of the green': T({ skills: { 'Knowledge (geography)': 1, 'Knowledge (nature)': 1 }, choice: ['Knowledge (geography)', 'Knowledge (nature)'] }),
+  'friend in every town': T({ skills: { 'Knowledge (local)': 1, Diplomacy: 1 }, choice: ['Knowledge (local)', 'Diplomacy'] }),
+  'guardian of the forge': T({ skills: { 'Knowledge (engineering)': 1, 'Knowledge (history)': 1 }, choice: ['Knowledge (engineering)', 'Knowledge (history)'] }),
+  'mathematical prodigy': T({ skills: { 'Knowledge (arcana)': 1, 'Knowledge (engineering)': 1 }, choice: ['Knowledge (arcana)', 'Knowledge (engineering)'] }),
+  'scholar of ruins': T({ skills: { 'Knowledge (geography)': 1, 'Knowledge (dungeoneering)': 1 }, choice: ['Knowledge (geography)', 'Knowledge (dungeoneering)'] }),
+  'scholar of the great beyond': T({ skills: { 'Knowledge (history)': 1, 'Knowledge (planes)': 1 }, choice: ['Knowledge (history)', 'Knowledge (planes)'] }),
+  'style sage': T({ choice: ['Knowledge (local)', 'Knowledge (history)'], choiceBonus: 1 }),
+  'well informed': T({ skills: { 'Knowledge (local)': 1 }, choice: ['Diplomacy', 'Knowledge (local)'] }),
+});
+
+/** The skills a trait lets the player pick from ("one of these skills, your choice"), or null. */
+export const traitChoices = name => TRAITS[key(name)]?.choice || null;
 
 // Standard racial traits that are always on, by race. `trait` is the racial trait's name, so an alternate racial trait that replaces it turns it off.
 const RACES = {
@@ -66,17 +87,26 @@ const RACES = {
 
 /**
  * What the traits and the race add. `mods` are [{target, value, type, source}] in the shape calc.js's modifiers use,
- * `skills` are [{skill, value, type, source}], `classSkills` is a Set of skill names.
+ * `skills` are [{skill, value, type, source}], `classSkills` is a Set of skill names,
+ * `choices` are the traits that let the player pick a class skill: [{index (in c.traits), name, options, chosen (or '')}].
  */
 export function autoEffects(c) {
-  const mods = [], skills = [], classSkills = new Set();
-  for (const t of c.traits || []) {
+  const mods = [], skills = [], classSkills = new Set(), choices = [];
+  (c.traits || []).forEach((t, index) => {
     const fx = TRAITS[key(t.name)];
-    if (!fx) continue;
+    if (!fx) return;
     for (const k of ['init', 'fort', 'ref', 'will', 'concentration']) if (fx[k]) mods.push({ target: k, value: fx[k], type: 'trait', source: t.name });
     for (const [skill, value] of Object.entries(fx.skills || {})) skills.push({ skill, value, type: 'trait', source: t.name });
     for (const s of fx.cs || []) classSkills.add(s);
-  }
+    if (fx.choice) {
+      const chosen = fx.choice.includes(t.choice) ? t.choice : '';
+      choices.push({ index, name: t.name, options: fx.choice, chosen });
+      if (chosen) {
+        classSkills.add(chosen);
+        if (fx.choiceBonus) skills.push({ skill: chosen, value: fx.choiceBonus, type: 'trait', source: t.name });
+      }
+    }
+  });
   const replaced = new Set((c.traits || []).flatMap(t => t.replaces || []).map(key));
   for (const r of RACES[c.race] || []) {
     if (replaced.has(key(r.trait))) continue;
@@ -85,5 +115,5 @@ export function autoEffects(c) {
     if (r.ac) mods.push({ target: 'ac', value: r.ac, type: r.acType || 'racial', source: src });
     for (const [skill, value] of Object.entries(r.skills || {})) skills.push({ skill, value, type: 'racial', source: src });
   }
-  return { mods, skills, classSkills };
+  return { mods, skills, classSkills, choices };
 }

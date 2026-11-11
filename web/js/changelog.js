@@ -5,6 +5,13 @@
 
 export const CHANGELOG = [
   {
+    version: '1.3.8', date: '2026-11-11',
+    items: [
+      'Skills: traits that make “one of these skills (your choice)” a class skill, like Child of Nature and Devotee of the Green, let you pick it on the Skills tab or in the Traits list.',
+      'Skills: trait bonuses on Knowledge skills (Black Sheep, Savage, Scholar of Ruins...) now count.',
+    ],
+  },
+  {
     version: '1.3.7', date: '2026-11-11',
     items: [
       'Create character: a Starting gold card gives your class’s starting wealth at 1st level (average or 🎲 rolled), or the Wealth by Level amount when you start higher (33,000 gp at 8th), or a custom amount you type in.',

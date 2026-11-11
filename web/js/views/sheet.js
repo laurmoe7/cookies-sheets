@@ -489,6 +489,28 @@ function chooseBuffPreset() {
 // =====================================================================
 // SKILLS
 // =====================================================================
+/** "Child of Nature: class skill [Survival | Knowledge (nature)]": a trait's "one of these skills (your choice)". Wired by wireTraitChoices. */
+function traitChoicePicker(ch) {
+  return `<span class="small"><b>${esc(ch.name)}</b>: class skill</span>
+    <span class="seg" role="group">${ch.options.map(o => `<button class="seg-btn ${o === ch.chosen ? 'on' : ''}" data-trait-choice="${ch.index}" data-skill="${esc(o)}">${esc(o)}</button>`).join('')}</span>
+    ${ch.chosen ? '' : '<span class="pill warn">choose one</span>'}`;
+}
+/** The same choice as a dropdown, for the narrow Traits list. */
+function traitChoiceSelect(ch) {
+  return `<label class="small ${ch.chosen ? 'muted' : 'warn'}">Class skill <select data-trait-select="${ch.index}">
+    ${ch.chosen ? '' : '<option value="" selected>choose one</option>'}${ch.options.map(o => `<option ${o === ch.chosen ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`;
+}
+function wireTraitChoices(body, c) {
+  const pick = (i, skill) => {
+    const t = c.traits[i];
+    if (!t || !skill || t.choice === skill) return;
+    t.choice = skill;
+    changed({ rerender: true });
+  };
+  $$('[data-trait-choice]', body).forEach(b => (b.onclick = () => pick(+b.dataset.traitChoice, b.dataset.skill)));
+  $$('[data-trait-select]', body).forEach(s => (s.onchange = () => pick(+s.dataset.traitSelect, s.value)));
+}
+
 function skills(body, c, d) {
   const sp = d.skillPoints;
   // Where the ranks come from, shown on hover: per class, then the extras, then the Int score they use
@@ -514,6 +536,7 @@ function skills(body, c, d) {
       ${d.acp ? `<span class="pill bad">Armor check penalty ${d.acp}</span>` : ''}
       <label class="small"><input type="checkbox" id="only-trained"> Hide untrained-only skills with 0 ranks</label>
     </div>
+    ${(d.traitChoices || []).map(ch => `<div class="row trait-choice">${traitChoicePicker(ch)}</div>`).join('')}
     <table class="tbl skills-tbl"><thead><tr><th title="Class skill">CS</th><th>Skill</th><th>Ability</th><th>Total</th><th>Ranks</th><th>Misc</th><th>Notes</th><th></th></tr></thead>
     <tbody>${c.skills.map((s, i) => {
       const key = s.sub ? `${s.name} (${s.sub})` : s.name;
@@ -535,6 +558,7 @@ function skills(body, c, d) {
     <p class="small muted">Class skills get +3 once they have at least 1 rank. Skill ranks per level = class ranks + Int modifier (min 1)${d.race.bonusSkill ? ' + 1 (human)' : ''}, plus favored-class choices. Size modifies Fly and Stealth automatically.</p>
   </section>`;
   wireCommon(body);
+  wireTraitChoices(body, c);
   $('#only-trained').onchange = e => $$('tr.untrained', body).forEach(r => (r.style.display = e.target.checked ? 'none' : ''));
   body.addEventListener('click', e => {
     const b = e.target.closest('[data-dup-skill]');
@@ -563,7 +587,7 @@ function feats(body, c, d) {
       ${c[key].length ? `<table class="tbl"><tbody>${c[key].map((f, i) => `<tr>
         <td class="nowrap w12">${f.id ? refId(f.id, f.name)
           : tf(`${key}.${i}.name`, { placeholder: 'Name', read: { title: f.name || 'Untitled', titlePath: `${key}.${i}.name`, cat: KIND[key], path: `${key}.${i}.notes` } })}</td>
-        <td class="muted small"><span class="nowrap">${esc(f.sub || '')}${f.level && key !== 'traits' ? ` · L${f.level}` : ''}</span>${f.replaces?.length ? `<div class="alt-note" title="An alternate racial trait">replaces ${esc(f.replaces.join(', '))}</div>` : ''}</td>
+        <td class="muted small"><span class="nowrap">${esc(f.sub || '')}${f.level && key !== 'traits' ? ` · L${f.level}` : ''}</span>${f.replaces?.length ? `<div class="alt-note" title="An alternate racial trait">replaces ${esc(f.replaces.join(', '))}</div>` : ''}${key === 'traits' ? (d.traitChoices || []).filter(ch => ch.index === i).map(ch => `<div class="trait-choice">${traitChoiceSelect(ch)}</div>`).join('') : ''}</td>
         <td class="grow-cell">${tf(`${key}.${i}.notes`, { multiline: true, placeholder: f.id ? 'Add notes' : 'Add a description',
           read: { title: f.name || 'Notes', titlePath: `${key}.${i}.name`, cat: f.id ? 'Your notes' : KIND[key] } })}</td>
         <td><button class="icon-btn" data-del="${key}.${i}">✕</button></td></tr>`).join('')}</tbody></table>`
@@ -591,6 +615,7 @@ function feats(body, c, d) {
       ${listBlock('specials', 'Special Abilities', 'Class Feature', 'Add ability')}
     </div></div>`;
   wireCommon(body);
+  wireTraitChoices(body, c);
   body.addEventListener('click', async e => {
     const p = e.target.closest('[data-pick]');
     const cu = e.target.closest('[data-custom]');
