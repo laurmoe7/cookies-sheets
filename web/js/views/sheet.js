@@ -106,7 +106,7 @@ function featForSelect(c, f, i) {
   let selected = opts.find(o => o.toLowerCase() === cur) || '';
   if (cur && !selected) { selected = f.choice || cur; opts.push(selected); }
   const none = kind === 'skill' ? 'choose a skill…' : kind === 'school' ? 'choose a school…' : c.weapons.length ? 'choose a weapon…' : 'add the weapon or attack first';
-  return `<div class="feat-for${selected ? '' : ' warn'}" title="What this feat is taken for; its bonus goes to that ${kind === 'skill' ? 'skill' : kind === 'school' ? 'school' : 'weapon or attack'}">for <select data-bind="feats.${i}.choice" data-rerender>
+  return `<div class="feat-for${selected ? '' : ' warn'}" title="What this feat is taken for; its bonus goes to that ${kind === 'skill' ? 'skill' : kind === 'school' ? 'school' : 'weapon or attack'}${selected ? '' : '. Until you pick one it does nothing.'}"><span class="feat-for-lbl">for</span><select data-bind="feats.${i}.choice" data-rerender>
     <option value="" ${selected ? '' : 'selected'}>${esc(none)}</option>${opts.map(o => `<option value="${esc(o)}" ${o === selected ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></div>`;
 }
 

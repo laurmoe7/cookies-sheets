@@ -975,7 +975,27 @@ button.doll-fig.empty { font: inherit; cursor: pointer; border: 2px dashed var(-
 button.doll-fig.empty:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 
 /* The "for" box on a feat taken for one weapon, attack, skill or school (Weapon Focus, Improved Natural Attack...) */
-.feat-for { white-space: nowrap; margin-top: 3px; }
+.feat-for { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; margin-top: 3px; }
+.feat-for-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; opacity: .7; }
 .feat-for select { font-size: 12px; padding: 1px 4px; max-width: 14em; }
-.chip .feat-for { margin-top: 0; }
-.feat-for.warn select { border-color: var(--warn, #c80); }
+.feat-for.warn select { border: 1px dashed var(--warn); color: var(--warn); }
+/* inside a companion's feat chip: the box blends into the chip */
+.feat-chip { padding-right: 6px; }
+.feat-chip .feat-for { margin: 0 0 0 4px; padding-left: 6px; border-left: 1px solid color-mix(in srgb, currentColor 35%, transparent); }
+.feat-chip .feat-for select { background: transparent; color: inherit; border: 1px solid transparent; border-radius: 999px; padding: 0 2px; font-weight: 600; cursor: pointer; }
+.feat-chip .feat-for select:hover, .feat-chip .feat-for select:focus { border-color: currentColor; }
+.feat-chip .feat-for select option { color: var(--ink); background: var(--panel); font-weight: normal; }
+.feat-chip:has(.feat-for.warn) { border-style: dashed; border-color: var(--warn); }
+.feat-chip .feat-for.warn select { color: var(--warn); border: 1px dashed var(--warn); }
+
+/* The unicorn mount block on an animal companion (Unicorn Charger levels) */
+.uc-box { border: 1px solid var(--line); border-radius: var(--radius, 8px); padding: 6px 10px 8px; margin: 10px 0 4px; background: color-mix(in srgb, var(--panel-2) 60%, transparent); }
+.uc-box.on { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.uc-head { align-items: center; gap: 8px; flex-wrap: wrap; }
+.uc-head h4 { margin: 4px 0; }
+.uc-head .seg, .uc-boost .seg { margin: 0; }
+.uc-box .seg-btn { padding: 3px 10px; font-size: 12.5px; }
+.uc-gets { margin: 2px 0 6px; }
+.uc-boosts { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.uc-boost { display: flex; align-items: center; gap: 6px; }
+.uc-boost.warn .seg { outline: 1px dashed var(--warn); outline-offset: 1px; }

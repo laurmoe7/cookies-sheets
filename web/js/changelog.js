@@ -22,6 +22,8 @@ export const CHANGELOG = [
       'Companions: the Gear card lists the gear as chips like the Inventory tab; click one (there or in your inventory) to open it in the side panel to wear, +N, enchant or remove.',
       'Companions: gear typed in by hand shows the compendium’s description in the side panel (a military saddle’s entry; barding shows its armor’s entry and the rules for barding).',
       'Companions: Weapon Focus, Weapon Specialization, Improved Critical and Improved Natural Attack get a “for” box on the companion’s feat to pick the natural attack (gore, bite, hoof…), and that attack gets the +1, the +2 damage or the bigger die.',
+      'Companions: changing a feat, a skill rank or anything else on a companion no longer scrolls the page back to the top.',
+      'Companions: the unicorn mount has its own box: a My unicorn / Not this one switch, what the mount gets, and Int / Wis / Cha buttons for each +2. A feat still waiting for its attack is outlined.',
       'Feats: Weapon Focus and the other feats taken for one weapon, skill or school get a “for” box on the Feats tab, so a feat added from the compendium now counts. Improved Natural Attack makes the chosen attack’s die one size bigger.',
       'Level up: a trait that lets you pick a class skill, like Child of Nature, asks which one right after you choose it.',
       'Level up: What changes lists your daily pools going up (lay on hands 3 → 4, smite evil 2/day...), and a feature with options, like a paladin’s mercy or a rage power, is marked “choose one”.',

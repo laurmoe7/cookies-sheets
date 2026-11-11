@@ -31,8 +31,8 @@ function masterOf(c, levels = {}) {
     ranks: Object.fromEntries((c.skills || []).map(s => [s.name, num(s.ranks)])), alignment: c.alignment, improvedFamiliar: levels._improved };
 }
 
-let dataPromise = null;
-const loadData = () => (dataPromise ||= api.companions().catch(e => { dataPromise = null; throw e; }));
+let dataPromise = null, dataCache = null;
+const loadData = () => (dataPromise ||= api.companions().then(d => (dataCache = d)).catch(e => { dataPromise = null; throw e; }));
 /** Which page of the Companions tab is open: 'companions' or 'summons' (kept while the app runs). */
 let compTab = 'companions';
 const ABIL = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
@@ -40,9 +40,13 @@ const ord = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 - 20) % 10] || ['th', 's
 const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
 
 export async function renderCompanions(body, c) {
-  body.innerHTML = '<section class="card loading-page"><p class="muted">Loading companion rules…</p></section>';
-  let data;
-  try { data = await loadData(); } catch (e) { body.innerHTML = `<p class="bad pad">Couldn't load companion data: ${esc(e.message)}</p>`; return; }
+  // Once the rules are loaded the tab redraws in one go: a placeholder (or even one await) here would let the page's
+  // scroll position be restored onto a short page, so every edit (a feat, a skill rank) would jump back to the top.
+  let data = dataCache;
+  if (!data) {
+    body.innerHTML = '<section class="card loading-page"><p class="muted">Loading companion rules…</p></section>';
+    try { data = await loadData(); } catch (e) { body.innerHTML = `<p class="bad pad">Couldn't load companion data: ${esc(e.message)}</p>`; return; }
+  }
   c.companions ||= [];
   const base = classLevels(c);
   const archs = Object.keys(base).flatMap(cls => archetypesOf(c, cls).map(a => (a.name || '').toLowerCase()));
@@ -80,7 +84,7 @@ export async function renderCompanions(body, c) {
       const comp = c.companions[+gearHost.dataset.comp], st = computeCompanion(comp, levels, data, masterOf(c, levels));
       if (await gearClick(e, comp, st?.size || 'Large', +gearHost.dataset.comp)) return;
     }
-    const t = e.target.closest('[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-from-creature],[data-statblock],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
+    const t = e.target.closest('[data-uc-mine],[data-uc-boost],[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-from-creature],[data-statblock],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
     if (!t) return;
     e.preventDefault();
     if (t.dataset.new) { c.companions.push(newCompanion(t.dataset.new, data)); return changed({ rerender: true }); }
@@ -128,6 +132,14 @@ export async function renderCompanions(body, c) {
       remarkOnCompanion(comp, before, comp.hpCur == null || comp.hpCur === '' ? s.hp : num(comp.hpCur), s.hp, s.abilities.con ?? 0);
       return changed({ rerender: true });
     }
+    if (t.dataset.ucMine !== undefined) { comp.unicornMount = t.dataset.ucMine; return changed({ rerender: true }); }
+    if (t.dataset.ucBoost) {
+      const [k, a] = t.dataset.ucBoost.split(':');
+      comp.unicornBoosts ||= [];
+      while (comp.unicornBoosts.length < +k) comp.unicornBoosts.push('');
+      comp.unicornBoosts[+k] = comp.unicornBoosts[+k] === a ? '' : a; // a second click clears it
+      return changed({ rerender: true });
+    }
     if (t.dataset.syncLevel !== undefined) { comp.levelOverride = ''; return changed({ rerender: true }); }
     if (t.dataset.pic !== undefined || t.dataset.picEdit !== undefined || t.dataset.picClear !== undefined) {
       if (await picAction(t, comp, PIC)) changed({ rerender: true });
@@ -171,8 +183,8 @@ const featForSelect = (p, k, f, s) => {
   if (kind !== 'weapon' && kind !== 'natural') return '';
   const names = [...new Set(s.attacks.map(a => a.name[0].toUpperCase() + a.name.slice(1)))];
   const cur = f.choice || '';
-  const opts = [['', 'for: choose…'], ...names.map(n => [n, 'for: ' + n]), ...(cur && !names.some(n => attackIs(n, cur)) ? [[cur, `for: ${cur} (not an attack now)`]] : [])];
-  return ` <span class="feat-for${cur ? '' : ' warn'}" title="Which attack this feat is for">${select(`${p}.feats.${k}.choice`, cur, opts)}</span>`;
+  const opts = [['', 'which attack?'], ...names.map(n => [n, n]), ...(cur && !names.some(n => attackIs(n, cur)) ? [[cur, `${cur} (not an attack now)`]] : [])];
+  return `<span class="feat-for${cur ? '' : ' warn'}" title="${cur ? 'The attack this feat applies to' : 'Pick the attack this feat applies to; until then it does nothing'}"><span class="feat-for-lbl">for</span>${select(`${p}.feats.${k}.choice`, cur, opts)}</span>`;
 };
 
 const bind = (path, v, { type = 'text', cls = 'w3', rerender = true, ph = '' } = {}) =>
@@ -400,14 +412,22 @@ function buildEditors(comp, s, p, { data, levels }) {
   const abilities = s.increases ? `<h4>Ability score increases (${s.increases})</h4><div class="row">${Array.from({ length: s.increases }, (_, k) =>
     select(`${p}.increases.${k}`, comp.increases?.[k], [['', 'choose…'], ...ABIL.map(a => [a, '+1 ' + a.toUpperCase()])])).join('')}</div>` : '';
   // Unicorn Charger levels: the mount's extras, and the +2s every 3 charger levels
-  const uc = isAnimal && levels['Unicorn Charger'] ? `<h4>Unicorn mount <span class="small muted">(Unicorn Charger ${levels['Unicorn Charger']})</span></h4>
-    <div class="row" style="gap:8px;flex-wrap:wrap">${select(`${p}.unicornMount`, comp.unicornMount || '', [['', 'This is my unicorn mount'], ['no', 'Not my unicorn mount']])}</div>
-    ${s.unicorn?.count ? `<div class="row" style="gap:6px;margin-top:6px"><span class="small muted">+2 enhancement:</span>${Array.from({ length: s.unicorn.count }, (_, k) =>
-      select(`${p}.unicornBoosts.${k}`, comp.unicornBoosts?.[k] || '', [['', 'choose…'], ['int', '+2 Int'], ['wis', '+2 Wis'], ['cha', '+2 Cha']])).join('')}</div>` : ''}` : '';
+  const ucLv = isAnimal ? levels['Unicorn Charger'] || 0 : 0;
+  const uc = ucLv ? `<div class="uc-box${s.unicorn ? ' on' : ''}">
+    <div class="row uc-head"><h4 class="grow">🦄 Unicorn mount <span class="small muted">Unicorn Charger ${ucLv}</span></h4>
+      <div class="seg" role="radiogroup" aria-label="Is this the unicorn mount?">${[['', 'My unicorn'], ['no', 'Not this one']].map(([v, l]) =>
+        `<button class="seg-btn ${(comp.unicornMount || '') === v ? 'on' : ''}" role="radio" aria-checked="${(comp.unicornMount || '') === v}" data-uc-mine="${v}">${l}</button>`).join('')}</div></div>
+    ${s.unicorn ? `<p class="small muted uc-gets">Gore ${esc(s.unicorn.gore)} (primary) · Int at least 6 · speaks Sylvan · horn sheds light</p>
+      ${s.unicorn.count ? `<div class="uc-boosts">${Array.from({ length: s.unicorn.count }, (_, k) => {
+        const cur = comp.unicornBoosts?.[k] || '';
+        return `<div class="uc-boost${cur ? '' : ' warn'}"><span class="small">+2 at charger ${(k + 1) * 3}</span><div class="seg">${['int', 'wis', 'cha'].map(a =>
+          `<button class="seg-btn ${cur === a ? 'on' : ''}" data-uc-boost="${k}:${a}">${a.toUpperCase()}</button>`).join('')}</div></div>`;
+      }).join('')}</div>` : `<p class="small muted">A +2 to Int, Wis or Cha comes at charger level 3.</p>`}` : ''}
+  </div>` : '';
   const build = `<section class="card"><h3>Build</h3>
       ${!isAnimal ? evolutionsBlock(comp, s, data, p) : ''}
       <h4>Feats <span class="pill ${featsLeft < 0 ? 'bad' : featsLeft ? 'warn' : 'good'}">${s.featsUsed} / ${s.featSlots}</span></h4>
-      <div class="chips">${(comp.feats || []).map((f, k) => `<span class="chip on">${f.id ? `<a href="#" class="ref" data-entry="${esc(f.name)}" data-entry-id="${f.id}">${esc(f.name)}</a>` : esc(f.name)}${featForSelect(p, k, f, s)} <button class="icon-btn" data-rm-feat="${k}">✕</button></span>`).join('')}
+      <div class="chips">${(comp.feats || []).map((f, k) => `<span class="chip on feat-chip">${f.id ? `<a href="#" class="ref" data-entry="${esc(f.name)}" data-entry-id="${f.id}">${esc(f.name)}</a>` : esc(f.name)}${featForSelect(p, k, f, s)} <button class="icon-btn" data-rm-feat="${k}">✕</button></span>`).join('')}
         <button class="btn small" data-add-feat>＋ Feat</button></div>
       ${s.bonusFeats ? `<p class="small muted">Bonus feat: ${esc(s.bonusFeats)}</p>` : ''}
       <h4>Skill ranks <span class="pill ${ranksLeft < 0 ? 'bad' : ranksLeft ? 'warn' : 'good'}">${s.skillRanksUsed} / ${s.skillRanks} ranks</span></h4>
