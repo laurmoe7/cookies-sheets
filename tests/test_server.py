@@ -258,7 +258,7 @@ class HttpApi(unittest.TestCase):
     def test_classes(self):
         status, data = self.call('/api/classes')
         self.assertEqual(status, 200)
-        self.assertEqual(len(data), 32 + 18, '32 base classes + 18 prestige classes (Core Rulebook 10, APG 8)')
+        self.assertEqual(len(data), 32 + 18 + 1, '32 base classes + 18 prestige classes (Core Rulebook 10, APG 8) + the hand-typed unicorn charger')
         theurge = next(c for c in data if c['name'] == 'Mystic Theurge')
         self.assertTrue(theurge['prestige'])
         self.assertEqual(len(theurge['levels']), 10)

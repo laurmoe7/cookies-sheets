@@ -217,6 +217,22 @@ test('prestige class: mystic theurge advances an arcane and a divine class at on
   assert.equal(d.spellcasting['Mystic Theurge'], undefined, 'the prestige class casts nothing of its own');
 });
 
+test('prestige class with its own spells: unicorn charger (Legendary Games)', () => {
+  // Fighter 6 / Unicorn Charger 4, Cha 14 (+2). Table 11-2 at 4th: 1 first-level, 0 second-level; Table 11-3: 4 + 1 ranger first, 2 + 1 ranger second.
+  const c = make({ raceChoice: 'cha', base: { cha: 12 }, levels: [...repeat('Fighter', 6), ...repeat('Unicorn Charger', 4)] });
+  const d = calc(c);
+  assert.equal(d.bab, 10, 'fighter 6 (+6) + unicorn charger 4 (+4)');
+  assert.equal(d.saves.fort.total, 7, 'fighter 6 good Fort +5, charger 4 good Fort +2, Con 10');
+  const sc = d.spellcasting['Unicorn Charger'];
+  assert.equal(sc.cl, 4, 'the class level (the page gives no other caster level)');
+  assert.equal(sc.slots[0], null, 'no orisons');
+  assert.equal(sc.slots[1], 2, '1 + 1 bonus for Cha 14');
+  assert.equal(sc.slots[2], 1, '0 + 1 bonus: a +2 modifier gives a bonus spell of 1st and 2nd level');
+  assert.deepEqual(sc.known.slice(1, 3), [5, 3], 'Table 11-3 counts plus the extra ranger spell of each level');
+  assert.equal(sc.dcs[1], 13, '10 + 1 + Cha 2');
+  assert.deepEqual(advanceable('any', { 'Unicorn Charger': 4 }, classesByName), [], 'another prestige class does not advance it');
+});
+
 test('prestige class: which base classes a level can advance', () => {
   const lv = { Wizard: 3, Cleric: 3, Alchemist: 1, Fighter: 2, 'Mystic Theurge': 1 };
   assert.deepEqual(advanceable('arcane', lv, classesByName), ['Wizard']);

@@ -19,6 +19,7 @@ import archetypes
 import companions
 import creatures
 import equipment
+import extra_classes
 import extra_entries
 import racetraits
 import fcb
@@ -368,6 +369,12 @@ def merge_extra_entries(entries):
         entries.append(dict(cat=cat, sub=sub, name=name, source=source, summary='', html='<p>%s</p>' % html.escape(text),
                             meta='{}', text=name + ' ' + text, late=True))
         added += 1
+    for cat, sub, name, source, body, meta in extra_classes.ENTRIES:  # hand-typed classes (tools/extra_classes.py)
+        if (cat, sub, norm(name)) in have:
+            continue
+        entries.append(dict(cat=cat, sub=sub, name=name, source=source, summary='', html=body, meta=json.dumps(meta),
+                            text=name + ' ' + re.sub(r'<[^>]+>', ' ', body), late=True))
+        added += 1
     return added
 
 
@@ -552,7 +559,7 @@ def build_classes(books):
         if casting:
             entry['casting'] = dict(casting, max_level=max_sl, tradition=TRADITION.get(name, 'arcane'))
         out.append(entry)
-    return out + build_prestige(books)
+    return out + build_prestige(books) + extra_classes.CLASSES  # the last: hand-typed third-party prestige classes
 
 
 # Which prestige classes can advance a base class's spellcasting: "+1 level of existing arcane spellcasting class" asks for an arcane one.

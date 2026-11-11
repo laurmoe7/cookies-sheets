@@ -129,8 +129,7 @@ function defaultAdvances(c, def) {
 }
 /** The spellcasting classes whose spells change with this level: the class itself, or the classes the prestige level advances. */
 function spellTargets(def) {
-  if (def.prestige) return [...new Set(draft.advances.filter(Boolean))];
-  return def.casting ? [def.name] : [];
+  return [...new Set([...(def.casting ? [def.name] : []), ...(def.prestige ? draft.advances.filter(Boolean) : [])])]; // a prestige class may cast on its own (unicorn charger)
 }
 const KIND_TEXT = { arcane: 'arcane spellcasting class', divine: 'divine spellcasting class', any: 'spellcasting class' };
 
@@ -242,7 +241,7 @@ function detail(el, c, d, newLevel) {
         ? `<li><a href="#" class="ref" data-arch-feat="${i}">${esc(f.name)}</a><span class="arch-badge">${esc(f.archetype)}</span>${f.replaces.length ? ` <span class="rep">replaces ${esc(f.replaces.join(', '))}</span>` : ''}</li>`
         : `<li><a href="#" class="ref" data-entry="${esc(featureLookupName(f.name))}">${esc(f.name)}</a>${f.modified ? ` <span class="mod">modified by ${esc(f.modified.join(', '))}</span>` : ''}</li>`).join('')}</ul>`
         : '<p class="muted">No new features this level (numbers improve automatically).</p>'}
-      ${targets.map(t => spellDiff(state.classesByName[t], d, after, def.prestige)).join('')}
+      ${targets.map(t => spellDiff(state.classesByName[t], d, after, t !== def.name)).join('')}
     </section>
 
     <section class="card">

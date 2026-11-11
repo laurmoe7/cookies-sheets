@@ -15639,5 +15639,367 @@
     "special": "Damage reduction 5/\u2014, defensive power, last word"
    }
   ]
+ },
+ {
+  "name": "Unicorn Charger",
+  "group": "Prestige",
+  "prestige": true,
+  "source": "Legendary Games (third party)",
+  "hit_die": 10,
+  "alignment": "Any good.",
+  "skill_ranks": 2,
+  "class_skills": [
+   "Craft",
+   "Diplomacy",
+   "Handle Animal",
+   "Knowledge (nature)",
+   "Knowledge (religion)",
+   "Profession",
+   "Ride",
+   "Sense Motive",
+   "Stealth",
+   "Survival"
+  ],
+  "requirements": [
+   "Base Attack Bonus: +6.",
+   "Feats: Mounted Combat.",
+   "Skills: Handle Animal 5 ranks, Knowledge (nature) 5 ranks, Survival 5 ranks.",
+   "Languages: Sylvan.",
+   "Class Feature: Divine bond, hunter\u2019s bond, mount, nature\u2019s bond, or a similar feature that grants a horse or pony (or a similar creature, at the GM\u2019s discretion) as an animal companion.",
+   "Special: Peaceful contact with a unicorn, whether called, summoned, or present under its own power."
+  ],
+  "casting": {
+   "stat": "cha",
+   "kind": "spontaneous",
+   "lists": [
+    "Paladin",
+    "Ranger"
+   ],
+   "cl_offset": 0,
+   "max_level": 4,
+   "tradition": "divine"
+  },
+  "levels": [
+   {
+    "level": 1,
+    "bab": 1,
+    "fort": 1,
+    "ref": 0,
+    "will": 0,
+    "special": "Aura of good, detect evil, unicorn mount, wild empathy",
+    "spells_per_day": [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "spells_known": [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "level": 2,
+    "bab": 2,
+    "fort": 1,
+    "ref": 1,
+    "will": 1,
+    "special": "Poison resistance +2, woodland stride",
+    "spells_per_day": [
+     null,
+     0,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "spells_known": [
+     null,
+     3,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "level": 3,
+    "bab": 3,
+    "fort": 2,
+    "ref": 1,
+    "will": 1,
+    "special": "Horn of healing, smite evil 1/day",
+    "spells_per_day": [
+     null,
+     1,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "spells_known": [
+     null,
+     4,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "level": 4,
+    "bab": 4,
+    "fort": 2,
+    "ref": 1,
+    "will": 1,
+    "special": "Aura of courage, unicorn\u2019s charge",
+    "spells_per_day": [
+     null,
+     1,
+     0,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "spells_known": [
+     null,
+     5,
+     3,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "level": 5,
+    "bab": 5,
+    "fort": 3,
+    "ref": 2,
+    "will": 2,
+    "special": "Forestmaster, poison resistance +4",
+    "spells_per_day": [
+     null,
+     1,
+     1,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "spells_known": [
+     null,
+     5,
+     4,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "level": 6,
+    "bab": 6,
+    "fort": 3,
+    "ref": 2,
+    "will": 2,
+    "special": "Horn of purity, smite evil 2/day",
+    "spells_per_day": [
+     null,
+     1,
+     1,
+     0,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "spells_known": [
+     null,
+     5,
+     4,
+     3,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "level": 7,
+    "bab": 7,
+    "fort": 4,
+    "ref": 2,
+    "will": 2,
+    "special": "Forest leap, pure heart",
+    "spells_per_day": [
+     null,
+     1,
+     1,
+     1,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "spells_known": [
+     null,
+     6,
+     5,
+     4,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "level": 8,
+    "bab": 8,
+    "fort": 4,
+    "ref": 3,
+    "will": 3,
+    "special": "Aura of resolve, poison resistance +6",
+    "spells_per_day": [
+     null,
+     2,
+     1,
+     1,
+     0,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "spells_known": [
+     null,
+     6,
+     5,
+     4,
+     3,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "level": 9,
+    "bab": 9,
+    "fort": 5,
+    "ref": 3,
+    "will": 3,
+    "special": "Horn of light, smite evil 3/day",
+    "spells_per_day": [
+     null,
+     2,
+     2,
+     1,
+     1,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "spells_known": [
+     null,
+     6,
+     5,
+     5,
+     4,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "level": 10,
+    "bab": 10,
+    "fort": 5,
+    "ref": 3,
+    "will": 3,
+    "special": "Forestmaster\u2019s charge, poison immunity",
+    "spells_per_day": [
+     null,
+     2,
+     2,
+     1,
+     1,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "spells_known": [
+     null,
+     6,
+     6,
+     5,
+     4,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  ]
  }
 ]
