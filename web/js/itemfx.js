@@ -50,10 +50,13 @@ export function suggestEffects(name) {
   return [];
 }
 
+/** A name without the +N at its end: "Cloak of Resistance +2" → "Cloak of Resistance". */
+export const stripPlus = name => String(name ?? '').replace(/\s*\+\s*\d+\s*$/, '').trim();
+
 /** The "+N" choices for an item whose bonus goes up in steps (headbands and belts +2/+4/+6, cloaks of resistance +1 to +5...), or [] for an item that has none.
  * `value` is the compendium price text ("4,000 gp (+2), 16,000 gp (+4), 36,000 gp (+6)"); the steps it names win, with the price of each. */
 export function plusOptions(name, value) {
-  const base = String(name ?? '').replace(/\s*\+\s*\d+\s*$/, '').trim();
+  const base = stripPlus(name);
   const one = suggestEffects(base + ' +1');
   if (!base || !one.length || JSON.stringify(one) === JSON.stringify(suggestEffects(base + ' +2'))) return []; // no bonus, or one that does not go up (cloak of elvenkind)
   const priced = [...String(value ?? '').matchAll(/([\d,]+\s*gp)\s*\(\+(\d+)\)/g)].map(m => ({ plus: +m[2], price: m[1] }));
@@ -64,8 +67,7 @@ export function plusOptions(name, value) {
 
 /** The item set to "+N": its name ends in +N and its bonuses are the usual ones for that. */
 export function setPlus(g, plus) {
-  const base = String(g.name ?? '').replace(/\s*\+\s*\d+\s*$/, '').trim();
-  g.name = `${base} +${plus}`;
+  g.name = `${stripPlus(g.name)} +${plus}`;
   g.effects = suggestEffects(g.name);
   return g;
 }

@@ -177,6 +177,12 @@ export function renderSheet(main) {
 // =====================================================================
 // OVERVIEW
 // =====================================================================
+/** Renames the side panel's heading (after renaming the spell, ability or item it shows). */
+function setDrawerTitle(text) { const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = text; }
+
+/** A row of +N buttons: `opts` [{plus, title}], the current one lit, each with `attr`="N". */
+const plusButtons = (opts, cur, attr) => `<span class="small muted">Bonus</span>${opts.map(o => `<button class="btn small ${o.plus === cur ? 'primary' : 'ghost'}" ${attr}="${o.plus}" title="${esc(o.title)}">+${o.plus}</button>`).join('')}`;
+
 // ---- inventory weapons and the Weapons & Attacks table (linked by g.uid / w.gearUid, see equipment.js) ----
 let weaponTpl = null, weaponTplLoading = null;
 /** The standard weapon list, loaded once; the page redraws when it arrives. */
@@ -211,7 +217,7 @@ function inventoryWeaponStrip(c) {
   if (!tpl) return '';
   const missing = inventoryWeapons(c, tpl).filter(x => x.attack < 0);
   if (!missing.length) return '';
-  return `<div class="row inv-weapons" style="gap:6px;flex-wrap:wrap;margin:6px 0"><span class="small muted">In your inventory, not in attacks yet:</span>
+  return `<div class="row inv-weapons"><span class="small muted">In your inventory, not in attacks yet:</span>
     ${missing.map(x => `<button class="btn small ghost" data-inv-attack="${x.i}" title="Add an attack row for it (${esc(x.tpl.name)})">＋ ${esc(c.gear[x.i].name)}</button>`).join('')}
     ${missing.length > 1 ? '<button class="btn small" data-inv-attack-all>Add all</button>' : ''}</div>`;
 }
@@ -1204,7 +1210,7 @@ function renderSlaActions() {
     if (e.target.matches('[data-sa-live]')) { s.active = e.target.checked; changed({ rerender: true }); return; }
     if (!e.target.matches('[data-sla-name]')) return;
     s.name = e.target.value;
-    const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = s.name || 'New ability';
+    setDrawerTitle(s.name || 'New ability');
     changed({ rerender: true });
     renderSlaActions();
   };
@@ -1291,7 +1297,7 @@ function renderItemActions() {
   const fx = g.effects || [], sug = suggestEffects(g.name), pluses = plusOptions(g.name, g.value), cur = plusOf(g.name);
   const wtpl = weaponTemplateFor(g.name, weaponTemplates()), atk = wtpl ? attackFor(c, g) : -1;
   const weaponRow = !wtpl ? '' : `<div class="wide item-weapon">${atk >= 0
-    ? `<div class="row" style="gap:6px;flex-wrap:wrap"><span class="small">⚔ In <b>Weapons &amp; Attacks</b> (Overview)</span><span class="grow"></span><span class="small muted">Bonus</span>${[0, 1, 2, 3, 4, 5].map(n => `<button class="btn small ${n === num(c.weapons[atk].enh) ? 'primary' : 'ghost'}" data-weapon-plus="${n}" title="${n ? `A +${n} weapon: +${n} to attack and damage` : 'No enhancement bonus'}">+${n}</button>`).join('')}</div>`
+    ? `<div class="row plus-row"><span class="small">⚔ In <b>Weapons &amp; Attacks</b> (Overview)</span><span class="grow"></span>${plusButtons([0, 1, 2, 3, 4, 5].map(n => ({ plus: n, title: n ? `A +${n} weapon: +${n} to attack and damage` : 'No enhancement bonus' })), num(c.weapons[atk].enh), 'data-weapon-plus')}</div>`
     : `<button class="btn small" data-item-attack title="Add an attack row for it on the Overview (${esc(wtpl.name)})">⚔ Add to attacks</button>`}</div>`;
   it.el.innerHTML = `<div class="item-actions">
     ${g.id ? '' : `<label class="wide"><span>Name</span><input data-item-name value="${esc(g.name || '')}" placeholder="Item name"></label>`}
@@ -1300,7 +1306,7 @@ function renderItemActions() {
     <label><span>Weight (each)</span>${inp(p('weight'), { type: 'num', cls: 'w3' })}</label>
     <label><span>Value</span>${inp(p('value'), { cls: 'w6' })}</label>
     ${weaponRow}
-    ${pluses.length ? `<div class="wide row item-plus" style="gap:6px"><span class="small muted">Bonus</span>${pluses.map(o => `<button class="btn small ${o.plus === cur ? 'primary' : 'ghost'}" data-item-plus="${o.plus}" title="${esc(`Make it a +${o.plus}${o.price ? ` (${o.price})` : ''}`)}">+${o.plus}</button>`).join('')}</div>` : ''}
+    ${pluses.length ? `<div class="wide row plus-row">${plusButtons(pluses.map(o => ({ plus: o.plus, title: `Make it a +${o.plus}${o.price ? ` (${o.price})` : ''}` })), cur, 'data-item-plus')}</div>` : ''}
     <div class="wide item-fx">
       <div>${fx.length ? esc(effectsText(fx)) : '<span class="muted">none</span>'}${fx.length && !g.slot ? ' <span class="small bad">not worn yet, so they do not count</span>' : ''}</div>
       <div class="row" style="gap:6px;margin-top:4px"><button class="btn small" data-item-fx>✦ ${fx.length ? 'Edit' : 'Add'} bonuses</button>${!fx.length && sug.length ? `<button class="btn small" data-item-fx-auto title="Fill in what this kind of item normally gives">Use the usual: ${esc(effectsText(sug))}</button>` : ''}</div></div>
@@ -1313,7 +1319,7 @@ function renderItemActions() {
   it.el.onchange = e => {
     if (!e.target.matches('[data-item-name]')) return;
     g.name = e.target.value;
-    const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = g.name || 'New item';
+    setDrawerTitle(g.name || 'New item');
     changed({ rerender: true });
   };
   it.el.onclick = async e => {
@@ -1329,13 +1335,13 @@ function renderItemActions() {
     const wp = e.target.closest('[data-weapon-plus]');
     if (wp) {
       setWeaponPlus(c, g, +wp.dataset.weaponPlus);
-      const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = g.name;
+      setDrawerTitle(g.name);
       changed({ rerender: true }); renderItemActions(); return;
     }
     const pl = e.target.closest('[data-item-plus]');
     if (pl) {
       setPlus(g, +pl.dataset.itemPlus);
-      const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = g.name;
+      setDrawerTitle(g.name);
       changed({ rerender: true }); renderItemActions(); return;
     }
     if (e.target.closest('[data-item-fx-auto]')) { g.effects = suggestEffects(g.name); changed({ rerender: true }); renderItemActions(); return; }
@@ -1430,7 +1436,7 @@ function renderSpellActions() {
   sd.el.onchange = e => {
     if (e.target.matches('[data-sa-prep]')) s.prepared = Math.max(0, Math.round(num(e.target.value)));
     else if (e.target.matches('[data-sa-live]')) s.active = e.target.checked;
-    else if (e.target.matches('[data-sa-name]')) { s.name = e.target.value; const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = s.name || 'New spell'; }
+    else if (e.target.matches('[data-sa-name]')) { s.name = e.target.value; setDrawerTitle(s.name || 'New spell'); }
     else if (e.target.matches('[data-sa-notes]')) s.notes = e.target.value;
     else return;
     changed({ rerender: true });

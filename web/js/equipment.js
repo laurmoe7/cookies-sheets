@@ -1,5 +1,8 @@
 // Standard weapons and armor to start from (data/equipment.json, built by tools/equipment.py): a template becomes a row on the Weapons or Armor table.
 // Pure functions, no DOM.
+import { stripPlus } from './itemfx.js';
+
+const num = v => +v || 0;
 
 const SMALL_OR_LESS = ['Fine', 'Diminutive', 'Tiny', 'Small'];
 /** Ranged weapons that add Strength to damage: thrown weapons and slings. Bows and crossbows do not (a Strength-rated composite bow is set by hand). */
@@ -112,13 +115,12 @@ export function addGearFromAttack(c, w) {
 
 /** Sets a weapon's +N on both the inventory item and its attack row: the names end in +N and the row's enhancement bonus is N. */
 export function setWeaponPlus(c, g, plus) {
-  const rename = n => `${String(n || '').replace(/\s*\+\s*\d+\s*$/, '').replace(/^\+\s*\d+\s+/, '').trim()}${plus ? ' +' + plus : ''}`;
+  const rename = n => `${stripPlus(String(n || '').replace(/^\+\s*\d+\s+/, ''))}${plus ? ' +' + plus : ''}`; // "+1 Longsword" and "Longsword +1" both become "Longsword +N"
   g.name = rename(g.name);
   const i = attackFor(c, g);
   if (i >= 0) { c.weapons[i].name = rename(c.weapons[i].name); c.weapons[i].enh = plus; }
 }
 
-const num = v => +v || 0;
 
 /** Links attack rows and inventory items of the same weapon that were made separately (a Lance row and a Lance item), one to one.
  * Returns true when it linked any, so the caller can save. */
