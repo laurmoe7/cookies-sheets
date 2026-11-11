@@ -157,17 +157,17 @@ function overview(body, c, d) {
       <h3>Hit Points</h3>
       <div class="hp-big"><span class="calc" data-calc="hp.current"></span><span class="muted"> / </span>${sum('hp.max', 'Maximum HP', calc('hp.max'))}</div>
       <div class="hp-bar"><div id="hp-fill"></div>${segsHtml(hpSegments(d.hp.max))}</div>
-      <div class="row">
-        <input id="hp-amt" type="number" class="num w4" placeholder="0" min="0">
+      <div class="hp-actions">
+        <input id="hp-amt" type="number" class="num" placeholder="0" min="0" title="How many hit points">
         <button class="btn danger" data-hp="dmg">Damage</button>
         <button class="btn good" data-hp="heal">Heal</button>
         <button class="btn" data-hp="full" title="Heal to full hit points"><span class="heart">♥</span> Full heal</button>
       </div>
-      <div class="kv">
-        <label>Current ${inp('hp.current', { type: 'num', cls: 'w4', ph: 'max' })}</label>
-        <label>Temp ${inp('hp.temp', { type: 'num', cls: 'w3' })}</label>
-        <label>Nonlethal ${inp('hp.nonlethal', { type: 'num', cls: 'w3' })}</label>
-        <label title="Toughness, items, etc.">Max adj. ${inp('hp.misc', { type: 'num', cls: 'w3' })}</label>
+      <div class="fields compact cols2">
+        <label>Current ${inp('hp.current', { type: 'num', ph: 'max' })}</label>
+        <label>Temp ${inp('hp.temp', { type: 'num' })}</label>
+        <label>Nonlethal ${inp('hp.nonlethal', { type: 'num' })}</label>
+        <label title="Toughness, items, etc.">Max adj. ${inp('hp.misc', { type: 'num' })}</label>
       </div>
       <p class="small muted" id="hp-status"></p>
       </div>
@@ -204,11 +204,11 @@ function overview(body, c, d) {
         <div class="stat"><div class="label">${label}</div>${sum(v, name, calc(v, 'plain', 'big'), { base: 10 })}
           <label class="stat-misc" title="Adds to this number only">misc ${inp(misc, { type: 'num', cls: 'w3' })}</label></div>`).join('')}
       </div>
-      <div class="kv">
-        <label title="Natural armor bonus">Natural ${inp('ac.natural', { type: 'num', cls: 'w3' })}</label>
-        <label title="Deflection bonus (ring of protection)">Deflect ${inp('ac.deflection', { type: 'num', cls: 'w3' })}</label>
-        <label title="Dodge bonus (Dodge feat)">Dodge ${inp('ac.dodge', { type: 'num', cls: 'w3' })}</label>
-        <label title="An untyped bonus: it counts for AC, touch, flat-footed and CMD. To change just one of them, use the misc box on that tile.">Untyped ${inp('ac.misc', { type: 'num', cls: 'w3' })}</label>
+      <div class="fields compact cols4">
+        <label title="Natural armor bonus">Natural ${inp('ac.natural', { type: 'num' })}</label>
+        <label title="Deflection bonus (ring of protection)">Deflect ${inp('ac.deflection', { type: 'num' })}</label>
+        <label title="Dodge bonus (Dodge feat)">Dodge ${inp('ac.dodge', { type: 'num' })}</label>
+        <label title="An untyped bonus: it counts for AC, touch, flat-footed and CMD. To change just one of them, use the misc box on that tile.">Untyped ${inp('ac.misc', { type: 'num' })}</label>
       </div>
       <table class="tbl saves"><thead><tr><th>Save</th><th>Total</th><th>Base</th><th>Ability</th><th>Buffs</th><th>Misc</th></tr></thead><tbody>
         ${[['fort', 'Fortitude'], ['ref', 'Reflex'], ['will', 'Will']].map(([s, n]) => `<tr>
@@ -216,9 +216,9 @@ function overview(body, c, d) {
           <td>${calc(`saves.${s}.base`, 'sign', 'dim')}</td><td>${calc(`saves.${s}.ability`, 'sign', 'dim')}</td>
           <td>${calc(`saves.${s}.bonus`, 'sign', 'dim')}</td><td>${inp(`saveMisc.${s}`, { type: 'num', cls: 'w3' })}</td></tr>`).join('')}
       </tbody></table>
-      <div class="kv wide">
-        <label>DR ${inp('defenses.dr', { cls: 'w8' })}</label><label>SR ${inp('defenses.sr', { cls: 'w4' })}</label>
-        <label>Resist ${inp('defenses.resist', { cls: 'w8' })}</label><label>Immune ${inp('defenses.immune', { cls: 'w8' })}</label>
+      <div class="fields compact cols2">
+        <label title="Damage reduction, e.g. 5/magic">DR ${inp('defenses.dr')}</label><label title="Spell resistance">SR ${inp('defenses.sr')}</label>
+        <label title="Energy resistance, e.g. fire 10">Resist ${inp('defenses.resist')}</label><label>Immune ${inp('defenses.immune')}</label>
       </div>
       ${d.armorFx?.text ? `<div class="small muted" title="From the armor and shield you wear (Inventory tab, Enchant)">From your armor: ${esc(d.armorFx.text)}</div>` : ''}
     </section>
@@ -234,10 +234,10 @@ function overview(body, c, d) {
         <div class="stat"><div class="label">${ref('Combat Maneuver Bonus', 'Rules', 'CMB')}</div>${roll('cmb', 'CMB', calc('cmb', 'sign', 'big'))}</div>
         <div class="stat"><div class="label">Speed</div>${sum('speed', 'Speed', `<span class="big">${calc('speed')}<small> ft</small></span>`, { unit: ' ft' })}</div>
       </div>
-      <div class="kv">
-        <label>Init misc ${inp('initMisc', { type: 'num', cls: 'w3' })}</label>
-        <label>CMB misc ${inp('cmbMisc', { type: 'num', cls: 'w3' })}</label>
-        <label>Speed misc ${inp('speedMisc', { type: 'num', cls: 'w3' })}</label>
+      <div class="fields compact cols3">
+        <label>Init misc ${inp('initMisc', { type: 'num' })}</label>
+        <label>CMB misc ${inp('cmbMisc', { type: 'num' })}</label>
+        <label>Speed misc ${inp('speedMisc', { type: 'num' })}</label>
       </div>
       <div class="small muted">Flat-footed CMD ${sum('cmdFlat', 'Flat-footed CMD', calc('cmdFlat'), { base: 10 })} · Size ${esc(d.size)} · ${ref('Attacks of Opportunity', 'Rules', 'AoO rules')} · ${ref('Combat Maneuvers', 'Rules', 'Maneuvers')}</div>
     </section>
@@ -1364,33 +1364,33 @@ function bio(body, c, d) {
   body.innerHTML = `<div class="grid two">
   <section class="card">
     <h3>Identity</h3>
-    <div class="form">
-      <label>Character name ${inp('name', { cls: 'full' })}</label>
-      <label>Player ${inp('player', { cls: 'full' })}</label>
-      <label>Race ${sel('race', Object.keys(RACES), { rerender: true })} ${c.race !== 'Custom' ? ref(c.race, 'Race', 'read') : ''}</label>
+    <div class="fields">
+      <label>Character name ${inp('name')}</label>
+      <label>Player ${inp('player')}</label>
+      <label for="bio-race">Race</label><span class="ctl">${sel('race', Object.keys(RACES), { rerender: true }).replace('<select', '<select id="bio-race"')} ${c.race !== 'Custom' ? ref(c.race, 'Race', 'read') : ''}</span>
+      <div class="small muted under">Size ${esc(d.size)} · Speed ${d.race.speed} ft. ${r.note ? '· ' + esc(r.note) : ''}</div>
       ${r.flex ? `<label>+2 racial bonus to ${sel('raceChoice', ABILITIES.map(a => [a, ABILITY_NAMES[a]]), { rerender: true })}</label>` : ''}
       ${c.race === 'Custom' ? `<label>Race name ${inp('customRace.name')}</label>
         <label>Size ${sel('customRace.size', Object.keys(SIZES), { rerender: true })}</label>
         <label>Base speed ${inp('customRace.speed', { type: 'num', cls: 'w3' })}</label>
-        <div class="kv">${ABILITIES.map(a => `<label>${a.toUpperCase()} ${inp(`customRace.mods.${a}`, { type: 'num', cls: 'w2' })}</label>`).join('')}</div>` : ''}
-      <div class="small muted">Size ${esc(d.size)} · Speed ${d.race.speed} ft. ${r.note ? '· ' + esc(r.note) : ''}</div>
+        <div class="kv span-all">${ABILITIES.map(a => `<label>${a.toUpperCase()} ${inp(`customRace.mods.${a}`, { type: 'num', cls: 'w2' })}</label>`).join('')}</div>` : ''}
       <label>Alignment ${sel('alignment', ALIGNMENTS)}</label>
       <label>Deity ${inp('deity')}</label>
       <label>Favored class ${sel('favoredClass', [['', '—'], ...classesTaken.map(x => [x, x]), ...state.classes.filter(x => !classesTaken.includes(x.name)).map(x => [x.name, x.name])])}</label>
       <label>Homeland ${inp('homeland')}</label>
-      <label>Languages ${inp('languages', { cls: 'full' })}</label>
+      <label>Languages ${inp('languages')}</label>
     </div>
   </section>
   <section class="card">
     <h3>Experience</h3>
-    <div class="form">
+    <div class="fields">
       <label>XP track ${sel('xpTrack', [['slow', 'Slow'], ['medium', 'Medium'], ['fast', 'Fast']], { rerender: true })}</label>
-      <label>Current XP ${inp('xp', { type: 'num', cls: 'w8', rerender: true })}</label>
+      <label>Current XP ${inp('xp', { type: 'num', rerender: true })}</label>
     </div>
     <p>${d.xp.next != null ? `Next level at <b>${d.xp.next.toLocaleString()}</b> XP.` : 'Maximum level.'}
       ${d.xp.levelByXp > d.level ? `<b class="good">You have enough XP to reach level ${d.xp.levelByXp}!</b> <button class="btn small primary" data-goto-lu>Level up</button>` : ''}</p>
     <h3>Appearance</h3>
-    <div class="kv">${['gender', 'age', 'height', 'weight', 'hair', 'eyes'].map(k => `<label>${k[0].toUpperCase() + k.slice(1)} ${inp(k, { cls: 'w6' })}</label>`).join('')}</div>
+    <div class="fields cols3">${['gender', 'age', 'height', 'weight', 'hair', 'eyes'].map(k => `<label>${k[0].toUpperCase() + k.slice(1)} ${inp(k)}</label>`).join('')}</div>
   </section>
   <section class="card span2">
     <h3>Biography</h3>

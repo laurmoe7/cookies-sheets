@@ -85,6 +85,8 @@ html[data-theme="tome"] .stat, html[data-theme="tome"] .summon-card, html[data-t
 html[data-theme="tome"] input, html[data-theme="tome"] select, html[data-theme="tome"] textarea { background: var(--input); border-color: #5a4a30; color: #f0e3c0; font-family: inherit; }
 html[data-theme="tome"] .btn { background: #9a8b66; border-color: #5a4a2c; color: #261a0b; font-style: italic; }
 html[data-theme="tome"] .btn.primary { background: #8a3326; border-color: #8a3326; color: #f6ead0; font-style: normal; }
+/* Damage / Delete and Heal keep their meaning on parchment, as they do in Classic dark */
+html[data-theme="tome"] .btn.danger { color: var(--bad); } html[data-theme="tome"] .btn.good { color: var(--good); }
 html[data-theme="tome"] .hp-bar, html[data-theme="tome"] .res-bar { border-color: #5a4a30; background: #2a1d10; border-radius: 2px; }
 html[data-theme="tome"] #hp-fill, html[data-theme="tome"] .comp-top .hp-bar > div { background: #8a3326; }
 /* brass dividers: the same metal as the frame, darkening where they meet the top and bottom of it so they blend in */

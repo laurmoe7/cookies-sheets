@@ -26,6 +26,8 @@ html, body { margin: 0; height: 100%; }
 body { font: 14px/1.45 var(--font); background: var(--bg); color: var(--ink); display: flex; overflow: hidden; }
 h1, h2, h3, h4 { font-family: var(--serif); margin: 0 0 .5em; font-weight: 600; }
 h1 { font-size: 26px; } h2 { font-size: 21px; } h3 { font-size: 17px; color: var(--accent); } h4 { font-size: 14px; margin-top: .8em; }
+/* a note after a card title ("click to read") is plain text, not part of the heading's style */
+h3 .small, h3 small { font: 400 12px/1.4 var(--font); font-variant: normal; letter-spacing: 0; text-transform: none; color: var(--muted); margin-left: 4px; }
 a { color: var(--accent); }
 code { background: var(--panel-2); padding: 1px 5px; border-radius: 4px; }
 .muted { color: var(--muted); } .small { font-size: 12px; } .dim { color: var(--muted); }
@@ -87,7 +89,8 @@ code { background: var(--panel-2); padding: 1px 5px; border-radius: 4px; }
 .overview-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
 .span2 { grid-column: 1 / -1; }
 .rules-grid { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); margin: 14px 0; }
-@media (max-width: 1100px) { .overview-grid, .grid.two { grid-template-columns: 1fr; } }
+/* minmax(0, 1fr), not 1fr: a plain 1fr column grows to its widest content (the ability table) and pushes the whole page sideways */
+@media (max-width: 1100px) { .overview-grid, .grid.two { grid-template-columns: minmax(0, 1fr); } .card.abilities, .card.weapons { overflow-x: auto; } }
 
 /* ---------- inputs ---------- */
 input, select, textarea { font: inherit; color: var(--ink); background: var(--input); border: 1px solid var(--line); border-radius: 6px; padding: 4px 7px; }
@@ -124,6 +127,22 @@ textarea { width: 100%; resize: vertical; }
 .kv { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0; }
 .kv label { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); }
 .kv-line { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+/* Label + box pairs in aligned columns: each <label>'s text and its box land in the same grid tracks, so the boxes line up whatever the label length.
+   --fcols sets how many pairs per row. Text boxes fill their track; selects keep their own width. .compact is the small muted look of .kv. */
+.fields { --fcols: 1; display: grid; grid-template-columns: repeat(var(--fcols), max-content minmax(0, 1fr)); gap: 8px 10px; align-items: center; margin: 8px 0; }
+.fields > label { display: contents; }
+.fields > label > input, .fields > label > textarea { width: 100%; min-width: 0; }
+.fields > label > select { justify-self: start; max-width: 100%; }
+.fields > label > input.num { max-width: 96px; justify-self: start; }
+.fields > .ctl { display: flex; gap: 8px; align-items: center; min-width: 0; }
+.fields > .span-all { grid-column: 1 / -1; }
+.fields > .under { grid-column: 2 / -1; margin-top: -4px; }
+.fields.compact { font-size: 12px; color: var(--muted); gap: 7px 10px; }
+.fields.cols2 { --fcols: 2; } .fields.cols3 { --fcols: 3; } .fields.cols4 { --fcols: 4; }
+/* the HP card's amount box and buttons: one row when there is room, and Full heal takes a whole row when there is not */
+.hp-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.hp-actions > input { flex: 0 0 64px; width: 64px; }
+.hp-actions > .btn { flex: 1 1 auto; justify-content: center; }
 
 /* ---------- buttons ---------- */
 .btn { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); padding: 6px 12px; border-radius: 7px; display: inline-flex; align-items: center; gap: 6px; }
@@ -222,8 +241,10 @@ html[data-theme] .btn.primary.discord-btn:hover, .btn.discord-btn:hover { backgr
 .tab:hover { color: var(--ink); }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
 .features { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 20px; }
-.features li { padding: 3px 0; break-inside: avoid; }
-.features .lvl { display: inline-block; min-width: 86px; font-size: 11px; color: var(--muted); }
+.features li { padding: 3px 0; break-inside: avoid; display: flex; align-items: baseline; gap: 6px; }
+.features li > a { min-width: 0; }
+.features li > .arch-badge, .features li > .mod { flex: none; }
+.features .lvl { flex: none; min-width: 86px; font-size: 11px; color: var(--muted); }
 .mod { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; margin-bottom: 6px; }
 .mod.on { border-color: var(--accent); background: var(--accent-soft); }
 /* spells tab: a header row, one slot table, and per level a table whose columns line up from row to row and level to level */
@@ -442,7 +463,9 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 
 /* ---------- class-skill dot ---------- */
 .skills-tbl th:first-child, .skills-tbl td:first-child { text-align: center; width: 36px; }
-.page-title { margin: 0 0 8px; }
+/* a title between cards with its buttons on the right (Companions) */
+.section-head { margin: 18px 0 10px; }
+.section-head h3 { margin: 0; }
 .comp-bar { display: flex; align-items: flex-start; gap: 14px; padding: 10px 16px; margin: 6px 0 12px; }
 .comp-bar-main { flex: 1; min-width: 0; }
 .comp-bar .comp-strip { margin: 0; }
@@ -595,7 +618,9 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .comp-top .hp-bar > div.mid { background: var(--warn); } .comp-top .hp-bar > div.low { background: var(--bad); }
 .portrait-frame.empty { display: flex; align-items: center; justify-content: center; border: 2px dashed var(--line); background: transparent; color: var(--muted); cursor: pointer; font: inherit; }
 .portrait-frame.empty:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-.comp-top .abilities th { text-align: center; }
+.comp-top .abilities table { width: auto; min-width: 240px; }
+.comp-top .abilities th:first-child { text-align: left; padding-right: 24px; }
+.comp-top .abilities td, .comp-top .abilities thead th { text-align: center; padding-left: 14px; padding-right: 14px; }
 
 /* ---------- tab icons ---------- */
 .tab { display: inline-flex; align-items: center; gap: 7px; }

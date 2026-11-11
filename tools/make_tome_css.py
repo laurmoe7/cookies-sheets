@@ -289,6 +289,8 @@ html[data-theme="tome"] .stat, html[data-theme="tome"] .summon-card, html[data-t
 html[data-theme="tome"] input, html[data-theme="tome"] select, html[data-theme="tome"] textarea { background: var(--input); border-color: #5a4a30; color: #f0e3c0; font-family: inherit; }
 html[data-theme="tome"] .btn { background: #9a8b66; border-color: #5a4a2c; color: #261a0b; font-style: italic; }
 html[data-theme="tome"] .btn.primary { background: #8a3326; border-color: #8a3326; color: #f6ead0; font-style: normal; }
+/* Damage / Delete and Heal keep their meaning on parchment, as they do in Classic dark */
+html[data-theme="tome"] .btn.danger { color: var(--bad); } html[data-theme="tome"] .btn.good { color: var(--good); }
 html[data-theme="tome"] .hp-bar, html[data-theme="tome"] .res-bar { border-color: #5a4a30; background: #2a1d10; border-radius: 2px; }
 html[data-theme="tome"] #hp-fill, html[data-theme="tome"] .comp-top .hp-bar > div { background: #8a3326; }
 /* brass dividers: the same metal as the frame, darkening where they meet the top and bottom of it so they blend in */
@@ -386,6 +388,13 @@ html[data-theme="tome"] ::-webkit-scrollbar-thumb:hover { background: #b08a3e; }
 @keyframes leaf-shadow-rev { 0% { opacity: 0; } 55% { opacity: .7; } 100% { opacity: 0; } }
 @keyframes leaf-bend { 0% { --c: 0; } 38% { --c: 1; } 75% { --c: .55; } 100% { --c: 0; } }
 @keyframes leaf-shadow { 0% { opacity: 0; } 35% { opacity: .75; } 100% { opacity: 0; } }
+
+/* Scroll bars inside windows sit on parchment: thin, a track that is a shade of the paper, and a thumb in ink brown that turns red under the mouse. */
+html[data-theme="tome"] .modal ::-webkit-scrollbar { width: 10px; height: 10px; }
+html[data-theme="tome"] .modal ::-webkit-scrollbar-track { background: rgba(70, 48, 20, .13); border: 0; border-radius: 6px; margin: 3px 0; }
+html[data-theme="tome"] .modal ::-webkit-scrollbar-thumb { background: rgba(84, 55, 22, .62); border: 2px solid transparent; background-clip: padding-box; border-radius: 6px; }
+html[data-theme="tome"] .modal ::-webkit-scrollbar-thumb:hover { background: #7a2415; border: 2px solid transparent; background-clip: padding-box; }
+html[data-theme="tome"] .modal ::-webkit-scrollbar-corner { background: transparent; }
 '''
 
 

@@ -44,9 +44,8 @@ export async function renderCompanions(body, c) {
   const archs = Object.keys(base).flatMap(cls => archetypesOf(c, cls).map(a => (a.name || '').toLowerCase()));
   const levels = withCompanionSources(base, c, classFeatures(c, state.classesByName), archs, state.derived?.level || 0);
   body.innerHTML = `
-    <h3 class="page-title">Companions</h3>
     <section class="card summons" id="summons-card"></section>
-    <div class="row"><span class="grow"></span>
+    <div class="row section-head"><h3 class="grow">Companions</h3>
       <button class="btn small" data-new="animal">＋ Animal companion</button>
       <button class="btn small" data-new="eidolon">＋ Eidolon</button>
       <button class="btn small" data-new="familiar">＋ Familiar</button>
@@ -185,11 +184,11 @@ function topPanels(comp, s, p, ed = {}) {
       <div class="hp-main"><h3>Hit Points</h3>
         <div class="hp-big">${cur}<span class="muted"> / </span>${max}</div>
         <div class="hp-bar"><div class="${pct <= 25 ? 'low' : pct <= 50 ? 'mid' : ''}" style="width:${pct}%"></div>${segsHtml(hpSegments(max))}</div>
-        <div class="row"><input type="number" class="num w4" data-chp-amt placeholder="0" min="0">
+        <div class="hp-actions"><input type="number" class="num" data-chp-amt placeholder="0" min="0" title="How many hit points">
           <button class="btn danger" data-chp="dmg">Damage</button><button class="btn good" data-chp="heal">Heal</button>
           <button class="btn" data-chp="full" title="Heal to full hit points"><span class="heart">♥</span> Full heal</button></div>
-        <div class="kv"><label>Current ${bind(`${p}.hpCur`, comp.hpCur, { type: 'num', cls: 'w4', ph: 'max' })}</label>
-          <label>Temp ${bind(`${p}.hpTemp`, comp.hpTemp, { type: 'num', cls: 'w3' })}</label>${ed.hp || ''}</div>
+        <div class="fields compact cols2"><label>Current ${bind(`${p}.hpCur`, comp.hpCur, { type: 'num', ph: 'max' })}</label>
+          <label>Temp ${bind(`${p}.hpTemp`, comp.hpTemp, { type: 'num' })}</label>${ed.hp || ''}</div>
         <p class="small muted">${hpNote(s)}</p>
         <p class="small muted">${status}</p></div>
       ${portrait}
