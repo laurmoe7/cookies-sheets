@@ -7,6 +7,7 @@ export const CHANGELOG = [
   {
     version: '1.4.1', next: true,
     items: [
+      'Class abilities: a paladin’s lay on hands lists the mercies it carries (from 3rd level), with Choose mercies to pick them by level; until then they are read from the level-up notes. Greater Mercy adds its +1d6 heal to the roll.',
       'Companions: an Untrained skills fold-out under a companion’s Skills lists every other skill it can try without ranks (Acrobatics, Climb, Swim…), each one click to roll.',
     ],
   },

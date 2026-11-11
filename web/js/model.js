@@ -22,6 +22,7 @@ export function newCharacter() {
     abilityRolls: null, // scores rolled at creation, kept so the table can see them: see statroll.js; null = point buy or typed in
     levelUps: [], // {cls, hp, fcb, fcbNote, abilityIncrease, feats:[], ranks:{skillKey:n}, spells:[], features}
     archetypes: {}, // {Class: [archetype data from features.bakeArchetype]}
+    mercies: null, // a paladin's mercies by name (mercy.js); null = not chosen on the sheet yet, so the level-up notes are read
     grantChoices: {}, // {Class: [{kind, name}]}: domains, bloodline, mystery, patron or spirit; their spells are on the Spells tab (grants.js)
     drawbackRule: 'optional', // 'optional' (the book: a drawback gives a 3rd trait) or 'perTrait' (house rule: one drawback per trait); traits.js
     portrait: '', // data URL, large picture on the Overview tab

@@ -26,6 +26,8 @@ import { sourceOf, grantedSpells, missingGranted, dropGranted } from '../grants.
 import { grantsData, grantPickerHtml, wireGrantPicker, addGrantedSpells } from './grantpicker.js';
 import { renderResources, resourcesHtml, poolsFor, wire as wireResources, wireRest } from './resources.js';
 import { usableAbilities, abilityActions } from '../classabilities.js';
+import { merciesOf } from '../mercy.js';
+import { mercyBlock, pickMercies } from './mercy.js';
 import { abilityRollWindow } from '../roller.js';
 import { currentOf } from '../resources.js';
 import { weaponFxRow, wireWeaponFx } from './weaponfx.js';
@@ -1020,7 +1022,11 @@ let abilOpen = null; // the class ability in the side panel
 let lastAbilUse = { key: '', at: 0 }; // the ability a roll last spent a use of
 
 const modsOf = d => Object.fromEntries(Object.entries(d.abilities).map(([k, v]) => [k, v.mod]));
-const actionsOf = a => abilityActions(a.lookup, a.cls, { level: state.derived.classLevels?.[a.cls] || a.level, mods: modsOf(state.derived) });
+const levelOf = a => state.derived.classLevels?.[a.cls] || a.level;
+/** A paladin's lay on hands from 3rd level, when mercies add to it. */
+const hasMercies = a => a.cls === 'Paladin' && a.lookup.toLowerCase() === 'lay on hands' && levelOf(a) >= 3;
+const actionsOf = a => abilityActions(a.lookup, a.cls, { level: levelOf(a), mods: modsOf(state.derived),
+  greaterMercy: hasMercies(a) && (state.char.feats || []).some(f => /^greater mercy$/i.test(String(f.name || '').trim())) });
 function buffNameOf(c, a) { const act = actionsOf(a); return act.buff?.name || act.preset || null; }
 /** The tracker an ability spends from (its own, or lay on hands for channel positive energy) and how much a use takes. */
 function poolOf(c, a, act = actionsOf(a)) { return { pool: act.cost ? poolsFor(c).find(p => p.id === act.cost.pool) : a.pool, n: act.cost?.n || 1 }; }
@@ -1058,10 +1064,16 @@ function openAbility(a, replace = false) {
         ${buffName ? `<div class="ss-cell"><span class="ss-lab">Buff</span><b>${esc(buffName)}</b></div>` : ''}
       </div>
       ${note || act.note ? `<dl class="ss-rows"><dt>Notes</dt><dd>${esc([act.note, note].filter(Boolean).join(' '))}</dd></dl>` : ''}
+      ${hasMercies(a) ? mercyBlock(c, levelOf(a)) : ''}
     </div>`;
   showCustom({ name: shortName(a), cat: 'Class feature', sub: `${a.cls} ${a.level}`, html: html + (featTexts[a.lookup] || ''), replace });
 }
 
+document.addEventListener('click', async e => {
+  if (!e.target.closest('[data-mercy-pick]') || !abilOpen || !hasMercies(abilOpen)) return;
+  const a = abilOpen;
+  if (await pickMercies(state.char, levelOf(a))) { changed({ rerender: true }); openAbility(a, true); }
+});
 document.addEventListener('drawer-closed', () => { if (abilOpen) { abilOpen = null; document.querySelectorAll('.cls-abil-chip.on').forEach(x => x.classList.remove('on')); } });
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-abil-panel] [data-abil-spend],[data-abil-panel] [data-abil-back],[data-abil-panel] [data-abil-buff],[data-abil-panel] [data-abil-roll]');
@@ -1076,7 +1088,8 @@ document.addEventListener('click', e => {
     const recent = lastAbilUse.key === key && Date.now() - lastAbilUse.at < 90000;
     const cast = pool ? { label: `Use it (−${n} ${pool.name.toLowerCase()})`, left: Math.floor(left / n), recent, on: left >= n && !recent,
       spend() { spend(n); lastAbilUse = { key, at: Date.now() }; changed({ rerender: true }); openAbility(a, true); toast(`${pool.name}: ${currentOf(pool, c.resources)} left`); } } : null;
-    return abilityRollWindow({ title: name, facts: [a.use, act.dc ? `${act.dc.text.replace(/ \(.*\)$/, '')}, DC ${act.dc.value}` : ''].filter(Boolean).join(' · '), rolls: act.rolls, touch: !!act.touch, cast });
+    const mercies = hasMercies(a) ? merciesOf(c) : [];
+    return abilityRollWindow({ title: name, facts: [a.use, act.dc ? `${act.dc.text.replace(/ \(.*\)$/, '')}, DC ${act.dc.value}` : '', mercies.length ? `Mercies: ${mercies.join(', ').toLowerCase()}` : ''].filter(Boolean).join(' · '), rolls: act.rolls, touch: !!act.touch, cast });
   }
   if (t.dataset.abilSpend !== undefined) spend(n);
   else if (t.dataset.abilBack !== undefined) spend(-n);

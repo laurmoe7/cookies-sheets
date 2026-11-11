@@ -33,6 +33,8 @@ test('usableAbilities: one per ability, the latest name, with its pool', () => {
 test('abilityActions: dice, DCs, costs and buffs from the rules', () => {
   const pal6 = { level: 6, mods: { cha: 3 } };
   assert.deepEqual(abilityActions('Lay on hands', 'Paladin', pal6).rolls[0], { label: 'Heal', dice: '3d6', group: 'Healing' }, '1d6 per two paladin levels: 6/2 = 3d6');
+  assert.deepEqual(abilityActions('Lay on hands', 'Paladin', { ...pal6, greaterMercy: true }).rolls.map(r => r.dice), ['3d6', '4d6', '3d6'],
+    'Greater Mercy: +1d6 (3d6 + 1d6) when no mercy has a condition to remove; harming undead stays 3d6');
   const ch = abilityActions('Channel positive energy', 'Paladin', pal6);
   assert.equal(ch.rolls[0].dice, '3d6', 'as a cleric of her paladin level: ceil(6/2) = 3d6');
   assert.equal(ch.dc.value, 16, '10 + 3 (half of 6) + 3 Cha');

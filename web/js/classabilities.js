@@ -52,7 +52,7 @@ const inspireCourage = l => (l >= 17 ? 4 : l >= 11 ? 3 : l >= 5 ? 2 : 1);
  * Returns {rolls: [{label, dice}], dc?: {value, text}, cost?: {pool, n}, buff?: {name, effects, note} | preset?: name, note?}.
  * `cost.pool` is a classResources() id; without one the panel spends from the feature's own pool, if it has one.
  */
-export function abilityActions(lookup, cls, { level: L = 1, mods = {} } = {}) {
+export function abilityActions(lookup, cls, { level: L = 1, mods = {}, greaterMercy = false } = {}) {
   const k = String(lookup || '').toLowerCase();
   const m = a => mods[a] || 0;
   const half = Math.floor(L / 2);
@@ -63,7 +63,10 @@ export function abilityActions(lookup, cls, { level: L = 1, mods = {} } = {}) {
   };
   switch (k) {
     case 'lay on hands':
-      return { rolls: [{ label: 'Heal', dice: `${Math.max(1, half)}d6`, group: 'Healing' }, { label: 'Harm undead', dice: `${Math.max(1, half)}d6`, group: 'Damage' }],
+      // Greater Mercy (Ultimate Magic): +1d6 healing when the target has no condition the paladin's mercies can remove.
+      return { rolls: [{ label: 'Heal', dice: `${Math.max(1, half)}d6`, group: 'Healing' },
+        ...(greaterMercy ? [{ label: 'Heal, Greater Mercy (nothing to remove)', dice: `${Math.max(1, half) + 1}d6`, group: 'Healing' }] : []),
+        { label: 'Harm undead', dice: `${Math.max(1, half)}d6`, group: 'Damage' }],
         touch: true, note: 'Standard action on someone else, swift action on yourself. Undead: melee touch attack.' };
     case 'channel energy': return channel();
     case 'channel positive energy': return { ...channel(), cost: { pool: 'lay-on-hands', n: 2 }, note: '30-foot burst. Uses two uses of lay on hands.' };
