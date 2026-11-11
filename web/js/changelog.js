@@ -5,7 +5,7 @@
 
 export const CHANGELOG = [
   {
-    version: '1.3.7', next: true,
+    version: '1.3.7', date: '2026-11-11',
     items: [
       'Create character: a Starting gold card gives your class’s starting wealth at 1st level (average or 🎲 rolled), or the Wealth by Level amount when you start higher (33,000 gp at 8th), or a custom amount you type in.',
       'Create character: 🎲 Roll your ability scores (4d6 drop the lowest, 3d6 or 2d6 + 6) and drag each roll onto the ability you want. The sheet keeps what you rolled and how many sets.',
