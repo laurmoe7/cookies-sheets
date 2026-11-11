@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { computeCompanion, newCompanion } from '../web/js/companions.js';
-import { bardingFromTemplate, reducedSpeed, companionGear } from '../web/js/compgear.js';
+import { bardingFromTemplate, reducedSpeed, companionGear, lookupNames, bardingBase } from '../web/js/compgear.js';
 import { rootPath } from './helpers.mjs';
 
 const data = JSON.parse(readFileSync(new URL('../data/companions.json', import.meta.url), 'utf-8'));
@@ -77,4 +77,13 @@ test('worn items on a companion: saves, AC, attacks, and only while worn', () =>
 test('two items of the same bonus type do not stack', () => {
   const items = [{ name: 'Ring A', effects: [{ target: 'ac', value: 1, type: 'deflection' }] }, { name: 'Ring B', effects: [{ target: 'ac', value: 2, type: 'deflection' }] }];
   assert.equal(companionGear({ items }).stat('ac'), 2, 'deflection +1 and +2: only the +2 counts');
+});
+
+test('looking up a typed-in piece of gear in the compendium', () => {
+  assert.deepEqual(lookupNames('Military saddle'), ['Military saddle', 'Saddle, Military'], 'the book files it as "Saddle, Military"');
+  assert.deepEqual(lookupNames('Saddlebags +1'), ['Saddlebags'], 'one word: nothing to turn around; the +N goes');
+  assert.deepEqual(lookupNames(''), []);
+  assert.equal(bardingBase('Breastplate barding +1'), 'Breastplate');
+  assert.equal(bardingBase('+2 chainmail barding'), 'chainmail');
+  assert.equal(bardingBase('Barding'), '', 'a blank barding has no base armor');
 });

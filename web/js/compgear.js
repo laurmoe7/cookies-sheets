@@ -4,6 +4,7 @@
 import { stack, num } from './calc.js';
 import { armorFx } from './armorfx.js';
 import { armorFromTemplate } from './equipment.js';
+import { stripPlus } from './itemfx.js';
 
 /** Armor for unusual creatures (Core Rulebook): weight by the wearer's size. Cost changes too, but the sheet does not track it. */
 export const SIZE_WEIGHT = { Fine: 0.1, Diminutive: 0.1, Tiny: 0.1, Small: 0.5, Medium: 1, Large: 2, Huge: 5, Gargantuan: 8, Colossal: 12 };
@@ -21,6 +22,22 @@ export function bardingFromTemplate(t, size = 'Large') {
   const a = armorFromTemplate(t);
   return { ...a, name: `${t.name} barding`, weight: Math.round(num(t.weight) * (SIZE_WEIGHT[size] ?? 1) * 10) / 10, equipped: true };
 }
+
+/** The compendium's write-up of barding in general, shown under the base armor's entry. */
+export const BARDING_ENTRY = 'Barding, Medium Creature and Large Creature';
+
+const bare = name => stripPlus(String(name ?? '').replace(/^\s*\+\s*\d+\s+/, ''));
+
+/** Compendium names to try for a piece of gear typed in by hand: "Military saddle +1" → ["Military saddle", "Saddle, Military"] (the book's way of naming them). */
+export function lookupNames(name) {
+  const n = bare(name);
+  if (!n) return [];
+  const w = n.split(/\s+/);
+  return [...new Set([n, ...(w.length > 1 ? [`${w[w.length - 1][0].toUpperCase()}${w[w.length - 1].slice(1)}, ${w.slice(0, -1).join(' ')}`] : [])])];
+}
+
+/** The armor a barding is made from: "Breastplate barding +1" → "Breastplate". */
+export const bardingBase = name => bare(name).replace(/\s*barding$/i, '').trim();
 
 const ARMOR_TYPES = new Set(['armor', 'shield', 'natural armor', 'natural armor enhancement']);
 const LIGHTER = { heavy: 'medium', medium: 'light', light: 'light' };

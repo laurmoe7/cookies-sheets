@@ -1,11 +1,12 @@
 // The Gear card on a companion (Companions tab): barding and worn items, drawn as chips like the Inventory tab's.
 // Clicking one opens it in the side panel with its controls, as the inventory does. The rules are in ../compgear.js.
+import { api } from '../api.js';
 import { state, changed } from '../app.js';
 import { num, sign } from '../calc.js';
 import { esc, $, modal, pickEntry, confirmBox, showEntry, showCustom, closeDrawer } from '../ui.js';
 import { suggestEffects, effectsText } from '../itemfx.js';
 import { armorFx } from '../armorfx.js';
-import { bardingFromTemplate } from '../compgear.js';
+import { bardingFromTemplate, lookupNames, bardingBase, BARDING_ENTRY } from '../compgear.js';
 import { setArmorPlus, blankArmor } from '../equipment.js';
 import { chooseArmor } from './equipment.js';
 import { editArmorFx } from './armorfx.js';
@@ -67,7 +68,7 @@ export async function gearClick(e, comp, size, ci) {
 }
 
 /** Show a piece of companion gear in the side panel: its compendium text when it has one, its controls on top. */
-export function openPiece(ci, kind, k = 0) {
+export async function openPiece(ci, kind, k = 0) {
   const d = { ci, kind, k, armed: true, id: null };
   const g = pieceOf(d);
   if (!g) return;
@@ -75,8 +76,22 @@ export function openPiece(ci, kind, k = 0) {
   compDrawer = d;
   markOpen();
   const who = state.char.companions[ci].name || 'your companion';
-  if (g.id) showEntry(g.id);
-  else showCustom({ name: g.name || (kind === 'barding' ? 'Barding' : 'Item'), cat: kind === 'barding' ? 'Barding' : 'Companion item', sub: `on ${who}`, html: '' });
+  if (g.id) { showEntry(g.id); return; }
+  // Typed in by hand: borrow the compendium's description (barding: its base armor, then the book's write-up of barding).
+  const found = kind === 'barding' ? [await findEntry(lookupNames(bardingBase(g.name))), await findEntry([BARDING_ENTRY])] : [await findEntry(lookupNames(g.name))];
+  if (compDrawer !== d) return; // another piece was clicked meanwhile
+  const parts = found.filter(Boolean);
+  const html = parts.map((e, n) => (kind === 'barding' && parts.length > 1 ? `<h4>${esc(n ? 'Barding' : e.name)}</h4>` : '') + e.html).join('');
+  const source = [...new Set(parts.map(e => e.source).filter(Boolean))].join('; ');
+  showCustom({ name: g.name || (kind === 'barding' ? 'Barding' : 'Item'), cat: kind === 'barding' ? 'Barding' : 'Companion item', sub: `on ${who}`, html, source });
+}
+
+/** The first of these names that is a compendium item, or null. */
+async function findEntry(names) {
+  for (const n of names) {
+    try { const e = await api.entryByName(n, 'Magic Item'); if (e?.html) return e; } catch { /* not found */ }
+  }
+  return null;
 }
 
 function markOpen() {
