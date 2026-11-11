@@ -9,6 +9,7 @@ export const CHANGELOG = [
     items: [
       'Create character: a Starting gold card gives your class’s starting wealth at 1st level (average or 🎲 rolled), or the Wealth by Level amount when you start higher (33,000 gp at 8th), or a custom amount you type in.',
       'Create character: 🎲 Roll your ability scores (4d6 drop the lowest, 3d6 or 2d6 + 6) and drag each roll onto the ability you want. The sheet keeps what you rolled and how many sets.',
+      'Create character: a class picked right after making a new character no longer gets unpicked a moment later.',
       'New race: the Ganzi (Planar Adventures), with its racial traits, all 13 oddities to choose from, and its favored class options.',
       'Level up: the 18 prestige classes of the Core Rulebook and the Advanced Player’s Guide with their requirements, plus the Unicorn Charger (Legendary Games). A level that adds spellcasting asks which class it advances.',
       'Characters: “🪦 Lay to rest” sends a character who died or retired to the graveyard, as a headstone with the date and an epitaph. Open them any time, or bring them back.',

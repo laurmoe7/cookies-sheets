@@ -169,7 +169,6 @@ textarea { width: 100%; resize: vertical; }
 .roll-empty-die { font-size: 30px; }
 .gold-amount { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0 10px; }
 .gold-amount b { font-size: 1.6em; color: var(--accent); }
-.gold-card .row > span, .gold-amount > span { flex: 1 1 14em; min-width: 0; } /* long hints wrap instead of running off a half-width card */
 .gold-dim .gold-amount { opacity: .45; } /* a custom amount is used instead */
 .roll-pool { display: flex; flex-wrap: wrap; gap: 8px; min-height: 62px; align-items: center; padding: 8px 10px; margin: 8px 0; border: 1px dashed var(--line); border-radius: 10px; transition: background .15s, border-color .15s; }
 .roll-pool.done { min-height: 0; padding: 6px 10px; border-style: solid; border-color: var(--good); color: var(--good); }

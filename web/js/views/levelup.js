@@ -29,7 +29,11 @@ function freshDraft(c) {
 
 export function renderLevelUp(main) {
   const c = state.char;
-  if (!draft || draft.forLevel !== c.levelUps.length || draft.charId !== c.id) draft = freshDraft(c);
+  // Same character: the same object, or the same saved id. A new character has no id until its first save lands, so the id alone
+  // would throw away a class picked before then.
+  const same = draft && (draft.char === c || (draft.charId != null && draft.charId === c.id));
+  if (!same || draft.forLevel !== c.levelUps.length) draft = freshDraft(c);
+  draft.char = c; draft.charId = c.id;
   const d = state.derived;
   const newLevel = d.level + 1;
   if (newLevel > 20) {
@@ -258,21 +262,19 @@ function goldCard(c) {
   const { lv, w, roll, gp, custom } = goldOffer();
   const have = num(c.money.pp) * 10 + num(c.money.gp) + num(c.money.sp) / 10 + num(c.money.cp) / 100;
   const body = lv > 1
-    ? `<div class="gold-amount"><b>${w.gp.toLocaleString()} gp</b><span class="small muted">Character Wealth by Level, ${ORD(lv)} level. Spend no more than half of it on any single item.</span></div>`
-    : !draft.cls ? '<p class="small muted">Choose a class above: a 1st-level character starts with its class’s starting wealth.</p>'
-    : !w.dice ? `<p class="small muted">${esc(draft.cls)} has no starting wealth listed here. Type the gold in on the Inventory tab.</p>`
+    ? `<div class="gold-amount" title="Spend no more than half of it on any single item. Then finish 1st level and level up to ${ORD(lv)}."><b>${w.gp.toLocaleString()} gp</b><span class="small muted">wealth by level</span></div>`
+    : !draft.cls ? '<p class="small muted">Pick a class for its starting gold.</p>'
+    : !w.dice ? `<p class="small muted">No starting gold listed for ${esc(draft.cls)}.</p>`
     : `<div class="row"><div class="seg" role="group">
         <button class="seg-btn ${roll ? '' : 'on'}" data-gold-avg>Average ${w.gp} gp</button>
         <button class="seg-btn ${roll ? 'on' : ''}" data-gold-roll>🎲 ${roll ? 'Roll again' : `Roll ${w.dice}d6 × 10`}</button></div></div>
       <div class="gold-amount"><b>${gp.toLocaleString()} gp</b><span class="small muted">${roll ? `${esc(draft.cls)}: (${roll.rolls.join(' + ')}) × 10` : esc(w.source)}</span></div>`;
   return `<section class="card gold-card"><h3>Starting gold</h3>
     <div class="row"><label class="small">Starting level <select id="gold-level">${Array.from({ length: 20 }, (_, i) => i + 1).map(n => `<option value="${n}" ${n === lv ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
-      <span class="grow"></span><span class="small muted">Purse now: ${have.toLocaleString()} gp</span></div>
+      <span class="grow"></span><span class="small muted">Purse: ${have.toLocaleString()} gp</span></div>
     <div class="${custom != null ? 'gold-dim' : ''}" data-gold-body>${body}</div>
-    <div class="row"><label class="small">Or a custom amount <input type="number" min="0" step="any" class="num w5" id="gold-custom" placeholder="gp" value="${esc(draft.goldCustom ?? '')}"> gp</label>
-      <span class="small muted">Your GM’s number, if it differs. Leave it empty to use the one above.</span></div>
-    <div class="row"><button class="btn primary" data-gold-set ${gp == null ? 'hidden' : ''}>Set gold to ${(gp ?? 0).toLocaleString()} gp</button>
-      ${lv > 1 ? '<span class="small muted">Then finish 1st level and level up to the level you start at.</span>' : ''}</div>
+    <div class="row"><label class="small" title="Your GM’s number, if it differs. Leave it empty to use the one above.">Custom <input type="number" min="0" step="any" class="num w5" id="gold-custom" value="${esc(draft.goldCustom ?? '')}"> gp</label>
+      <span class="grow"></span><button class="btn primary" data-gold-set ${gp == null ? 'hidden' : ''}>Set gold to ${(gp ?? 0).toLocaleString()} gp</button></div>
   </section>`;
 }
 function wireGold(main, c) {
