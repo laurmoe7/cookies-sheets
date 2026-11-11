@@ -950,6 +950,8 @@ html[data-motion="off"] .fx-spark { display: none; }
 .item-fx { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
 .plus-row { gap: 6px; flex-wrap: wrap; }
 .inv-chips .comp-gear-chip { border-style: dashed; opacity: .85; } /* worn by a companion */
+.comp-name { display: flex; align-items: center; gap: 6px; color: var(--muted); }
+.comp-name .comp-name-input { flex: 1; max-width: 420px; font: inherit; font-size: 20px; color: var(--ink); padding: 4px 8px; }
 .cg-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 4px 0; border-bottom: 1px solid var(--line); }
 .inv-weapons { gap: 6px; flex-wrap: wrap; margin: 6px 0; }
 

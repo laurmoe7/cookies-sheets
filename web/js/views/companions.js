@@ -442,7 +442,8 @@ function companionCard(comp, i, levels, data, master) {
   // The kind chip, the stat block button and remove sit on the paper card under the name (a custom companion has no such card, so they stay beside its name).
   const actions = `<span class="pill">${{ animal: 'Animal companion', eidolon: 'Eidolon', familiar: 'Familiar', creature: 'Creature', custom: 'Companion' }[comp.kind]}</span>
     <button class="icon-btn" data-del-comp title="Remove">✕</button>`;
-  const head = `<div class="row"><h3 class="grow" style="margin:0">${tf(`${p}.name`, { placeholder: 'Name' })}</h3>${comp.kind === 'custom' ? actions : ''}</div>`;
+  // The name is a plain text box, so it is plain that it can be typed in (it was a double-click field that looked like a heading).
+  const head = `<div class="row comp-name-row"><label class="grow comp-name" title="Your companion's name">✎ ${bind(`${p}.name`, comp.name, { cls: 'comp-name-input', ph: 'Name your companion' })}</label>${comp.kind === 'custom' ? actions : ''}</div>`;
   if (comp.kind === 'custom') {
     return `<section class="card companion" data-comp="${i}">${head}
       <div class="grid two"><div>${picFrame(comp.image, 'lg')}<h4>Stat block</h4>${tf(`${p}.statblock`, { multiline: true, placeholder: 'Double-click to paste or type a stat block', read: { title: comp.name, titlePath: `${p}.name`, cat: 'Companion stat block' } })}</div>

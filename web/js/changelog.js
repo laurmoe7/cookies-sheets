@@ -15,6 +15,7 @@ export const CHANGELOG = [
       'Level up: a paladin who takes Unicorn Charger can count its levels as paladin levels for spellcasting, so they cast as one paladin with one pool of spells.',
       'Companions: Unicorn Charger levels stack with the class that grants your mount (paladin 6 / charger 2 has an 8th-level mount).',
       'Companions: a Unicorn Charger’s mount gets its gore, Intelligence 6, Sylvan and glowing horn, and a +2 to Int, Wis or Cha to choose at charger level 3, 6 and 9.',
+      'Companions: name your companion in the box at the top of its card (✎); it was a double-click field that looked like a heading.',
       'Companions: a paladin’s divine bond mount uses the full paladin level, as the Core Rulebook says, not paladin level − 3.',
       'Companions: a Gear card on each companion. Barding from the armor list (weight for its size, +0 to +5, ✦ Enchant) adds to its AC, caps its Dex, and slows it when medium or heavy.',
       'Companions: worn items on a companion (a cloak of resistance, an amulet of mighty fists…) add their bonuses, and barding’s check penalty applies to its Str and Dex skills.',
