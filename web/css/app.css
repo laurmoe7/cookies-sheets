@@ -950,6 +950,8 @@ html[data-motion="off"] .fx-spark { display: none; }
 .item-fx { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
 .plus-row { gap: 6px; flex-wrap: wrap; }
 .inv-weapons { gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+[data-armor-drop].drop-ok { outline: 2px dashed var(--accent); outline-offset: 2px; }
+.inv-chips .sp-chip[draggable=true] { cursor: grab; }
 
 .inv-chips .sp-chip .sp-n, .inv-chips .sp-chip.ready .sp-n, .inv-chips .sp-chip.idle .sp-n { font-weight: 400; }
 .doll-fig { position: relative; }

@@ -36,6 +36,7 @@ export const CHANGELOG = [
       'Spells: a Unicorn Charger who is also a paladin can switch between casting as a paladin (charger levels count as paladin levels, one spellbook) and casting separately; switching moves the charger spells into the paladin book.',
       'Inventory: items whose bonus comes in steps (headbands and belts +2/+4/+6, cloaks of resistance, rings of protection...) have +N buttons in their panel that set the name and the bonus.',
       'Inventory: a worn item on the paper doll shows just its name, without the price or notes underneath.',
+      'Inventory: drag armor or a shield from your inventory onto Armor & Shields to wear it; it gets the book’s numbers and keeps its +N, masterwork and material.',
       'Inventory: a weapon in your inventory has ⚔ Add to attacks in its panel, and once added, +0 to +5 buttons that set its enhancement bonus.',
       'Overview: Weapons & Attacks lists the weapons in your inventory that have no attack yet, to add with one click; an attack that is not in your inventory has a button to put it there.',
       'Overview: removing a weapon that is in both your attacks and your inventory asks whether to remove it from one or both, and its weight counts only once.',

@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { weaponFromTemplate, armorFromTemplate, filterTemplates, blankWeapon, blankArmor, weaponTemplateFor, inventoryWeapons, attackFor, gearFor, addAttackFromGear, addGearFromAttack, setWeaponPlus, linkByName } from '../web/js/equipment.js';
+import { weaponFromTemplate, armorFromTemplate, filterTemplates, blankWeapon, blankArmor, weaponTemplateFor, inventoryWeapons, attackFor, gearFor, addAttackFromGear, addGearFromAttack, setWeaponPlus, linkByName, armorTemplateFor, armorFromGear, moveGearToArmor } from '../web/js/equipment.js';
 import { rootPath, make, calc } from './helpers.mjs';
 
 const data = JSON.parse(readFileSync(rootPath + 'data/equipment.json', 'utf-8'));
@@ -137,4 +137,45 @@ test('inventory weapons: a row and an item of the same weapon made separately ge
   assert.equal(c.gear[2].uid, undefined, 'the second dagger has no row of its own');
   assert.equal(calc(c).encumbrance.weight, 12, 'lance 10 + two daggers 1 each; the linked rows add nothing');
   assert.equal(linkByName(c), false, 'nothing more to link');
+});
+
+test('inventory to armor: which items are armor or shields, by the book list', () => {
+  const A = data.armor;
+  assert.equal(armorTemplateFor('Chain Shirt', A).name, 'Chain shirt');
+  assert.equal(armorTemplateFor('+1 Mithral Chain Shirt', A).name, 'Chain shirt', 'bonus and material are not the kind');
+  assert.equal(armorTemplateFor('Studded Leather Armor', A).name, 'Studded leather', 'the longest name that fits, not Leather');
+  assert.equal(armorTemplateFor('Heavy Steel Shield +1', A).name, 'Heavy steel');
+  assert.equal(armorTemplateFor('Light Wooden Shield', A).name, 'Light wooden', 'not the Wooden armor');
+  assert.equal(armorTemplateFor('Chain mail', A).name, 'Chainmail', 'written as two words');
+  assert.equal(armorTemplateFor('Rope', A), null);
+  assert.equal(armorTemplateFor('Longsword', A), null);
+});
+
+test('inventory to armor: a dropped item becomes a row with the book numbers and its +N, and leaves the inventory', () => {
+  const c = make({ levels: ['Fighter'] });
+  c.armor = [];
+  c.gear = [{ name: '+1 Mithral Chain Shirt', qty: 1, weight: 0 }, { name: 'Heavy Steel Shield', qty: 2, weight: 15 }, { name: 'Rope', qty: 1, weight: 10 }];
+  assert.equal(moveGearToArmor(c, 0, data.armor), 0);
+  const a = c.armor[0];
+  assert.equal(a.bonus, 4, 'chain shirt: armor bonus +4');
+  assert.equal(a.enh, 1, 'the +1 in its name');
+  assert.equal(a.material, 'mithral');
+  assert.equal(a.type, 'armor');
+  assert.equal(a.weight, 25, 'no weight on the item, so the book weight (mithral halves it in calc.js)');
+  assert.deepEqual(c.gear.map(g => g.name), ['Heavy Steel Shield', 'Rope'], 'it left the inventory');
+  assert.equal(moveGearToArmor(c, 0, data.armor), 1);
+  assert.equal(c.armor[1].type, 'shield');
+  assert.equal(c.armor[1].bonus, 2, 'heavy steel shield: +2');
+  assert.equal(c.gear[0].qty, 1, 'one of the two shields moved');
+  assert.equal(moveGearToArmor(c, 1, data.armor), -1, 'rope is not armor');
+  assert.equal(c.gear.length, 2, 'and stays in the inventory');
+});
+
+test('inventory to armor: magic armor not on the book list still moves when the compendium files it as armor', () => {
+  const row = armorFromGear({ name: 'Celestial Armor', hint: 'armor', weight: 20, id: 42 }, data.armor);
+  assert.equal(row.name, 'Celestial Armor');
+  assert.equal(row.type, 'armor');
+  assert.equal(row.weight, 20);
+  assert.equal(row.id, 42, 'keeps its compendium entry');
+  assert.equal(armorFromGear({ name: 'Mysterious Thing' }, data.armor), null);
 });

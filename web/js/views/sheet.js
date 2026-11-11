@@ -33,7 +33,7 @@ import { armorFxChip, wireArmorFx } from './armorfx.js';
 import { paperDollCard, wirePaperDoll } from './paperdoll.js';
 import { suggestEffects, effectsText, plusOptions, setPlus, plusOf } from '../itemfx.js';
 import { parseMagicWeapon, parseMagicArmor } from '../magicgear.js';
-import { weaponFromTemplate, armorFromTemplate, blankWeapon, blankArmor, weaponTemplateFor, inventoryWeapons, attackFor, gearFor, addAttackFromGear, addGearFromAttack, setWeaponPlus, linkByName } from '../equipment.js';
+import { weaponFromTemplate, armorFromTemplate, blankWeapon, blankArmor, weaponTemplateFor, inventoryWeapons, attackFor, gearFor, addAttackFromGear, addGearFromAttack, setWeaponPlus, linkByName, moveGearToArmor } from '../equipment.js';
 import { chooseWeapon, chooseArmor } from './equipment.js';
 import { SLOTS, slotName, hintFromSub, sortByName } from '../paperdoll.js';
 
@@ -184,12 +184,13 @@ function setDrawerTitle(text) { const h2 = document.querySelector('#drawer h2');
 const plusButtons = (opts, cur, attr) => `<span class="small muted">Bonus</span>${opts.map(o => `<button class="btn small ${o.plus === cur ? 'primary' : 'ghost'}" ${attr}="${o.plus}" title="${esc(o.title)}">+${o.plus}</button>`).join('')}`;
 
 // ---- inventory weapons and the Weapons & Attacks table (linked by g.uid / w.gearUid, see equipment.js) ----
-let weaponTpl = null, weaponTplLoading = null;
-/** The standard weapon list, loaded once; the page redraws when it arrives. */
-function weaponTemplates() {
-  if (!weaponTpl && !weaponTplLoading) weaponTplLoading = api.equipment().then(d => { weaponTpl = d.weapons || []; render(); }).catch(() => { weaponTplLoading = null; });
-  return weaponTpl;
+let equipData = null, equipLoading = null;
+/** The standard weapon and armor lists (data/equipment.json), loaded once; the page redraws when they arrive. */
+function equipTemplates() {
+  if (!equipData && !equipLoading) equipLoading = api.equipment().then(d => { equipData = d; render(); }).catch(() => { equipLoading = null; });
+  return equipData;
 }
+const weaponTemplates = () => equipTemplates()?.weapons || null;
 const hasFinesse = c => c.feats.some(f => /^weapon finesse/i.test(f.name || ''));
 /** Adds inventory item `i` to the attacks; true when it is a weapon we know. */
 function gearToAttack(c, i) {
@@ -220,6 +221,36 @@ function inventoryWeaponStrip(c) {
   return `<div class="row inv-weapons"><span class="small muted">In your inventory, not in attacks yet:</span>
     ${missing.map(x => `<button class="btn small ghost" data-inv-attack="${x.i}" title="Add an attack row for it (${esc(x.tpl.name)})">＋ ${esc(c.gear[x.i].name)}</button>`).join('')}
     ${missing.length > 1 ? '<button class="btn small" data-inv-attack-all>Add all</button>' : ''}</div>`;
+}
+
+/** Inventory items dragged onto the Armor & Shields card become armor rows (moveGearToArmor in equipment.js). */
+const GEAR_DRAG = 'application/x-cookie-gear';
+function wireArmorDrop(body, c) {
+  equipTemplates(); // the armor list, for the stats of a dropped item
+  body.addEventListener('dragstart', e => {
+    const t = e.target.closest?.('[data-item]');
+    if (!t) return;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData(GEAR_DRAG, t.dataset.item);
+    e.dataTransfer.setData('text/plain', c.gear[+t.dataset.item]?.name || '');
+  });
+  const card = $('[data-armor-drop]', body);
+  if (!card) return;
+  const ours = e => [...e.dataTransfer.types].includes(GEAR_DRAG);
+  card.addEventListener('dragover', e => { if (!ours(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = 'move'; card.classList.add('drop-ok'); });
+  card.addEventListener('dragleave', e => { if (!card.contains(e.relatedTarget)) card.classList.remove('drop-ok'); });
+  card.addEventListener('drop', e => {
+    if (!ours(e)) return;
+    e.preventDefault();
+    card.classList.remove('drop-ok');
+    const i = +e.dataTransfer.getData(GEAR_DRAG), g = c.gear[i];
+    if (!g) return;
+    const name = g.name || 'That item';
+    if (moveGearToArmor(c, i, equipTemplates()?.armor) < 0) { toast(`${name} is not armor or a shield we know. Add it with ＋ Add armor/shield instead.`, 'err'); return; }
+    if (itemDrawer) { itemDrawer = null; closeDrawer(); } // the inventory's order has changed
+    toast(`${name} is in Armor & Shields now.`);
+    changed({ rerender: true });
+  });
 }
 
 function overview(body, c, d) {
@@ -1543,7 +1574,7 @@ function gear(body, c, d) {
   const enc = d.encumbrance;
   body.innerHTML = `<div class="grid two">
   ${paperDollCard(c, d)}
-  <section class="card span2">
+  <section class="card span2" data-armor-drop>
     <div class="row"><h3 class="grow">Armor & Shields</h3><button class="btn small" data-pick-armor>＋ Magic item</button><button class="btn small" data-add-armor title="Pick standard armor or a shield, or start with a blank row">＋ Add armor/shield</button></div>
     ${c.armor.length ? `<table class="tbl"><thead><tr><th>Worn</th><th>Name</th><th>Type</th><th>Category</th><th title="Armor/shield bonus">Bonus</th><th title="Enhancement">Enh</th>
       <th title="Max Dex bonus (blank = none)">Max Dex</th><th title="Armor check penalty">ACP</th><th title="Arcane spell failure %">ASF %</th><th>Weight</th><th></th></tr></thead><tbody>
@@ -1554,6 +1585,7 @@ function gear(body, c, d) {
         <td>${inp(`armor.${i}.maxDex`, { type: 'num', cls: 'w2' })}</td><td>${inp(`armor.${i}.acp`, { type: 'num', cls: 'w2' })}</td>
         <td>${inp(`armor.${i}.asf`, { type: 'num', cls: 'w2' })}</td><td>${inp(`armor.${i}.weight`, { type: 'num', cls: 'w3' })}</td>
         <td><button class="icon-btn" data-del="armor.${i}">✕</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted">No armor.</p>'}
+    <p class="small muted drop-hint">Drag armor or a shield from your inventory here to wear it.</p>
   </section>
   <section class="card span2">
     <div class="row"><h3 class="grow">Inventory</h3>
@@ -1562,7 +1594,7 @@ function gear(body, c, d) {
       const worn = !!g.slot, qty = num(g.qty) > 1 ? `<span class="sp-s">×${esc(g.qty)}</span>` : '';
       const fxMark = (g.effects || []).length ? `<span class="sp-s" title="${esc(effectsText(g.effects))}${worn ? '' : ' (counts once worn)'}">✦</span>` : '';
       const where = worn ? `<span class="sp-s">${esc(slotName(g.slot))}</span><span class="pips"><i class="pip"></i></span>` : '';
-      return `<button class="sp-chip ${isItemActive(i) ? 'on' : ''} ${worn ? 'ready' : g.hint ? 'idle' : ''}" data-item="${i}" title="${worn ? 'Equipped: ' + esc(slotName(g.slot)) + '. ' : ''}Click for details"><span class="sp-n">${esc(g.name || 'New item')}</span>${qty}${fxMark}${where}</button>`;
+      return `<button class="sp-chip ${isItemActive(i) ? 'on' : ''} ${worn ? 'ready' : g.hint ? 'idle' : ''}" data-item="${i}" draggable="true" title="${worn ? 'Equipped: ' + esc(slotName(g.slot)) + '. ' : ''}Click for details"><span class="sp-n">${esc(g.name || 'New item')}</span>${qty}${fxMark}${where}</button>`;
     }).join('')}</div>` : '<p class="muted">Nothing carried.</p>'}
   </section>
   <section class="card">
@@ -1593,6 +1625,7 @@ function gear(body, c, d) {
   $('[data-add-armor]', body).onclick = () => addFromList('armor');
   wirePaperDoll(body);
   body.addEventListener('click', e => { const t = e.target.closest('[data-item]'); if (t) openItem(+t.dataset.item); });
+  wireArmorDrop(body, c);
   const upd = () => { $('#money-total').textContent = (num(c.money.pp) * 10 + num(c.money.gp) + num(c.money.sp) / 10 + num(c.money.cp) / 100).toLocaleString(); };
   upd();
   document.addEventListener('recalc', upd);

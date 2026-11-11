@@ -140,3 +140,43 @@ export function linkByName(c) {
   }
   return changedAny;
 }
+
+// ---- inventory items onto the Armor & Shields table ----
+const ARMOR_MATERIAL = /\b(mithral|adamantine|darkwood)\b/;
+/** An armor name reduced to what identifies its kind: "+1 Mithral Chain Shirt" → "chain shirt", "Heavy Steel Shield" → "heavy steel", "Lamellar (Leather)" → "lamellar leather". */
+export const armorKey = n => String(n || '').toLowerCase().replace(/\+\s*\d+/g, ' ').replace(/\b(masterwork|mwk|mithral|adamantine|darkwood|dragonhide|armou?r|shield)\b/g, ' ')
+  .replace(/\bchain mail\b/g, 'chainmail').replace(/[^a-z]+/g, ' ').trim();
+
+/** The standard armor or shield an item's name is: the longest template name it contains ("Studded leather", not "Leather"). Null when none fits. */
+export function armorTemplateFor(name, templates) {
+  const k = armorKey(name);
+  if (!k) return null;
+  let best = null, bestLen = 0;
+  for (const t of templates || []) {
+    const tk = armorKey(t.name);
+    if (!tk) continue;
+    if (tk === k) return t;
+    if ((' ' + k + ' ').includes(' ' + tk + ' ') && tk.length > bestLen) { best = t; bestLen = tk.length; }
+  }
+  return best;
+}
+
+/** The Armor & Shields row for inventory item `g`, or null when it is not armor or a shield. A standard one gets the book's numbers; armor the
+ * compendium files as armor or a shield (`hint`) but that is not on the list gets a row to fill in. Its +N, masterwork and material come from the name. */
+export function armorFromGear(g, templates) {
+  const tpl = armorTemplateFor(g.name, templates);
+  if (!tpl && g.hint !== 'armor' && g.hint !== 'shield') return null;
+  const row = tpl ? armorFromTemplate(tpl) : { ...blankArmor(), type: g.hint === 'shield' ? 'shield' : 'armor' };
+  const n = String(g.name || '').toLowerCase();
+  return { ...row, name: g.name || row.name, enh: plusIn(g.name), mw: /\b(masterwork|mwk)\b/.test(n), material: (ARMOR_MATERIAL.exec(n) || [])[1] || '',
+    weight: num(g.weight) || row.weight, ...(g.id ? { id: g.id } : {}) };
+}
+
+/** Moves inventory item `i` onto the Armor & Shields table (one of a stack). Returns the new row's index, or -1 when it is not armor. */
+export function moveGearToArmor(c, i, templates) {
+  const g = c.gear[i], row = g && armorFromGear(g, templates);
+  if (!row) return -1;
+  c.armor.push(row);
+  if (num(g.qty) > 1) g.qty = num(g.qty) - 1; else c.gear.splice(i, 1);
+  return c.armor.length - 1;
+}
