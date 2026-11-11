@@ -202,9 +202,8 @@ function removeWhere(name, here, there) {
     $('[data-both]', body).onclick = () => close('both');
   });
 }
-/** Under a weapon row's name: whether it is in the inventory too, or a button to put it there. */
-const weaponInvMark = (c, w, i) => gearFor(c, w) >= 0
-  ? '<span class="small muted" title="This weapon is also in your inventory (Inventory tab), where its weight is counted">🎒 in inventory</span>'
+/** Under a weapon row's name: a button to put it in the inventory, when it is not there yet. */
+const weaponInvMark = (c, w, i) => gearFor(c, w) >= 0 ? ''
   : `<button class="wbtn" data-w-to-inv="${i}" title="Put this weapon in your inventory too">＋ Inventory</button>`;
 /** Below the Weapons & Attacks table: inventory weapons that have no attack row yet. */
 function inventoryWeaponStrip(c) {
