@@ -2,6 +2,7 @@
 // base-form data in data/companions.json (built by tools/companions.py).
 import { mod, num, sign } from './calc.js';
 import { SIZES } from './data.js';
+import { companionGear, reducedSpeed } from './compgear.js';
 
 export const ANIMAL_SKILLS = ['Acrobatics', 'Climb', 'Escape Artist', 'Fly', 'Intimidate', 'Perception', 'Stealth', 'Survival', 'Swim'];
 export const EIDOLON_SKILLS = ['Bluff', 'Craft', 'Knowledge (planes)', 'Perception', 'Sense Motive', 'Stealth'];
@@ -151,32 +152,41 @@ export function computeCompanion(comp, levels, data, master = {}) {
 }
 
 function finish(out, comp) {
+  const gear = companionGear(comp); // barding and worn items (compgear.js)
+  for (const a of ABIL) if (out.abilities[a] != null) out.abilities[a] += gear.stat(a);
   const M = a => (out.abilities[a] == null ? 0 : mod(out.abilities[a]));
   out.mods = Object.fromEntries(ABIL.map(a => [a, out.abilities[a] == null ? null : M(a)]));
   const sz = SIZES[out.size] || SIZES.Medium;
   out.sizeMods = sz;
   const dodge = hasFeat(comp, 'Dodge') ? 1 : 0;
-  out.ac = { total: 10 + out.natural + M('dex') + sz.ac + dodge + num(comp.acMisc), touch: 10 + M('dex') + sz.ac + dodge,
-    flat: 10 + out.natural + Math.min(0, M('dex')) + sz.ac + num(comp.acMisc), natural: out.natural };
+  const bard = gear.barding;
+  const dexAc = bard?.maxDex != null ? Math.min(M('dex'), bard.maxDex) : M('dex'); // barding's max Dex bonus
+  out.ac = { total: 10 + out.natural + dexAc + sz.ac + dodge + num(comp.acMisc) + gear.stat('ac'), touch: 10 + dexAc + sz.ac + dodge + gear.touchAc(),
+    flat: 10 + out.natural + Math.min(0, dexAc) + sz.ac + num(comp.acMisc) + gear.flatAc(), natural: out.natural, gear: gear.stat('ac'), dexCapped: dexAc < M('dex') };
+  out.gear = { barding: bard, ac: gear.stat('ac') };
+  if (bard?.slows) out.speed = String(out.speed || '').replace(/^(\d+)/, n => String(reducedSpeed(+n)));
+  if (gear.stat('speed')) out.speed = String(out.speed || '').replace(/^(\d+)/, n => String(+n + gear.stat('speed')));
+  const gearNotes = bard ? [...bard.fx.dr.map(x => `DR ${x}`), bard.fx.fort ? `fortification ${bard.fx.fort}%` : '', bard.fx.sr ? `SR ${bard.fx.sr}` : '', ...bard.fx.resist.map(r => `resist ${r.type} ${r.n}`)].filter(Boolean) : [];
+  if (gearNotes.length) out.qualities = [out.qualities, ...gearNotes.map(x => x + ' (barding)')].filter(Boolean).join(', ');
   const conHp = out.abilities.con == null ? 0 : M('con') * out.hd;
   const toughness = hasFeat(comp, 'Toughness') ? Math.max(3, out.hd) : 0;
   out.hp = out.hpFixed != null ? Math.max(1, out.hpFixed + num(comp.hpMisc))
-    : Math.max(1, Math.floor(out.hd * out.hdAvg) + conHp + toughness + num(comp.hpMisc));
+    : Math.max(1, Math.floor(out.hd * out.hdAvg) + conHp + toughness + num(comp.hpMisc) + gear.stat('hp'));
   const baseSaves = { ...out.saves };
-  out.saves.fort += M('con') + (hasFeat(comp, 'Great Fortitude') ? 2 : 0);
-  out.saves.ref += M('dex') + (hasFeat(comp, 'Lightning Reflexes') ? 2 : 0);
-  out.saves.will += M('wis') + (hasFeat(comp, 'Iron Will') ? 2 : 0);
-  out.init = M('dex') + (hasFeat(comp, 'Improved Initiative') ? 4 : 0);
+  out.saves.fort += M('con') + (hasFeat(comp, 'Great Fortitude') ? 2 : 0) + gear.stat('saves', 'fort');
+  out.saves.ref += M('dex') + (hasFeat(comp, 'Lightning Reflexes') ? 2 : 0) + gear.stat('saves', 'ref');
+  out.saves.will += M('wis') + (hasFeat(comp, 'Iron Will') ? 2 : 0) + gear.stat('saves', 'will');
+  out.init = M('dex') + (hasFeat(comp, 'Improved Initiative') ? 4 : 0) + gear.stat('init');
   const P = (...xs) => xs.filter(p => p.value);
   out.bd = {
-    fort: P({ label: 'Base save', value: baseSaves.fort }, { label: 'Con modifier', value: M('con') }, { label: 'Great Fortitude', value: hasFeat(comp, 'Great Fortitude') ? 2 : 0 }),
-    ref: P({ label: 'Base save', value: baseSaves.ref }, { label: 'Dex modifier', value: M('dex') }, { label: 'Lightning Reflexes', value: hasFeat(comp, 'Lightning Reflexes') ? 2 : 0 }),
-    will: P({ label: 'Base save', value: baseSaves.will }, { label: 'Wis modifier', value: M('wis') }, { label: 'Iron Will', value: hasFeat(comp, 'Iron Will') ? 2 : 0 }),
-    init: P({ label: 'Dex modifier', value: M('dex') }, { label: 'Improved Initiative', value: hasFeat(comp, 'Improved Initiative') ? 4 : 0 }),
+    fort: P({ label: 'Base save', value: baseSaves.fort }, { label: 'Con modifier', value: M('con') }, { label: 'Great Fortitude', value: hasFeat(comp, 'Great Fortitude') ? 2 : 0 }, { label: 'Gear', value: gear.stat('saves', 'fort') }),
+    ref: P({ label: 'Base save', value: baseSaves.ref }, { label: 'Dex modifier', value: M('dex') }, { label: 'Lightning Reflexes', value: hasFeat(comp, 'Lightning Reflexes') ? 2 : 0 }, { label: 'Gear', value: gear.stat('saves', 'ref') }),
+    will: P({ label: 'Base save', value: baseSaves.will }, { label: 'Wis modifier', value: M('wis') }, { label: 'Iron Will', value: hasFeat(comp, 'Iron Will') ? 2 : 0 }, { label: 'Gear', value: gear.stat('saves', 'will') }),
+    init: P({ label: 'Dex modifier', value: M('dex') }, { label: 'Improved Initiative', value: hasFeat(comp, 'Improved Initiative') ? 4 : 0 }, { label: 'Gear', value: gear.stat('init') }),
     cmb: P({ label: 'Base attack bonus', value: out.bab }, { label: 'Str modifier', value: M('str') }, { label: `Size (${out.size}, maneuvers)`, value: sz.cmb }),
   };
-  out.cmb = out.bab + M('str') + sz.cmb;
-  out.cmd = 10 + out.bab + M('str') + M('dex') + sz.cmb + dodge;
+  out.cmb = out.bab + M('str') + sz.cmb + gear.stat('cmb');
+  out.cmd = 10 + out.bab + M('str') + M('dex') + sz.cmb + dodge + gear.stat('cmd');
   // Natural attacks: full BAB; Str (or Dex with Weapon Finesse); secondary attacks -5 (-2 with Multiattack) and ½ Str.
   const finesse = (out.finesseAlways || hasFeat(comp, 'Weapon Finesse')) && M('dex') > M('str');
   const multi = hasFeat(comp, 'Multiattack') || (out.multiattackSpecial && out.attacks.reduce((n, a) => n + a.count, 0) >= 3);
@@ -184,10 +194,11 @@ function finish(out, comp) {
   const strM = M('str');
   out.attacks = out.attacks.map(a => {
     const secondary = a.secondary ?? SECONDARY.has(a.name);
-    const bonus = out.bab + (finesse ? M('dex') : strM) + sz.ac + num(comp.attackMisc) - (secondary ? (multi ? 2 : 5) : 0);
+    const gearAtk = gear.stat('attack', 'melee'), gearDmg = gear.stat('damage', 'meleeDamage');
+    const bonus = out.bab + (finesse ? M('dex') : strM) + sz.ac + num(comp.attackMisc) + gearAtk - (secondary ? (multi ? 2 : 5) : 0);
     const mult = totalAttacks === 1 && !secondary ? 1.5 : secondary ? 0.5 : 1;
-    const dmg = strM < 0 ? strM : Math.floor(strM * mult);
-    const parts = P({ label: 'Base attack bonus', value: out.bab }, { label: finesse ? 'Dex modifier (Weapon Finesse)' : 'Str modifier', value: finesse ? M('dex') : strM }, { label: `Size (${out.size})`, value: sz.ac }, { label: 'Misc attack bonus', value: num(comp.attackMisc) }, { label: multi ? 'Secondary attack (Multiattack)' : 'Secondary attack', value: secondary ? -(multi ? 2 : 5) : 0 });
+    const dmg = (strM < 0 ? strM : Math.floor(strM * mult)) + gearDmg;
+    const parts = P({ label: 'Base attack bonus', value: out.bab }, { label: finesse ? 'Dex modifier (Weapon Finesse)' : 'Str modifier', value: finesse ? M('dex') : strM }, { label: `Size (${out.size})`, value: sz.ac }, { label: 'Misc attack bonus', value: num(comp.attackMisc) }, { label: 'Gear', value: gearAtk }, { label: multi ? 'Secondary attack (Multiattack)' : 'Secondary attack', value: secondary ? -(multi ? 2 : 5) : 0 });
     return { ...a, parts, secondary, bonus, damage: a.dice ? `${a.dice}${dmg ? sign(dmg) : ''}` : '',
       text: `${a.count > 1 ? a.count + ' ' : ''}${a.count > 1 ? plural(a.name) : a.name} ${sign(bonus)} (${a.dice ? a.dice + (dmg ? sign(dmg) : '') : '—'}${a.extra ? ' ' + a.extra : ''})` };
   });
@@ -196,6 +207,7 @@ function finish(out, comp) {
     const isClass = out.classSkills.includes(name) || (comp.extraClassSkills || []).includes(name);
     const ab = skillAbility(name);
     let total = num(r) + (out.abilities[ab] == null ? 0 : M(ab)) + (isClass ? 3 : 0);
+    total += gear.skill(name) + (bard && (ab === 'str' || ab === 'dex') ? bard.acp : 0) + (bard?.fx.skills[name] || 0); // items, the barding's check penalty and abilities
     if (name === 'Stealth') total += sz.stealth;
     if (name === 'Fly') total += sz.fly;
     return { name, ranks: num(r), total, isClass };
@@ -370,7 +382,7 @@ function computeEidolon(comp, levels, data) {
 /** A new companion record of the given kind, with sensible starting choices. */
 export function newCompanion(kind, data) {
   const base = { id: Math.random().toString(36).slice(2, 10), kind, name: '', levelOverride: '', increases: [], feats: [], skills: {},
-    extraClassSkills: [], hpMisc: 0, acMisc: 0, attackMisc: 0, tricks: '', notes: '' };
+    extraClassSkills: [], hpMisc: 0, acMisc: 0, attackMisc: 0, tricks: '', notes: '', barding: null, items: [] };
   if (kind === 'animal') return { ...base, name: 'Animal companion', species: 'Wolf' };
   if (kind === 'eidolon') return { ...base, name: 'Eidolon', form: data?.eidolon?.forms?.[0]?.name || 'Biped', evolutions: [] };
   if (kind === 'familiar') return { ...base, name: 'Familiar', species: data?.familiar?.species?.[0]?.name || 'Cat', template: '' };

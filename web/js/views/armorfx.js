@@ -17,8 +17,9 @@ export function wireArmorFx(body) {
   });
 }
 
-export function editArmorFx(i) {
-  const c = state.char, a = c.armor[i];
+/** The enchantment window for armor row `i`, or for an armor object given directly (a companion's barding). */
+export function editArmorFx(i, given = null) {
+  const c = state.char, a = given || c.armor[i];
   if (!a) return;
   a.fx ||= [];
   const type = a.type === 'shield' ? 'shield' : 'armor';

@@ -1722,7 +1722,7 @@ function buffs(body, c, d) {
   });
 }
 
-function editModifier(m) {
+export function editModifier(m) {
   return modal('Edit modifier', (body, close) => {
     const draw = () => {
       body.innerHTML = `<div class="fields"><label>Name <input id="m-name" value="${esc(m.name)}"></label>
