@@ -95,7 +95,7 @@ powershell -ExecutionPolicy Bypass -File build_exe.ps1
 
 `build_data.py` regenerates `data/pf1e.db` and the JSON files in `data/` (classes, companions, creatures, equipment, summons, granted spells and racial options) from `tools/sources/`. `build_exe.ps1` rebuilds the .exe into `dist/`.
 
-`tools/sources/` is not in the repository; see "Data pipeline" in `CLAUDE.md` for what goes in it and where to get it.
+`tools/sources/` is not in the repository; see [dev-docs/data-pipeline.md](dev-docs/data-pipeline.md) for what goes in it and where to get it.
 
 ## Testing
 
@@ -103,7 +103,7 @@ powershell -ExecutionPolicy Bypass -File build_exe.ps1
 npm test
 ```
 
-This runs the rules-math and importer tests (Node.js) and the server tests (Python). `npm run check` syntax-checks all of the UI code. Developer notes are in `CLAUDE.md`.
+This runs the rules-math and importer tests (Node.js) and the server tests (Python). `npm run check` syntax-checks all of the UI code. Developer notes start in `CLAUDE.md`, with the details in `dev-docs/`.
 
 ## Project layout
 

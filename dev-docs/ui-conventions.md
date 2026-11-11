@@ -1,6 +1,6 @@
 # UI conventions (follow these when adding fields)
 
-Moved out of CLAUDE.md to keep that file short. Read the bullet for the area you are touching.
+Read the bullet for the area you are touching. The rules for every change are at the top of [CLAUDE.md](../CLAUDE.md); module notes are in [web-modules.md](web-modules.md).
 
 - **Bindings:** `<input data-bind="path.in.char">` binds two-way through a global listener in `app.js`.
   - Add `data-type="num"` for numbers and `data-rerender` to redraw the page on change.
