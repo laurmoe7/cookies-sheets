@@ -492,6 +492,16 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .res-val .num { text-align: right; }
 .alt-note { font-size: 11.5px; color: var(--muted); font-style: italic; }
 .trait-choice { gap: 6px; margin: 4px 0; }
+.cls-abil-chip { text-decoration: none; }
+.abil-left { min-width: 54px; text-align: center; font-size: 15px; }
+.grant-row { margin: -4px 0 12px; }
+.grant-row > .row { gap: 8px; align-items: center; }
+.grant-pick { margin-top: 6px; }
+.grant-selects { gap: 8px; margin-bottom: 6px; }
+.grant-list { margin: 6px 0; }
+.grant-spells { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 3px; }
+.grant-sp.later { opacity: .55; }
+.sp-g { color: var(--accent); font-size: 11px; }
 .card.lu-spells-due { border-color: var(--warn); box-shadow: 0 0 0 1px var(--warn) inset; }
 .drawback-head { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line); }
 .drawback-head h4 { margin: 0; }
@@ -831,6 +841,7 @@ html[data-motion="off"] .fx-spark { display: none; }
 .btn.danger-solid:hover:not(:disabled) { background: rgba(179, 53, 44, .15) !important; border-color: #c43b31 !important; color: #8f1f18 !important; }
 /* the open spell's bar in the side panel: groups with a small label, a stepper for numbers, and a solid Cast */
 .sp-actions { display: flex; align-items: center; gap: 10px 22px; flex-wrap: wrap; padding: 10px 12px; margin: 6px 0 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); }
+.sp-actions:not(:has(*)) { display: none; } /* nothing to roll, track or cast (detect evil): no empty bar */
 .sp-group { display: inline-flex; align-items: center; gap: 8px; }
 .sp-group-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 .sp-actions .btn { padding: 6px 14px; }
@@ -854,7 +865,7 @@ html[data-motion="off"] .fx-spark { display: none; }
 .sp-custom textarea { min-height: 280px; resize: vertical; line-height: 1.45; }
 /* spell slots as circles: filled = available, ringed = used, dashed = not filled */
 .slot-pips { display: inline-flex; flex-wrap: wrap; gap: 3px; align-items: center; vertical-align: middle; }
-.spip { display: block; width: 11px; height: 11px; border-radius: 50%; box-sizing: border-box; border: 1.5px solid var(--accent); }
+.spip { display: block; width: 11px; height: 11px; padding: 0; flex: none; border-radius: 50%; box-sizing: border-box; border: 1.5px solid var(--accent); } /* padding: 0 beats the page-wide .empty rule */
 .spip.full { background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 55%, #fff), var(--accent) 70%); box-shadow: 0 0 4px color-mix(in srgb, var(--accent) 55%, transparent); }
 .spip.used { border-color: var(--muted); opacity: .6; }
 .spip.empty { border: 1.5px dashed var(--muted); opacity: .5; }
@@ -867,9 +878,9 @@ html[data-motion="off"] .fx-spark { display: none; }
 /* The tab bar stays at the top of the page while the tab scrolls under it. */
 .page > .tabs { position: sticky; top: 0; z-index: 20; background: var(--bg); }
 /* Gold buttons: Summon and every Roll button (with its dice) stand out from the plain ones. The html[data-theme] copies beat the themes' own .btn rules. */
-.sp-actions .btn[data-summon], .btn[data-spell-roll], .btn[data-roll], .rchip.go, html[data-theme] .sp-actions .btn[data-summon], html[data-theme] .btn[data-spell-roll], html[data-theme] .btn[data-roll], html[data-theme] .rchip.go { background: linear-gradient(180deg, #e6bb58, #b8862a); border-color: #7a560f; color: #2a1904; font-style: normal; font-weight: 700;
+.sp-actions .btn[data-summon], .btn[data-spell-roll], .btn[data-abil-roll], .btn[data-roll], .rchip.go, html[data-theme] .sp-actions .btn[data-summon], html[data-theme] .btn[data-spell-roll], html[data-theme] .btn[data-abil-roll], html[data-theme] .btn[data-roll], html[data-theme] .rchip.go { background: linear-gradient(180deg, #e6bb58, #b8862a); border-color: #7a560f; color: #2a1904; font-style: normal; font-weight: 700;
   box-shadow: 0 0 0 2px rgba(230,187,88,.38), 0 2px 8px rgba(0,0,0,.4); text-shadow: 0 1px 0 rgba(255,240,200,.45); }
-.sp-actions .btn[data-summon]:hover, .btn[data-spell-roll]:hover, .btn[data-roll]:hover, .rchip.go:hover, html[data-theme] .sp-actions .btn[data-summon]:hover, html[data-theme] .btn[data-spell-roll]:hover, html[data-theme] .btn[data-roll]:hover, html[data-theme] .rchip.go:hover { background: linear-gradient(180deg, #f0c968, #c4902e); border-color: #7a560f; color: #2a1904; }
+.sp-actions .btn[data-summon]:hover, .btn[data-spell-roll]:hover, .btn[data-abil-roll]:hover, .btn[data-roll]:hover, .rchip.go:hover, html[data-theme] .sp-actions .btn[data-summon]:hover, html[data-theme] .btn[data-spell-roll]:hover, html[data-theme] .btn[data-abil-roll]:hover, html[data-theme] .btn[data-roll]:hover, html[data-theme] .rchip.go:hover { background: linear-gradient(180deg, #f0c968, #c4902e); border-color: #7a560f; color: #2a1904; }
 .rchip.go { padding: 3px 14px; }
 
 .opt-inline { display: inline-flex; align-items: center; gap: 12px; }

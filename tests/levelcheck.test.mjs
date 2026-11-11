@@ -27,3 +27,9 @@ test('1st level checks point buy and the default name', () => {
   assert.ok(w.some(s => /default name/.test(s)));
   assert.ok(levelWarnings({ ...done, newLevel: 1, pointsLeft: -2, name: 'Ada' }).some(s => /2 points over/.test(s)));
 });
+test('a feature with options and blank notes asks for the choice', () => {
+  const w = levelWarnings({ ...done, choicesUnnoted: ['Mercy'] });
+  assert.equal(w.length, 1);
+  assert.match(w[0], /^Mercy: write which one/);
+  assert.deepEqual(levelWarnings({ ...done, choicesUnnoted: [] }), []);
+});

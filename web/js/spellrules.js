@@ -95,3 +95,13 @@ export function describeRemaining(rem) {
   if (rem.any) parts.push(`${rem.any.count} of any level up to ${ORD[rem.any.maxLevel].replace('-level', '')}`);
   return parts.join(', ');
 }
+
+/**
+ * Whole-list prepared casters (cleric, druid, paladin, ranger...): the spell levels whose class list should go on the Spells tab after a level.
+ * A level counts when the caster can use it (slots above 0, or at will) and it is new this level or has nothing on the list yet.
+ * `before` / `after` are spellcasting slot arrays (before may be missing: the class could not cast yet); `have` is [{level}].
+ */
+export function levelsToFill(before, after, have) {
+  return (after || []).map((v, l) => (v != null && v !== 0 && (before?.[l] == null || !have.some(s => s.level === l)) ? l : -1)).filter(l => l >= 0);
+}
+

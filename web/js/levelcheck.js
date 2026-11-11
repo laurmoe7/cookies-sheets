@@ -18,6 +18,7 @@ export function levelWarnings(x) {
     else if (x.fcb === 'other' && !String(x.fcbNote || '').trim()) out.push('Favored class bonus: your own bonus is blank.');
   }
   if (x.spellsLeft) out.push(`${x.spellsLeft} still to choose.`);
+  if (x.choicesUnnoted?.length) out.push(`${x.choicesUnnoted.join(', ')}: write which one you chose in the notes for this level.`);
   if (x.newLevel === 1) {
     if (x.pointsLeft > 0) out.push(`${plural(x.pointsLeft, 'ability point-buy point')} not spent.`);
     if (x.notRolled) out.push('Ability scores are not rolled yet.');

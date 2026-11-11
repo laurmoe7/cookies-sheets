@@ -383,6 +383,22 @@ function rollDiceBox() {
 }
 
 /**
+ * The roll window for a class ability (lay on hands, channel energy...): its dice to pick from, a melee touch attack first when `touch`,
+ * and `cast` ({label, left, recent, on, spend()}) for the "Use it" tick that spends from its tracker.
+ * rolls: [{label, dice, group: 'Healing' | 'Damage'}].
+ */
+export function abilityRollWindow({ title, facts, rolls, touch = false, cast = null }) {
+  const d = state.derived;
+  const choices = [
+    ...(touch ? [{ group: 'Hit', label: 'To hit: melee touch ' + (bonusText(d.melee) || '+0'), tip: 'Roll d20 melee touch attack', kind: 'melee', attack: true,
+      p: { expr: 'd20' + bonusText(d.melee), label: title + ' melee touch attack', parts: d.bd?.melee } }] : []),
+    ...rolls.map(r => ({ group: r.group || 'Damage', label: `${r.label} ${r.dice}`, tip: `Roll ${r.dice}`, p: { expr: r.dice, label: `${title}: ${r.label}` } })),
+  ];
+  if (!choices.length) return;
+  rollWindow(null, false, { title, facts, choices, cast, start: touch ? 1 : 0 });
+}
+
+/**
  * Puts the Roll button on the spells that have something to roll (damage or healing dice, an attack roll, or spell resistance to beat).
  * Spells with none of those, like Mage Armor, get no button. Runs after the Spells tab is drawn; entries are cached, so redraws are instant.
  */

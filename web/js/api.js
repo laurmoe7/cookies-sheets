@@ -40,6 +40,7 @@ export const api = {
   companions: () => req('GET', 'companions'),
   summons: () => req('GET', 'summons'),
   fcb: () => req('GET', 'fcb'),
+  grants: () => req('GET', 'grants'),
   characters: () => req('GET', 'characters'),
   character: id => req('GET', 'character?' + qs({ id })),
   saveCharacter: c => req('POST', 'character', c),

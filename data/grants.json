@@ -1,0 +1,8988 @@
+{
+ "domain": {
+  "Air": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Obscuring Mist",
+     "level": 1
+    },
+    {
+     "name": "Wind Wall",
+     "level": 2
+    },
+    {
+     "name": "Gaseous Form",
+     "level": 3
+    },
+    {
+     "name": "Air Walk",
+     "level": 4
+    },
+    {
+     "name": "Control Winds",
+     "level": 5
+    },
+    {
+     "name": "Chain Lightning",
+     "level": 6
+    },
+    {
+     "name": "Elemental Body IV",
+     "level": 7,
+     "note": "air only"
+    },
+    {
+     "name": "Whirlwind",
+     "level": 8
+    },
+    {
+     "name": "Elemental Swarm",
+     "level": 9,
+     "note": "air spell only"
+    }
+   ],
+   "desc": "You can manipulate lightning, mist, and wind, traffic with air creatures, and are resistant to electricity damage."
+  },
+  "Animal": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Calm Animals",
+     "level": 1
+    },
+    {
+     "name": "Hold Animal",
+     "level": 2
+    },
+    {
+     "name": "Dominate Animal",
+     "level": 3
+    },
+    {
+     "name": "Summon Nature's Ally IV",
+     "level": 4,
+     "note": "animals only"
+    },
+    {
+     "name": "Beast Shape III",
+     "level": 5,
+     "note": "animals only"
+    },
+    {
+     "name": "Antilife Shell",
+     "level": 6
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 7
+    },
+    {
+     "name": "Summon Nature's Ally VIII",
+     "level": 8,
+     "note": "animals only"
+    },
+    {
+     "name": "Shapechange",
+     "level": 9
+    }
+   ],
+   "desc": "You can speak with and befriend animals with ease. In addition, you treat Knowledge (nature) as a class skill."
+  },
+  "Artifice": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Animate Rope",
+     "level": 1
+    },
+    {
+     "name": "Wood Shape",
+     "level": 2
+    },
+    {
+     "name": "Stone Shape",
+     "level": 3
+    },
+    {
+     "name": "Minor Creation",
+     "level": 4
+    },
+    {
+     "name": "Fabricate",
+     "level": 5
+    },
+    {
+     "name": "Major Creation",
+     "level": 6
+    },
+    {
+     "name": "Wall Of Iron",
+     "level": 7
+    },
+    {
+     "name": "Statue",
+     "level": 8
+    },
+    {
+     "name": "Prismatic Sphere",
+     "level": 9
+    }
+   ],
+   "desc": "You can repair damage to objects, animate objects with life, and create objects from nothing."
+  },
+  "Chaos": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Protection From Law",
+     "level": 1
+    },
+    {
+     "name": "Align Weapon",
+     "level": 2,
+     "note": "chaos only"
+    },
+    {
+     "name": "Magic Circle Against Law",
+     "level": 3
+    },
+    {
+     "name": "Chaos Hammer",
+     "level": 4
+    },
+    {
+     "name": "Dispel Law",
+     "level": 5
+    },
+    {
+     "name": "Animate Objects",
+     "level": 6
+    },
+    {
+     "name": "Word Of Chaos",
+     "level": 7
+    },
+    {
+     "name": "Cloak Of Chaos",
+     "level": 8
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "note": "chaos spell only"
+    }
+   ],
+   "desc": "Your touch infuses life and weapons with chaos, and you revel in all things anarchic."
+  },
+  "Charm": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Charm Person",
+     "level": 1
+    },
+    {
+     "name": "Calm Emotions",
+     "level": 2
+    },
+    {
+     "name": "Suggestion",
+     "level": 3
+    },
+    {
+     "name": "Heroism",
+     "level": 4
+    },
+    {
+     "name": "Charm Monster",
+     "level": 5
+    },
+    {
+     "name": "Geas/Quest",
+     "level": 6
+    },
+    {
+     "name": "Insanity",
+     "level": 7
+    },
+    {
+     "name": "Demand",
+     "level": 8
+    },
+    {
+     "name": "Dominate Monster",
+     "level": 9
+    }
+   ],
+   "desc": "You can baffle and befuddle foes with a touch or a smile, and your beauty and grace are divine."
+  },
+  "Community": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Bless",
+     "level": 1
+    },
+    {
+     "name": "Shield Other",
+     "level": 2
+    },
+    {
+     "name": "Prayer",
+     "level": 3
+    },
+    {
+     "name": "Imbue With Spell Ability",
+     "level": 4
+    },
+    {
+     "name": "Telepathic Bond",
+     "level": 5
+    },
+    {
+     "name": "Heroes' Feast",
+     "level": 6
+    },
+    {
+     "name": "Refuge",
+     "level": 7
+    },
+    {
+     "name": "Cure Critical Wounds, Mass",
+     "level": 8
+    },
+    {
+     "name": "Miracle",
+     "level": 9
+    }
+   ],
+   "desc": "Your touch can heal wounds, and your presence instills unity and strengthens emotional bonds."
+  },
+  "Darkness": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Obscuring Mist",
+     "level": 1
+    },
+    {
+     "name": "Blindness/Deafness",
+     "level": 2,
+     "note": "only to cause blindness"
+    },
+    {
+     "name": "Deeper Darkness",
+     "level": 3
+    },
+    {
+     "name": "Shadow Conjuration",
+     "level": 4
+    },
+    {
+     "name": "Summon Monster V",
+     "level": 5,
+     "note": "summons 1d3 shadows"
+    },
+    {
+     "name": "Shadow Walk",
+     "level": 6
+    },
+    {
+     "name": "Power Word Blind",
+     "level": 7
+    },
+    {
+     "name": "Shadow Evocation, Greater",
+     "level": 8
+    },
+    {
+     "name": "Shades",
+     "level": 9
+    }
+   ],
+   "desc": ""
+  },
+  "Death": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Cause Fear",
+     "level": 1
+    },
+    {
+     "name": "Death Knell",
+     "level": 2
+    },
+    {
+     "name": "Animate Dead",
+     "level": 3
+    },
+    {
+     "name": "Death Ward",
+     "level": 4
+    },
+    {
+     "name": "Slay Living",
+     "level": 5
+    },
+    {
+     "name": "Create Undead",
+     "level": 6
+    },
+    {
+     "name": "Destruction",
+     "level": 7
+    },
+    {
+     "name": "Create Greater Undead",
+     "level": 8
+    },
+    {
+     "name": "Wail Of The Banshee",
+     "level": 9
+    }
+   ],
+   "desc": "You can cause the living to bleed at a touch, and find comfort in the presence of the dead."
+  },
+  "Destruction": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "True Strike",
+     "level": 1
+    },
+    {
+     "name": "Shatter",
+     "level": 2
+    },
+    {
+     "name": "Rage",
+     "level": 3
+    },
+    {
+     "name": "Inflict Critical Wounds",
+     "level": 4
+    },
+    {
+     "name": "Shout",
+     "level": 5
+    },
+    {
+     "name": "Harm",
+     "level": 6
+    },
+    {
+     "name": "Disintegrate",
+     "level": 7
+    },
+    {
+     "name": "Earthquake",
+     "level": 8
+    },
+    {
+     "name": "Implosion",
+     "level": 9
+    }
+   ],
+   "desc": "You revel in ruin and devastation, and can deliver particularly destructive attacks."
+  },
+  "Earth": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Magic Stone",
+     "level": 1
+    },
+    {
+     "name": "Soften Earth And Stone",
+     "level": 2
+    },
+    {
+     "name": "Stone Shape",
+     "level": 3
+    },
+    {
+     "name": "Spike Stones",
+     "level": 4
+    },
+    {
+     "name": "Wall Of Stone",
+     "level": 5
+    },
+    {
+     "name": "Stoneskin",
+     "level": 6
+    },
+    {
+     "name": "Elemental Body IV",
+     "level": 7,
+     "note": "earth only"
+    },
+    {
+     "name": "Earthquake",
+     "level": 8
+    },
+    {
+     "name": "Elemental Swarm",
+     "level": 9,
+     "note": "earth spell only"
+    }
+   ],
+   "desc": "You have mastery over earth, metal, and stone, can fire darts of acid, and command earth creatures."
+  },
+  "Evil": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Protection From Good",
+     "level": 1
+    },
+    {
+     "name": "Align Weapon",
+     "level": 2,
+     "note": "evil only"
+    },
+    {
+     "name": "Magic Circle Against Good",
+     "level": 3
+    },
+    {
+     "name": "Unholy Blight",
+     "level": 4
+    },
+    {
+     "name": "Dispel Good",
+     "level": 5
+    },
+    {
+     "name": "Create Undead",
+     "level": 6
+    },
+    {
+     "name": "Blasphemy",
+     "level": 7
+    },
+    {
+     "name": "Unholy Aura",
+     "level": 8
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "note": "evil spell only"
+    }
+   ],
+   "desc": "You are sinister and cruel, and have wholly pledged your soul to the cause of evil."
+  },
+  "Fire": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Burning Hands",
+     "level": 1
+    },
+    {
+     "name": "Produce Flame",
+     "level": 2
+    },
+    {
+     "name": "Fireball",
+     "level": 3
+    },
+    {
+     "name": "Wall Of Fire",
+     "level": 4
+    },
+    {
+     "name": "Fire Shield",
+     "level": 5
+    },
+    {
+     "name": "Fire Seeds",
+     "level": 6
+    },
+    {
+     "name": "Elemental Body IV",
+     "level": 7,
+     "note": "fire only"
+    },
+    {
+     "name": "Incendiary Cloud",
+     "level": 8
+    },
+    {
+     "name": "Elemental Swarm",
+     "level": 9,
+     "note": "fire spell only"
+    }
+   ],
+   "desc": "You can call forth fire, command creatures of the inferno, and your flesh does not burn."
+  },
+  "Glory": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Shield Of Faith",
+     "level": 1
+    },
+    {
+     "name": "Bless Weapon",
+     "level": 2
+    },
+    {
+     "name": "Searing Light",
+     "level": 3
+    },
+    {
+     "name": "Holy Smite",
+     "level": 4
+    },
+    {
+     "name": "Righteous Might",
+     "level": 5
+    },
+    {
+     "name": "Undeath To Death",
+     "level": 6
+    },
+    {
+     "name": "Holy Sword",
+     "level": 7
+    },
+    {
+     "name": "Holy Aura",
+     "level": 8
+    },
+    {
+     "name": "Gate",
+     "level": 9
+    }
+   ],
+   "desc": "You are infused with the glory of the divine, and are a true foe of the undead. In addition, when you channel positive energy to harm undead creatures, the save DC to halve the damage is increased by 2."
+  },
+  "Good": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Protection From Evil",
+     "level": 1
+    },
+    {
+     "name": "Align Weapon",
+     "level": 2,
+     "note": "good only"
+    },
+    {
+     "name": "Magic Circle Against Evil",
+     "level": 3
+    },
+    {
+     "name": "Holy Smite",
+     "level": 4
+    },
+    {
+     "name": "Dispel Evil",
+     "level": 5
+    },
+    {
+     "name": "Blade Barrier",
+     "level": 6
+    },
+    {
+     "name": "Holy Word",
+     "level": 7
+    },
+    {
+     "name": "Holy Aura",
+     "level": 8
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "note": "good spell only"
+    }
+   ],
+   "desc": "You have pledged your life and soul to goodness and purity."
+  },
+  "Healing": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Cure Light Wounds",
+     "level": 1
+    },
+    {
+     "name": "Cure Moderate Wounds",
+     "level": 2
+    },
+    {
+     "name": "Cure Serious Wounds",
+     "level": 3
+    },
+    {
+     "name": "Cure Critical Wounds",
+     "level": 4
+    },
+    {
+     "name": "Breath Of Life",
+     "level": 5
+    },
+    {
+     "name": "Heal",
+     "level": 6
+    },
+    {
+     "name": "Regenerate",
+     "level": 7
+    },
+    {
+     "name": "Cure Critical Wounds, Mass",
+     "level": 8
+    },
+    {
+     "name": "Heal, Mass",
+     "level": 9
+    }
+   ],
+   "desc": "Your touch staves off pain and death, and your healing magic is particularly vital and potent."
+  },
+  "Knowledge": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Comprehend Languages",
+     "level": 1
+    },
+    {
+     "name": "Detect Thoughts",
+     "level": 2
+    },
+    {
+     "name": "Speak With Dead",
+     "level": 3
+    },
+    {
+     "name": "Divination",
+     "level": 4
+    },
+    {
+     "name": "True Seeing",
+     "level": 5
+    },
+    {
+     "name": "Find The Path",
+     "level": 6
+    },
+    {
+     "name": "Legend Lore",
+     "level": 7
+    },
+    {
+     "name": "Discern Location",
+     "level": 8
+    },
+    {
+     "name": "Foresight",
+     "level": 9
+    }
+   ],
+   "desc": "You are a scholar and a sage of legends. In addition, you treat all Knowledge skills as class skills."
+  },
+  "Law": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Protection From Chaos",
+     "level": 1
+    },
+    {
+     "name": "Align Weapon",
+     "level": 2,
+     "note": "law only"
+    },
+    {
+     "name": "Magic Circle Against Chaos",
+     "level": 3
+    },
+    {
+     "name": "Order's Wrath",
+     "level": 4
+    },
+    {
+     "name": "Dispel Chaos",
+     "level": 5
+    },
+    {
+     "name": "Hold Monster",
+     "level": 6
+    },
+    {
+     "name": "Dictum",
+     "level": 7
+    },
+    {
+     "name": "Shield Of Law",
+     "level": 8
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "note": "law spell only"
+    }
+   ],
+   "desc": "You follow a strict and ordered code of laws, and in so doing, achieve enlightenment."
+  },
+  "Liberation": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Remove Fear",
+     "level": 1
+    },
+    {
+     "name": "Remove Paralysis",
+     "level": 2
+    },
+    {
+     "name": "Remove Curse",
+     "level": 3
+    },
+    {
+     "name": "Freedom Of Movement",
+     "level": 4
+    },
+    {
+     "name": "Break Enchantment",
+     "level": 5
+    },
+    {
+     "name": "Dispel Magic, Greater",
+     "level": 6
+    },
+    {
+     "name": "Refuge",
+     "level": 7
+    },
+    {
+     "name": "Mind Blank",
+     "level": 8
+    },
+    {
+     "name": "Freedom",
+     "level": 9
+    }
+   ],
+   "desc": "You are a spirit of freedom and a staunch foe against all who would enslave and oppress."
+  },
+  "Luck": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "True Strike",
+     "level": 1
+    },
+    {
+     "name": "Aid",
+     "level": 2
+    },
+    {
+     "name": "Protection From Energy",
+     "level": 3
+    },
+    {
+     "name": "Freedom Of Movement",
+     "level": 4
+    },
+    {
+     "name": "Break Enchantment",
+     "level": 5
+    },
+    {
+     "name": "Mislead",
+     "level": 6
+    },
+    {
+     "name": "Spell Turning",
+     "level": 7
+    },
+    {
+     "name": "Moment Of Prescience",
+     "level": 8
+    },
+    {
+     "name": "Miracle",
+     "level": 9
+    }
+   ],
+   "desc": "You are infused with luck, and your mere presence can spread good fortune."
+  },
+  "Madness": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Confusion, Lesser",
+     "level": 1
+    },
+    {
+     "name": "Touch Of Idiocy",
+     "level": 2
+    },
+    {
+     "name": "Rage",
+     "level": 3
+    },
+    {
+     "name": "Confusion",
+     "level": 4
+    },
+    {
+     "name": "Nightmare",
+     "level": 5
+    },
+    {
+     "name": "Phantasmal Killer",
+     "level": 6
+    },
+    {
+     "name": "Insanity",
+     "level": 7
+    },
+    {
+     "name": "Scintillating Pattern",
+     "level": 8
+    },
+    {
+     "name": "Weird",
+     "level": 9
+    }
+   ],
+   "desc": "You embrace the madness that lurks deep in your heart, and can unleash it to drive your foes insane or to sacrifice certain abilities to hone others."
+  },
+  "Magic": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Identify",
+     "level": 1
+    },
+    {
+     "name": "Magic Mouth",
+     "level": 2
+    },
+    {
+     "name": "Dispel Magic",
+     "level": 3
+    },
+    {
+     "name": "Imbue With Spell Ability",
+     "level": 4
+    },
+    {
+     "name": "Spell Resistance",
+     "level": 5
+    },
+    {
+     "name": "Antimagic Field",
+     "level": 6
+    },
+    {
+     "name": "Spell Turning",
+     "level": 7
+    },
+    {
+     "name": "Protection From Spells",
+     "level": 8
+    },
+    {
+     "name": "Mage's Disjunction",
+     "level": 9
+    }
+   ],
+   "desc": "You are a true student of all things mystical, and see divinity in the purity of magic."
+  },
+  "Nobility": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Divine Favor",
+     "level": 1
+    },
+    {
+     "name": "Enthrall",
+     "level": 2
+    },
+    {
+     "name": "Magic Vestment",
+     "level": 3
+    },
+    {
+     "name": "Discern Lies",
+     "level": 4
+    },
+    {
+     "name": "Command, Greater",
+     "level": 5
+    },
+    {
+     "name": "Geas/Quest",
+     "level": 6
+    },
+    {
+     "name": "Repulsion",
+     "level": 7
+    },
+    {
+     "name": "Demand",
+     "level": 8
+    },
+    {
+     "name": "Storm Of Vengeance",
+     "level": 9
+    }
+   ],
+   "desc": "You are a great leader, an inspiration to all who follow the teachings of your faith."
+  },
+  "Plant": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Entangle",
+     "level": 1
+    },
+    {
+     "name": "Barkskin",
+     "level": 2
+    },
+    {
+     "name": "Plant Growth",
+     "level": 3
+    },
+    {
+     "name": "Command Plants",
+     "level": 4
+    },
+    {
+     "name": "Wall Of Thorns",
+     "level": 5
+    },
+    {
+     "name": "Repel Wood",
+     "level": 6
+    },
+    {
+     "name": "Animate Plants",
+     "level": 7
+    },
+    {
+     "name": "Control Plants",
+     "level": 8
+    },
+    {
+     "name": "Shambler",
+     "level": 9
+    }
+   ],
+   "desc": "You find solace in the green, can grow defensive thorns, and can communicate with plants."
+  },
+  "Protection": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Sanctuary",
+     "level": 1
+    },
+    {
+     "name": "Shield Other",
+     "level": 2
+    },
+    {
+     "name": "Protection From Energy",
+     "level": 3
+    },
+    {
+     "name": "Spell Immunity",
+     "level": 4
+    },
+    {
+     "name": "Spell Resistance",
+     "level": 5
+    },
+    {
+     "name": "Antimagic Field",
+     "level": 6
+    },
+    {
+     "name": "Repulsion",
+     "level": 7
+    },
+    {
+     "name": "Mind Blank",
+     "level": 8
+    },
+    {
+     "name": "Prismatic Sphere",
+     "level": 9
+    }
+   ],
+   "desc": "Your faith is your greatest source of protection, and you can use that faith to defend others. In addition, you receive a +1 resistance bonus on saving throws. This bonus increases by 1 for every 5 levels you possess."
+  },
+  "Repose": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Deathwatch",
+     "level": 1
+    },
+    {
+     "name": "Gentle Repose",
+     "level": 2
+    },
+    {
+     "name": "Speak With Dead",
+     "level": 3
+    },
+    {
+     "name": "Death Ward",
+     "level": 4
+    },
+    {
+     "name": "Slay Living",
+     "level": 5
+    },
+    {
+     "name": "Undeath To Death",
+     "level": 6
+    },
+    {
+     "name": "Destruction",
+     "level": 7
+    },
+    {
+     "name": "Waves Of Exhaustion",
+     "level": 8
+    },
+    {
+     "name": "Wail Of The Banshee",
+     "level": 9
+    }
+   ],
+   "desc": "You see death not as something to be feared, but as a final rest and reward for a life well spent. The taint of undeath is a mockery of what you hold dear."
+  },
+  "Rune": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Erase",
+     "level": 1
+    },
+    {
+     "name": "Secret Page",
+     "level": 2
+    },
+    {
+     "name": "Glyph Of Warding",
+     "level": 3
+    },
+    {
+     "name": "Explosive Runes",
+     "level": 4
+    },
+    {
+     "name": "Planar Binding, Lesser",
+     "level": 5
+    },
+    {
+     "name": "Glyph Of Warding, Greater",
+     "level": 6
+    },
+    {
+     "name": "Instant Summons",
+     "level": 7
+    },
+    {
+     "name": "Symbol Of Death",
+     "level": 8
+    },
+    {
+     "name": "Teleportation Circle",
+     "level": 9
+    }
+   ],
+   "desc": "In strange and eldritch runes you find potent magic. You gain Scribe Scroll as a bonus feat."
+  },
+  "Strength": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Enlarge Person",
+     "level": 1
+    },
+    {
+     "name": "Bull's Strength",
+     "level": 2
+    },
+    {
+     "name": "Magic Vestment",
+     "level": 3
+    },
+    {
+     "name": "Spell Immunity",
+     "level": 4
+    },
+    {
+     "name": "Righteous Might",
+     "level": 5
+    },
+    {
+     "name": "Stoneskin",
+     "level": 6
+    },
+    {
+     "name": "Grasping Hand",
+     "level": 7
+    },
+    {
+     "name": "Clenched Fist",
+     "level": 8
+    },
+    {
+     "name": "Crushing Hand",
+     "level": 9
+    }
+   ],
+   "desc": "In strength and brawn there is truth—your faith gives you incredible might and power."
+  },
+  "Sun": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Endure Elements",
+     "level": 1
+    },
+    {
+     "name": "Heat Metal",
+     "level": 2
+    },
+    {
+     "name": "Searing Light",
+     "level": 3
+    },
+    {
+     "name": "Fire Shield",
+     "level": 4
+    },
+    {
+     "name": "Flame Strike",
+     "level": 5
+    },
+    {
+     "name": "Fire Seeds",
+     "level": 6
+    },
+    {
+     "name": "Sunbeam",
+     "level": 7
+    },
+    {
+     "name": "Sunburst",
+     "level": 8
+    },
+    {
+     "name": "Prismatic Sphere",
+     "level": 9
+    }
+   ],
+   "desc": "You see truth in the pure and burning light of the sun, and can call upon its blessing or wrath to work great deeds."
+  },
+  "Travel": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Longstrider",
+     "level": 1
+    },
+    {
+     "name": "Locate Object",
+     "level": 2
+    },
+    {
+     "name": "Fly",
+     "level": 3
+    },
+    {
+     "name": "Dimension Door",
+     "level": 4
+    },
+    {
+     "name": "Teleport",
+     "level": 5
+    },
+    {
+     "name": "Find The Path",
+     "level": 6
+    },
+    {
+     "name": "Teleport, Greater",
+     "level": 7
+    },
+    {
+     "name": "Phase Door",
+     "level": 8
+    },
+    {
+     "name": "Astral Projection",
+     "level": 9
+    }
+   ],
+   "desc": "You are an explorer and find enlightenment in the simple joy of travel, be it by foot or conveyance or magic. Increase your base speed by 10 feet."
+  },
+  "Trickery": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Disguise Self",
+     "level": 1
+    },
+    {
+     "name": "Invisibility",
+     "level": 2
+    },
+    {
+     "name": "Nondetection",
+     "level": 3
+    },
+    {
+     "name": "Confusion",
+     "level": 4
+    },
+    {
+     "name": "False Vision",
+     "level": 5
+    },
+    {
+     "name": "Mislead",
+     "level": 6
+    },
+    {
+     "name": "Screen",
+     "level": 7
+    },
+    {
+     "name": "Invisibility, Mass",
+     "level": 8
+    },
+    {
+     "name": "Time Stop",
+     "level": 9
+    }
+   ],
+   "desc": "You are a master of illusions and deceptions. Bluff, Disguise, and Stealth are class skills."
+  },
+  "War": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Magic Weapon",
+     "level": 1
+    },
+    {
+     "name": "Spiritual Weapon",
+     "level": 2
+    },
+    {
+     "name": "Magic Vestment",
+     "level": 3
+    },
+    {
+     "name": "Divine Power",
+     "level": 4
+    },
+    {
+     "name": "Flame Strike",
+     "level": 5
+    },
+    {
+     "name": "Blade Barrier",
+     "level": 6
+    },
+    {
+     "name": "Power Word Blind",
+     "level": 7
+    },
+    {
+     "name": "Power Word Stun",
+     "level": 8
+    },
+    {
+     "name": "Power Word Kill",
+     "level": 9
+    }
+   ],
+   "desc": "You are a crusader for your god, always ready and willing to fight to defend your faith."
+  },
+  "Water": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Obscuring Mist",
+     "level": 1
+    },
+    {
+     "name": "Fog Cloud",
+     "level": 2
+    },
+    {
+     "name": "Water Breathing",
+     "level": 3
+    },
+    {
+     "name": "Control Water",
+     "level": 4
+    },
+    {
+     "name": "Ice Storm",
+     "level": 5
+    },
+    {
+     "name": "Cone Of Cold",
+     "level": 6
+    },
+    {
+     "name": "Elemental Body IV",
+     "level": 7,
+     "note": "water only"
+    },
+    {
+     "name": "Horrid Wilting",
+     "level": 8
+    },
+    {
+     "name": "Elemental Swarm",
+     "level": 9,
+     "note": "water spell only"
+    }
+   ],
+   "desc": "You can manipulate water and mist and ice, conjure creatures of water, and resist cold."
+  },
+  "Weather": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Obscuring Mist",
+     "level": 1
+    },
+    {
+     "name": "Fog Cloud",
+     "level": 2
+    },
+    {
+     "name": "Call Lightning",
+     "level": 3
+    },
+    {
+     "name": "Sleet Storm",
+     "level": 4
+    },
+    {
+     "name": "Ice Storm",
+     "level": 5
+    },
+    {
+     "name": "Control Winds",
+     "level": 6
+    },
+    {
+     "name": "Control Weather",
+     "level": 7
+    },
+    {
+     "name": "Whirlwind",
+     "level": 8
+    },
+    {
+     "name": "Storm Of Vengeance",
+     "level": 9
+    }
+   ],
+   "desc": "With power over storm and sky, you can call down the wrath of the gods upon the world below."
+  }
+ },
+ "subdomain": {
+  "Agathion": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Shield Of Faith",
+     "level": 1
+    },
+    {
+     "name": "Align Weapon",
+     "level": 2,
+     "note": "good only"
+    },
+    {
+     "name": "Tongues",
+     "level": 3
+    },
+    {
+     "name": "Holy Smite",
+     "level": 4
+    },
+    {
+     "name": "Dispel Evil",
+     "level": 5
+    },
+    {
+     "name": "Planar Ally",
+     "level": 6,
+     "note": "agathions only"
+    },
+    {
+     "name": "Holy Word",
+     "level": 7
+    },
+    {
+     "name": "Holy Aura",
+     "level": 8
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "note": "good spell only"
+    }
+   ],
+   "domain": "Good",
+   "desc": "",
+   "replaces": [
+    1,
+    3,
+    6
+   ]
+  },
+  "Ancestors": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Deathwatch",
+     "level": 1
+    },
+    {
+     "name": "Gentle Repose",
+     "level": 2
+    },
+    {
+     "name": "Speak With Dead",
+     "level": 3
+    },
+    {
+     "name": "Rest Eternal",
+     "level": 4
+    },
+    {
+     "name": "Slay Living",
+     "level": 5
+    },
+    {
+     "name": "Geas/Quest",
+     "level": 6
+    },
+    {
+     "name": "Destruction",
+     "level": 7
+    },
+    {
+     "name": "Waves Of Exhaustion",
+     "level": 8
+    },
+    {
+     "name": "Wail Of The Banshee",
+     "level": 9
+    }
+   ],
+   "domain": "Repose",
+   "desc": "",
+   "replaces": [
+    4,
+    6
+   ]
+  },
+  "Arcane": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Identify",
+     "level": 1
+    },
+    {
+     "name": "Magic Mouth",
+     "level": 2
+    },
+    {
+     "name": "Dispel Magic",
+     "level": 3
+    },
+    {
+     "name": "Arcane Eye",
+     "level": 4
+    },
+    {
+     "name": "Spell Resistance",
+     "level": 5
+    },
+    {
+     "name": "Analyze Dweomer",
+     "level": 6
+    },
+    {
+     "name": "Spell Turning",
+     "level": 7
+    },
+    {
+     "name": "Protection From Spells",
+     "level": 8
+    },
+    {
+     "name": "Mage's Disjunction",
+     "level": 9
+    }
+   ],
+   "domain": "Magic",
+   "desc": "",
+   "replaces": [
+    4,
+    6
+   ]
+  },
+  "Archon": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Divine Favor",
+     "level": 1
+    },
+    {
+     "name": "Align Weapon",
+     "level": 2,
+     "note": "good only"
+    },
+    {
+     "name": "Prayer",
+     "level": 3
+    },
+    {
+     "name": "Holy Smite",
+     "level": 4
+    },
+    {
+     "name": "Dispel Evil",
+     "level": 5
+    },
+    {
+     "name": "Planar Ally",
+     "level": 6,
+     "note": "archon only"
+    },
+    {
+     "name": "Holy Word",
+     "level": 7
+    },
+    {
+     "name": "Holy Aura",
+     "level": 8
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "note": "good spell only"
+    }
+   ],
+   "domain": "Good",
+   "desc": "",
+   "replaces": [
+    1,
+    3,
+    6
+   ]
+  },
+  "Ash": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Burning Hands",
+     "level": 1
+    },
+    {
+     "name": "Produce Flame",
+     "level": 2
+    },
+    {
+     "name": "Fireball",
+     "level": 3
+    },
+    {
+     "name": "Wall Of Fire",
+     "level": 4
+    },
+    {
+     "name": "Fire Shield",
+     "level": 5
+    },
+    {
+     "name": "Fire Seeds",
+     "level": 6
+    },
+    {
+     "name": "Disintegrate",
+     "level": 7
+    },
+    {
+     "name": "Incendiary Cloud",
+     "level": 8
+    },
+    {
+     "name": "Fiery Body",
+     "level": 9
+    }
+   ],
+   "domain": "Fire",
+   "desc": "",
+   "replaces": [
+    7,
+    9
+   ]
+  },
+  "Azata": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Expeditious Retreat",
+     "level": 1
+    },
+    {
+     "name": "Align Weapon",
+     "level": 2,
+     "note": "chaos only"
+    },
+    {
+     "name": "Fly",
+     "level": 3
+    },
+    {
+     "name": "Chaos Hammer",
+     "level": 4
+    },
+    {
+     "name": "Dispel Law",
+     "level": 5
+    },
+    {
+     "name": "Planar Ally",
+     "level": 6,
+     "note": "azata only"
+    },
+    {
+     "name": "Word Of Chaos",
+     "level": 7
+    },
+    {
+     "name": "Cloak Of Chaos",
+     "level": 8
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "note": "chaos spell only"
+    }
+   ],
+   "domain": "Chaos",
+   "desc": "",
+   "replaces": [
+    1,
+    3,
+    6
+   ]
+  },
+  "Blood": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Magic Weapon",
+     "level": 1
+    },
+    {
+     "name": "Spiritual Weapon",
+     "level": 2
+    },
+    {
+     "name": "Vampiric Touch",
+     "level": 3
+    },
+    {
+     "name": "Divine Power",
+     "level": 4
+    },
+    {
+     "name": "Wall Of Thorns",
+     "level": 5
+    },
+    {
+     "name": "Blade Barrier",
+     "level": 6
+    },
+    {
+     "name": "Inflict Serious Wounds, Mass",
+     "level": 7
+    },
+    {
+     "name": "Power Word Stun",
+     "level": 8
+    },
+    {
+     "name": "Power Word Kill",
+     "level": 9
+    }
+   ],
+   "domain": "War",
+   "desc": "",
+   "replaces": [
+    3,
+    5,
+    7
+   ]
+  },
+  "Catastrophe": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "True Strike",
+     "level": 1
+    },
+    {
+     "name": "Gust Of Wind",
+     "level": 2
+    },
+    {
+     "name": "Call Lightning",
+     "level": 3
+    },
+    {
+     "name": "Inflict Critical Wounds",
+     "level": 4
+    },
+    {
+     "name": "Shout",
+     "level": 5
+    },
+    {
+     "name": "Harm",
+     "level": 6
+    },
+    {
+     "name": "Control Weather",
+     "level": 7
+    },
+    {
+     "name": "Earthquake",
+     "level": 8
+    },
+    {
+     "name": "Implosion",
+     "level": 9
+    }
+   ],
+   "domain": "Destruction",
+   "desc": "",
+   "replaces": [
+    2,
+    3,
+    7
+   ]
+  },
+  "Caves": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Magic Stone",
+     "level": 1
+    },
+    {
+     "name": "Create Pit",
+     "level": 2
+    },
+    {
+     "name": "Spiked Pit",
+     "level": 3
+    },
+    {
+     "name": "Spike Stones",
+     "level": 4
+    },
+    {
+     "name": "Wall Of Stone",
+     "level": 5
+    },
+    {
+     "name": "Hungry Pit",
+     "level": 6
+    },
+    {
+     "name": "Elemental Body IV",
+     "level": 7,
+     "note": "earth only"
+    },
+    {
+     "name": "Earthquake",
+     "level": 8
+    },
+    {
+     "name": "Elemental Swarm",
+     "level": 9,
+     "note": "earth spell only"
+    }
+   ],
+   "domain": "Earth",
+   "desc": "",
+   "replaces": [
+    2,
+    3,
+    6
+   ]
+  },
+  "Cloud": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Obscuring Mist",
+     "level": 1
+    },
+    {
+     "name": "Wind Wall",
+     "level": 2
+    },
+    {
+     "name": "Gaseous Form",
+     "level": 3
+    },
+    {
+     "name": "Solid Fog",
+     "level": 4
+    },
+    {
+     "name": "Control Winds",
+     "level": 5
+    },
+    {
+     "name": "Chain Lightning",
+     "level": 6
+    },
+    {
+     "name": "Elemental Body IV",
+     "level": 7,
+     "note": "air only"
+    },
+    {
+     "name": "Whirlwind",
+     "level": 8
+    },
+    {
+     "name": "Storm Of Vengeance",
+     "level": 9
+    }
+   ],
+   "domain": "Air",
+   "desc": "",
+   "replaces": [
+    4,
+    9
+   ]
+  },
+  "Construct": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Animate Rope",
+     "level": 1
+    },
+    {
+     "name": "Wood Shape",
+     "level": 2
+    },
+    {
+     "name": "Stone Shape",
+     "level": 3
+    },
+    {
+     "name": "Minor Creation",
+     "level": 4
+    },
+    {
+     "name": "Fabricate",
+     "level": 5
+    },
+    {
+     "name": "Major Creation",
+     "level": 6
+    },
+    {
+     "name": "Limited Wish",
+     "level": 7
+    },
+    {
+     "name": "Polymorph Any Object",
+     "level": 8
+    },
+    {
+     "name": "Prismatic Sphere",
+     "level": 9
+    }
+   ],
+   "domain": "Artifice",
+   "desc": "",
+   "replaces": [
+    7,
+    8
+   ]
+  },
+  "Curse": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "True Strike",
+     "level": 1
+    },
+    {
+     "name": "Aid",
+     "level": 2
+    },
+    {
+     "name": "Bestow Curse",
+     "level": 3
+    },
+    {
+     "name": "Freedom Of Movement",
+     "level": 4
+    },
+    {
+     "name": "Break Enchantment",
+     "level": 5
+    },
+    {
+     "name": "Eyebite",
+     "level": 6
+    },
+    {
+     "name": "Spell Turning",
+     "level": 7
+    },
+    {
+     "name": "Moment Of Prescience",
+     "level": 8
+    },
+    {
+     "name": "Miracle",
+     "level": 9
+    }
+   ],
+   "domain": "Luck",
+   "desc": "",
+   "replaces": [
+    3,
+    6
+   ]
+  },
+  "Daemon": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Cause Fear",
+     "level": 1
+    },
+    {
+     "name": "Align Weapon",
+     "level": 2,
+     "note": "evil only"
+    },
+    {
+     "name": "Vampiric Touch",
+     "level": 3
+    },
+    {
+     "name": "Unholy Blight",
+     "level": 4
+    },
+    {
+     "name": "Dispel Good",
+     "level": 5
+    },
+    {
+     "name": "Planar Binding",
+     "level": 6,
+     "note": "daemons only"
+    },
+    {
+     "name": "Blasphemy",
+     "level": 7
+    },
+    {
+     "name": "Unholy Aura",
+     "level": 8
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "note": "evil spell only"
+    }
+   ],
+   "domain": "Evil",
+   "desc": "",
+   "replaces": [
+    1,
+    3,
+    6
+   ]
+  },
+  "Day": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Endure Elements",
+     "level": 1
+    },
+    {
+     "name": "Heat Metal",
+     "level": 2
+    },
+    {
+     "name": "Daylight",
+     "level": 3
+    },
+    {
+     "name": "Fire Shield",
+     "level": 4
+    },
+    {
+     "name": "Flame Strike",
+     "level": 5
+    },
+    {
+     "name": "Fire Seeds",
+     "level": 6
+    },
+    {
+     "name": "Sunbeam",
+     "level": 7
+    },
+    {
+     "name": "Sunburst",
+     "level": 8
+    },
+    {
+     "name": "Prismatic Sphere",
+     "level": 9
+    }
+   ],
+   "domain": "Sun",
+   "desc": "",
+   "replaces": [
+    3
+   ]
+  },
+  "Decay": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Entangle",
+     "level": 1
+    },
+    {
+     "name": "Barkskin",
+     "level": 2
+    },
+    {
+     "name": "Contagion",
+     "level": 3
+    },
+    {
+     "name": "Poison",
+     "level": 4
+    },
+    {
+     "name": "Wall Of Thorns",
+     "level": 5
+    },
+    {
+     "name": "Harm",
+     "level": 6
+    },
+    {
+     "name": "Animate Plants",
+     "level": 7
+    },
+    {
+     "name": "Control Plants",
+     "level": 8
+    },
+    {
+     "name": "Shambler",
+     "level": 9
+    }
+   ],
+   "domain": "Plant",
+   "desc": "",
+   "replaces": [
+    3,
+    4,
+    6
+   ]
+  },
+  "Deception": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Disguise Self",
+     "level": 1
+    },
+    {
+     "name": "Mirror Image",
+     "level": 2
+    },
+    {
+     "name": "Nondetection",
+     "level": 3
+    },
+    {
+     "name": "Confusion",
+     "level": 4
+    },
+    {
+     "name": "False Vision",
+     "level": 5
+    },
+    {
+     "name": "Mislead",
+     "level": 6
+    },
+    {
+     "name": "Project Image",
+     "level": 7
+    },
+    {
+     "name": "Invisibility, Mass",
+     "level": 8
+    },
+    {
+     "name": "Time Stop",
+     "level": 9
+    }
+   ],
+   "domain": "Trickery",
+   "desc": "",
+   "replaces": [
+    2,
+    7
+   ]
+  },
+  "Defense": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Shield",
+     "level": 1
+    },
+    {
+     "name": "Barkskin",
+     "level": 2
+    },
+    {
+     "name": "Protection From Energy",
+     "level": 3
+    },
+    {
+     "name": "Spell Immunity",
+     "level": 4
+    },
+    {
+     "name": "Spell Resistance",
+     "level": 5
+    },
+    {
+     "name": "Antimagic Field",
+     "level": 6
+    },
+    {
+     "name": "Deflection",
+     "level": 7
+    },
+    {
+     "name": "Mind Blank",
+     "level": 8
+    },
+    {
+     "name": "Prismatic Sphere",
+     "level": 9
+    }
+   ],
+   "domain": "Protection",
+   "desc": "",
+   "replaces": [
+    1,
+    2,
+    7
+   ]
+  },
+  "Demon": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Doom",
+     "level": 1
+    },
+    {
+     "name": "Align Weapon",
+     "level": 2,
+     "note": "chaos only"
+    },
+    {
+     "name": "Rage",
+     "level": 3
+    },
+    {
+     "name": "Chaos Hammer",
+     "level": 4
+    },
+    {
+     "name": "Dispel Law",
+     "level": 5
+    },
+    {
+     "name": "Planar Binding",
+     "level": 6,
+     "note": "demons only"
+    },
+    {
+     "name": "Word Of Chaos",
+     "level": 7
+    },
+    {
+     "name": "Cloak Of Chaos",
+     "level": 8
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "note": "chaos spell only"
+    }
+   ],
+   "domain": "Chaos",
+   "desc": "",
+   "replaces": [
+    1,
+    3,
+    6
+   ]
+  },
+  "Devil": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Command",
+     "level": 1
+    },
+    {
+     "name": "Align Weapon",
+     "level": 2,
+     "note": "evil only"
+    },
+    {
+     "name": "Suggestion",
+     "level": 3
+    },
+    {
+     "name": "Unholy Blight",
+     "level": 4
+    },
+    {
+     "name": "Dispel Good",
+     "level": 5
+    },
+    {
+     "name": "Planar Binding",
+     "level": 6,
+     "note": "devils only"
+    },
+    {
+     "name": "Blasphemy",
+     "level": 7
+    },
+    {
+     "name": "Unholy Aura",
+     "level": 8
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "note": "evil spell only"
+    }
+   ],
+   "domain": "Evil",
+   "desc": "",
+   "replaces": [
+    1,
+    3,
+    6
+   ]
+  },
+  "Divine": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Identify",
+     "level": 1
+    },
+    {
+     "name": "Magic Mouth",
+     "level": 2
+    },
+    {
+     "name": "Dispel Magic",
+     "level": 3
+    },
+    {
+     "name": "Imbue With Spell Ability",
+     "level": 4
+    },
+    {
+     "name": "Cleanse",
+     "level": 5
+    },
+    {
+     "name": "Antimagic Field",
+     "level": 6
+    },
+    {
+     "name": "Resurrection",
+     "level": 7
+    },
+    {
+     "name": "Protection From Spells",
+     "level": 8
+    },
+    {
+     "name": "Miracle",
+     "level": 9
+    }
+   ],
+   "domain": "Magic",
+   "desc": "",
+   "replaces": [
+    5,
+    7,
+    9
+   ]
+  },
+  "Exploration": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Expeditious Retreat",
+     "level": 1
+    },
+    {
+     "name": "Locate Object",
+     "level": 2
+    },
+    {
+     "name": "Fly",
+     "level": 3
+    },
+    {
+     "name": "Locate Creature",
+     "level": 4
+    },
+    {
+     "name": "Teleport",
+     "level": 5
+    },
+    {
+     "name": "Find The Path",
+     "level": 6
+    },
+    {
+     "name": "Teleport, Greater",
+     "level": 7
+    },
+    {
+     "name": "Phase Door",
+     "level": 8
+    },
+    {
+     "name": "World Wave",
+     "level": 9
+    }
+   ],
+   "domain": "Travel",
+   "desc": "",
+   "replaces": [
+    1,
+    4,
+    9
+   ]
+  },
+  "Family": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Bless",
+     "level": 1
+    },
+    {
+     "name": "Calm Emotions",
+     "level": 2
+    },
+    {
+     "name": "Create Food And Water",
+     "level": 3
+    },
+    {
+     "name": "Imbue With Spell Ability",
+     "level": 4
+    },
+    {
+     "name": "Telepathic Bond",
+     "level": 5
+    },
+    {
+     "name": "Heroes' Feast",
+     "level": 6
+    },
+    {
+     "name": "Refuge",
+     "level": 7
+    },
+    {
+     "name": "Cure Critical Wounds, Mass",
+     "level": 8
+    },
+    {
+     "name": "Miracle",
+     "level": 9
+    }
+   ],
+   "domain": "Community",
+   "desc": "",
+   "replaces": [
+    2,
+    3
+   ]
+  },
+  "Fate": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "True Strike",
+     "level": 1
+    },
+    {
+     "name": "Augury",
+     "level": 2
+    },
+    {
+     "name": "Borrow Fortune",
+     "level": 3
+    },
+    {
+     "name": "Freedom Of Movement",
+     "level": 4
+    },
+    {
+     "name": "Break Enchantment",
+     "level": 5
+    },
+    {
+     "name": "Mislead",
+     "level": 6
+    },
+    {
+     "name": "Spell Turning",
+     "level": 7
+    },
+    {
+     "name": "Moment Of Prescience",
+     "level": 8
+    },
+    {
+     "name": "Miracle",
+     "level": 9
+    }
+   ],
+   "domain": "Luck",
+   "desc": "",
+   "replaces": [
+    2,
+    3
+   ]
+  },
+  "Ferocity": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Enlarge Person",
+     "level": 1
+    },
+    {
+     "name": "Bull's Strength",
+     "level": 2
+    },
+    {
+     "name": "Rage",
+     "level": 3
+    },
+    {
+     "name": "Spell Immunity",
+     "level": 4
+    },
+    {
+     "name": "Righteous Might",
+     "level": 5
+    },
+    {
+     "name": "Bull's Strength, Mass",
+     "level": 6
+    },
+    {
+     "name": "Grasping Hand",
+     "level": 7
+    },
+    {
+     "name": "Clenched Fist",
+     "level": 8
+    },
+    {
+     "name": "Crushing Hand",
+     "level": 9
+    }
+   ],
+   "domain": "Strength",
+   "desc": "",
+   "replaces": [
+    3,
+    6
+   ]
+  },
+  "Freedom": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Sanctuary",
+     "level": 1
+    },
+    {
+     "name": "Remove Paralysis",
+     "level": 2
+    },
+    {
+     "name": "Remove Curse",
+     "level": 3
+    },
+    {
+     "name": "Freedom Of Movement",
+     "level": 4
+    },
+    {
+     "name": "Plane Shift",
+     "level": 5
+    },
+    {
+     "name": "Dispel Magic, Greater",
+     "level": 6
+    },
+    {
+     "name": "Refuge",
+     "level": 7
+    },
+    {
+     "name": "Mind Blank",
+     "level": 8
+    },
+    {
+     "name": "Freedom",
+     "level": 9
+    }
+   ],
+   "domain": "Liberation",
+   "desc": "",
+   "replaces": [
+    1,
+    5
+   ]
+  },
+  "Fur": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Magic Fang",
+     "level": 1
+    },
+    {
+     "name": "Hold Animal",
+     "level": 2
+    },
+    {
+     "name": "Beast Shape I",
+     "level": 3,
+     "note": "animals only"
+    },
+    {
+     "name": "Summon Nature's Ally IV",
+     "level": 4,
+     "note": "animals only"
+    },
+    {
+     "name": "Beast Shape III",
+     "level": 5,
+     "note": "animals only"
+    },
+    {
+     "name": "Antilife Shell",
+     "level": 6
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 7
+    },
+    {
+     "name": "Summon Nature's Ally VIII",
+     "level": 8,
+     "note": "animals only"
+    },
+    {
+     "name": "Shapechange",
+     "level": 9
+    }
+   ],
+   "domain": "Animal",
+   "desc": "",
+   "replaces": [
+    1,
+    3
+   ]
+  },
+  "Growth": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Enlarge Person",
+     "level": 1
+    },
+    {
+     "name": "Barkskin",
+     "level": 2
+    },
+    {
+     "name": "Plant Growth",
+     "level": 3
+    },
+    {
+     "name": "Command Plants",
+     "level": 4
+    },
+    {
+     "name": "Righteous Might",
+     "level": 5
+    },
+    {
+     "name": "Repel Wood",
+     "level": 6
+    },
+    {
+     "name": "Animate Plants",
+     "level": 7
+    },
+    {
+     "name": "Control Plants",
+     "level": 8
+    },
+    {
+     "name": "Shambler",
+     "level": 9
+    }
+   ],
+   "domain": "Plant",
+   "desc": "",
+   "replaces": [
+    1,
+    5
+   ]
+  },
+  "Heroism": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Shield Of Faith",
+     "level": 1
+    },
+    {
+     "name": "Bless Weapon",
+     "level": 2
+    },
+    {
+     "name": "Heroism",
+     "level": 3
+    },
+    {
+     "name": "Holy Smite",
+     "level": 4
+    },
+    {
+     "name": "Righteous Might",
+     "level": 5
+    },
+    {
+     "name": "Heroism, Greater",
+     "level": 6
+    },
+    {
+     "name": "Holy Sword",
+     "level": 7
+    },
+    {
+     "name": "Holy Aura",
+     "level": 8
+    },
+    {
+     "name": "Gate",
+     "level": 9
+    }
+   ],
+   "domain": "Glory",
+   "desc": "",
+   "replaces": [
+    3,
+    6
+   ]
+  },
+  "Home": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Alarm",
+     "level": 1
+    },
+    {
+     "name": "Shield Other",
+     "level": 2
+    },
+    {
+     "name": "Glyph Of Warding",
+     "level": 3
+    },
+    {
+     "name": "Imbue With Spell Ability",
+     "level": 4
+    },
+    {
+     "name": "Telepathic Bond",
+     "level": 5
+    },
+    {
+     "name": "Heroes' Feast",
+     "level": 6
+    },
+    {
+     "name": "Guards And Wards",
+     "level": 7
+    },
+    {
+     "name": "Cure Critical Wounds, Mass",
+     "level": 8
+    },
+    {
+     "name": "Miracle",
+     "level": 9
+    }
+   ],
+   "domain": "Community",
+   "desc": "",
+   "replaces": [
+    1,
+    3,
+    7
+   ]
+  },
+  "Honor": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Shield Of Faith",
+     "level": 1
+    },
+    {
+     "name": "Zone Of Truth",
+     "level": 2
+    },
+    {
+     "name": "Searing Light",
+     "level": 3
+    },
+    {
+     "name": "Holy Smite",
+     "level": 4
+    },
+    {
+     "name": "Righteous Might",
+     "level": 5
+    },
+    {
+     "name": "Geas/Quest",
+     "level": 6
+    },
+    {
+     "name": "Holy Sword",
+     "level": 7
+    },
+    {
+     "name": "Holy Aura",
+     "level": 8
+    },
+    {
+     "name": "Gate",
+     "level": 9
+    }
+   ],
+   "domain": "Glory",
+   "desc": "",
+   "replaces": [
+    2,
+    6
+   ]
+  },
+  "Ice": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Obscuring Mist",
+     "level": 1
+    },
+    {
+     "name": "Fog Cloud",
+     "level": 2
+    },
+    {
+     "name": "Water Breathing",
+     "level": 3
+    },
+    {
+     "name": "Control Water",
+     "level": 4
+    },
+    {
+     "name": "Ice Storm",
+     "level": 5
+    },
+    {
+     "name": "Cone Of Cold",
+     "level": 6
+    },
+    {
+     "name": "Freezing Sphere",
+     "level": 7
+    },
+    {
+     "name": "Horrid Wilting",
+     "level": 8
+    },
+    {
+     "name": "Polar Ray",
+     "level": 9
+    }
+   ],
+   "domain": "Water",
+   "desc": "",
+   "replaces": [
+    7,
+    9
+   ]
+  },
+  "Inevitable": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Protection From Chaos",
+     "level": 1
+    },
+    {
+     "name": "Align Weapon",
+     "level": 2,
+     "note": "law only"
+    },
+    {
+     "name": "Command Undead",
+     "level": 3
+    },
+    {
+     "name": "Order's Wrath",
+     "level": 4
+    },
+    {
+     "name": "Command, Greater",
+     "level": 5
+    },
+    {
+     "name": "Planar Binding",
+     "level": 6,
+     "note": "inevitables only"
+    },
+    {
+     "name": "Dictum",
+     "level": 7
+    },
+    {
+     "name": "Shield Of Law",
+     "level": 8
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "note": "law spell only"
+    }
+   ],
+   "domain": "Law",
+   "desc": "",
+   "replaces": [
+    3,
+    5,
+    6
+   ]
+  },
+  "Insanity": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Confusion, Lesser",
+     "level": 1
+    },
+    {
+     "name": "Touch Of Idiocy",
+     "level": 2
+    },
+    {
+     "name": "Rage",
+     "level": 3
+    },
+    {
+     "name": "Moonstruck",
+     "level": 4
+    },
+    {
+     "name": "Nightmare",
+     "level": 5
+    },
+    {
+     "name": "Phantasmal Web",
+     "level": 6
+    },
+    {
+     "name": "Insanity",
+     "level": 7
+    },
+    {
+     "name": "Scintillating Pattern",
+     "level": 8
+    },
+    {
+     "name": "Weird",
+     "level": 9
+    }
+   ],
+   "domain": "Madness",
+   "desc": "",
+   "replaces": [
+    4,
+    6
+   ]
+  },
+  "Language": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Comprehend Languages",
+     "level": 1
+    },
+    {
+     "name": "Share Language",
+     "level": 2
+    },
+    {
+     "name": "Tongues",
+     "level": 3
+    },
+    {
+     "name": "Explosive Runes",
+     "level": 4
+    },
+    {
+     "name": "Telepathic Bond",
+     "level": 5
+    },
+    {
+     "name": "Glyph Of Warding, Greater",
+     "level": 6
+    },
+    {
+     "name": "Instant Summons",
+     "level": 7
+    },
+    {
+     "name": "Symbol Of Death",
+     "level": 8
+    },
+    {
+     "name": "Teleportation Circle",
+     "level": 9
+    }
+   ],
+   "domain": "Rune",
+   "desc": "",
+   "replaces": [
+    1,
+    2,
+    3,
+    5
+   ]
+  },
+  "Leadership": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Divine Favor",
+     "level": 1
+    },
+    {
+     "name": "Enthrall",
+     "level": 2
+    },
+    {
+     "name": "Prayer",
+     "level": 3
+    },
+    {
+     "name": "Discern Lies",
+     "level": 4
+    },
+    {
+     "name": "Command, Greater",
+     "level": 5
+    },
+    {
+     "name": "Brilliant Inspiration",
+     "level": 6
+    },
+    {
+     "name": "Repulsion",
+     "level": 7
+    },
+    {
+     "name": "Demand",
+     "level": 8
+    },
+    {
+     "name": "Storm Of Vengeance",
+     "level": 9
+    }
+   ],
+   "domain": "Nobility",
+   "desc": "",
+   "replaces": [
+    3,
+    6
+   ]
+  },
+  "Light": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Faerie Fire",
+     "level": 1
+    },
+    {
+     "name": "Heat Metal",
+     "level": 2
+    },
+    {
+     "name": "Daylight",
+     "level": 3
+    },
+    {
+     "name": "Fire Shield",
+     "level": 4
+    },
+    {
+     "name": "Flame Strike",
+     "level": 5
+    },
+    {
+     "name": "Fire Seeds",
+     "level": 6
+    },
+    {
+     "name": "Sunbeam",
+     "level": 7
+    },
+    {
+     "name": "Sunburst",
+     "level": 8
+    },
+    {
+     "name": "Prismatic Sphere",
+     "level": 9
+    }
+   ],
+   "domain": "Sun",
+   "desc": "",
+   "replaces": [
+    1,
+    3
+   ]
+  },
+  "Loss": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Obscuring Mist",
+     "level": 1
+    },
+    {
+     "name": "Blindness/Deafness",
+     "level": 2,
+     "note": "only to cause blindness"
+    },
+    {
+     "name": "Deeper Darkness",
+     "level": 3
+    },
+    {
+     "name": "Shadow Conjuration",
+     "level": 4
+    },
+    {
+     "name": "Enervation",
+     "level": 5
+    },
+    {
+     "name": "Modify Memory",
+     "level": 6
+    },
+    {
+     "name": "Power Word Blind",
+     "level": 7
+    },
+    {
+     "name": "Shadow Evocation, Greater",
+     "level": 8
+    },
+    {
+     "name": "Energy Drain",
+     "level": 9
+    }
+   ],
+   "domain": "Darkness",
+   "desc": "",
+   "replaces": [
+    5,
+    6,
+    9
+   ]
+  },
+  "Love": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Charm Person",
+     "level": 1
+    },
+    {
+     "name": "Enthrall",
+     "level": 2
+    },
+    {
+     "name": "Suggestion",
+     "level": 3
+    },
+    {
+     "name": "Heroism",
+     "level": 4
+    },
+    {
+     "name": "Charm Monster",
+     "level": 5
+    },
+    {
+     "name": "Geas/Quest",
+     "level": 6
+    },
+    {
+     "name": "Insanity",
+     "level": 7
+    },
+    {
+     "name": "Euphoric Tranquility",
+     "level": 8
+    },
+    {
+     "name": "Dominate Monster",
+     "level": 9
+    }
+   ],
+   "domain": "Charm",
+   "desc": "",
+   "replaces": [
+    2,
+    8
+   ]
+  },
+  "Lust": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Charm Person",
+     "level": 1
+    },
+    {
+     "name": "Touch Of Idiocy",
+     "level": 2
+    },
+    {
+     "name": "Suggestion",
+     "level": 3
+    },
+    {
+     "name": "Confusion",
+     "level": 4
+    },
+    {
+     "name": "Charm Monster",
+     "level": 5
+    },
+    {
+     "name": "Geas/Quest",
+     "level": 6
+    },
+    {
+     "name": "Insanity",
+     "level": 7
+    },
+    {
+     "name": "Demand",
+     "level": 8
+    },
+    {
+     "name": "Dominate Monster",
+     "level": 9
+    }
+   ],
+   "domain": "Charm",
+   "desc": "",
+   "replaces": [
+    2,
+    4
+   ]
+  },
+  "Martyr": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Divine Favor",
+     "level": 1
+    },
+    {
+     "name": "Shield Other",
+     "level": 2
+    },
+    {
+     "name": "Magic Vestment",
+     "level": 3
+    },
+    {
+     "name": "Discern Lies",
+     "level": 4
+    },
+    {
+     "name": "Command, Greater",
+     "level": 5
+    },
+    {
+     "name": "Sacrificial Oath",
+     "level": 6
+    },
+    {
+     "name": "Repulsion",
+     "level": 7
+    },
+    {
+     "name": "Demand",
+     "level": 8
+    },
+    {
+     "name": "Storm Of Vengeance",
+     "level": 9
+    }
+   ],
+   "domain": "Nobility",
+   "desc": "",
+   "replaces": [
+    2,
+    6
+   ]
+  },
+  "Memory": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Comprehend Languages",
+     "level": 1
+    },
+    {
+     "name": "Memory Lapse",
+     "level": 2
+    },
+    {
+     "name": "Speak With Dead",
+     "level": 3
+    },
+    {
+     "name": "Divination",
+     "level": 4
+    },
+    {
+     "name": "True Seeing",
+     "level": 5
+    },
+    {
+     "name": "Modify Memory",
+     "level": 6
+    },
+    {
+     "name": "Legend Lore",
+     "level": 7
+    },
+    {
+     "name": "Moment Of Prescience",
+     "level": 8
+    },
+    {
+     "name": "Foresight",
+     "level": 9
+    }
+   ],
+   "domain": "Knowledge",
+   "desc": "",
+   "replaces": [
+    2,
+    6,
+    8
+   ]
+  },
+  "Metal": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Magic Stone",
+     "level": 1
+    },
+    {
+     "name": "Heat Metal",
+     "level": 2
+    },
+    {
+     "name": "Stone Shape",
+     "level": 3
+    },
+    {
+     "name": "Spike Stones",
+     "level": 4
+    },
+    {
+     "name": "Wall Of Stone",
+     "level": 5
+    },
+    {
+     "name": "Wall Of Iron",
+     "level": 6
+    },
+    {
+     "name": "Elemental Body IV",
+     "level": 7,
+     "note": "earth only"
+    },
+    {
+     "name": "Iron Body",
+     "level": 8
+    },
+    {
+     "name": "Elemental Swarm",
+     "level": 9,
+     "note": "earth spell only"
+    }
+   ],
+   "domain": "Earth",
+   "desc": "",
+   "replaces": [
+    2,
+    6,
+    8
+   ]
+  },
+  "Murder": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Cause Fear",
+     "level": 1
+    },
+    {
+     "name": "Death Knell",
+     "level": 2
+    },
+    {
+     "name": "Keen Edge",
+     "level": 3
+    },
+    {
+     "name": "Death Ward",
+     "level": 4
+    },
+    {
+     "name": "Suffocation",
+     "level": 5
+    },
+    {
+     "name": "Create Undead",
+     "level": 6
+    },
+    {
+     "name": "Destruction",
+     "level": 7
+    },
+    {
+     "name": "Create Greater Undead",
+     "level": 8
+    },
+    {
+     "name": "Suffocation, Mass",
+     "level": 9
+    }
+   ],
+   "domain": "Death",
+   "desc": "",
+   "replaces": [
+    3,
+    5,
+    9
+   ]
+  },
+  "Night": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Sleep",
+     "level": 1
+    },
+    {
+     "name": "Blindness/Deafness",
+     "level": 2,
+     "note": "only to cause blindness"
+    },
+    {
+     "name": "Deeper Darkness",
+     "level": 3
+    },
+    {
+     "name": "Shadow Conjuration",
+     "level": 4
+    },
+    {
+     "name": "Summon Monster V",
+     "level": 5,
+     "note": "summons 1d3 shadows"
+    },
+    {
+     "name": "Nightmare",
+     "level": 6
+    },
+    {
+     "name": "Power Word Blind",
+     "level": 7
+    },
+    {
+     "name": "Shadow Evocation, Greater",
+     "level": 8
+    },
+    {
+     "name": "Shades",
+     "level": 9
+    }
+   ],
+   "domain": "Darkness",
+   "desc": "",
+   "replaces": [
+    1,
+    6
+   ]
+  },
+  "Nightmare": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Confusion, Lesser",
+     "level": 1
+    },
+    {
+     "name": "Touch Of Idiocy",
+     "level": 2
+    },
+    {
+     "name": "Rage",
+     "level": 3
+    },
+    {
+     "name": "Phantasmal Killer",
+     "level": 4
+    },
+    {
+     "name": "Nightmare",
+     "level": 5
+    },
+    {
+     "name": "Cloak Of Dreams",
+     "level": 6
+    },
+    {
+     "name": "Insanity",
+     "level": 7
+    },
+    {
+     "name": "Scintillating Pattern",
+     "level": 8
+    },
+    {
+     "name": "Weird",
+     "level": 9
+    }
+   ],
+   "domain": "Madness",
+   "desc": "",
+   "replaces": [
+    4,
+    6,
+    9
+   ]
+  },
+  "Oceans": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Obscuring Mist",
+     "level": 1
+    },
+    {
+     "name": "Slipstream",
+     "level": 2
+    },
+    {
+     "name": "Water Walk",
+     "level": 3
+    },
+    {
+     "name": "Control Water",
+     "level": 4
+    },
+    {
+     "name": "Ice Storm",
+     "level": 5
+    },
+    {
+     "name": "Cone Of Cold",
+     "level": 6
+    },
+    {
+     "name": "Elemental Body IV",
+     "level": 7,
+     "note": "water only"
+    },
+    {
+     "name": "Horrid Wilting",
+     "level": 8
+    },
+    {
+     "name": "Tsunami",
+     "level": 9
+    }
+   ],
+   "domain": "Water",
+   "desc": "",
+   "replaces": [
+    2,
+    3,
+    9
+   ]
+  },
+  "Protean": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Confusion, Lesser",
+     "level": 1
+    },
+    {
+     "name": "Align Weapon",
+     "level": 2,
+     "note": "chaos only"
+    },
+    {
+     "name": "Displacement",
+     "level": 3
+    },
+    {
+     "name": "Chaos Hammer",
+     "level": 4
+    },
+    {
+     "name": "Dispel Law",
+     "level": 5
+    },
+    {
+     "name": "Planar Binding",
+     "level": 6,
+     "note": "proteans only"
+    },
+    {
+     "name": "Word Of Chaos",
+     "level": 7
+    },
+    {
+     "name": "Cloak Of Chaos",
+     "level": 8
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "note": "chaos spell only"
+    }
+   ],
+   "domain": "Chaos",
+   "desc": "",
+   "replaces": [
+    1,
+    3,
+    6
+   ]
+  },
+  "Purity": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Protection From Chaos",
+     "level": 1
+    },
+    {
+     "name": "Protection From Evil",
+     "level": 1
+    },
+    {
+     "name": "Protection From Good",
+     "level": 1
+    },
+    {
+     "name": "Protection From Law",
+     "level": 1
+    },
+    {
+     "name": "Shield Other",
+     "level": 2
+    },
+    {
+     "name": "Remove Blindness/Deafness",
+     "level": 3
+    },
+    {
+     "name": "Spell Immunity",
+     "level": 4
+    },
+    {
+     "name": "Atonement",
+     "level": 5
+    },
+    {
+     "name": "Antimagic Field",
+     "level": 6
+    },
+    {
+     "name": "Repulsion",
+     "level": 7
+    },
+    {
+     "name": "Mind Blank",
+     "level": 8
+    },
+    {
+     "name": "Prismatic Sphere",
+     "level": 9
+    }
+   ],
+   "domain": "Protection",
+   "desc": "",
+   "replaces": [
+    1,
+    3,
+    5
+   ]
+  },
+  "Rage": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "True Strike",
+     "level": 1
+    },
+    {
+     "name": "Bull's Strength",
+     "level": 2
+    },
+    {
+     "name": "Rage",
+     "level": 3
+    },
+    {
+     "name": "Inflict Critical Wounds",
+     "level": 4
+    },
+    {
+     "name": "Shout",
+     "level": 5
+    },
+    {
+     "name": "Moonstruck",
+     "level": 6
+    },
+    {
+     "name": "Disintegrate",
+     "level": 7
+    },
+    {
+     "name": "Earthquake",
+     "level": 8
+    },
+    {
+     "name": "Implosion",
+     "level": 9
+    }
+   ],
+   "domain": "Destruction",
+   "desc": "",
+   "replaces": [
+    2,
+    6
+   ]
+  },
+  "Resolve": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Bless",
+     "level": 1
+    },
+    {
+     "name": "Bull's Strength",
+     "level": 2
+    },
+    {
+     "name": "Magic Vestment",
+     "level": 3
+    },
+    {
+     "name": "Spell Immunity",
+     "level": 4
+    },
+    {
+     "name": "Righteous Might",
+     "level": 5
+    },
+    {
+     "name": "Heroes' Feast",
+     "level": 6
+    },
+    {
+     "name": "Grasping Hand",
+     "level": 7
+    },
+    {
+     "name": "Clenched Fist",
+     "level": 8
+    },
+    {
+     "name": "Crushing Hand",
+     "level": 9
+    }
+   ],
+   "domain": "Strength",
+   "desc": "",
+   "replaces": [
+    1,
+    6
+   ]
+  },
+  "Restoration": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Cure Light Wounds",
+     "level": 1
+    },
+    {
+     "name": "Remove Disease",
+     "level": 2
+    },
+    {
+     "name": "Cure Serious Wounds",
+     "level": 3
+    },
+    {
+     "name": "Neutralize Poison",
+     "level": 4
+    },
+    {
+     "name": "Break Enchantment",
+     "level": 5
+    },
+    {
+     "name": "Heal",
+     "level": 6
+    },
+    {
+     "name": "Regenerate",
+     "level": 7
+    },
+    {
+     "name": "Cure Critical Wounds, Mass",
+     "level": 8
+    },
+    {
+     "name": "Heal, Mass",
+     "level": 9
+    }
+   ],
+   "domain": "Healing",
+   "desc": "",
+   "replaces": [
+    2,
+    4,
+    5
+   ]
+  },
+  "Resurrection": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Cure Light Wounds",
+     "level": 1
+    },
+    {
+     "name": "Cure Moderate Wounds",
+     "level": 2
+    },
+    {
+     "name": "Cure Serious Wounds",
+     "level": 3
+    },
+    {
+     "name": "Cure Critical Wounds",
+     "level": 4
+    },
+    {
+     "name": "Raise Dead",
+     "level": 5
+    },
+    {
+     "name": "Heal",
+     "level": 6
+    },
+    {
+     "name": "Resurrection",
+     "level": 7
+    },
+    {
+     "name": "Cure Critical Wounds, Mass",
+     "level": 8
+    },
+    {
+     "name": "True Resurrection",
+     "level": 9
+    }
+   ],
+   "domain": "Healing",
+   "desc": "",
+   "replaces": [
+    5,
+    7,
+    9
+   ]
+  },
+  "Revolution": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Remove Fear",
+     "level": 1
+    },
+    {
+     "name": "Enthrall",
+     "level": 2
+    },
+    {
+     "name": "Remove Curse",
+     "level": 3
+    },
+    {
+     "name": "Freedom Of Movement",
+     "level": 4
+    },
+    {
+     "name": "Break Enchantment",
+     "level": 5
+    },
+    {
+     "name": "Symbol Of Persuasion",
+     "level": 6
+    },
+    {
+     "name": "Refuge",
+     "level": 7
+    },
+    {
+     "name": "Mind Blank",
+     "level": 8
+    },
+    {
+     "name": "Freedom",
+     "level": 9
+    }
+   ],
+   "domain": "Liberation",
+   "desc": "",
+   "replaces": [
+    2,
+    6
+   ]
+  },
+  "Seasons": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Goodberry",
+     "level": 1
+    },
+    {
+     "name": "Fog Cloud",
+     "level": 2
+    },
+    {
+     "name": "Call Lightning",
+     "level": 3
+    },
+    {
+     "name": "Blight",
+     "level": 4
+    },
+    {
+     "name": "Ice Storm",
+     "level": 5
+    },
+    {
+     "name": "Control Winds",
+     "level": 6
+    },
+    {
+     "name": "Control Weather",
+     "level": 7
+    },
+    {
+     "name": "Sunburst",
+     "level": 8
+    },
+    {
+     "name": "Storm Of Vengeance",
+     "level": 9
+    }
+   ],
+   "domain": "Weather",
+   "desc": "",
+   "replaces": [
+    1,
+    4,
+    8
+   ]
+  },
+  "Smoke": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Burning Hands",
+     "level": 1
+    },
+    {
+     "name": "Pyrotechnics",
+     "level": 2
+    },
+    {
+     "name": "Stinking Cloud",
+     "level": 3
+    },
+    {
+     "name": "Wall Of Fire",
+     "level": 4
+    },
+    {
+     "name": "Fire Shield",
+     "level": 5
+    },
+    {
+     "name": "Fire Seeds",
+     "level": 6
+    },
+    {
+     "name": "Elemental Body IV",
+     "level": 7,
+     "note": "fire only"
+    },
+    {
+     "name": "Incendiary Cloud",
+     "level": 8
+    },
+    {
+     "name": "Elemental Swarm",
+     "level": 9,
+     "note": "fire spell only"
+    }
+   ],
+   "domain": "Fire",
+   "desc": "",
+   "replaces": [
+    2,
+    3
+   ]
+  },
+  "Souls": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Deathwatch",
+     "level": 1
+    },
+    {
+     "name": "Gentle Repose",
+     "level": 2
+    },
+    {
+     "name": "Animate Dead",
+     "level": 3
+    },
+    {
+     "name": "Death Ward",
+     "level": 4
+    },
+    {
+     "name": "Slay Living",
+     "level": 5
+    },
+    {
+     "name": "Antilife Shell",
+     "level": 6
+    },
+    {
+     "name": "Destruction",
+     "level": 7
+    },
+    {
+     "name": "Waves Of Exhaustion",
+     "level": 8
+    },
+    {
+     "name": "Trap The Soul",
+     "level": 9
+    }
+   ],
+   "domain": "Repose",
+   "desc": "",
+   "replaces": [
+    3,
+    6,
+    9
+   ]
+  },
+  "Storms": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Obscuring Mist",
+     "level": 1
+    },
+    {
+     "name": "Fog Cloud",
+     "level": 2
+    },
+    {
+     "name": "Call Lightning",
+     "level": 3
+    },
+    {
+     "name": "Sleet Storm",
+     "level": 4
+    },
+    {
+     "name": "Call Lightning Storm",
+     "level": 5
+    },
+    {
+     "name": "Sirocco",
+     "level": 6
+    },
+    {
+     "name": "Control Weather",
+     "level": 7
+    },
+    {
+     "name": "Whirlwind",
+     "level": 8
+    },
+    {
+     "name": "Storm Of Vengeance",
+     "level": 9
+    }
+   ],
+   "domain": "Weather",
+   "desc": "",
+   "replaces": [
+    5,
+    6
+   ]
+  },
+  "Tactics": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Magic Weapon",
+     "level": 1
+    },
+    {
+     "name": "Aid",
+     "level": 2
+    },
+    {
+     "name": "Magic Vestment",
+     "level": 3
+    },
+    {
+     "name": "Divine Power",
+     "level": 4
+    },
+    {
+     "name": "Command, Greater",
+     "level": 5
+    },
+    {
+     "name": "Blade Barrier",
+     "level": 6
+    },
+    {
+     "name": "Power Word Blind",
+     "level": 7
+    },
+    {
+     "name": "Planar Ally, Greater",
+     "level": 8
+    },
+    {
+     "name": "Power Word Kill",
+     "level": 9
+    }
+   ],
+   "domain": "War",
+   "desc": "",
+   "replaces": [
+    2,
+    5,
+    8
+   ]
+  },
+  "Thievery": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Disguise Self",
+     "level": 1
+    },
+    {
+     "name": "Invisibility",
+     "level": 2
+    },
+    {
+     "name": "Locate Object",
+     "level": 3
+    },
+    {
+     "name": "Confusion",
+     "level": 4
+    },
+    {
+     "name": "False Vision",
+     "level": 5
+    },
+    {
+     "name": "Mislead",
+     "level": 6
+    },
+    {
+     "name": "Ethereal Jaunt",
+     "level": 7
+    },
+    {
+     "name": "Invisibility, Mass",
+     "level": 8
+    },
+    {
+     "name": "Time Stop",
+     "level": 9
+    }
+   ],
+   "domain": "Trickery",
+   "desc": "",
+   "replaces": [
+    3,
+    7
+   ]
+  },
+  "Thought": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Comprehend Languages",
+     "level": 1
+    },
+    {
+     "name": "Detect Thoughts",
+     "level": 2
+    },
+    {
+     "name": "Seek Thoughts",
+     "level": 3
+    },
+    {
+     "name": "Divination",
+     "level": 4
+    },
+    {
+     "name": "Telepathic Bond",
+     "level": 5
+    },
+    {
+     "name": "Find The Path",
+     "level": 6
+    },
+    {
+     "name": "Legend Lore",
+     "level": 7
+    },
+    {
+     "name": "Mind Blank",
+     "level": 8
+    },
+    {
+     "name": "Foresight",
+     "level": 9
+    }
+   ],
+   "domain": "Knowledge",
+   "desc": "",
+   "replaces": [
+    3,
+    5,
+    8
+   ]
+  },
+  "Toil": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Command",
+     "level": 1
+    },
+    {
+     "name": "Wood Shape",
+     "level": 2
+    },
+    {
+     "name": "Stone Shape",
+     "level": 3
+    },
+    {
+     "name": "Minor Creation",
+     "level": 4
+    },
+    {
+     "name": "Waves Of Fatigue",
+     "level": 5
+    },
+    {
+     "name": "Major Creation",
+     "level": 6
+    },
+    {
+     "name": "Waves Of Exhaustion",
+     "level": 7
+    },
+    {
+     "name": "Statue",
+     "level": 8
+    },
+    {
+     "name": "Prismatic Sphere",
+     "level": 9
+    }
+   ],
+   "domain": "Artifice",
+   "desc": "",
+   "replaces": [
+    1,
+    5,
+    7
+   ]
+  },
+  "Trade": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Floating Disk",
+     "level": 1
+    },
+    {
+     "name": "Locate Object",
+     "level": 2
+    },
+    {
+     "name": "Fly",
+     "level": 3
+    },
+    {
+     "name": "Dimension Door",
+     "level": 4
+    },
+    {
+     "name": "Overland Flight",
+     "level": 5
+    },
+    {
+     "name": "Find The Path",
+     "level": 6
+    },
+    {
+     "name": "Teleport, Greater",
+     "level": 7
+    },
+    {
+     "name": "Phase Door",
+     "level": 8
+    },
+    {
+     "name": "Gate",
+     "level": 9
+    }
+   ],
+   "domain": "Travel",
+   "desc": "",
+   "replaces": [
+    1,
+    5,
+    9
+   ]
+  },
+  "Undead": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Cause Fear",
+     "level": 1
+    },
+    {
+     "name": "Ghoul Touch",
+     "level": 2
+    },
+    {
+     "name": "Animate Dead",
+     "level": 3
+    },
+    {
+     "name": "Enervation",
+     "level": 4
+    },
+    {
+     "name": "Slay Living",
+     "level": 5
+    },
+    {
+     "name": "Create Undead",
+     "level": 6
+    },
+    {
+     "name": "Destruction",
+     "level": 7
+    },
+    {
+     "name": "Create Greater Undead",
+     "level": 8
+    },
+    {
+     "name": "Energy Drain",
+     "level": 9
+    }
+   ],
+   "domain": "Death",
+   "desc": "",
+   "replaces": [
+    2,
+    4,
+    9
+   ]
+  },
+  "Wards": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Erase",
+     "level": 1
+    },
+    {
+     "name": "Secret Page",
+     "level": 2
+    },
+    {
+     "name": "Glyph Of Warding",
+     "level": 3
+    },
+    {
+     "name": "Dimensional Anchor",
+     "level": 4
+    },
+    {
+     "name": "Planar Binding, Lesser",
+     "level": 5
+    },
+    {
+     "name": "Guards And Wards",
+     "level": 6
+    },
+    {
+     "name": "Instant Summons",
+     "level": 7
+    },
+    {
+     "name": "Symbol Of Death",
+     "level": 8
+    },
+    {
+     "name": "Teleportation Circle",
+     "level": 9
+    }
+   ],
+   "domain": "Rune",
+   "desc": "",
+   "replaces": [
+    4,
+    6
+   ]
+  },
+  "Wind": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Whispering Wind",
+     "level": 1
+    },
+    {
+     "name": "Wind Wall",
+     "level": 2
+    },
+    {
+     "name": "Gaseous Form",
+     "level": 3
+    },
+    {
+     "name": "Air Walk",
+     "level": 4
+    },
+    {
+     "name": "Control Winds",
+     "level": 5
+    },
+    {
+     "name": "Wind Walk",
+     "level": 6
+    },
+    {
+     "name": "Elemental Body IV",
+     "level": 7,
+     "note": "air only"
+    },
+    {
+     "name": "Whirlwind",
+     "level": 8
+    },
+    {
+     "name": "Winds Of Vengeance",
+     "level": 9
+    }
+   ],
+   "domain": "Air",
+   "desc": "",
+   "replaces": [
+    1,
+    6,
+    9
+   ]
+  }
+ },
+ "druidDomain": {
+  "Aquatic": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Hydraulic Push",
+     "level": 1
+    },
+    {
+     "name": "Slipstream",
+     "level": 2
+    },
+    {
+     "name": "Water Breathing",
+     "level": 3
+    },
+    {
+     "name": "Freedom Of Movement",
+     "level": 4
+    },
+    {
+     "name": "Black Tentacles",
+     "level": 5
+    },
+    {
+     "name": "Freezing Sphere",
+     "level": 6
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 7,
+     "note": "aquatic creatures only"
+    },
+    {
+     "name": "Seamantle",
+     "level": 8
+    },
+    {
+     "name": "Tsunami",
+     "level": 9
+    }
+   ],
+   "desc": "You master the deeps of the sea, raging rivers, flowing falls, and relentless tides."
+  },
+  "Arctic": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Frostbite",
+     "level": 1
+    },
+    {
+     "name": "Aspect Of The Bear",
+     "level": 2
+    },
+    {
+     "name": "Sleet Storm",
+     "level": 3
+    },
+    {
+     "name": "Wall Of Ice",
+     "level": 4
+    },
+    {
+     "name": "Aspect Of The Wolf",
+     "level": 5
+    },
+    {
+     "name": "Freezing Sphere",
+     "level": 6
+    },
+    {
+     "name": "Wind Walk",
+     "level": 7
+    },
+    {
+     "name": "Polar Ray",
+     "level": 8
+    },
+    {
+     "name": "Polar Midnight",
+     "level": 9
+    }
+   ],
+   "desc": "You master the might of the endless, snow-covered wastes beneath the midnight sun, where icy polar winds blow."
+  },
+  "Cave": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Detect Aberration",
+     "level": 1
+    },
+    {
+     "name": "Stone Call",
+     "level": 2
+    },
+    {
+     "name": "Deeper Darkness",
+     "level": 3
+    },
+    {
+     "name": "Echolocation",
+     "level": 4
+    },
+    {
+     "name": "Wall Of Stone",
+     "level": 5
+    },
+    {
+     "name": "Conjure Black Pudding",
+     "level": 6
+    },
+    {
+     "name": "Statue",
+     "level": 7,
+     "note": "looking like a stalagmite or stalactite"
+    },
+    {
+     "name": "Earthquake",
+     "level": 8
+    },
+    {
+     "name": "Imprisonment",
+     "level": 9
+    }
+   ],
+   "desc": "The wonders and dark secrets of the deepest caves give you strength."
+  },
+  "Desert": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Cloak Of Shade",
+     "level": 1
+    },
+    {
+     "name": "Shifting Sand",
+     "level": 2
+    },
+    {
+     "name": "Cup Of Dust",
+     "level": 3
+    },
+    {
+     "name": "Hallucinatory Terrain",
+     "level": 4
+    },
+    {
+     "name": "Transmute Rock To Mud",
+     "level": 5,
+     "note": "creates loose sand instead of mud"
+    },
+    {
+     "name": "Sirocco",
+     "level": 6
+    },
+    {
+     "name": "Sunbeam",
+     "level": 7
+    },
+    {
+     "name": "Sunburst",
+     "level": 8
+    },
+    {
+     "name": "Horrid Wilting",
+     "level": 9
+    }
+   ],
+   "desc": "The spirits and secrets of the endless wastes are yours to command."
+  },
+  "Eagle": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Aspect Of The Falcon",
+     "level": 1
+    },
+    {
+     "name": "Eagle's Splendor",
+     "level": 2
+    },
+    {
+     "name": "Fly",
+     "level": 3
+    },
+    {
+     "name": "River Of Wind",
+     "level": 4
+    },
+    {
+     "name": "Overland Flight",
+     "level": 5
+    },
+    {
+     "name": "Eagle Aerie",
+     "level": 6
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 7,
+     "note": "birds only"
+    },
+    {
+     "name": "Sunburst",
+     "level": 8
+    },
+    {
+     "name": "Winds Of Vengeance",
+     "level": 9
+    }
+   ],
+   "desc": "Your spirit soars with the mightiest and noblest of all winged creatures."
+  },
+  "Frog": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Jump",
+     "level": 1
+    },
+    {
+     "name": "Delay Poison",
+     "level": 2
+    },
+    {
+     "name": "Lily Pad Stride",
+     "level": 3
+    },
+    {
+     "name": "Shout",
+     "level": 4
+    },
+    {
+     "name": "Blessing Of The Salamander",
+     "level": 5
+    },
+    {
+     "name": "Confusion",
+     "level": 6
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 7,
+     "note": "amphibians only"
+    },
+    {
+     "name": "Shout, Greater",
+     "level": 8
+    },
+    {
+     "name": "Summon Froghemoth",
+     "level": 9
+    }
+   ],
+   "desc": "You venerate the elder amphibians that first brought life to land."
+  },
+  "Jungle": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Glide",
+     "level": 1
+    },
+    {
+     "name": "Tar Ball",
+     "level": 2
+    },
+    {
+     "name": "Venomous Bolt",
+     "level": 3
+    },
+    {
+     "name": "Arboreal Hammer",
+     "level": 4
+    },
+    {
+     "name": "Blessing Of The Salamander",
+     "level": 5
+    },
+    {
+     "name": "Swarm Skin",
+     "level": 6
+    },
+    {
+     "name": "Creeping Doom",
+     "level": 7
+    },
+    {
+     "name": "Wall Of Lava",
+     "level": 8
+    },
+    {
+     "name": "Shambler",
+     "level": 9
+    }
+   ],
+   "desc": "The spirits of the jungle, both of natural guardians and lost civilizations, whisper in your heart."
+  },
+  "Monkey": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Beguiling Gift",
+     "level": 1
+    },
+    {
+     "name": "Spider Climb",
+     "level": 2
+    },
+    {
+     "name": "Cacophonous Call",
+     "level": 3
+    },
+    {
+     "name": "Freedom Of Movement",
+     "level": 4
+    },
+    {
+     "name": "Summon Nature's Ally V",
+     "level": 5,
+     "note": "dire ape or girallon only"
+    },
+    {
+     "name": "Confusion",
+     "level": 6
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 7,
+     "note": "apes and monkeys only"
+    },
+    {
+     "name": "Clenched Fist",
+     "level": 8
+    },
+    {
+     "name": "Foresight",
+     "level": 9
+    }
+   ],
+   "desc": "The balanced wisdom, skill, agility, and playfulness of the monkey are the model for your spiritual discipline."
+  },
+  "Mountain": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Fist of stone",
+     "level": 1,
+     "missing": true
+    },
+    {
+     "name": "Stone Call",
+     "level": 2
+    },
+    {
+     "name": "Cloak Of Winds",
+     "level": 3
+    },
+    {
+     "name": "Stoneskin",
+     "level": 4
+    },
+    {
+     "name": "Geyser",
+     "level": 5
+    },
+    {
+     "name": "Suffocate",
+     "level": 6,
+     "missing": true
+    },
+    {
+     "name": "Flesh To Stone",
+     "level": 7
+    },
+    {
+     "name": "Reverse Gravity",
+     "level": 8
+    },
+    {
+     "name": "Clashing Rocks",
+     "level": 9
+    }
+   ],
+   "desc": "You have mastered the mighty powers of the great mountains that pierce the sky and stand aloof above the lowlands."
+  },
+  "Plains": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Mount",
+     "level": 1
+    },
+    {
+     "name": "Chameleon Stride",
+     "level": 2
+    },
+    {
+     "name": "Haste",
+     "level": 3
+    },
+    {
+     "name": "Aspect Of The Stag",
+     "level": 4
+    },
+    {
+     "name": "Control Winds",
+     "level": 5
+    },
+    {
+     "name": "Find The Path",
+     "level": 6
+    },
+    {
+     "name": "Whirlwind",
+     "level": 7
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 8
+    },
+    {
+     "name": "Worldwave",
+     "level": 9,
+     "missing": true
+    }
+   ],
+   "desc": "The wide open spaces of the prairie, savanna, and steppe are yours to master."
+  },
+  "Serpent": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Charm Animal",
+     "level": 1
+    },
+    {
+     "name": "Animal Trance",
+     "level": 2
+    },
+    {
+     "name": "Poison",
+     "level": 3
+    },
+    {
+     "name": "Strong Jaw",
+     "level": 4
+    },
+    {
+     "name": "Snakestaff",
+     "level": 5,
+     "missing": true
+    },
+    {
+     "name": "Charm Monster",
+     "level": 6
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 7,
+     "note": "reptiles and snakes only"
+    },
+    {
+     "name": "Scintillating Pattern",
+     "level": 8
+    },
+    {
+     "name": "Crushing Hand",
+     "level": 9
+    }
+   ],
+   "desc": "You serve ancient serpentine mysteries whose coils still encircle the world."
+  },
+  "Swamp": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Hydraulic Push",
+     "level": 1
+    },
+    {
+     "name": "Burst Of Nettles",
+     "level": 2
+    },
+    {
+     "name": "Lily Pad Stride",
+     "level": 3
+    },
+    {
+     "name": "Cape Of Wasps",
+     "level": 4
+    },
+    {
+     "name": "Insect Plague",
+     "level": 5
+    },
+    {
+     "name": "Fester, Mass",
+     "level": 6
+    },
+    {
+     "name": "Animate Plants",
+     "level": 7
+    },
+    {
+     "name": "Blood Mist",
+     "level": 8
+    },
+    {
+     "name": "Shambler",
+     "level": 9
+    }
+   ],
+   "desc": "The sour-sweet depths of bogs, marshes, and swamps are your places of power."
+  },
+  "Wolf": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Hunter's Howl",
+     "level": 1
+    },
+    {
+     "name": "Bloodhound",
+     "level": 2
+    },
+    {
+     "name": "Aspect Of The Wolf",
+     "level": 3
+    },
+    {
+     "name": "Strong Jaw",
+     "level": 4
+    },
+    {
+     "name": "Tireless Pursuers",
+     "level": 5
+    },
+    {
+     "name": "Find The Path",
+     "level": 6
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 7,
+     "note": "canines only"
+    },
+    {
+     "name": "Phantasmal Revenge",
+     "level": 8
+    },
+    {
+     "name": "Freedom",
+     "level": 9
+    }
+   ],
+   "desc": "You run with the pack and are the master of the cold hunt of your spirit totem."
+  }
+ },
+ "bloodline": {
+  "Aberrant": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Enlarge Person",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "See Invisibility",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Tongues",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Black Tentacles",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Feeblemind",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Veil",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Plane Shift",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Mind Blank",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Shapechange",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "There is a taint in your blood, one that is alien and bizarre. You tend to think in odd ways, approaching problems from an angle that most would not expect. Over time, this taint manifests itself in your physical form."
+  },
+  "Abyssal": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Cause Fear",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Bull's Strength",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Rage",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Stoneskin",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Dismissal",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Transformation",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Teleport, Greater",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Unholy Aura",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Summon Monster IX",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "Generations ago, a demon spread its filth into your heritage. While it does not manifest in all of your kin, for you it is particularly strong. You might sometimes have urges to chaos or evil, but your destiny (and align"
+  },
+  "Aquatic": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Hydraulic Push",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Slipstream",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Aqueous Orb",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Geyser",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Control Water",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Beast Shape IV",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Summon Monster VII",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Seamantle",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "World Wave",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "Your family traces its heritage back to the ocean depths, whether scions of undersea empires left in the wake of nomadic sea-tribes, or the spawn of creeping ichthyic infiltrators into remote seaside villages. The song o"
+  },
+  "Arcane": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Identify",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Invisibility",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Dispel Magic",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Dimension Door",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Overland Flight",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "True Seeing",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Teleport, Greater",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Power Word Stun",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Wish",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "Your family has always been skilled in the eldritch art of magic. While many of your relatives were accomplished wizards, your powers developed without the need for study and practice."
+  },
+  "Boreal": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Enlarge Person",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Rage",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Elemental Aura",
+     "level": 3,
+     "at": 7,
+     "note": "cold only"
+    },
+    {
+     "name": "Wall Of Ice",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Cone Of Cold",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Transformation",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Giant Form I",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Polar Ray",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Meteor Swarm",
+     "level": 9,
+     "at": 19,
+     "note": "dealing cold damage"
+    }
+   ],
+   "desc": "Descended from inhabitants of the lands of ice and snow, you count among your ancestors giant-kin, troll-born, and frost-rimed spirits. Their savage and raw energies flow down through generations to infuse you to the mar"
+  },
+  "Celestial": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Bless",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Resist Energy",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Magic Circle Against Evil",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Remove Curse",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Flame Strike",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Dispel Magic, Greater",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Banishment",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Sunburst",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Gate",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "Your bloodline is blessed by a celestial power, either from a celestial ancestor or through divine intervention. Although this power drives you along the path of good, your fate (and alignment) is your own to determine."
+  },
+  "Deep Earth": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Expeditious Excavation",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Darkvision",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Shifting Sand",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Stoneskin",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Spike Stones",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Stone Tell",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Repel Metal Or Stone",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Earthquake",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Clashing Rocks",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "The echoing cave-songs and the rumble and creak of primal spirits deep below the ground thrum in your soul and in all your family line. You are likely slow, steady, and stable in your thinking, little prone to wandering "
+  },
+  "Destined": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Alarm",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Blur",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Protection From Energy",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Freedom Of Movement",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Break Enchantment",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Mislead",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Spell Turning",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Moment Of Prescience",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Foresight",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "Your family is destined for greatness in some way. Your birth could have been foretold in prophecy, or perhaps it occurred during an especially auspicious event, such as a solar eclipse. Regardless of your bloodline's or"
+  },
+  "Draconic": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Mage Armor",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Resist Energy",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Fly",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Fear",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Spell Resistance",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Form Of The Dragon I",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Form Of The Dragon II",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Form Of The Dragon III",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Wish",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "At some point in your family's history, a dragon interbred with your bloodline, and now its ancient power flows through your veins."
+  },
+  "Dreamspun": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Sleep",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Augury",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Deep Slumber",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Divination",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Dream",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Shadow Walk",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Vision",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Moment Of Prescience",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Astral Projection",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "Your family is a long line of dreamers, who dream not as ordinary mortals do but rather as those who reach through and touch the supernal realm of dreams and the farthest shores of night. Whether it is a gift or curse is"
+  },
+  "Elemental": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Burning Hands",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Scorching Ray",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Protection From Energy",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Elemental Body I",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Elemental Body II",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Elemental Body III",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Elemental Body IV",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Summon Monster VIII",
+     "level": 8,
+     "at": 17,
+     "note": "elementals only"
+    },
+    {
+     "name": "Elemental Swarm",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "The power of the elements resides in you, and at times you can hardly control its fury. This influence comes from an elemental outsider in your family history or a time when you or your relatives were exposed to a powerf"
+  },
+  "Fey": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Entangle",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Hideous Laughter",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Deep Slumber",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Poison",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Tree Stride",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Mislead",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Phase Door",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Irresistible Dance",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Shapechange",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "The capricious nature of the fey runs in your family due to some intermingling of fey blood or magic. You are more emotional than most, prone to bouts of joy and rage."
+  },
+  "Infernal": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Protection From Good",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Scorching Ray",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Suggestion",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Charm Monster",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Dominate Person",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Planar Binding",
+     "level": 6,
+     "at": 13,
+     "note": "devils and creatures with the fiendish template only"
+    },
+    {
+     "name": "Teleport, Greater",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Power Word Stun",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Meteor Swarm",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "Somewhere in your family's history, a relative made a deal with a devil, and that pact has influenced your family line ever since. In you, it manifests in direct and obvious ways, granting you powers and abilities. While"
+  },
+  "Kobold": {
+   "source": "Advanced Race Guide",
+   "spells": [
+    {
+     "name": "Alarm",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Create Pit",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Explosive Runes",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Dragon's Breath",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Transmute Rock To Mud",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Guards And Wards",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Delayed Blast Fireball",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Form Of The Dragon III",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Imprisonment",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "While many kobold sorcerers tout their purely draconic bloodline, over generations of eldritch training, some such spellcasters have created a bloodline that, while tinged with some draconic magic, is the embodiment of t"
+  },
+  "Protean": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Entropic Shield",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Blur",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Gaseous Form",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Confusion",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Major Creation",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Disintegrate",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Polymorph, Greater",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Polymorph Any Object",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Shapechange",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "You have in your veins the ever-changing wildness of primal chaos, the raw essence of unbound creation. Your mind and spirit burst with the constant inspiration of consummate freedom, though you have difficulty following"
+  },
+  "Serpentine": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Hypnotism",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Delay Poison",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Summon Monster III",
+     "level": 3,
+     "at": 7,
+     "note": "reptiles only"
+    },
+    {
+     "name": "Poison",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Hold Monster",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Suggestion, Mass",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Summon Monster VII",
+     "level": 7,
+     "at": 15,
+     "note": "reptiles only"
+    },
+    {
+     "name": "Irresistible Dance",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Dominate Monster",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "Your bloodline carries the lingering stain of ancient serpent races that ruled when the world was young; your forebears were likely favored slaves anointed by their reptilian masters and gifted with their cold cunning an"
+  },
+  "Shadow": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Ray Of Enfeeblement",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Darkvision",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Deeper Darkness",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Shadow Conjuration",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Shadow Evocation",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Shadow Walk",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Power Word Blind",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Shadow Evocation, Greater",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Shades",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "Spirits from the shadow plane dally at times in the world of light, and such as these lay with your ancestors once upon a time, imparting the mystery of shadow-stuff into your lineage. You are often sullen and withdrawn,"
+  },
+  "Starsoul": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Unseen Servant",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Glitterdust",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Blink",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Call Lightning Storm",
+     "level": 4,
+     "at": 9,
+     "note": "dealing fire damage, damage increased outdoors at night"
+    },
+    {
+     "name": "Overland Flight",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Repulsion",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Reverse Gravity",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Prying Eyes, Greater",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Meteor Swarm",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "You come from a line of stargazers and explorers who delved deeply into the darkness beyond the stars. In touching the void, the void touched them, and your mind, spirit, and body yearn to span the gulf between worlds."
+  },
+  "Stormborn": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Shocking Grasp",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Gust Of Wind",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Lightning Bolt",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Shout",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Overland Flight",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Chain Lightning",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Control Weather",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Whirlwind",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Storm Of Vengeance",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "You trace your heritage to fierce and proud spirits of storm and sky, and living lightning sings in your veins."
+  },
+  "Undead": {
+   "source": "Core Rulebook",
+   "spells": [
+    {
+     "name": "Chill Touch",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "False Life",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Vampiric Touch",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Animate Dead",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Waves Of Fatigue",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Undeath To Death",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Finger Of Death",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Horrid Wilting",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Energy Drain",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "The taint of the grave runs through your family. Perhaps one of your ancestors became a powerful lich or vampire, or maybe you were born dead before suddenly returning to life. Either way, the forces of death move throug"
+  },
+  "Verdant": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Entangle",
+     "level": 1,
+     "at": 3
+    },
+    {
+     "name": "Barkskin",
+     "level": 2,
+     "at": 5
+    },
+    {
+     "name": "Speak With Plants",
+     "level": 3,
+     "at": 7
+    },
+    {
+     "name": "Command Plants",
+     "level": 4,
+     "at": 9
+    },
+    {
+     "name": "Wall Of Thorns",
+     "level": 5,
+     "at": 11
+    },
+    {
+     "name": "Transport Via Plants",
+     "level": 6,
+     "at": 13
+    },
+    {
+     "name": "Plant Shape III",
+     "level": 7,
+     "at": 15
+    },
+    {
+     "name": "Animate Plants",
+     "level": 8,
+     "at": 17
+    },
+    {
+     "name": "Shambler",
+     "level": 9,
+     "at": 19
+    }
+   ],
+   "desc": "Your progenitors infused themselves with raw plant life, binding it into their own tissue and passing it down to their literal seed, giving you innate communion with nature."
+  }
+ },
+ "bloodragerBloodline": {
+  "Aberrant": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Enlarge Person",
+     "level": 1,
+     "at": 7
+    },
+    {
+     "name": "See Invisibility",
+     "level": 2,
+     "at": 10
+    },
+    {
+     "name": "Displacement",
+     "level": 3,
+     "at": 13
+    },
+    {
+     "name": "Black Tentacles",
+     "level": 4,
+     "at": 16
+    }
+   ],
+   "desc": "There is a taint in your blood that is both alien and bizarre. When you bloodrage, this manifests in peculiar and terrifying ways."
+  },
+  "Abyssal": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Ray Of Enfeeblement",
+     "level": 1,
+     "at": 7
+    },
+    {
+     "name": "Bull's Strength",
+     "level": 2,
+     "at": 10
+    },
+    {
+     "name": "Rage",
+     "level": 3,
+     "at": 13
+    },
+    {
+     "name": "Stoneskin",
+     "level": 4,
+     "at": 16
+    }
+   ],
+   "desc": "Generations ago, a demon spread its filth into the essence of your bloodline. While it doesn't manifest in all of your kin, in those moments when you're bloodraging, you embody its terrifying presence."
+  },
+  "Arcane": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Magic Missile",
+     "level": 1,
+     "at": 7
+    },
+    {
+     "name": "Invisibility",
+     "level": 2,
+     "at": 10
+    },
+    {
+     "name": "Lightning Bolt",
+     "level": 3,
+     "at": 13
+    },
+    {
+     "name": "Dimension Door",
+     "level": 4,
+     "at": 16
+    }
+   ],
+   "desc": "While others of your kin may be powerful wizards and sorcerers, the eldritch nature of the blood coursing through your veins transforms you into a spell-breaking terror."
+  },
+  "Celestial": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Bless",
+     "level": 1,
+     "at": 7
+    },
+    {
+     "name": "Resist Energy",
+     "level": 2,
+     "at": 10
+    },
+    {
+     "name": "Heroism",
+     "level": 3,
+     "at": 13
+    },
+    {
+     "name": "Holy Smite",
+     "level": 4,
+     "at": 16
+    }
+   ],
+   "desc": "By way of a celestial ancestor or divine intervention, the blood of angels fills your body with a holy potency, granting you a majestic visage and angelic powers when you enter your bloodrage."
+  },
+  "Destined": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Shield",
+     "level": 1,
+     "at": 7
+    },
+    {
+     "name": "Blur",
+     "level": 2,
+     "at": 10
+    },
+    {
+     "name": "Protection From Energy",
+     "level": 3,
+     "at": 13
+    },
+    {
+     "name": "Freedom Of Movement",
+     "level": 4,
+     "at": 16
+    }
+   ],
+   "desc": "Your bloodline is destined for great things. When you bloodrage, you exude a greatness that makes all but the most legendary creatures seem lesser."
+  },
+  "Draconic": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Shield",
+     "level": 1,
+     "at": 7
+    },
+    {
+     "name": "Resist Energy",
+     "level": 2,
+     "at": 10
+    },
+    {
+     "name": "Fly",
+     "level": 3,
+     "at": 13
+    },
+    {
+     "name": "Fear",
+     "level": 4,
+     "at": 16
+    }
+   ],
+   "desc": "At some point in your family's history, a dragon interbred with your bloodline. Now, the sublime monster's ancient power fuels your bloodrage."
+  },
+  "Elemental": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Burning Hands",
+     "level": 1,
+     "at": 7
+    },
+    {
+     "name": "Scorching Ray",
+     "level": 2,
+     "at": 10
+    },
+    {
+     "name": "Protection From Energy",
+     "level": 3,
+     "at": 13
+    },
+    {
+     "name": "Elemental Body I",
+     "level": 4,
+     "at": 16
+    }
+   ],
+   "desc": "The power of the elements resides in you, and at times you can hardly control its fury. This influence comes either from an elemental outsider in your family history or from a moment when you or your ancestors were expos"
+  },
+  "Fey": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Entangle",
+     "level": 1,
+     "at": 7
+    },
+    {
+     "name": "Hideous Laughter",
+     "level": 2,
+     "at": 10
+    },
+    {
+     "name": "Haste",
+     "level": 3,
+     "at": 13
+    },
+    {
+     "name": "Confusion",
+     "level": 4,
+     "at": 16
+    }
+   ],
+   "desc": "One of your ancestors was fey, or the fey realm somehow intermixed with your bloodline. It affects your bloodrage in tricky and surprising ways."
+  },
+  "Infernal": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Protection From Good",
+     "level": 1,
+     "at": 7
+    },
+    {
+     "name": "Scorching Ray",
+     "level": 2,
+     "at": 10
+    },
+    {
+     "name": "Suggestion",
+     "level": 3,
+     "at": 13
+    },
+    {
+     "name": "Fire Shield",
+     "level": 4,
+     "at": 16
+    }
+   ],
+   "desc": "The Pit lives in your blood. Maybe one of your ancestors was seduced by the powers of Hell or made a deal with a devil. Either way, its corruption seethes within your lineage."
+  },
+  "Undead": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Chill Touch",
+     "level": 1,
+     "at": 7
+    },
+    {
+     "name": "False Life",
+     "level": 2,
+     "at": 10
+    },
+    {
+     "name": "Vampiric Touch",
+     "level": 3,
+     "at": 13
+    },
+    {
+     "name": "Enervation",
+     "level": 4,
+     "at": 16
+    }
+   ],
+   "desc": "The foul corruption of undeath is a part of you. Somewhere in the past, death became infused with your lineage. Your connection to the attributes of the undead bestows frightening power when your bloodrage."
+  }
+ },
+ "mystery": {
+  "Ancestor": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Unseen Servant",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Spiritual Weapon",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Heroism",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Spiritual Ally",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Telekinesis",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Heroism, Greater",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Ethereal Jaunt",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Vision",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Astral Projection",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Battle": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Enlarge Person",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Fog Cloud",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Magic Vestment",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Wall Of Fire",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Righteous Might",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Bull's Strength, Mass",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Control Weather",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Earthquake",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Storm Of Vengeance",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Bones": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Cause Fear",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "False Life",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Animate Dead",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Fear",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Slay Living",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Circle Of Death",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Control Undead",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Horrid Wilting",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Wail Of The Banshee",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Dark Tapestry": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Entropic Shield",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Dust Of Twilight",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Tongues",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Black Tentacles",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Feeblemind",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Planar Binding",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Insanity",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Reverse Gravity",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Interplanetary Teleport",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Flame": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Burning Hands",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Resist Energy",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Fireball",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Wall Of Fire",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Summon Monster V",
+     "level": 5,
+     "at": 10,
+     "note": "fire elementals only"
+    },
+    {
+     "name": "Fire Seeds",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Fire Storm",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Incendiary Cloud",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Fiery Body",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Heavens": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Color Spray",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Hypnotic Pattern",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Daylight",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Rainbow Pattern",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Overland Flight",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Chain Lightning",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Prismatic Spray",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Sunburst",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Meteor Swarm",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Life": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Detect Undead",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Restoration, Lesser",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Neutralize Poison",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Restoration",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Breath Of Life",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Heal",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Restoration, Greater",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Heal, Mass",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "True Resurrection",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Lore": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Identify",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Tongues",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Locate Object",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Legend Lore",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Contact Other Plane",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Owl's Wisdom, Mass",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Vision",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Moment Of Prescience",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Time Stop",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Metal": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Lead Blades",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Heat Metal",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Keen Edge",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Versatile Weapon",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Major Creation",
+     "level": 5,
+     "at": 10,
+     "note": "metal items only"
+    },
+    {
+     "name": "Wall Of Iron",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Statue",
+     "level": 7,
+     "at": 14,
+     "note": "metal statue instead of iron"
+    },
+    {
+     "name": "Repel Metal Or Stone",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Iron Body",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Nature": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Charm Animal",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Barkskin",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Speak With Plants",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Grove Of Respite",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Awaken",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Stone Tell",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Creeping Doom",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "World Wave",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Stone": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Magic Stone",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Stone Call",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Meld Into Stone",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Wall Of Stone",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Stoneskin",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Stone Tell",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Statue",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Repel Metal Or Stone",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Clashing Rocks",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Time": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Memory Lapse",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Gentle Repose",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Sands Of Time",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Threefold Aspect",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Permanency",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Contingency",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Disintegrate",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Temporal Stasis",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Time Stop",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Waves": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Touch Of The Sea",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Slipstream",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Water Breathing",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Wall Of Ice",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Geyser",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Fluid Form",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Vortex",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Seamantle",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Tsunami",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Wind": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Alter Winds",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Gust Of Wind",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Cloak Of Winds",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "River Of Wind",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Control Winds",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Sirocco",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Control Weather",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Whirlwind",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Winds Of Vengeance",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  },
+  "Wood": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Shillelagh",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Barkskin",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Minor Creation",
+     "level": 3,
+     "at": 6,
+     "note": "wood items only"
+    },
+    {
+     "name": "Thorn Body",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Tree Stride",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Ironwood",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Transmute Metal To Wood",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Changestaff",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Wooden Phalanx",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": ""
+  }
+ },
+ "patron": {
+  "Agility": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Jump",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Cat's Grace",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Haste",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Freedom Of Movement",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Polymorph",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Cat's Grace, Mass",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Ethereal Jaunt",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Shapechange",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— jump , 4th— cat's grace , 6th— haste , 8th— freedom of movement , 10th— polymorph , 12th— cat's grace (mass) , 14th— ethereal jaunt , 16th— animal shapes , 18th— shapechange ."
+  },
+  "Ancestors": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Bless",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Aid",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Prayer",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Blessing Of Fervor",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Commune",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Heroism, Greater",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Refuge",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Euphoric Tranquility",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Weird",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— bless , 4th— aid , 6th— prayer , 8th— blessing of fervor , 10th— commune , 12th— greater heroism , 14th— refuge , 16th— euphoric tranquility , 18th— weird ."
+  },
+  "Animals": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Charm Animal",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Speak With Animals",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Dominate Animal",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Summon Nature's Ally IV",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Animal Growth",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Antilife Shell",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Beast Shape IV",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Summon Nature's Ally IX",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— charm animals , 4th— speak with animals , 6th— dominate animal , 8th— summon nature's ally IV , 10th— animal growth , 12th— antilife shell , 14th— beast shape IV , 16th— animal shapes , 18th— summon nature's ally IX"
+  },
+  "Death": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Deathwatch",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Blessing Of Courage And Life",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Speak With Dead",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Rest Eternal",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Suffocation",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Circle Of Death",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Finger Of Death",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Symbol Of Death",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Power Word Kill",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— deathwatch , 4th— blessing of courage and life , 6th— speak with dead , 8th— rest eternal , 10th— suffocation , 12th— circle of death , 14th— finger of death , 16th— symbol of death , 18th— power word kill ."
+  },
+  "Deception": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Ventriloquism",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Invisibility",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Blink",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Confusion",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Passwall",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Programmed Image",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Invisibility, Mass",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Scintillating Pattern",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Time Stop",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— ventriloquism , 4th— invisibility , 6th— blink , 8th— confusion , 10th— passwall , 12th— programmed image , 14th— invisibility (mass) , 16th— scintillating pattern , 18th— time stop ."
+  },
+  "Elements": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Shocking Grasp",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Flaming Sphere",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Fireball",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Wall Of Ice",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Flame Strike",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Freezing Sphere",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Vortex",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Fire Storm",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Meteor Swarm",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— shocking grasp , 4th— flaming sphere , 6th— fireball , 8th— wall of ice , 10th— flame strike , 12th— freezing sphere , 14th— vortex* , 16th— fire storm , 18th— meteor swarm ."
+  },
+  "Enchantment": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Unnatural Lust",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Calm Emotions",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Unadulterated Loathing",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Overwhelming Grief",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Dominate Person",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Geas/Quest",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Euphoric Tranquility",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Demand",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Dominate Monster",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— unnatural lust , 4th— calm emotions , 6th— unadulterated loathing , 8th— overwhelming grief , 10th— dominate person , 12th— geas , 14th— euphoric tranquility , 16th— demand , 18th— dominate monster ."
+  },
+  "Endurance": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Endure Elements",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Bear's Endurance",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Protection From Energy",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Spell Immunity",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Spell Resistance",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Bear's Endurance, Mass",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Restoration, Greater",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Iron Body",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Miracle",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— endure elements , 4th— bear's endurance , 6th— protection from energy , 8th— spell immunity , 10th— spell resistance , 12th— bear's endurance (mass) , 14th— restoration (greater) , 16th— iron body , 18th— miracle ."
+  },
+  "Healing": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Remove Fear",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Restoration, Lesser",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Remove Disease",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Restoration",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Cleanse",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Pillar Of Life",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Restoration, Greater",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Cure Critical Wounds, Mass",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "True Resurrection",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— remove fear , 4th— lesser restoration , 6th— remove disease , 8th— restoration , 10th— cleanse , 12th— pillar of life 14th— greater restoration , 16th— mass cure critical wounds , 18th— true resurrection ."
+  },
+  "Insanity": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Memory Lapse",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Hideous Laughter",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Distracting Cacophony",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Confusion",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Mind Fog",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Envious Urge",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Insanity",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Symbol Of Insanity",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Overwhelming Presence",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— memory lapse , 4th— hideous laughter , 6th— distracting cacophony , 8th— confusion , 10th— mind fog , 12th— envious urge , 14th— insanity , 16th— symbol of insanity , 18th— overwhelming presence ."
+  },
+  "Light": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Dancing Lantern",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Continual Flame",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Daylight",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Rainbow Pattern",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Fire Snake",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Sirocco",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Sunbeam",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Sunburst",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Fiery Body",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— dancing lantern , 4th— continual flame , 6th— daylight , 8th— rainbow pattern , 10th— fire snake , 12th— sirocco , 14th— sunbeam , 16th— sunburst , 18th— fiery body ."
+  },
+  "Moon": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Darkness",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Darkvision",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Owl's Wisdom",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Moonstruck",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Aspect Of The Wolf",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Control Water",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Lunar Veil",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Horrid Wilting",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Meteor Swarm",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— darkness , 4th— darkvision , 6th— owl's wisdom , 8th— moonstruck , 10th— aspect of the wolf , 12th— control water , 14th— lunar veil , 16th— horrid wilting , 18th— meteor swarm ."
+  },
+  "Occult": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Detect Undead",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Command Undead",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Twilight Knife",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Black Tentacles",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Snake Staff",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Create Undead",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Waves Of Exhaustion",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Trap The Soul",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Gate",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— detect undead , 4th— command undead , 6th— twilight knife , 8th— black tentacles , 10th— snake staff , 12th— create undead , 14th— waves of exhaustion , 16th— trap the soul , 18th— gate ."
+  },
+  "Plague": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Detect Undead",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Command Undead",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Contagion",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Animate Dead",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Giant Vermin",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Create Undead",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Control Undead",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Create Greater Undead",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Energy Drain",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— detect undead , 4th— command undead , 6th— contagion , 8th— animate dead , 10th— giant vermin , 12th— create undead , 14th— control undead , 16th— create greater undead , 18th— energy drain ."
+  },
+  "Portents": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Ill Omen",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Locate Object",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Blood Biography",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Divination",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Contact Other Plane",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Legend Lore",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Vision",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Moment Of Prescience",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Foresight",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— ill-omen , 4th— locate object , 6th— blood biography , 8th— divination , 10th— contact other plane , 12th— legend lore , 14th— vision , 16th— moment of prescience , 18th— foresight ."
+  },
+  "Shadow": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Silent Image",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Darkness",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Deeper Darkness",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Shadow Conjuration",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Shadow Evocation",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Shadow Walk",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Shadow Conjuration, Greater",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Shadow Evocation, Greater",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Shades",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— silent image , 4th— darkness , 6th— deeper darkness , 8th— shadow conjuration , 10th— shadow evocation , 12th— shadow walk , 14th— shadow conjuration (greater) , 16th— shadow evocation (greater) , 18th— shades ."
+  },
+  "Spirits": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Ghostbane Dirge",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Invisibility",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Speak With Dead",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Spiritual Ally",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Ghostbane Dirge, Mass",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Shadow Walk",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Ethereal Jaunt",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Planar Ally",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Etherealness",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— ghostbane dirge , 4th— invisibility , 6th— speak with dead , 8th— spiritual ally , 10th— mass ghostbane dirge , 12th— shadow walk , 14th— ethereal jaunt , 16th— planar ally , 18th— etherealness ."
+  },
+  "Stars": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Faerie Fire",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Dust Of Twilight",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Guiding Star",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Wandering Star Motes",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Dream",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Cloak Of Dreams",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Circle Of Clarity",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Euphoric Tranquility",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Astral Projection",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— faerie fire , 4th— dust of twilight , 6th— guiding star , 8th— wandering star motes , 10th— dream , 12th— cloak of dreams 14th— circle of clarity , 16th— euphoric tranquility , 18th— astral projection ."
+  },
+  "Strength": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Divine Favor",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Bull's Strength",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Magic Weapon, Greater",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Divine Power",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Righteous Might",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Bull's Strength, Mass",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Giant Form I",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Giant Form II",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Shapechange",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— divine favor , 4th— bull's strength , 6th— greater magic weapon , 8th— divine power , 10th— righteous might , 12th— bull's strength (mass) , 14th— giant form I , 16th— giant form II , 18th— shapechange ."
+  },
+  "Time": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Ventriloquism",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Silence",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Haste",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Threefold Aspect",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Teleport",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Disintegrate",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Expend",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Temporal Stasis",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Time Stop",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— ventriloquism , 4th— silence , 6th— haste , 8th— threefold aspect , 10th— teleport , 12th— disintegrate , 14th— expend , 16th— temporal stasis , 18th— time stop ."
+  },
+  "Transformation": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Jump",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Bear's Endurance",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Beast Shape I",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Beast Shape II",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Beast Shape III",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Form Of The Dragon I",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Form Of The Dragon II",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Form Of The Dragon III",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Shapechange",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— jump , 4th— bear's endurance , 6th— beast shape I , 8th— beast shape II , 10th— beast shape III , 12th— form of the dragon I , 14th— form of the dragon II , 16th— form of the dragon III , 18th— shapechange ."
+  },
+  "Trickery": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Animate Rope",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Mirror Image",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Major Image",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Hallucinatory Terrain",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Mirage Arcana",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Mislead",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Reverse Gravity",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Screen",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Time Stop",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— animate rope , 4th— mirror image , 6th— major image , 8th— hallucinatory terrain , 10th— mirage arcana , 12th— mislead , 14th— reverse gravity , 16th— screen , 18th— time stop ."
+  },
+  "Vengeance": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Burning Hands",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Burning Gaze",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Pain Strike",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Shout",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Symbol Of Pain",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Pain Strike, Mass",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Phantasmal Revenge",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Incendiary Cloud",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Winds Of Vengeance",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— burning hands , 4th— burning gaze , 6th— pain strike , 8th— shout , 10th— symbol of pain , 12th— mass pain strike , 14th— phantasmal revenge 16th— incendiary cloud , 18th— winds of vengeance ."
+  },
+  "Water": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Bless Water",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Curse Water",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Slipstream",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Water Breathing",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Control Water",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Geyser",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Elemental Body III",
+     "level": 6,
+     "at": 12,
+     "note": "water only"
+    },
+    {
+     "name": "Elemental Body IV",
+     "level": 7,
+     "at": 14,
+     "note": "water only"
+    },
+    {
+     "name": "Seamantle",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Tsunami",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— bless water/curse water , 4th— slipstream* , 6th— water breathing , 8th— control water , 10th— geyser* , 12th— elemental body III (water only), 14th—elemental body IV (water only), 16th— seamantle* , 18th— tsunami* "
+  },
+  "Winter": {
+   "source": "Ultimate Magic",
+   "spells": [
+    {
+     "name": "Unshakable Chill",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Resist Energy",
+     "level": 2,
+     "at": 4,
+     "note": "cold only"
+    },
+    {
+     "name": "Ice Storm",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Wall Of Ice",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Cone Of Cold",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Freezing Sphere",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Control Weather",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Polar Ray",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Polar Midnight",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— unshakable chill , 4th— resist energy (cold only), 6th— ice storm , 8th— wall of ice , 10th— cone of cold , 12th— freezing sphere 14th— control weather , 16th— polar ray , 18th— polar midnight ."
+  },
+  "Wisdom": {
+   "source": "Advanced Player's Guide",
+   "spells": [
+    {
+     "name": "Shield Of Faith",
+     "level": 1,
+     "at": 2
+    },
+    {
+     "name": "Owl's Wisdom",
+     "level": 2,
+     "at": 4
+    },
+    {
+     "name": "Magic Vestment",
+     "level": 3,
+     "at": 6
+    },
+    {
+     "name": "Globe Of Invulnerability, Lesser",
+     "level": 4,
+     "at": 8
+    },
+    {
+     "name": "Dream",
+     "level": 5,
+     "at": 10
+    },
+    {
+     "name": "Globe Of Invulnerability",
+     "level": 6,
+     "at": 12
+    },
+    {
+     "name": "Spell Turning",
+     "level": 7,
+     "at": 14
+    },
+    {
+     "name": "Protection From Spells",
+     "level": 8,
+     "at": 16
+    },
+    {
+     "name": "Mage's Disjunction",
+     "level": 9,
+     "at": 18
+    }
+   ],
+   "desc": "2nd— shield of faith , 4th— owl's wisdom , 6th— magic vestment , 8th— globe of invulnerability (lesser) , 10th— dream , 12th— globe of invulnerability (greater) , 14th— spell turning , 16th— protection from spells , 18th"
+  }
+ },
+ "spirit": {
+  "Battle": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Enlarge Person",
+     "level": 1
+    },
+    {
+     "name": "Fog Cloud",
+     "level": 2
+    },
+    {
+     "name": "Magic Vestment",
+     "level": 3
+    },
+    {
+     "name": "Wall Of Fire",
+     "level": 4
+    },
+    {
+     "name": "Righteous Might",
+     "level": 5
+    },
+    {
+     "name": "Bull's Strength, Mass",
+     "level": 6
+    },
+    {
+     "name": "Control Weather",
+     "level": 7
+    },
+    {
+     "name": "Earthquake",
+     "level": 8
+    },
+    {
+     "name": "Storm Of Vengeance",
+     "level": 9
+    }
+   ],
+   "desc": "A shaman who selects the battle spirit gains scars from every wound she takes, and the grit of battle always seems to cling on her body. When she calls upon one of this spirit's abilities, she grows in stature—becoming t"
+  },
+  "Bones": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Cause Fear",
+     "level": 1
+    },
+    {
+     "name": "False Life",
+     "level": 2
+    },
+    {
+     "name": "Animate Dead",
+     "level": 3
+    },
+    {
+     "name": "Fear",
+     "level": 4
+    },
+    {
+     "name": "Slay Living",
+     "level": 5
+    },
+    {
+     "name": "Circle Of Death",
+     "level": 6
+    },
+    {
+     "name": "Control Undead",
+     "level": 7
+    },
+    {
+     "name": "Horrid Wilting",
+     "level": 8
+    },
+    {
+     "name": "Wail Of The Banshee",
+     "level": 9
+    }
+   ],
+   "desc": "A shaman who selects the bones spirit is cadaverously thin, with sunken eye sockets and dead eyes that stare off into the distance. Her body has a faint smell of the grave. When she calls upon one of this spirit's abilit"
+  },
+  "Flame": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Burning Hands",
+     "level": 1
+    },
+    {
+     "name": "Resist Energy",
+     "level": 2
+    },
+    {
+     "name": "Fireball",
+     "level": 3
+    },
+    {
+     "name": "Wall Of Fire",
+     "level": 4
+    },
+    {
+     "name": "Summon Monster V",
+     "level": 5,
+     "note": "fire elementals only"
+    },
+    {
+     "name": "Fire Seeds",
+     "level": 6
+    },
+    {
+     "name": "Fire Storm",
+     "level": 7
+    },
+    {
+     "name": "Incendiary Cloud",
+     "level": 8
+    },
+    {
+     "name": "Fiery Body",
+     "level": 9
+    }
+   ],
+   "desc": "A shaman who selects the flame spirit has a radiant light behind her eyes and the faint smell of smoke about her. When she calls upon one of this spirit's abilities, a hungry spectral flame dances around her body."
+  },
+  "Heavens": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Color Spray",
+     "level": 1
+    },
+    {
+     "name": "Hypnotic Pattern",
+     "level": 2
+    },
+    {
+     "name": "Daylight",
+     "level": 3
+    },
+    {
+     "name": "Rainbow Pattern",
+     "level": 4
+    },
+    {
+     "name": "Overland Flight",
+     "level": 5
+    },
+    {
+     "name": "Chain Lightning",
+     "level": 6
+    },
+    {
+     "name": "Prismatic Spray",
+     "level": 7
+    },
+    {
+     "name": "Sunburst",
+     "level": 8
+    },
+    {
+     "name": "Meteor Swarm",
+     "level": 9
+    }
+   ],
+   "desc": "A shaman who selects the heavens spirit has eyes that sparkle like starlight, exuding an aura of otherworldliness to those she is around. When she calls upon one of this spirit's abilities, her eyes turn pitch black and "
+  },
+  "Life": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Detect Undead",
+     "level": 1
+    },
+    {
+     "name": "Restoration, Lesser",
+     "level": 2
+    },
+    {
+     "name": "Naturalize poison",
+     "level": 3,
+     "missing": true
+    },
+    {
+     "name": "Restoration",
+     "level": 4
+    },
+    {
+     "name": "Breath Of Life",
+     "level": 5
+    },
+    {
+     "name": "Heal",
+     "level": 6
+    },
+    {
+     "name": "Restoration, Greater",
+     "level": 7
+    },
+    {
+     "name": "Heal, Mass",
+     "level": 8
+    },
+    {
+     "name": "True Resurrection",
+     "level": 9
+    }
+   ],
+   "desc": "A shaman who selects the life spirit appears more vibrant than most mortals. Her skin seems to glow, and her teeth are a pearly white. When she calls upon one of this spirit's abilities, her eyes and hair shimmer in the "
+  },
+  "Lore": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Identify",
+     "level": 1
+    },
+    {
+     "name": "Tongues",
+     "level": 2
+    },
+    {
+     "name": "Locate Object",
+     "level": 3
+    },
+    {
+     "name": "Legend Lore",
+     "level": 4
+    },
+    {
+     "name": "Contact Other Plane",
+     "level": 5
+    },
+    {
+     "name": "Owl's Wisdom, Mass",
+     "level": 6
+    },
+    {
+     "name": "Vision",
+     "level": 7
+    },
+    {
+     "name": "Moment Of Prescience",
+     "level": 8
+    },
+    {
+     "name": "Time Stop",
+     "level": 9
+    }
+   ],
+   "desc": "A shaman who selects the lore spirit appears far wiser and knowing that her age would suggest. Though she can seem unassuming, her eyes give the impression she is peering deep into all she looks at, seeing the secrets of"
+  },
+  "Nature": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Charm Animal",
+     "level": 1
+    },
+    {
+     "name": "Barkskin",
+     "level": 2
+    },
+    {
+     "name": "Speak With Plants",
+     "level": 3
+    },
+    {
+     "name": "Grove Of Respite",
+     "level": 4
+    },
+    {
+     "name": "Awaken",
+     "level": 5
+    },
+    {
+     "name": "Stone Tell",
+     "level": 6
+    },
+    {
+     "name": "Creeping Doom",
+     "level": 7
+    },
+    {
+     "name": "Animal Shapes",
+     "level": 8
+    },
+    {
+     "name": "World Wave",
+     "level": 9
+    }
+   ],
+   "desc": "A shaman who selects the nature spirit takes on an appearance that reflects the aspect of the natural world she has the closest connection to. A nature shaman from the forest has a green tinge to her skin and hair, with "
+  },
+  "Stone": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Magic Stone",
+     "level": 1
+    },
+    {
+     "name": "Stone Call",
+     "level": 2
+    },
+    {
+     "name": "Meld Into Stone",
+     "level": 3
+    },
+    {
+     "name": "Wall Of Stone",
+     "level": 4
+    },
+    {
+     "name": "Stoneskin",
+     "level": 5
+    },
+    {
+     "name": "Stone Tell",
+     "level": 6
+    },
+    {
+     "name": "Statue",
+     "level": 7
+    },
+    {
+     "name": "Repel Metal Or Stone",
+     "level": 8
+    },
+    {
+     "name": "Clashing Rocks",
+     "level": 9
+    }
+   ],
+   "desc": "The skin of a shaman who selects the stone spirit takes on a rough, stony appearance. When the shaman calls upon one of this spirit's abilities, tiny gemstones underneath her flesh pulse with a bright glow, like phosphor"
+  },
+  "Waves": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Hydraulic Push",
+     "level": 1
+    },
+    {
+     "name": "Slipstream",
+     "level": 2
+    },
+    {
+     "name": "Water Breathing",
+     "level": 3
+    },
+    {
+     "name": "Wall Of Ice",
+     "level": 4
+    },
+    {
+     "name": "Geyser",
+     "level": 5
+    },
+    {
+     "name": "Fluid Form",
+     "level": 6
+    },
+    {
+     "name": "Vortex",
+     "level": 7
+    },
+    {
+     "name": "Seamantle",
+     "level": 8
+    },
+    {
+     "name": "Tsunami",
+     "level": 9
+    }
+   ],
+   "desc": "A shaman who selects the waves spirit has a fluid grace that exhibits itself whenever she moves. When she calls upon one of this spirit's abilities, floating orbs dance about her, sublimating between icy crystals, misty "
+  },
+  "Wind": {
+   "source": "Advanced Class Guide",
+   "spells": [
+    {
+     "name": "Alter Winds",
+     "level": 1
+    },
+    {
+     "name": "Gust Of Wind",
+     "level": 2
+    },
+    {
+     "name": "Cloak Of Winds",
+     "level": 3
+    },
+    {
+     "name": "River Of Wind",
+     "level": 4
+    },
+    {
+     "name": "Control Winds",
+     "level": 5
+    },
+    {
+     "name": "Sirocco",
+     "level": 6
+    },
+    {
+     "name": "Control Weather",
+     "level": 7
+    },
+    {
+     "name": "Whirlwind",
+     "level": 8
+    },
+    {
+     "name": "Winds Of Vengeance",
+     "level": 9
+    }
+   ],
+   "desc": "A shaman who selects the wind spirit appears windswept, and her movements seem lithe and carefree."
+  }
+ }
+}

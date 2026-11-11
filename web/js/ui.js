@@ -90,8 +90,9 @@ export function showEntryFromClick(idOrName, cat) {
   openedByClick = true;
 }
 
-export function showCustom({ name, cat = '', sub = '', html = '', source = '' }) {
+export function showCustom({ name, cat = '', sub = '', html = '', source = '', replace = false }) {
   const entry = { id: null, name, cat, sub, html, source };
+  if (replace && drawerHistory.length && $('#drawer').classList.contains('open')) drawerHistory.pop(); // redraw the same panel, no Back step
   drawerHistory.push(entry);
   renderDrawer(entry);
 }

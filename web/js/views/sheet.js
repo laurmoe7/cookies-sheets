@@ -22,7 +22,12 @@ import { hpSegments, segsHtml } from '../bars.js';
 import { playSfx } from '../sfx.js';
 import { hpFx } from '../healfx.js';
 import { view as petView } from '../pet/pet.js';
-import { renderResources, resourcesHtml, wire as wireResources, wireRest } from './resources.js';
+import { sourceOf, grantedSpells, missingGranted, dropGranted } from '../grants.js';
+import { grantsData, grantPickerHtml, wireGrantPicker, addGrantedSpells } from './grantpicker.js';
+import { renderResources, resourcesHtml, poolsFor, wire as wireResources, wireRest } from './resources.js';
+import { usableAbilities, abilityActions } from '../classabilities.js';
+import { abilityRollWindow } from '../roller.js';
+import { currentOf } from '../resources.js';
 import { weaponFxRow, wireWeaponFx } from './weaponfx.js';
 import { armorFxChip, wireArmorFx } from './armorfx.js';
 import { paperDollCard, wirePaperDoll } from './paperdoll.js';
@@ -681,6 +686,46 @@ function feats(body, c, d) {
 // =====================================================================
 // SPELLS
 // =====================================================================
+/** Domains / bloodline / mystery / patron / spirit for a class on the Spells tab: the choice, and a button when granted spells are missing. */
+function grantRow(c, cls, d) {
+  const src = sourceOf(cls);
+  if (!src) return '';
+  const gd = grantsData(() => render({ keepScroll: true }));
+  if (!gd) return '';
+  const choices = c.grantChoices?.[cls] || [];
+  const def = state.classesByName[cls], lv = d.casterLevels?.[cls] || 0;
+  const missing = missingGranted(grantedSpells(gd, def, choices, lv), c.spellbooks[cls]?.spells);
+  const open = grantOpen.has(cls) || (!choices.length && !src.optional);
+  return `<div class="grant-row" data-grant-cls="${esc(cls)}">
+    <div class="row"><b>${esc(src.title)}:</b> ${choices.length ? esc(choices.map(ch => ch.name).join(', ')) : `<span class="${src.optional ? 'muted' : 'warn'}">${src.optional ? 'none' : 'not chosen yet'}</span>`}
+      <button class="btn small ghost" data-grant-toggle>${open ? 'Done' : choices.length ? 'Change' : 'Choose'}</button>
+      ${missing.length ? `<button class="btn small" data-grant-add title="${esc(missing.map(m => m.name).join(', '))}">＋ Add ${missing.length} granted spell${missing.length === 1 ? '' : 's'}</button>` : ''}</div>
+    ${open ? `<p class="small muted">${esc(src.about)} Changing it swaps the old choice's spells for the new one's.</p>${grantPickerHtml(cls, choices, { def, lv })}` : ''}
+  </div>`;
+}
+const grantOpen = new Set(); // classes whose choice is being changed on the Spells tab
+
+function wireGrants(body, c, d) {
+  $$('[data-grant-toggle]', body).forEach(b => (b.onclick = () => {
+    const cls = b.closest('[data-grant-cls]').dataset.grantCls;
+    if (!grantOpen.delete(cls)) grantOpen.add(cls);
+    render({ keepScroll: true });
+  }));
+  const add = async cls => {
+    const book = (c.spellbooks[cls] ||= { spells: [], used: Array(10).fill(0), extraSlot: false });
+    const n = await addGrantedSpells(book, cls, state.classesByName[cls], c.grantChoices?.[cls] || [], d.casterLevels?.[cls] || 0);
+    if (n) toast(`Added ${n} granted spell${n === 1 ? '' : 's'}`, 'good');
+    changed({ rerender: true });
+  };
+  $$('[data-grant-add]', body).forEach(b => (b.onclick = () => add(b.closest('[data-grant-cls]').dataset.grantCls)));
+  wireGrantPicker(body, cls => c.grantChoices?.[cls] || [], async (cls, next) => {
+    const book = (c.spellbooks[cls] ||= { spells: [], used: Array(10).fill(0), extraSlot: false });
+    book.spells = dropGranted(book.spells, c.grantChoices?.[cls], next);
+    (c.grantChoices ||= {})[cls] = next;
+    await add(cls);
+  });
+}
+
 /** The Class resources & trackers card (lay on hands, smite evil, rage...) at the top of the Spells tab too; wired by wireResources(body). */
 const resCard = c => { const h = resourcesHtml(c, { hideEmpty: true }); return h ? `<section class="card res-on-spells">${h}</section>` : ''; };
 /** A prepared caster that prepares straight from its class list (cleric, druid, paladin, ranger...), not from a spellbook or a known list. */
@@ -691,7 +736,7 @@ const ORD = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th']
 function spells(body, c, d) {
   const casters = Object.entries(d.spellcasting);
   if (!casters.length) {
-    body.innerHTML = `${resCard(c)}<section class="card spellbook">${slaCard(c, d)}</section><section class="card"><h3>Spells</h3><p class="muted">None of your classes cast spells (yet), but you can still keep spells here: add any compendium spell or your own under <b>Spell-likes &amp; other spells</b> above. Paladins and rangers start casting at 4th level.</p>
+    body.innerHTML = `${resCard(c)}<section class="card spellbook">${slaCard(c, d)}</section><section class="card"><h3>Spells</h3><p class="muted">None of your classes cast spells (yet), but you can still keep spells here: add any compendium spell or your own under <b>Spell-likes &amp; abilities</b> above. Paladins and rangers start casting at 4th level.</p>
       <p>Looking something up? Try the ${'<a href="#" data-goto="compendium">Compendium</a>'} or ${'<a href="#" data-goto="rules">Quick Rules</a>'}.</p></section>`;
     $$('[data-goto]', body).forEach(a => (a.onclick = e => { e.preventDefault(); go(a.dataset.goto); }));
     wireSla(body, c);
@@ -720,6 +765,7 @@ function spells(body, c, d) {
           ${sc.hasExtraSlot ? `<label class="small" title="Cleric/druid domain, wizard specialist school, or shaman spirit slot">${chk(`spellbooks.${cls}.extraSlot`, { rerender: true })} Domain / school slot</label>` : ''}
         </div>
       </div>
+      ${grantRow(c, cls, d)}
       <table class="tbl slot-tbl"><thead><tr><th>Level</th>${levels.map(l => `<th>${ORD[l]}</th>`).join('')}</tr></thead><tbody>
         <tr><th>${spont ? 'Per day' : 'Slots'}</th>${levels.map(l => `<td><b>${fmtSlots(sc.slots[l])}</b></td>`).join('')}</tr>
         ${sc.known.some(k => k != null) ? `<tr><th>Known</th>${levels.map(l => `<td>${knownCount(book, l)} / ${sc.known[l] ?? '—'}</td>`).join('')}</tr>` : ''}
@@ -740,14 +786,14 @@ function spells(body, c, d) {
         const chip = s => {
           const left = num(s.prepared), spent = num(s.cast);
           const pips = prepared && l > 0 ? `<span class="pips" title="${left} prepared${spent ? `, ${spent} cast` : ''}">${'<i class="pip"></i>'.repeat(Math.min(left, 9))}${'<i class="pip used"></i>'.repeat(Math.min(spent, 9))}</span>` : '';
-          return `<button class="sp-chip ${isActive(cls, s.i) ? 'on' : ''} ${prepared && l > 0 ? (left || spent ? 'ready' : 'idle') : ''}" data-sp-select="${s.i}" data-level="${l}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(cls, s.i)}"><span class="sp-n">${esc(s.name || 'New spell')}</span>${s.school ? `<span class="sp-s">${esc(s.school)}</span>` : ''}${liveMark(s)}${pips}</button>`;
+          return `<button class="sp-chip ${isActive(cls, s.i) ? 'on' : ''} ${prepared && l > 0 ? (left || spent ? 'ready' : 'idle') : ''}" data-sp-select="${s.i}" data-level="${l}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(cls, s.i)}"><span class="sp-n">${esc(s.name || 'New spell')}</span>${s.school ? `<span class="sp-s">${esc(s.school)}</span>` : ''}${s.granted ? `<span class="sp-g" title="Granted by your ${esc(s.granted)}">✦</span>` : ''}${liveMark(s)}${pips}</button>`;
         };
         return `<div class="spell-level">
           <div class="sl-head"><h4>${l === 0 ? (sc.extracts ? 'Level 0' : 'Cantrips / Orisons') : ORD[l] + ' level'}</h4>${count}${heading}<span class="grow"></span>
             <button class="btn small ghost" data-add-spell="${l}">＋ Add</button>
             <button class="btn small ghost" data-custom-spell="${l}" title="A spell that isn't in the compendium">＋ Custom</button></div>
           ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>`
-            : `<p class="muted small sl-none">${wholeList(cls, sc, l) ? `${esc(cls)}s can prepare any ${l === 0 ? 'cantrip or orison' : ORD[l] + '-level'} ${esc(cls.toLowerCase())} spell. Use <b>＋ Add</b> to put the ones you prepare (or like to have handy) here.` : 'No spells yet.'}</p>`}
+            : `<p class="muted small sl-none">${wholeList(cls, sc, l) ? `Any ${l === 0 ? `${esc(cls.toLowerCase())} orison` : `${ORD[l]}-level ${esc(cls.toLowerCase())} spell`}: <b>＋ Add</b> the ones you prepare.` : 'No spells yet.'}</p>`}
         </div>`;
       }).join('')}
     </section>`;
@@ -755,6 +801,7 @@ function spells(body, c, d) {
   wireSla(body, c);
   wireCommon(body);
   wireResources(body, c);
+  wireGrants(body, c, d);
   if (spellDrawer?.el?.isConnected) renderSpellActions(); // the open spell's bar shows the same numbers as the tab
   body.addEventListener('click', async e => {
     const sbEl = e.target.closest('[data-cls]');
@@ -814,6 +861,7 @@ function spells(body, c, d) {
 /** The spell-likes block on the Spells tab: spell-like abilities (Dimension Door 1/day, Light at will). No slots, just uses per day, refilled by Rest. */
 function slaCard(c, d) {
   const list = c.spellLikes || [];
+  const abilities = classAbilityChips(c);
   const chip = (s, i) => {
     const x = d.spellLikes[i];
     const pips = x.unlimited ? '<span class="sp-s">at will</span>'
@@ -821,17 +869,142 @@ function slaCard(c, d) {
     return `<button class="sp-chip ${isActive(SLA, i) ? 'on' : ''} ${x.unlimited || x.left ? 'ready' : 'idle'}" data-sp-select="${i}" data-level="${x.level}" data-tip="${esc(s.id ? (s.summary || '') : (s.notes || ''))}" aria-pressed="${isActive(SLA, i)}"><span class="sp-n">${esc(s.name || 'New ability')}</span><span class="sp-s">${x.level ? ORD[x.level] : '0'}</span>${liveMark(s)}${pips}</button>`;
   };
   return `<div class="spell-level sla-card" data-cls="${SLA}">
-    <div class="sl-head"><h4>Spell-likes &amp; other spells</h4><span class="muted small">any spell, no class needed · uses per day (or at will) · Rest refills them</span><span class="grow"></span>
+    <div class="sl-head"><h4>Spell-likes &amp; abilities</h4><span class="grow"></span>
       <button class="btn small ghost" data-sla-add title="Pick a spell from the compendium">＋ Add spell</button><button class="btn small ghost" data-sla-ability title="One of your special abilities, feats or traits that works like a spell (an arcanist exploit, a racial spell-like ability)">＋ Ability</button><button class="btn small ghost" data-sla-custom title="A spell or ability that is not in the compendium">＋ Custom</button></div>
-    ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>` : '<p class="muted small sl-none">None yet. For spells that are not on a class list: racial and monster spell-likes (Dimension Door 1/day), item spells, or a spell you were given. Set how many times a day, or leave it blank for at will.</p>'}
+    ${list.length || abilities ? `<div class="sp-chips">${abilities}${list.map(chip).join('')}</div>` : '<p class="muted small sl-none">None yet.</p>'}
   </div>`;
 }
+
+// Class feature texts by compendium name, loaded once per name, so the Spell-likes card can tell abilities you use from passive ones.
+const featTexts = {};
+let featLoading = null;
+async function loadFeatTexts(names) {
+  try {
+    const hits = await api.resolve(names.map(n => ({ variants: [n], cats: ['Class Feature'] })));
+    const ents = await api.entries(hits.filter(Boolean).map(h => h.id));
+    names.forEach((n, i) => { featTexts[n] = (hits[i] && ents.find(e => e?.id === hits[i].id)?.html) || ''; });
+  } catch { for (const n of names) featTexts[n] ??= ''; }
+}
+
+/** Class abilities (detect evil, smite evil, lay on hands...) as chips like the spells': name, uses as pips, at will. */
+function classAbilityChips(c) {
+  const features = classFeatures(c, state.classesByName).map(f => ({ name: f.name, cls: f.cls, level: f.level, archetype: f.kind === 'archetype',
+    lookup: f.kind === 'archetype' ? f.name : featureLookupName(f.name), html: f.html }));
+  for (const f of features) if (f.archetype) featTexts[f.lookup] ??= f.html || '';
+  const need = [...new Set(features.filter(f => !(f.lookup in featTexts)).map(f => f.lookup))];
+  if (need.length && !featLoading) featLoading = loadFeatTexts(need).then(() => { featLoading = null; if (state.view === 'sheet' && state.sheetTab === 'spells') render({ keepScroll: true }); });
+  const list = usableAbilities(features, featTexts, poolsFor(c));
+  shownAbilities = list;
+  if (!list.length) return '';
+  const on = a => { const n = buffNameOf(c, a); return n && (c.modifiers || []).some(m => m.name === n && m.active); };
+  // Uses as pips, counted in uses of this ability: channel positive energy takes 2 lay on hands, so 7 lay on hands is 3 channels.
+  const usesLeft = a => { const { pool, n } = poolOf(c, a); return pool ? [Math.floor(currentOf(pool, c.resources) / n), Math.floor(pool.max / n)] : null; };
+  const uses = a => {
+    if (!usesLeft(a)) return a.use === 'At will' ? '<span class="sp-s">at will</span>' : '';
+    const [left, max] = usesLeft(a);
+    return max > 9 ? `<span class="sp-s ${left ? '' : 'bad'}">${left}/${max}</span>`
+      : `<span class="pips" title="${left} of ${max} left today">${'<i class="pip"></i>'.repeat(left)}${'<i class="pip used"></i>'.repeat(Math.max(0, max - left))}</span>`;
+  };
+  return list.map((a, i) => {
+    const empty = usesLeft(a)?.[0] === 0;
+    return `<button class="sp-chip cls-abil-chip ${empty ? 'idle' : 'ready'} ${abilOpen?.lookup === a.lookup && abilOpen?.cls === a.cls ? 'on' : ''}" data-abil="${i}" data-tip="${esc(`${a.cls} ${a.level}: ${poolOf(c, a).n > 1 ? `${poolOf(c, a).n} ${poolOf(c, a).pool?.name.toLowerCase()} a use` : a.use.toLowerCase()}`)}"><span class="sp-n">${esc(shortName(a))}</span>${on(a) ? '<span class="sp-live" title="Its buff is on (Buffs &amp; Conditions tab)">on</span>' : ''}${uses(a)}</button>`;
+  }).join('');
+}
+
+let shownAbilities = []; // the class abilities on the Spells tab, by chip index
+let abilOpen = null; // the class ability in the side panel
+let lastAbilUse = { key: '', at: 0 }; // the ability a roll last spent a use of
+
+const modsOf = d => Object.fromEntries(Object.entries(d.abilities).map(([k, v]) => [k, v.mod]));
+const actionsOf = a => abilityActions(a.lookup, a.cls, { level: state.derived.classLevels?.[a.cls] || a.level, mods: modsOf(state.derived) });
+function buffNameOf(c, a) { const act = actionsOf(a); return act.buff?.name || act.preset || null; }
+/** The tracker an ability spends from (its own, or lay on hands for channel positive energy) and how much a use takes. */
+function poolOf(c, a, act = actionsOf(a)) { return { pool: act.cost ? poolsFor(c).find(p => p.id === act.cost.pool) : a.pool, n: act.cost?.n || 1 }; }
+/** "Smite evil", "Channel energy": the name without the count or dice the class table adds (2/day, 3d6). */
+const shortName = a => a.name.replace(/\s*(\d+\/day|\+?\d+d\d+|\+\d+)$/i, '');
+
+/** The side panel for a class ability: its uses, DC, dice to roll (the roll window), a Use button and its buff, then its rules text. */
+function openAbility(a, replace = false) {
+  const c = state.char;
+  abilOpen = a;
+  const act = actionsOf(a);
+  const { pool, n } = poolOf(c, a, act);
+  const left = pool ? currentOf(pool, c.resources) : null;
+  const buffName = act.buff?.name || act.preset;
+  const on = buffName && (c.modifiers || []).some(m => m.name === buffName && m.active);
+  const note = act.buff?.note || (act.preset && BUFF_PRESETS.find(p => p.name === act.preset)?.note) || '';
+  // Laid out like a spell in the side panel: the action bar (Roll, uses, Use or the buff), the stat card, then the rules text.
+  const html = `<div class="sp-actions" data-abil-panel>
+      ${act.rolls.length ? `<div class="sp-group"><button class="btn" data-abil-roll title="${esc(act.rolls.map(r => `${r.label} ${r.dice}`).join(', '))}">🎲 Roll</button></div>` : ''}
+      ${pool ? `<div class="sp-group" title="From the Class resources & trackers card">
+        <span class="sp-group-label">${esc(pool.name)}</span>
+        <span class="stepper"><button data-abil-spend title="Spend ${n}" aria-label="Spend ${n}">−</button><b class="abil-left ${left < n ? 'bad' : ''}">${left}<span class="dim"> / ${pool.max}</span></b><button data-abil-back ${left >= pool.max ? 'disabled' : ''} title="Get ${n} back" aria-label="Get ${n} back">＋</button></span>
+      </div>` : ''}
+      ${buffName ? `<div class="sp-group"><button class="btn ${on ? '' : 'primary'} sp-cast" data-abil-buff ${!on && pool && left < n ? 'disabled' : ''} title="${esc(on ? 'Turn its bonuses off (Buffs & Conditions tab)' : `Turns on its bonuses${pool ? ` and spends ${n}` : ''}`)}">${on ? 'End' : 'Use'}</button>${on ? '<span class="sp-cast-n">on</span>' : ''}</div>`
+        : pool ? `<div class="sp-group"><button class="btn primary sp-cast" data-abil-spend ${left < n ? 'disabled' : ''} title="Spend ${n} from ${esc(pool.name)}">Use</button>${n > 1 ? `<span class="sp-cast-n">uses ${n}</span>` : ''}</div>` : ''}
+    </div>
+    <div class="spell-stat"><div class="ss-school">${esc(a.cls)} ability</div>
+      <div class="ss-level"><span class="ss-lab">Level ${a.level}</span><span class="ss-chip">${esc(a.cls)}</span></div>
+      <div class="ss-facts">
+        ${!pool ? `<div class="ss-cell"><span class="ss-lab">Use</span><b>${esc(a.use)}</b></div>`
+          : n > 1 ? `<div class="ss-cell"><span class="ss-lab">Each use</span><b>${n} ${esc(pool.name.toLowerCase())}</b></div>`
+          : `<div class="ss-cell"><span class="ss-lab">Per day</span><b>${pool.max}</b></div>`}
+        ${act.dc ? `<div class="ss-cell"><span class="ss-lab">Saving throw</span><b>${esc(act.dc.text.replace(/ \(.*\)$/, ''))}, DC ${act.dc.value}</b></div>` : ''}
+        ${act.rolls.map(r => `<div class="ss-cell"><span class="ss-lab">${esc(r.label)}</span><b>${esc(r.dice)}</b></div>`).join('')}
+        ${buffName ? `<div class="ss-cell"><span class="ss-lab">Buff</span><b>${esc(buffName)}</b></div>` : ''}
+      </div>
+      ${note || act.note ? `<dl class="ss-rows"><dt>Notes</dt><dd>${esc([act.note, note].filter(Boolean).join(' '))}</dd></dl>` : ''}
+    </div>`;
+  showCustom({ name: shortName(a), cat: 'Class feature', sub: `${a.cls} ${a.level}`, html: html + (featTexts[a.lookup] || ''), replace });
+}
+
+document.addEventListener('drawer-closed', () => { if (abilOpen) { abilOpen = null; document.querySelectorAll('.cls-abil-chip.on').forEach(x => x.classList.remove('on')); } });
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-abil-panel] [data-abil-spend],[data-abil-panel] [data-abil-back],[data-abil-panel] [data-abil-buff],[data-abil-panel] [data-abil-roll]');
+  if (!t || !abilOpen) return;
+  const c = state.char, a = abilOpen, act = actionsOf(a);
+  const { pool, n } = poolOf(c, a, act);
+  const spend = k => { if (pool) (c.resources ||= {})[pool.id] = Math.max(0, Math.min(pool.max, currentOf(pool, c.resources) - k)); };
+  if (t.dataset.abilRoll !== undefined) {
+    // The spells' roll window; its "Use it" tick spends from the tracker once per use (a to-hit roll and the damage right after count once).
+    const name = shortName(a);
+    const left = pool ? currentOf(pool, c.resources) : 0, key = `${a.cls}:${a.lookup}`;
+    const recent = lastAbilUse.key === key && Date.now() - lastAbilUse.at < 90000;
+    const cast = pool ? { label: `Use it (−${n} ${pool.name.toLowerCase()})`, left: Math.floor(left / n), recent, on: left >= n && !recent,
+      spend() { spend(n); lastAbilUse = { key, at: Date.now() }; changed({ rerender: true }); openAbility(a, true); toast(`${pool.name}: ${currentOf(pool, c.resources)} left`); } } : null;
+    return abilityRollWindow({ title: name, facts: [a.use, act.dc ? `${act.dc.text.replace(/ \(.*\)$/, '')}, DC ${act.dc.value}` : ''].filter(Boolean).join(' · '), rolls: act.rolls, touch: !!act.touch, cast });
+  }
+  if (t.dataset.abilSpend !== undefined) spend(n);
+  else if (t.dataset.abilBack !== undefined) spend(-n);
+  else {
+    const name = act.buff?.name || act.preset;
+    c.modifiers ||= [];
+    const have = c.modifiers.find(m => m.name === name);
+    if (have?.active) have.active = false;
+    else {
+      const src = act.buff || BUFF_PRESETS.find(p => p.name === act.preset);
+      if (!src) return;
+      if (have) Object.assign(have, { active: true, effects: structuredClone(src.effects) }); // the numbers may have grown since
+      else c.modifiers.push({ name, active: true, note: src.note || '', effects: structuredClone(src.effects) });
+      spend(n);
+      toast(`${name} is on (Buffs & Conditions tab)`, 'good');
+    }
+  }
+  changed({ rerender: true });
+  openAbility(a, true);
+});
 
 function wireSla(body, c) {
   const card = body.querySelector('.sla-card');
   if (!card) return;
   const blank = extra => ({ name: '', school: '', summary: '', notes: '', level: 1, perDay: 1, used: 0, cl: '', ability: 'cha', ...extra });
   card.onclick = async e => {
+    const ab = e.target.closest('[data-abil]');
+    if (ab) {
+      card.querySelectorAll('.cls-abil-chip.on').forEach(x => x.classList.remove('on'));
+      ab.classList.add('on');
+      return openAbility(shownAbilities[+ab.dataset.abil]);
+    }
     const t = e.target.closest('[data-sp-select],[data-sla-add],[data-sla-custom],[data-sla-ability]');
     if (!t) return;
     if (t.dataset.spSelect !== undefined) return openSpell(SLA, +t.dataset.spSelect, t);
@@ -1181,7 +1354,7 @@ function preparedPips(book, sc, l) {
 /** Slots still free at a spell level for a spontaneous caster (the Used box counts the ones spent). */
 const slotsLeft = (book, sc, l) => (sc.slots[l] == null ? 0 : sc.slots[l] === Infinity ? Infinity : Math.max(0, sc.slots[l] - num((book.used || [])[l])));
 const fmtSlots = v => (v == null ? '—' : v === Infinity ? '∞' : v);
-const knownCount = (book, l) => book.spells.filter(s => s.level === l).length;
+const knownCount = (book, l) => book.spells.filter(s => s.level === l && !s.granted).length; // bloodline / mystery spells are extra
 // the day's preparation: what is left plus what has been cast, so casting does not look like unpreparing
 const preparedCount = (book, l) => book.spells.filter(s => s.level === l).reduce((a, s) => a + num(s.prepared) + num(s.cast), 0);
 

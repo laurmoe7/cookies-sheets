@@ -1,7 +1,7 @@
 // Which spells a character may learn when gaining a level (level-up wizard spell chooser).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { learnAllowance, remaining, pickableLevels, describeRemaining } from '../web/js/spellrules.js';
+import { learnAllowance, remaining, pickableLevels, describeRemaining, levelsToFill } from '../web/js/spellrules.js';
 import { classesByName, make, calc, repeat } from './helpers.mjs';
 
 /** Allowance for gaining `cls` level n (the character already has n-1 levels and `known` spells). */
@@ -98,4 +98,19 @@ test('favourites have no limit: every level the caster has slots for, or just on
 test('favourites leave the real allowance alone: a wizard still has exactly two spells to learn', () => {
   const a = learnAllowance(classesByName.Wizard, 2, [{ level: 0 }, { level: 1 }, { level: 1 }, { level: 1 }], { slots: [Infinity, 3, null] }, 3);
   assert.equal(remaining(a, [{ level: 1 }]).total, 1, 'one of the two is used up');
+});
+
+test('levelsToFill: a paladin reaching 4th gets 1st-level spells only with a Cha bonus spell', () => {
+  // Paladin 4 table: 1st level 0 per day; Cha 14 (+2) gives one bonus 1st-level spell, so 0 + 1 = 1 slot.
+  const slots = cha => calc(make({ base: { cha }, levels: repeat('Paladin', 4) })).spellcasting.Paladin.slots;
+  assert.deepEqual(levelsToFill(undefined, slots(14), []), [1], 'paladin 3 could not cast; 1st level opens with 1 slot');
+  assert.deepEqual(levelsToFill(undefined, slots(10), []), [], 'Cha 10: 0 slots, nothing to cast yet');
+});
+test('levelsToFill: new levels, plus older levels that are still empty', () => {
+  const before = [null, 2, null], after = [null, 2, 1];
+  assert.deepEqual(levelsToFill(before, after, [{ level: 1 }]), [2], '1st already has spells; 2nd is new');
+  assert.deepEqual(levelsToFill(before, after, []), [1, 2], '1st was never filled in, so it is added too');
+  assert.deepEqual(levelsToFill(before, after, [{ level: 1 }, { level: 2 }]), [2], 'a new level is filled even if a spell of it is on the list');
+  assert.deepEqual(levelsToFill([3, 1], [3, 2], [{ level: 0 }, { level: 1 }]), [], 'more slots of levels already filled: nothing to add');
+  assert.deepEqual(levelsToFill(undefined, [Infinity, 1], []), [0, 1], 'at-will orisons count');
 });

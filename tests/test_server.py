@@ -291,6 +291,12 @@ class HttpApi(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertIn('Fighter', data['Dwarf'])
 
+    def test_granted_spell_lists(self):
+        status, data = self.call('/api/grants')
+        self.assertEqual(status, 200)
+        self.assertEqual(data['domain']['Fire']['spells'][0], {'name': 'Burning Hands', 'level': 1})
+        self.assertEqual(data['bloodline']['Arcane']['spells'][0], {'name': 'Identify', 'level': 1, 'at': 3}, 'Core Rulebook: identify (3rd)')
+
     def test_save_and_load(self):
         status, r = self.call('/api/character', {'name': 'Ezren'})
         self.assertEqual(status, 200)

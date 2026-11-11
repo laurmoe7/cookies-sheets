@@ -151,5 +151,35 @@ class Drawbacks(unittest.TestCase):
         self.assertEqual((entries[1]['sub'], entries[1]['name'], entries[1]['source'], entries[1]['html']), ('Drawback', 'Anxious', 'Q', '<p>B.</p>'))
 
 
+class GrantedSpells(unittest.TestCase):
+    NAMES = {n.lower(): n for n in ["Burning Hands", "Produce Flame", "Identify", "Cat's Grace, Mass", "Elemental Body IV",
+                                    "Summon Monster V", "Geas/Quest", "Blindness/Deafness", "Protection From Evil",
+                                    "Protection From Law", "Bless Water", "Curse Water", "Repel Metal Or Stone", "Charm Animal"]}
+
+    def parse(self, text, explicit=False):
+        from grants import parse_spells
+        return parse_spells(text, self.NAMES, explicit)
+
+    def test_domain_list_gives_spell_levels(self):
+        self.assertEqual(self.parse('<p>1st&mdash;<i>burning hands</i>, 2nd&mdash;<i>produce flame</i>, 7th&mdash;<i>elemental body IV</i> (fire only).</p>'),
+                         [{'name': 'Burning Hands', 'level': 1}, {'name': 'Produce Flame', 'level': 2},
+                          {'name': 'Elemental Body IV', 'level': 7, 'note': 'fire only'}])
+
+    def test_bloodline_list_gives_class_levels(self):
+        got = self.parse('identify (3rd), summon monster V (fire elementals only, 5th), cat\'s grace (mass)* (7th).', explicit=True)
+        self.assertEqual(got, [{'name': 'Identify', 'level': 1, 'at': 3},
+                               {'name': 'Summon Monster V', 'level': 2, 'at': 5, 'note': 'fire elementals only'},
+                               {'name': "Cat's Grace, Mass", 'level': 3, 'at': 7}], 'the nth spell is an nth-level spell')
+
+    def test_names_with_slashes_and_odd_wording(self):
+        names = [s['name'] for s in self.parse('2nd&mdash;geas, 4th&mdash;blindness/deafness, 6th&mdash;bless water/curse water, '
+                                               '8th&mdash;protection from evil/law, 10th&mdash;repel metal and stone, 12th&mdash;charm animals')]
+        self.assertEqual(names, ['Geas/Quest', 'Blindness/Deafness', 'Bless Water', 'Curse Water', 'Protection From Evil',
+                                 'Protection From Law', 'Repel Metal Or Stone', 'Charm Animal'])
+
+    def test_unknown_spell_is_kept_and_marked(self):
+        self.assertEqual(self.parse('1st&mdash;fist of stone'), [{'name': 'Fist of stone', 'level': 1, 'missing': True}])
+
+
 if __name__ == '__main__':
     unittest.main()

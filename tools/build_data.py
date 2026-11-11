@@ -24,6 +24,7 @@ import extra_drawbacks
 import extra_entries
 import racetraits
 import fcb
+import grants
 import summons
 from htmltable import parse_table
 
@@ -36,6 +37,7 @@ OUT_SUMMONS = os.path.join(ROOT, 'data', 'summons.json')
 OUT_CREATURES = os.path.join(ROOT, 'data', 'creatures.json')
 OUT_EQUIPMENT = os.path.join(ROOT, 'data', 'equipment.json')
 OUT_FCB = os.path.join(ROOT, 'data', 'fcb.json')
+OUT_GRANTS = os.path.join(ROOT, 'data', 'grants.json')
 
 # Book priority (earlier wins when the same entry appears twice)
 BOOKS = ['cr', 'apg', 'acg', 'um', 'uc', 'ucampaign', 'arg', 'ue', 'gmg', 'ma', 'tech', 'mc', 'npc',
@@ -765,6 +767,10 @@ def main():
     with open(OUT_FCB, 'w', encoding='utf-8') as f:
         json.dump(fcb_data, f, indent=1)
     print('wrote racial favored class options:', len(fcb_data), 'races,', sum(len(o) for r in fcb_data.values() for o in r.values()), 'options')
+    grant_data = grants.build(books, {e['name'].lower(): e['name'] for e in entries if e['cat'] == 'Spell'})
+    with open(OUT_GRANTS, 'w', encoding='utf-8') as f:
+        json.dump(grant_data, f, indent=1, ensure_ascii=False)
+    print('wrote granted spell lists:', {k: len(v) for k, v in grant_data.items()})
     summon_data, summon_misses = summons.build(books)
     with open(OUT_SUMMONS, 'w', encoding='utf-8') as f:
         json.dump(summon_data, f, indent=1)
