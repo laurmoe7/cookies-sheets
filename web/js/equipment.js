@@ -113,13 +113,24 @@ export function addGearFromAttack(c, w) {
   return c.gear.length - 1;
 }
 
+/** A name with its +N set: "+1 Longsword" and "Longsword +1" both become "Longsword +N" (no +0: just "Longsword"). */
+export const withPlus = (name, plus) => `${stripPlus(String(name || '').replace(/^\+\s*\d+\s+/, ''))}${plus ? ' +' + plus : ''}`;
+
 /** Sets a weapon's +N on both the inventory item and its attack row: the names end in +N and the row's enhancement bonus is N. */
 export function setWeaponPlus(c, g, plus) {
-  const rename = n => `${stripPlus(String(n || '').replace(/^\+\s*\d+\s+/, ''))}${plus ? ' +' + plus : ''}`; // "+1 Longsword" and "Longsword +1" both become "Longsword +N"
-  g.name = rename(g.name);
+  g.name = withPlus(g.name, plus);
   const i = attackFor(c, g);
-  if (i >= 0) { c.weapons[i].name = rename(c.weapons[i].name); c.weapons[i].enh = plus; }
+  if (i >= 0) { c.weapons[i].name = withPlus(c.weapons[i].name, plus); c.weapons[i].enh = plus; }
 }
+
+/** Sets armor's or a shield's +N: its name ends in +N and its enhancement bonus is N. */
+export function setArmorPlus(a, plus) {
+  a.name = withPlus(a.name, plus);
+  a.enh = plus;
+}
+
+/** Is this item plainly armor or a shield (to file it with the armor when it is added): the compendium says so, or its name is exactly a standard one. */
+export const isPlainArmor = (g, templates) => g.hint === 'armor' || g.hint === 'shield' || (!!armorKey(g.name) && (templates || []).some(t => armorKey(t.name) === armorKey(g.name)));
 
 
 /** Links attack rows and inventory items of the same weapon that were made separately (a Lance row and a Lance item), one to one.

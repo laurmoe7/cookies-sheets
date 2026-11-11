@@ -17,12 +17,12 @@ export function wireArmorFx(body) {
   });
 }
 
-function editArmorFx(i) {
+export function editArmorFx(i) {
   const c = state.char, a = c.armor[i];
   if (!a) return;
   a.fx ||= [];
   const type = a.type === 'shield' ? 'shield' : 'armor';
-  modal(`${a.name || (type === 'shield' ? 'Shield' : 'Armor')}: enchantments`, body => {
+  return modal(`${a.name || (type === 'shield' ? 'Shield' : 'Armor')}: enchantments`, body => {
     const draw = () => {
       const fx = armorFx(a), mat = MATERIAL_BY_ID[a.material || ''];
       const has = id => a.fx.some(f => f.id === id);

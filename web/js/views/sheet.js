@@ -29,11 +29,12 @@ import { usableAbilities, abilityActions } from '../classabilities.js';
 import { abilityRollWindow } from '../roller.js';
 import { currentOf } from '../resources.js';
 import { weaponFxRow, wireWeaponFx } from './weaponfx.js';
-import { armorFxChip, wireArmorFx } from './armorfx.js';
+import { editArmorFx } from './armorfx.js';
+import { armorFx } from '../armorfx.js';
 import { paperDollCard, wirePaperDoll } from './paperdoll.js';
 import { suggestEffects, effectsText, plusOptions, setPlus, plusOf } from '../itemfx.js';
 import { parseMagicWeapon, parseMagicArmor } from '../magicgear.js';
-import { weaponFromTemplate, armorFromTemplate, blankWeapon, blankArmor, weaponTemplateFor, inventoryWeapons, attackFor, gearFor, addAttackFromGear, addGearFromAttack, setWeaponPlus, linkByName, moveGearToArmor } from '../equipment.js';
+import { weaponFromTemplate, armorFromTemplate, blankWeapon, blankArmor, weaponTemplateFor, inventoryWeapons, attackFor, gearFor, addAttackFromGear, addGearFromAttack, setWeaponPlus, linkByName, moveGearToArmor, armorFromGear, setArmorPlus, isPlainArmor } from '../equipment.js';
 import { chooseWeapon, chooseArmor } from './equipment.js';
 import { SLOTS, slotName, hintFromSub, sortByName } from '../paperdoll.js';
 
@@ -221,36 +222,6 @@ function inventoryWeaponStrip(c) {
   return `<div class="row inv-weapons"><span class="small muted">In your inventory, not in attacks yet:</span>
     ${missing.map(x => `<button class="btn small ghost" data-inv-attack="${x.i}" title="Add an attack row for it (${esc(x.tpl.name)})">＋ ${esc(c.gear[x.i].name)}</button>`).join('')}
     ${missing.length > 1 ? '<button class="btn small" data-inv-attack-all>Add all</button>' : ''}</div>`;
-}
-
-/** Inventory items dragged onto the Armor & Shields card become armor rows (moveGearToArmor in equipment.js). */
-const GEAR_DRAG = 'application/x-cookie-gear';
-function wireArmorDrop(body, c) {
-  equipTemplates(); // the armor list, for the stats of a dropped item
-  body.addEventListener('dragstart', e => {
-    const t = e.target.closest?.('[data-item]');
-    if (!t) return;
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData(GEAR_DRAG, t.dataset.item);
-    e.dataTransfer.setData('text/plain', c.gear[+t.dataset.item]?.name || '');
-  });
-  const card = $('[data-armor-drop]', body);
-  if (!card) return;
-  const ours = e => [...e.dataTransfer.types].includes(GEAR_DRAG);
-  card.addEventListener('dragover', e => { if (!ours(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = 'move'; card.classList.add('drop-ok'); });
-  card.addEventListener('dragleave', e => { if (!card.contains(e.relatedTarget)) card.classList.remove('drop-ok'); });
-  card.addEventListener('drop', e => {
-    if (!ours(e)) return;
-    e.preventDefault();
-    card.classList.remove('drop-ok');
-    const i = +e.dataTransfer.getData(GEAR_DRAG), g = c.gear[i];
-    if (!g) return;
-    const name = g.name || 'That item';
-    if (moveGearToArmor(c, i, equipTemplates()?.armor) < 0) { toast(`${name} is not armor or a shield we know. Add it with ＋ Add armor/shield instead.`, 'err'); return; }
-    if (itemDrawer) { itemDrawer = null; closeDrawer(); } // the inventory's order has changed
-    toast(`${name} is in Armor & Shields now.`);
-    changed({ rerender: true });
-  });
 }
 
 function overview(body, c, d) {
@@ -1295,7 +1266,8 @@ document.addEventListener('click', e => {
 
 // An inventory item shown in the side panel: its compendium text, and under the name the fields to edit. {i, armed, id, el}
 let itemDrawer = null;
-const isItemActive = i => itemDrawer?.i === i;
+const isItemActive = i => itemDrawer?.kind !== 'armor' && itemDrawer?.i === i;
+const isArmorActive = i => itemDrawer?.kind === 'armor' && itemDrawer?.i === i;
 const WEARABLE = () => [['', 'Not worn'], ...SLOTS.filter(x => !['armor', 'shield', 'main', 'off'].includes(x.id)).map(x => [x.id, slotName(x.id)])];
 
 function openItem(i) {
@@ -1303,8 +1275,8 @@ function openItem(i) {
   if (!g) return;
   weaponTemplates(); // the panel shows "Add to attacks" for weapons
   if (linkByName(state.char)) changed();
-  itemDrawer = { i, armed: true, id: g.id || null };
-  document.querySelectorAll('.sp-chip[data-item].on').forEach(x => x.classList.remove('on'));
+  itemDrawer = { kind: 'gear', i, armed: true, id: g.id || null };
+  document.querySelectorAll('.inv-chips .sp-chip.on').forEach(x => x.classList.remove('on'));
   document.querySelector(`[data-item="${i}"]`)?.classList.add('on');
   if (g.id) showEntry(g.id);
   else showCustom({ name: g.name || 'New item', cat: 'Custom item', sub: g.value || '', html: '' });
@@ -1317,26 +1289,78 @@ document.addEventListener('entry-shown', e => {
   else if (!it.armed) clearItem(); // the panel moved on to something else
 });
 document.addEventListener('drawer-closed', () => clearItem());
-function clearItem() { itemDrawer = null; document.querySelectorAll('.sp-chip[data-item].on').forEach(x => x.classList.remove('on')); }
+function clearItem() { itemDrawer = null; document.querySelectorAll('.inv-chips .sp-chip.on').forEach(x => x.classList.remove('on')); }
+
+/** Armor or a shield in the side panel: its numbers, +N, enchantments and whether it is worn. */
+function openArmor(i) {
+  const a = state.char.armor[i];
+  if (!a) return;
+  itemDrawer = { kind: 'armor', i, armed: true, id: a.id || null };
+  document.querySelectorAll('.inv-chips .sp-chip.on').forEach(x => x.classList.remove('on'));
+  document.querySelector(`[data-armor-item="${i}"]`)?.classList.add('on');
+  if (a.id) showEntry(a.id);
+  else showCustom({ name: a.name || (a.type === 'shield' ? 'Shield' : 'Armor'), cat: a.type === 'shield' ? 'Shield' : 'Armor', sub: '', html: '' });
+}
+
+function renderArmorActions() {
+  const it = itemDrawer, c = state.char, a = c.armor[it.i];
+  if (!a) { it.el.innerHTML = ''; return; }
+  const p = k => `armor.${it.i}.${k}`;
+  const fx = armorFxChipText(a);
+  it.el.innerHTML = `<div class="item-actions">
+    ${a.id ? '' : `<label class="wide"><span>Name</span><input data-armor-name value="${esc(a.name || '')}" placeholder="Armor name"></label>`}
+    <label class="row" style="gap:6px"><span>Worn</span>${chk(p('equipped'), { rerender: true })}</label>
+    <label><span>Type</span>${sel(p('type'), [['armor', 'Armor'], ['shield', 'Shield']], { rerender: true })}</label>
+    <label><span>Category</span>${sel(p('category'), [['light', 'Light'], ['medium', 'Medium'], ['heavy', 'Heavy']], { rerender: true })}</label>
+    <label><span>${a.type === 'shield' ? 'Shield' : 'Armor'} bonus</span>${inp(p('bonus'), { type: 'num', cls: 'w3', rerender: true })}</label>
+    <label><span>Max Dex</span>${inp(p('maxDex'), { type: 'num', cls: 'w3', ph: 'none', rerender: true })}</label>
+    <label><span>Check penalty</span>${inp(p('acp'), { type: 'num', cls: 'w3', rerender: true })}</label>
+    <label><span>Spell failure %</span>${inp(p('asf'), { type: 'num', cls: 'w3', rerender: true })}</label>
+    <label><span>Weight</span>${inp(p('weight'), { type: 'num', cls: 'w3', rerender: true })}</label>
+    <div class="wide row plus-row">${plusButtons([0, 1, 2, 3, 4, 5].map(n => ({ plus: n, title: n ? `+${n} ${a.type === 'shield' ? 'shield' : 'armor'}: +${n} more to AC` : 'No enhancement bonus' })), num(a.enh), 'data-armor-plus')}</div>
+    <div class="wide item-fx"><div>${fx ? esc(fx) : '<span class="muted">No enchantments or special material</span>'}</div>
+      <div class="row" style="margin-top:4px"><button class="btn small" data-armor-fx title="Masterwork, special material (mithral...) and special abilities (fortification...)">✦ Enchant</button></div></div>
+    <div class="wide row end"><button class="btn small danger" data-armor-del>Remove from inventory</button></div></div>`;
+  it.el.onchange = e => {
+    if (!e.target.matches('[data-armor-name]')) return;
+    a.name = e.target.value;
+    setDrawerTitle(a.name || 'Armor');
+    changed({ rerender: true });
+  };
+  it.el.onclick = async e => {
+    const pl = e.target.closest('[data-armor-plus]');
+    if (pl) { setArmorPlus(a, +pl.dataset.armorPlus); setDrawerTitle(a.name); changed({ rerender: true }); renderArmorActions(); return; }
+    if (e.target.closest('[data-armor-fx]')) { await editArmorFx(it.i); renderArmorActions(); return; }
+    if (!e.target.closest('[data-armor-del]')) return;
+    if (!await confirmBox(`Remove “${a.name || 'this armor'}” from your inventory?`, 'Remove')) return;
+    c.armor.splice(it.i, 1);
+    itemDrawer = null;
+    closeDrawer();
+    changed({ rerender: true });
+  };
+}
+/** "+1 · mithral · fortification (light)" for the armor panel. */
+const armorFxChipText = a => armorFx(a).summary || '';
 
 function renderItemActions() {
   const it = itemDrawer;
   if (!it?.el?.isConnected) return;
+  if (it.kind === 'armor') { renderArmorActions(); return; }
   const c = state.char, g = c.gear[it.i];
   if (!g) { it.el.innerHTML = ''; return; }
   const p = k => `gear.${it.i}.${k}`;
   const fx = g.effects || [], sug = suggestEffects(g.name), pluses = plusOptions(g.name, g.value), cur = plusOf(g.name);
   const wtpl = weaponTemplateFor(g.name, weaponTemplates()), atk = wtpl ? attackFor(c, g) : -1;
-  const weaponRow = !wtpl ? '' : `<div class="wide item-weapon">${atk >= 0
-    ? `<div class="row plus-row"><span class="small">⚔ In <b>Weapons &amp; Attacks</b> (Overview)</span><span class="grow"></span>${plusButtons([0, 1, 2, 3, 4, 5].map(n => ({ plus: n, title: n ? `A +${n} weapon: +${n} to attack and damage` : 'No enhancement bonus' })), num(c.weapons[atk].enh), 'data-weapon-plus')}</div>`
-    : `<button class="btn small" data-item-attack title="Add an attack row for it on the Overview (${esc(wtpl.name)})">⚔ Add to attacks</button>`}</div>`;
+  const weaponRow = !wtpl ? '' : `<div class="wide item-weapon"><div class="row plus-row">${atk >= 0 ? '<span class="small">⚔ In <b>Weapons &amp; Attacks</b> (Overview)</span>'
+    : `<button class="btn small" data-item-attack title="Add an attack row for it on the Overview (${esc(wtpl.name)})">⚔ Add to attacks</button>`}<span class="grow"></span>${plusButtons([0, 1, 2, 3, 4, 5].map(n => ({ plus: n, title: n ? `A +${n} weapon: +${n} to attack and damage` : 'No enhancement bonus' })), atk >= 0 ? num(c.weapons[atk].enh) : plusOf(g.name), 'data-weapon-plus')}</div></div>`;
+  const asArmor = !wtpl && armorFromGear(g, equipTemplates()?.armor) ? `<div class="wide"><button class="btn small" data-item-armor title="Move it to your armor, with the book's numbers, so it counts toward your AC">🛡 Use as armor</button></div>` : '';
   it.el.innerHTML = `<div class="item-actions">
     ${g.id ? '' : `<label class="wide"><span>Name</span><input data-item-name value="${esc(g.name || '')}" placeholder="Item name"></label>`}
     <label><span>Worn in</span>${sel(p('slot'), WEARABLE(), { rerender: true })}</label>
     <label><span>Qty</span>${inp(p('qty'), { type: 'num', cls: 'w3', rerender: true })}</label>
     <label><span>Weight (each)</span>${inp(p('weight'), { type: 'num', cls: 'w3' })}</label>
     <label><span>Value</span>${inp(p('value'), { cls: 'w6' })}</label>
-    ${weaponRow}
+    ${weaponRow}${asArmor}
     ${pluses.length ? `<div class="wide row plus-row">${plusButtons(pluses.map(o => ({ plus: o.plus, title: `Make it a +${o.plus}${o.price ? ` (${o.price})` : ''}` })), cur, 'data-item-plus')}</div>` : ''}
     <div class="wide item-fx">
       <div>${fx.length ? esc(effectsText(fx)) : '<span class="muted">none</span>'}${fx.length && !g.slot ? ' <span class="small bad">not worn yet, so they do not count</span>' : ''}</div>
@@ -1357,6 +1381,13 @@ function renderItemActions() {
     if (e.target.closest('[data-item-fx]')) {
       const m = await editModifier({ name: g.name || 'Item', note: '', active: true, effects: structuredClone(g.effects || []).concat(g.effects?.length ? [] : [{ target: 'ac', value: 1, type: 'untyped' }]) });
       if (m) { g.effects = m.effects; changed({ rerender: true }); renderItemActions(); }
+      return;
+    }
+    if (e.target.closest('[data-item-armor]')) {
+      const ai = moveGearToArmor(c, it.i, equipTemplates()?.armor);
+      if (ai < 0) return;
+      changed({ rerender: true });
+      openArmor(ai);
       return;
     }
     if (e.target.closest('[data-item-attack]')) {
@@ -1574,28 +1605,19 @@ function gear(body, c, d) {
   const enc = d.encumbrance;
   body.innerHTML = `<div class="grid two">
   ${paperDollCard(c, d)}
-  <section class="card span2" data-armor-drop>
-    <div class="row"><h3 class="grow">Armor & Shields</h3><button class="btn small" data-pick-armor>＋ Magic item</button><button class="btn small" data-add-armor title="Pick standard armor or a shield, or start with a blank row">＋ Add armor/shield</button></div>
-    ${c.armor.length ? `<table class="tbl"><thead><tr><th>Worn</th><th>Name</th><th>Type</th><th>Category</th><th title="Armor/shield bonus">Bonus</th><th title="Enhancement">Enh</th>
-      <th title="Max Dex bonus (blank = none)">Max Dex</th><th title="Armor check penalty">ACP</th><th title="Arcane spell failure %">ASF %</th><th>Weight</th><th></th></tr></thead><tbody>
-      ${c.armor.map((a, i) => `<tr><td>${chk(`armor.${i}.equipped`)}</td><td class="w10"${entryAttrs(a)}>${tf(`armor.${i}.name`, { placeholder: 'Name' })}${armorFxChip(c, i)}</td>
-        <td>${sel(`armor.${i}.type`, [['armor', 'Armor'], ['shield', 'Shield']], { rerender: true })}</td>
-        <td>${sel(`armor.${i}.category`, [['light', 'Light'], ['medium', 'Medium'], ['heavy', 'Heavy']])}</td>
-        <td>${inp(`armor.${i}.bonus`, { type: 'num', cls: 'w2' })}</td><td>${inp(`armor.${i}.enh`, { type: 'num', cls: 'w2', rerender: true })}</td>
-        <td>${inp(`armor.${i}.maxDex`, { type: 'num', cls: 'w2' })}</td><td>${inp(`armor.${i}.acp`, { type: 'num', cls: 'w2' })}</td>
-        <td>${inp(`armor.${i}.asf`, { type: 'num', cls: 'w2' })}</td><td>${inp(`armor.${i}.weight`, { type: 'num', cls: 'w3' })}</td>
-        <td><button class="icon-btn" data-del="armor.${i}">✕</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted">No armor.</p>'}
-    <p class="small muted drop-hint">Drag armor or a shield from your inventory here to wear it.</p>
-  </section>
   <section class="card span2">
     <div class="row"><h3 class="grow">Inventory</h3>
-      <button class="btn small ghost" data-sort-gear title="Put the inventory in alphabetical order">A–Z</button><button class="btn small" data-pick-item>＋ Magic item</button><button class="btn small" data-add="gear">＋ Item</button></div>
-    ${c.gear.length ? `<div class="sp-chips inv-chips">${c.gear.map((g, i) => {
+      <button class="btn small ghost" data-sort-gear title="Put the inventory in alphabetical order">A–Z</button><button class="btn small" data-pick-item title="A magic item from the compendium (magic armor and shields go with your armor)">＋ Magic item</button><button class="btn small" data-add-armor title="Standard armor or a shield">＋ Armor/shield</button><button class="btn small" data-add="gear">＋ Item</button></div>
+    ${c.armor.length || c.gear.length ? `<div class="sp-chips inv-chips">${c.armor.map((a, i) => {
+      const ac = num(a.bonus) + num(a.enh), worn = !!a.equipped;
+      return `<button class="sp-chip armor-chip ${isArmorActive(i) ? 'on' : ''} ${worn ? 'ready' : 'idle'}" data-armor-item="${i}" title="${worn ? 'Worn. ' : 'Not worn. '}Click for its numbers, +N and enchantments"><span class="sp-n">🛡 ${esc(a.name || (a.type === 'shield' ? 'Shield' : 'Armor'))}</span><span class="sp-s">AC +${ac}</span>${worn ? '<span class="pips"><i class="pip"></i></span>' : ''}</button>`;
+    }).join('')}${c.gear.map((g, i) => {
       const worn = !!g.slot, qty = num(g.qty) > 1 ? `<span class="sp-s">×${esc(g.qty)}</span>` : '';
       const fxMark = (g.effects || []).length ? `<span class="sp-s" title="${esc(effectsText(g.effects))}${worn ? '' : ' (counts once worn)'}">✦</span>` : '';
       const where = worn ? `<span class="sp-s">${esc(slotName(g.slot))}</span><span class="pips"><i class="pip"></i></span>` : '';
-      return `<button class="sp-chip ${isItemActive(i) ? 'on' : ''} ${worn ? 'ready' : g.hint ? 'idle' : ''}" data-item="${i}" draggable="true" title="${worn ? 'Equipped: ' + esc(slotName(g.slot)) + '. ' : ''}Click for details"><span class="sp-n">${esc(g.name || 'New item')}</span>${qty}${fxMark}${where}</button>`;
+      return `<button class="sp-chip ${isItemActive(i) ? 'on' : ''} ${worn ? 'ready' : g.hint ? 'idle' : ''}" data-item="${i}" title="${worn ? 'Equipped: ' + esc(slotName(g.slot)) + '. ' : ''}Click for details"><span class="sp-n">${esc(g.name || 'New item')}</span>${qty}${fxMark}${where}</button>`;
     }).join('')}</div>` : '<p class="muted">Nothing carried.</p>'}
+    <p class="small muted">🛡 Armor and shields count toward your AC while worn (tick Worn in their panel, or use the paper doll).</p>
   </section>
   <section class="card">
     <h3>Money</h3>
@@ -1620,19 +1642,22 @@ function gear(body, c, d) {
     ${enc.load === 'medium' ? '· max Dex +3, ACP −3, reduced speed' : enc.load === 'heavy' ? '· max Dex +1, ACP −6, reduced speed, run ×3' : enc.load === 'overloaded' ? '· can only move 5 ft. per round' : ''}</p>`}
   </section></div>`;
   wireCommon(body);
-  wireArmorFx(body);
-  $('[data-pick-armor]', body).onclick = () => addMagicGear('armor');
-  $('[data-add-armor]', body).onclick = () => addFromList('armor');
+  $('[data-add-armor]', body).onclick = async () => { const n = c.armor.length; await addFromList('armor'); if (c.armor.length > n) openArmor(c.armor.length - 1); };
   wirePaperDoll(body);
-  body.addEventListener('click', e => { const t = e.target.closest('[data-item]'); if (t) openItem(+t.dataset.item); });
-  wireArmorDrop(body, c);
+  equipTemplates(); // the armor list, to tell armor added to the inventory
+  body.addEventListener('click', e => {
+    const a = e.target.closest('[data-armor-item]');
+    if (a) { openArmor(+a.dataset.armorItem); return; }
+    const t = e.target.closest('[data-item]'); if (t) openItem(+t.dataset.item);
+  });
   const upd = () => { $('#money-total').textContent = (num(c.money.pp) * 10 + num(c.money.gp) + num(c.money.sp) / 10 + num(c.money.cp) / 100).toLocaleString(); };
   upd();
   document.addEventListener('recalc', upd);
   onLeave(() => document.removeEventListener('recalc', upd));
   $('[data-sort-gear]', body).onclick = () => {
-    if (c.gear.length < 2) return;
+    if (c.gear.length + c.armor.length < 2) return;
     c.gear = sortByName(c.gear);
+    c.armor = sortByName(c.armor);
     if (itemDrawer) { itemDrawer = null; closeDrawer(); } // the open item's place in the list has changed
     changed({ rerender: true });
   };
@@ -1642,7 +1667,15 @@ function gear(body, c, d) {
     const en = await api.entry(r.id);
     const w = parseFloat((en.html.match(/<dt>Weight<\/dt><dd>([\d.]+)/) || [])[1]) || 0;
     const price = (en.html.match(/<dt>Price<\/dt><dd>([^<]+)/) || [])[1] || '';
-    c.gear.push({ id: r.id, name: r.name, qty: 1, weight: w, value: price, notes: '', slot: '', hint: hintFromSub(r.sub), effects: suggestEffects(r.name) });
+    const g = { id: r.id, name: r.name, qty: 1, weight: w, value: price, notes: '', slot: '', hint: hintFromSub(r.sub), effects: suggestEffects(r.name) };
+    if (isPlainArmor(g, equipTemplates()?.armor)) { // magic armor and shields: read its base armor, +N and abilities from the text
+      const row = parseMagicArmor(en) || armorFromGear(g, equipTemplates()?.armor) || { ...blankArmor(), name: r.name, type: g.hint === 'shield' ? 'shield' : 'armor', id: r.id };
+      c.armor.push({ ...row, equipped: false });
+      changed({ rerender: true });
+      openArmor(c.armor.length - 1);
+      return;
+    }
+    c.gear.push(g);
     if (gearToAttack(c, c.gear.length - 1)) toast(`${r.name} is in Weapons & Attacks on the Overview too.`);
     changed({ rerender: true });
     openItem(c.gear.length - 1);

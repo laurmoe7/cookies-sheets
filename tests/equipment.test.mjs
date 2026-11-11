@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { weaponFromTemplate, armorFromTemplate, filterTemplates, blankWeapon, blankArmor, weaponTemplateFor, inventoryWeapons, attackFor, gearFor, addAttackFromGear, addGearFromAttack, setWeaponPlus, linkByName, armorTemplateFor, armorFromGear, moveGearToArmor } from '../web/js/equipment.js';
+import { weaponFromTemplate, armorFromTemplate, filterTemplates, blankWeapon, blankArmor, weaponTemplateFor, inventoryWeapons, attackFor, gearFor, addAttackFromGear, addGearFromAttack, setWeaponPlus, linkByName, armorTemplateFor, armorFromGear, moveGearToArmor, setArmorPlus, isPlainArmor, withPlus } from '../web/js/equipment.js';
 import { rootPath, make, calc } from './helpers.mjs';
 
 const data = JSON.parse(readFileSync(rootPath + 'data/equipment.json', 'utf-8'));
@@ -178,4 +178,18 @@ test('inventory to armor: magic armor not on the book list still moves when the 
   assert.equal(row.weight, 20);
   assert.equal(row.id, 42, 'keeps its compendium entry');
   assert.equal(armorFromGear({ name: 'Mysterious Thing' }, data.armor), null);
+});
+
+test('armor in the inventory: +N, and which added items go with the armor', () => {
+  const a = { name: 'Breastplate', bonus: 6, enh: 0 };
+  setArmorPlus(a, 2);
+  assert.equal(a.name, 'Breastplate +2');
+  assert.equal(a.enh, 2, '+2 armor: +2 enhancement to its armor bonus');
+  setArmorPlus(a, 0);
+  assert.equal(a.name, 'Breastplate', '+0 takes the +N off');
+  assert.equal(withPlus('+1 Longsword', 3), 'Longsword +3', 'a +N in front moves to the end');
+  assert.equal(isPlainArmor({ name: 'Chain Shirt' }, data.armor), true);
+  assert.equal(isPlainArmor({ name: 'Celestial Armor', hint: 'armor' }, data.armor), true, 'the compendium files it as armor');
+  assert.equal(isPlainArmor({ name: 'Leather Pouch' }, data.armor), false, 'only an exact armor name, not one that contains "leather"');
+  assert.equal(isPlainArmor({ name: 'Rope' }, data.armor), false);
 });
