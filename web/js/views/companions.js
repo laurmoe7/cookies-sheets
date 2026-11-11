@@ -15,7 +15,7 @@ import { playSfx } from '../sfx.js';
 import { tipText } from '../rolltip.js';
 import { event as petEvent } from '../pet/pet.js';
 import { SKILLS } from '../data.js';
-import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom, debounce } from '../ui.js';
+import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCustom, debounce, toast } from '../ui.js';
 import { picAction, picFrame } from '../cropper.js';
 import { renderSummons, summonsView } from './summons.js';
 
@@ -106,7 +106,7 @@ export async function renderCompanions(body, c) {
         playSfx('fullHeal');
         comp.hpCur = null;
       } else {
-        if (!amt) return;
+        if (!amt) { $('[data-chp-amt]', row).focus(); toast('Type how many hit points first'); return; }
         if (t.dataset.chp === 'dmg') {
           let rest = amt; const temp = num(comp.hpTemp);
           if (temp) { const used = Math.min(temp, rest); comp.hpTemp = temp - used; rest -= used; }
@@ -197,7 +197,7 @@ function topPanels(comp, s, p, ed = {}) {
       <div class="hp-main"><h3>Hit Points</h3>
         <div class="hp-big">${cur}<span class="muted"> / </span>${max}</div>
         <div class="hp-bar"><div class="${pct <= 25 ? 'low' : pct <= 50 ? 'mid' : ''}" style="width:${pct}%"></div>${segsHtml(hpSegments(max))}</div>
-        <div class="hp-actions"><input type="number" class="num" data-chp-amt placeholder="0" min="0" title="How many hit points">
+        <div class="hp-actions"><input type="number" class="num" data-chp-amt placeholder="HP" min="0" title="How many hit points to take or heal" aria-label="Hit points to take or heal">
           <button class="btn danger" data-chp="dmg">Damage</button><button class="btn good" data-chp="heal">Heal</button>
           <button class="btn" data-chp="full" title="Heal to full hit points"><span class="heart">♥</span> Full heal</button></div>
         <div class="fields compact cols2"><label>Current ${bind(`${p}.hpCur`, comp.hpCur, { type: 'num', ph: 'max' })}</label>

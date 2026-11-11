@@ -219,7 +219,10 @@ def search(q='', cat='', limit=60, offset=0, sub=''):
     cols = 'e.id, e.cat, e.sub, e.name, e.source, e.summary'
     q = (q or '').strip()
     if not q:
-        rows = db().execute(f'select {cols} from entries e where 1=1 {cat_sql} order by e.name limit ? offset ?',
+        # Browsing: names that start with a letter first, so the list doesn't open on "(harmless)" and "-2 Cursed Sword".
+        rows = db().execute(f'''select {cols} from entries e where 1=1 {cat_sql}
+                                order by case when upper(substr(e.name, 1, 1)) between 'A' and 'Z' then 0 else 1 end, e.name
+                                limit ? offset ?''',
                             (*cats, limit, offset)).fetchall()
     else:
         fq = fts_query(q)

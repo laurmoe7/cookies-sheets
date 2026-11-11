@@ -644,6 +644,9 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .comp-top .hp-bar > div.mid { background: var(--warn); } .comp-top .hp-bar > div.low { background: var(--bad); }
 .portrait-frame.empty { display: flex; align-items: center; justify-content: center; border: 2px dashed var(--line); background: transparent; color: var(--muted); cursor: pointer; font: inherit; }
 .portrait-frame.empty:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+/* No picture yet: a slim slot beside the hit points, not two thirds of the card. */
+.card.hp .portrait-frame.empty { flex: 0 0 132px; min-height: 0; padding: 10px; text-align: center; line-height: 1.4; }
+.card.hp:has(> .portrait-frame.empty) .hp-main { flex: 1 1 auto; }
 .comp-top .abilities table { width: auto; min-width: 240px; }
 .comp-top .abilities th:first-child { text-align: left; padding-right: 24px; }
 .comp-top .abilities td, .comp-top .abilities thead th { text-align: center; padding-left: 14px; padding-right: 14px; }
@@ -651,6 +654,9 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 /* ---------- tab icons ---------- */
 .tab { display: inline-flex; align-items: center; gap: 7px; }
 .tab-ico { width: 17px; height: 17px; flex: none; }
+/* Narrow window (sheet.js fitTabs): icons only, so the tabs stay on one row; the open tab keeps its name. */
+.tabs.compact .tab:not(.active) .tab-l { display: none; }
+.tabs.compact .tab:not(.active) { padding-left: 11px; padding-right: 11px; }
 
 /* ---------- options window ---------- */
 .opt-grid { display: grid; gap: 4px; margin-bottom: 14px; min-width: 420px; }

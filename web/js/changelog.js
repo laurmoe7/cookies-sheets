@@ -14,6 +14,12 @@ export const CHANGELOG = [
       'Tidier layout: boxes line up in the Hit Points, Defense, Offense and Biography cards, Damage and Heal keep their colours on parchment, a narrow window no longer scrolls sideways, and the import buttons on Characters sit together.',
       'Roll window: about half the height. What to roll, bonuses, penalties and your own number are one labelled list, and the ticks (Keep modifiers, In play, Cast it) sit on one line at the bottom.',
       'Companions: summons have their own Summons page next to your companions, and it opens there after you summon something.',
+      'Spells: “＋ Add” stays open so you can add several spells, and spells you already know show as known instead of being added twice.',
+      'In a narrow window the sheet tabs show only their icons so they fit on one row, and switching tabs from further down no longer makes the tab bar jump.',
+      'Overview: with no portrait, the “Add a portrait” box is a slim strip and the hit points get the room.',
+      'Damage and Heal: the amount box says HP, and pressing Damage or Heal with it empty tells you to type a number.',
+      'Compendium: browsing with an empty search starts at A, not at “(harmless)” and “-2 Cursed Sword”.',
+      'Characters: a class level no longer wraps onto a line of its own (“Arcanist (White Mage) 8” on the headstone).',
     ],
   },
   {

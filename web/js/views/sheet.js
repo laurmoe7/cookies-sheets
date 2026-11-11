@@ -109,6 +109,36 @@ const sum = (key, label, inner, { base = 0, unit = '' } = {}) => `<span class="s
 const ref = (name, cat, label) => `<a href="#" class="ref" data-entry="${esc(name)}" ${cat ? `data-cat="${esc(cat)}"` : ''}>${esc(label ?? name)}</a>`;
 const refId = (id, label) => `<a href="#" class="ref" data-entry="${esc(label)}" data-entry-id="${id}">${esc(label)}</a>`;
 
+/**
+ * Switching tabs from further down the page: start the new tab just under the tab bar instead of at the very top,
+ * so the bar (stuck to the top while scrolled) doesn't jump down under the pointer.
+ */
+function keepTabsStill(main, was) {
+  const tabs = $('.tabs', main);
+  if (!tabs) return;
+  const natural = tabs.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop; // render() left scrollTop at 0
+  if (was > natural) main.scrollTop = natural;
+}
+
+/**
+ * In a narrow window the tabs would wrap onto a second row, which stays pinned at the top and eats the page.
+ * Then they go compact: icons only (the name is the tooltip), except the open tab, which keeps its name.
+ */
+let tabsFitter = null;
+function fitTabs(main) {
+  const fit = () => {
+    const bar = $('.tabs', main);
+    if (!bar) return;
+    bar.classList.remove('compact');
+    const tabs = $$('.tab', bar);
+    const rows = new Set(tabs.map(t => Math.round(t.getBoundingClientRect().bottom)));
+    bar.classList.toggle('compact', rows.size > 1);
+  };
+  fit();
+  // Watch the page area, not the bar: the bar's own size changes when it goes compact.
+  if (!tabsFitter) { tabsFitter = new ResizeObserver(() => fit()); tabsFitter.observe(main); }
+}
+
 export function renderSheet(main) {
   const c = state.char;
   const d = state.derived;
@@ -116,12 +146,13 @@ export function renderSheet(main) {
   if (!$('.tabs', main) || main.dataset.view !== 'sheet' || main.dataset.tabs !== tabsKey()) {
     main.dataset.tabs = tabsKey();
     main.innerHTML = `<div class="page">
-      <div class="tabs" role="tablist">${orderedTabs().map(([k, l]) => `<button class="tab" data-tab="${k}">${icon(k)}${l}</button>`).join('')}
+      <div class="tabs" role="tablist">${orderedTabs().map(([k, l]) => `<button class="tab" data-tab="${k}" title="${esc(l)}">${icon(k)}<span class="tab-l">${l}</span></button>`).join('')}
         <div class="grow"></div><span id="tabs-extra"></span>
       </div>
       <div id="tab-body"></div></div>`;
-    $$('.tab', main).forEach(b => (b.onclick = () => { if (state.sheetTab !== b.dataset.tab) { const snap = snapshotPage($('#tab-body')); const order = orderedTabs().map(t => t[0]), back = order.indexOf(b.dataset.tab) < order.indexOf(state.sheetTab); state.turn = snap && { snap, back }; state.sheetTab = b.dataset.tab; render(); petView('tab-' + b.dataset.tab); } }));
+    $$('.tab', main).forEach(b => (b.onclick = () => { if (state.sheetTab !== b.dataset.tab) { const snap = snapshotPage($('#tab-body')); const order = orderedTabs().map(t => t[0]), back = order.indexOf(b.dataset.tab) < order.indexOf(state.sheetTab); state.turn = snap && { snap, back }; state.sheetTab = b.dataset.tab; const was = main.scrollTop; render(); keepTabsStill(main, was); petView('tab-' + b.dataset.tab); } }));
     if (options().tabDrag) wireTabDrag(main);
+    fitTabs(main);
   }
   $$('.tab', main).forEach(b => b.classList.toggle('active', b.dataset.tab === state.sheetTab));
   $('#tabs-extra', main).innerHTML = d.level === 0 ? '<button class="btn primary" data-goto-levelup>Choose 1st level class →</button>' : '';
@@ -158,7 +189,7 @@ function overview(body, c, d) {
       <div class="hp-big"><span class="calc" data-calc="hp.current"></span><span class="muted"> / </span>${sum('hp.max', 'Maximum HP', calc('hp.max'))}</div>
       <div class="hp-bar"><div id="hp-fill"></div>${segsHtml(hpSegments(d.hp.max))}</div>
       <div class="hp-actions">
-        <input id="hp-amt" type="number" class="num" placeholder="0" min="0" title="How many hit points">
+        <input id="hp-amt" type="number" class="num" placeholder="HP" min="0" title="How many hit points to take or heal" aria-label="Hit points to take or heal">
         <button class="btn danger" data-hp="dmg">Damage</button>
         <button class="btn good" data-hp="heal">Heal</button>
         <button class="btn" data-hp="full" title="Heal to full hit points"><span class="heart">♥</span> Full heal</button>
@@ -320,7 +351,7 @@ function overview(body, c, d) {
       state.healFx = { amount: healed, frac: Math.max(0.6, healed / Math.max(1, dd.hp.max)), from: cur / Math.max(1, dd.hp.max) };
       playSfx('fullHeal');
       c.hp.current = null; c.hp.nonlethal = 0; changed({ rerender: true }); return; }
-    if (!amt) return;
+    if (!amt) { $('#hp-amt').focus(); toast('Type how many hit points first'); return; }
     if (b.dataset.hp === 'dmg') {
       let rest = amt;
       const temp = num(c.hp.temp);
@@ -694,11 +725,15 @@ function spells(body, c, d) {
       return;
     }
     if (t.dataset.addSpell !== undefined) {
-      const picked = await pickSpell(cls, sc, +t.dataset.addSpell);
-      if (picked) {
-        book.spells.push({ id: picked.id, name: picked.name, level: picked.level ?? +t.dataset.addSpell, school: picked.school, summary: picked.summary, prepared: 0, cast: 0 });
-        changed({ rerender: true });
-      }
+      // Stays open so several spells can be added; spells already on the list can't be added twice.
+      const lvl = +t.dataset.addSpell;
+      await pickSpell(cls, sc, lvl, {
+        known: book.spells.map(s => s.name),
+        onPick: picked => {
+          book.spells.push({ id: picked.id, name: picked.name, level: picked.level ?? lvl, school: picked.school, summary: picked.summary, prepared: 0, cast: 0 });
+          changed({ rerender: true });
+        },
+      });
     } else if (t.dataset.prep !== undefined) {
       const s = book.spells[+t.dataset.prep];
       s.prepared = Math.max(0, num(s.prepared) + +t.dataset.d);
@@ -1093,8 +1128,14 @@ const knownCount = (book, l) => book.spells.filter(s => s.level === l).length;
 // the day's preparation: what is left plus what has been cast, so casting does not look like unpreparing
 const preparedCount = (book, l) => book.spells.filter(s => s.level === l).reduce((a, s) => a + num(s.prepared) + num(s.cast), 0);
 
-export function pickSpell(cls, sc, level) {
-  return modal(`Add ${cls} spell`, (body, close) => {
+/**
+ * Spell chooser for the Spells tab. Without `onPick` it closes with the chosen spell; with it, it stays open and calls
+ * `onPick` for each spell added. Names in `known` (and spells added here) show as "known" / "added ✓" and can't be added again.
+ */
+export function pickSpell(cls, sc, level, { known = [], onPick } = {}) {
+  const have = new Set(known.map(n => String(n || '').toLowerCase()).filter(Boolean));
+  const added = new Set();
+  return modal(`Add ${cls} spells`, (body, close) => {
     body.innerHTML = `<div class="row">
         <input class="search grow" placeholder="Search spell names…">
         <select data-f="level"></select>
@@ -1115,10 +1156,23 @@ export function pickSpell(cls, sc, level) {
       const res = await api.spells(which.value || sc.lists.join(','), lv.value, q.value, sch.value);
       if (my !== seq) return;
       rows = res;
-      list.innerHTML = rows.map((r, i) => `<div class="pick-row" data-i="${i}">
+      list.innerHTML = rows.map((r, i) => {
+        const n = r.name.toLowerCase(), isAdded = added.has(n), isKnown = !isAdded && have.has(n);
+        return `<div class="pick-row ${isKnown || isAdded ? 'known' : ''}" data-i="${i}">
         <div><b>${esc(r.name)}</b> <span class="muted small">L${r.level} · ${esc(r.school || '')}</span></div>
-        <div class="muted small">${esc(r.summary || '')}</div><button class="btn small primary" data-pick="${i}">Add</button></div>`).join('') || '<p class="pad muted">No spells match.</p>';
+        <div class="muted small">${esc(r.summary || '')}</div>${isAdded ? '<span class="small good">added ✓</span>' : isKnown ? '<span class="small muted">known</span>' : `<button class="btn small primary" data-pick="${i}">Add</button>`}</div>`;
+      }).join('') || '<p class="pad muted">No spells match.</p>';
     }, 120);
+    const take = r => {
+      const n = r.name.toLowerCase();
+      if (have.has(n) || added.has(n)) return;
+      if (!onPick) { close(r); return; }
+      onPick(r);
+      added.add(n);
+      have.add(n);
+      toast(`${r.name} added`, 'good');
+      run();
+    };
     [q, lv, sch].forEach(x => x.addEventListener('input', run));
     which.addEventListener('input', () => {
       fillLevels(which.value ? 9 : sc.maxLevel, '');
@@ -1127,7 +1181,7 @@ export function pickSpell(cls, sc, level) {
     });
     list.addEventListener('click', async e => {
       const p = e.target.closest('[data-pick]');
-      if (p) { close(rows[+p.dataset.pick]); return; }
+      if (p) { take(rows[+p.dataset.pick]); return; }
       const row = e.target.closest('.pick-row');
       if (!row) return;
       $$('.pick-row.sel', list).forEach(x => x.classList.remove('sel'));

@@ -81,7 +81,7 @@ export async function renderHome(main) {
   }
   el.innerHTML = list.map(c => `<div class="char-card ${state.char?.id === c.id ? 'current' : ''}" data-id="${esc(c.id)}">
       <div class="grow"><h3>${esc(c.name)}</h3>
-      <div class="muted">${esc(c.race)} · ${esc(c.summary)}</div>
+      <div class="muted">${classLine(c)}</div>
       <div class="muted small">Last edited ${new Date(c.updated * 1000).toLocaleString()}</div></div>
       <button class="btn small" data-export="${esc(c.id)}">Export</button>
       <button class="btn small" data-retire="${esc(c.id)}" title="Move to the graveyard: for a character who died or retired">🪦 Lay to rest</button>
@@ -173,6 +173,9 @@ function askRetire(name) {
 
 let graveOpen = true; // the graveyard is unfolded until the player folds it, kept across re-draws of the page
 
+/** "Human · Arcanist (White Mage) 8": a level number never wraps onto a line of its own, away from its class. */
+const classLine = c => `${esc(c.race)} · ${esc(c.summary || '').replace(/ (\d+)(?= \/|$)/g, '&nbsp;$1')}`;
+
 /** Characters who died or retired: still openable, with a headstone line, and a way back to the active list. */
 function renderGraveyard(box, fallen) {
   if (!fallen.length) { box.innerHTML = ''; return; }
@@ -185,7 +188,7 @@ function renderGraveyard(box, fallen) {
     <div class="graves">${fallen.map(c => `<div class="char-card grave ${c.retired.status}" data-id="${esc(c.id)}">
       <div class="rip">${c.retired.status === 'dead' ? '† Here lies' : 'Retired'}</div>
       <h3>${esc(c.name)}</h3>
-      <div class="muted">${esc(c.race)} · ${esc(c.summary)}</div>
+      <div class="muted">${classLine(c)}</div>
       ${c.retired.note ? `<div class="epitaph">“${esc(c.retired.note)}”</div>` : ''}
       <div class="muted small">${c.retired.status === 'dead' ? 'Fell' : 'Retired'}${c.retired.date ? ' ' + esc(when(c.retired)) : ''}</div>
       <div><button class="btn small" data-revive="${esc(c.id)}" title="Back to the active characters">${c.retired.status === 'dead' ? 'Raise dead' : 'Bring back'}</button></div></div>`).join('')}</div>
@@ -213,7 +216,7 @@ function renderHistory(box, older) {
     <div class="muted small">Copies made automatically as you edit, in case a change went wrong. Going back keeps the save it replaces.</div>
     ${older.map(c => `<div class="char-card gone">
       <div class="grow"><h3>${esc(c.name)}</h3>
-      <div class="muted">${esc(c.race)} · ${esc(c.summary)}</div>
+      <div class="muted">${classLine(c)}</div>
       <div class="muted small">Saved ${new Date(c.saved * 1000).toLocaleString()}</div></div>
       <button class="btn small" data-revert="${esc(c.file)}">Go back to this</button></div>`).join('')}
   </details>`;
@@ -239,7 +242,7 @@ function renderBin(bin, gone) {
   bin.innerHTML = `<details class="bin" ${binOpen ? 'open' : ''}><summary class="muted">Deleted characters (${gone.length})</summary>
     ${gone.map(c => `<div class="char-card gone">
       <div class="grow"><h3>${esc(c.name)}</h3>
-      <div class="muted">${esc(c.race)} · ${esc(c.summary)}</div>
+      <div class="muted">${classLine(c)}</div>
       <div class="muted small">Deleted ${new Date(c.deleted * 1000).toLocaleString()}</div></div>
       <button class="btn small" data-restore="${esc(c.file)}">Restore</button>
       <button class="btn small danger" data-purge="${esc(c.file)}" title="Remove the file for good">Delete for good</button></div>`).join('')}

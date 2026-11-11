@@ -162,6 +162,13 @@ class Compendium(unittest.TestCase):
         self.assertEqual(app._summary(c), 'Arcanist (White Mage) 8 / Rogue (Scout, Thug) 1')
         self.assertEqual(app._summary(dict(levelUps=[dict(cls='Fighter')])), 'Fighter 1')
 
+    def test_browse_starts_with_letters(self):
+        names = [r['name'] for r in app.search('', '', 60)]
+        self.assertTrue(names and all(n[:1].isalpha() for n in names), 'an empty search opens on names that start with a letter')
+        self.assertEqual(names, sorted(names), 'and in name order')
+        later = app.search('', 'Magic Item', 5000)
+        self.assertIn('-2 Cursed Sword', [r['name'] for r in later], 'names starting with punctuation or digits come at the end')
+
     def test_search_filters_by_sub_category(self):
         meta = app.search('', 'Feat', 500, 0, 'Metamagic')
         self.assertGreater(len(meta), 20)
