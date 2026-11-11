@@ -24,7 +24,7 @@ function describe(c, d, o) {
   const g = c.gear[o.i];
   const note = String(g.notes || '').replace(/\s+/g, ' ').trim();
   const fx = effectsText(g.effects);
-  return { name: g.name || 'Item', sub: fx || note.slice(0, 40) || g.value || '', magic: !!g.id || !!fx, tip: `${g.name || 'Item'}${g.value ? ' (' + g.value + ')' : ''}${fx ? '\n' + fx : ''}${note ? '\n' + note : ''}` };
+  return { name: g.name || 'Item', sub: '', magic: !!g.id || !!fx, tip: `${g.name || 'Item'}${g.value ? ' (' + g.value + ')' : ''}${fx ? '\n' + fx : ''}${note ? '\n' + note : ''}` };
 }
 
 function tile(c, d, id, worn) {
@@ -33,7 +33,7 @@ function tile(c, d, id, worn) {
   const clash = list.length > 1 ? `<i class="ds-clash" title="${list.length} items are set to this slot. Only the first is shown.">!</i>` : '';
   return `<button class="doll-slot ${it ? 'full' : ''} ${it?.magic ? 'magic' : ''}" data-doll="${id}" title="${esc(it ? it.tip + '\nClick to change or take off' : slot.label + ': empty. Click to choose what to wear')}">
     <span class="ds-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${slot.icon}</svg></span>
-    <span class="ds-txt"><span class="ds-lab">${esc(slot.label)}</span>${it ? `<b class="ds-name">${esc(it.name)}</b><span class="ds-sub">${esc(it.sub)}</span>` : '<span class="ds-empty">empty</span>'}</span>${clash}</button>`;
+    <span class="ds-txt"><span class="ds-lab">${esc(slot.label)}</span>${it ? `<b class="ds-name">${esc(it.name)}</b>${it.sub ? `<span class="ds-sub">${esc(it.sub)}</span>` : ''}` : '<span class="ds-empty">empty</span>'}</span>${clash}</button>`;
 }
 
 /** The card's HTML. `d` is the computed sheet. */

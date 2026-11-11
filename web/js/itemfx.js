@@ -50,6 +50,29 @@ export function suggestEffects(name) {
   return [];
 }
 
+/** The "+N" choices for an item whose bonus goes up in steps (headbands and belts +2/+4/+6, cloaks of resistance +1 to +5...), or [] for an item that has none.
+ * `value` is the compendium price text ("4,000 gp (+2), 16,000 gp (+4), 36,000 gp (+6)"); the steps it names win, with the price of each. */
+export function plusOptions(name, value) {
+  const base = String(name ?? '').replace(/\s*\+\s*\d+\s*$/, '').trim();
+  const one = suggestEffects(base + ' +1');
+  if (!base || !one.length || JSON.stringify(one) === JSON.stringify(suggestEffects(base + ' +2'))) return []; // no bonus, or one that does not go up (cloak of elvenkind)
+  const priced = [...String(value ?? '').matchAll(/([\d,]+\s*gp)\s*\(\+(\d+)\)/g)].map(m => ({ plus: +m[2], price: m[1] }));
+  if (priced.length) return priced;
+  const steps = /^(belt|headband)\b/i.test(base) ? [2, 4, 6] : /^bracers of armor\b/i.test(base) ? [1, 2, 3, 4, 5, 6, 7, 8] : [1, 2, 3, 4, 5];
+  return steps.map(plus => ({ plus, price: '' }));
+}
+
+/** The item set to "+N": its name ends in +N and its bonuses are the usual ones for that. */
+export function setPlus(g, plus) {
+  const base = String(g.name ?? '').replace(/\s*\+\s*\d+\s*$/, '').trim();
+  g.name = `${base} +${plus}`;
+  g.effects = suggestEffects(g.name);
+  return g;
+}
+
+/** The +N an item's name ends in, or 0. */
+export const plusOf = name => +((/\+\s*(\d+)\s*$/.exec(String(name ?? '')) || [])[1] || 0);
+
 /** "+2 Intelligence (enhancement), +2 All saves (resistance)" */
 export function effectsText(effects) {
   return (effects || []).map(e => {

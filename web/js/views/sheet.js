@@ -31,7 +31,7 @@ import { currentOf } from '../resources.js';
 import { weaponFxRow, wireWeaponFx } from './weaponfx.js';
 import { armorFxChip, wireArmorFx } from './armorfx.js';
 import { paperDollCard, wirePaperDoll } from './paperdoll.js';
-import { suggestEffects, effectsText } from '../itemfx.js';
+import { suggestEffects, effectsText, plusOptions, setPlus, plusOf } from '../itemfx.js';
 import { parseMagicWeapon, parseMagicArmor } from '../magicgear.js';
 import { weaponFromTemplate, armorFromTemplate, blankWeapon, blankArmor } from '../equipment.js';
 import { chooseWeapon, chooseArmor } from './equipment.js';
@@ -1227,13 +1227,14 @@ function renderItemActions() {
   const c = state.char, g = c.gear[it.i];
   if (!g) { it.el.innerHTML = ''; return; }
   const p = k => `gear.${it.i}.${k}`;
-  const fx = g.effects || [], sug = suggestEffects(g.name);
+  const fx = g.effects || [], sug = suggestEffects(g.name), pluses = plusOptions(g.name, g.value), cur = plusOf(g.name);
   it.el.innerHTML = `<div class="item-actions">
     ${g.id ? '' : `<label class="wide"><span>Name</span><input data-item-name value="${esc(g.name || '')}" placeholder="Item name"></label>`}
     <label><span>Worn in</span>${sel(p('slot'), WEARABLE(), { rerender: true })}</label>
     <label><span>Qty</span>${inp(p('qty'), { type: 'num', cls: 'w3', rerender: true })}</label>
     <label><span>Weight (each)</span>${inp(p('weight'), { type: 'num', cls: 'w3' })}</label>
     <label><span>Value</span>${inp(p('value'), { cls: 'w6' })}</label>
+    ${pluses.length ? `<div class="wide row item-plus" style="gap:6px"><span class="small muted">Bonus</span>${pluses.map(o => `<button class="btn small ${o.plus === cur ? 'primary' : 'ghost'}" data-item-plus="${o.plus}" title="${esc(`Make it a +${o.plus}${o.price ? ` (${o.price})` : ''}`)}">+${o.plus}</button>`).join('')}</div>` : ''}
     <div class="wide item-fx">
       <div>${fx.length ? esc(effectsText(fx)) : '<span class="muted">none</span>'}${fx.length && !g.slot ? ' <span class="small bad">not worn yet, so they do not count</span>' : ''}</div>
       <div class="row" style="gap:6px;margin-top:4px"><button class="btn small" data-item-fx>✦ ${fx.length ? 'Edit' : 'Add'} bonuses</button>${!fx.length && sug.length ? `<button class="btn small" data-item-fx-auto title="Fill in what this kind of item normally gives">Use the usual: ${esc(effectsText(sug))}</button>` : ''}</div></div>
@@ -1254,6 +1255,12 @@ function renderItemActions() {
       const m = await editModifier({ name: g.name || 'Item', note: '', active: true, effects: structuredClone(g.effects || []).concat(g.effects?.length ? [] : [{ target: 'ac', value: 1, type: 'untyped' }]) });
       if (m) { g.effects = m.effects; changed({ rerender: true }); renderItemActions(); }
       return;
+    }
+    const pl = e.target.closest('[data-item-plus]');
+    if (pl) {
+      setPlus(g, +pl.dataset.itemPlus);
+      const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = g.name;
+      changed({ rerender: true }); renderItemActions(); return;
     }
     if (e.target.closest('[data-item-fx-auto]')) { g.effects = suggestEffects(g.name); changed({ rerender: true }); renderItemActions(); return; }
     if (!e.target.closest('[data-item-del]')) return;

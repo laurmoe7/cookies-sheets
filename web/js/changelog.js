@@ -34,6 +34,8 @@ export const CHANGELOG = [
       'Spells: a side panel with nothing to roll, spend or cast, like detect evil’s, no longer shows an empty bar.',
       'Spells: choose your domains, bloodline, mystery, patron or spirit at the top of the class’s spells (or in level up), and the spells it grants are added as you level, marked ✦. Changing it swaps the old spells for the new.',
       'Spells: a Unicorn Charger who is also a paladin can switch between casting as a paladin (charger levels count as paladin levels, one spellbook) and casting separately; switching moves the charger spells into the paladin book.',
+      'Inventory: items whose bonus comes in steps (headbands and belts +2/+4/+6, cloaks of resistance, rings of protection...) have +N buttons in their panel that set the name and the bonus.',
+      'Inventory: a worn item on the paper doll shows just its name, without the price or notes underneath.',
       'Spells: bloodline and mystery bonus spells do not count against your spells known.',
       'Spells: an unfilled prepared slot is a small dashed circle again, not a large oval.',
       'Class resources: lay on hands starts at 2nd level, as in the book, not 1st.',

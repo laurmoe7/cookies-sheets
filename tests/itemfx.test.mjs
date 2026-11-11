@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { make, calc, repeat } from './helpers.mjs';
-import { suggestEffects, effectsText, wornEffects, boxDuplicates, removeFromBoxes } from '../web/js/itemfx.js';
+import { suggestEffects, effectsText, wornEffects, boxDuplicates, removeFromBoxes, plusOptions, setPlus, plusOf } from '../web/js/itemfx.js';
 import { migrate } from '../web/js/model.js';
 
 test('the usual bonuses are read from the item name', () => {
@@ -134,4 +134,20 @@ test('a settled question stays settled after the save is loaded again', () => {
   const loaded = migrate(JSON.parse(JSON.stringify(c)));
   assert.deepEqual(loaded.itemBoxKeep, ['Cloak of Resistance +2|saves'], 'text entries survive migrate (it drops non-objects from the other lists)');
   assert.deepEqual(boxDuplicates(loaded), [], "Will's leftover +2 is not asked about again");
+});
+
+test('plus choices: an item whose bonus goes up in steps can be set to +N', () => {
+  const value = '4,000 gp (+2), 16,000 gp (+4), 36,000 gp (+6)';
+  assert.deepEqual(plusOptions('Headband of Alluring Charisma', value).map(o => o.plus), [2, 4, 6], 'the steps the price list names');
+  assert.equal(plusOptions('Headband of Alluring Charisma', value)[1].price, '16,000 gp');
+  assert.deepEqual(plusOptions('Cloak of Resistance +1', '').map(o => o.plus), [1, 2, 3, 4, 5], 'no price list: the usual +1 to +5');
+  assert.deepEqual(plusOptions('Cloak of Elvenkind', '2,500 gp'), [], 'an item with no +N bonus');
+  const g = { name: 'Headband of Alluring Charisma', value, effects: [] };
+  setPlus(g, 4);
+  assert.equal(g.name, 'Headband of Alluring Charisma +4');
+  assert.deepEqual(g.effects, [{ target: 'cha', value: 4, type: 'enhancement' }], 'a +4 headband of alluring charisma: +4 enhancement to Charisma');
+  setPlus(g, 2);
+  assert.equal(g.name, 'Headband of Alluring Charisma +2', 'changing it replaces the +N, never adds a second one');
+  assert.equal(plusOf(g.name), 2);
+  assert.equal(g.value, value, 'the price list stays');
 });
