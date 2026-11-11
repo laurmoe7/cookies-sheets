@@ -158,7 +158,7 @@ test('shaman, sea singer and blight druid get familiars; paladin, Animal domain 
   assert.equal(companionSources({ Bard: 4 }, [], ['sea singer']).familiar, 4);
   assert.equal(companionSources({ Bard: 4 }, [], []).familiar, 0);
   assert.equal(companionSources({ Druid: 6 }, [], ['blight druid']).familiar, 6);
-  assert.equal(companionSources({ Paladin: 7 }, []).animal, 4, '7 - 3');
+  assert.equal(companionSources({ Paladin: 7 }, []).animal, 7, 'divine bond mount: the paladin’s level is its effective druid level (Core Rulebook), no −3');
   assert.equal(companionSources({ Paladin: 4 }, []).animal, 0, 'no mount before 5th');
   assert.equal(companionSources({ Cleric: 6 }, ['link to the wild']).animal, 3, '6 - 3');
   assert.equal(companionSources({ Fighter: 8 }, ['animal ally'], [], 8).animal, 5, 'character level 8 - 3');
@@ -263,7 +263,7 @@ test('Improved Familiar feat (or demonic / fiendish familiar abilities) is detec
 
 test('unicorn charger levels stack with the class that grants the mount', () => {
   const s = companionSources({ Paladin: 6, 'Unicorn Charger': 2 });
-  assert.equal(s.animal, 5, 'paladin 6 − 3 = 3 for the divine bond mount, + 2 charger levels: (6 + 2) − 3 = 5');
+  assert.equal(s.animal, 8, 'paladin 6 (the mount uses the full paladin level) + 2 charger levels = 8');
   assert.match(s.animalWhy, /Unicorn Charger/);
   assert.equal(companionSources({ Cavalier: 6, 'Unicorn Charger': 3 }).animal, 9, 'cavalier mount: 6 + 3');
   assert.equal(companionSources({ Fighter: 6, 'Unicorn Charger': 2 }).animal, 0, 'no class that grants a mount: the charger levels add nothing on their own');
@@ -271,7 +271,7 @@ test('unicorn charger levels stack with the class that grants the mount', () => 
 
 test('unicorn mount: gore, Int 6 and the +2s every 3 charger levels', () => {
   const horse = { ...newCompanion('animal', data), species: 'Horse' };
-  // Paladin 6 / Unicorn Charger 2: mount level (6 + 2) − 3 = 5. Horse advanced at 4th: Str 16 + 2 (advance) + 1 (level 5 row) = 19.
+  // A level-5 mount. Horse advanced at 4th: Str 16 + 2 (advance) + 1 (level 5 row) = 19.
   const s = computeCompanion(horse, { Paladin: 6, 'Unicorn Charger': 2, _animal: 5 }, data);
   assert.equal(s.abilities.str, 19, 'horse 16 + 2 advanced + 1 from the level 5 row');
   assert.equal(s.abilities.int, 6, 'unicorn mount: Intelligence 6 (a horse has 2)');

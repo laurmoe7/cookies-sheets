@@ -80,10 +80,10 @@ export function companionSources(levels, names = [], archs = [], charLevel = 0) 
   part(animal, Math.max(0, (levels.Ranger || 0) - 3), 'Ranger levels −3');
   part(animal, levels.Cavalier || 0, 'Cavalier levels (mount)');
   part(animal, levels.Samurai || 0, 'Samurai levels (mount)');
-  if ((levels.Paladin || 0) >= 5) part(animal, levels.Paladin - 3, 'Paladin levels −3 (divine bond mount)');
+  if ((levels.Paladin || 0) >= 5) part(animal, levels.Paladin, 'Paladin levels (divine bond mount)'); // the paladin's level is the mount's effective druid level (no −3: that is the ranger)
   if (levels.Cleric && has(/^link to the wild$/)) part(animal, Math.max(0, levels.Cleric - 3), 'Cleric levels −3 (Animal domain)');
   const sum = l => l.reduce((t, x) => t + x.n, 0);
-  // Unicorn Charger (Legendary Games): its levels stack with the class that grants the mount (paladin 6 / charger 2 → (6 + 2) − 3 = 5).
+  // Unicorn Charger (Legendary Games): its levels stack with the class that grants the mount (paladin 6 / charger 2 → 6 + 2 = 8).
   if (sum(animal)) part(animal, levels['Unicorn Charger'] || 0, 'Unicorn Charger levels (unicorn mount)');
   if (!sum(animal) && has(/^animal ally$/) && charLevel) part(animal, Math.max(1, charLevel - 3), 'character level −3 (Animal Ally feat)');
   if (sum(animal) && has(/^boon companion$/) && charLevel) {
