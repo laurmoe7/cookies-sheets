@@ -20,6 +20,7 @@ import companions
 import creatures
 import equipment
 import extra_classes
+import extra_drawbacks
 import extra_entries
 import racetraits
 import fcb
@@ -403,7 +404,21 @@ def tag_drawbacks(entries):
             entries.append(dict(cat='Trait', sub='Drawback', name=name, source=src['source'], summary='', html=body, meta='{}',
                                 text=name + ' drawback ' + re.sub(r'<[^>]+>', ' ', body), late=True))
             tagged += 1
-    return tagged
+    return tagged + add_extra_drawbacks(entries)
+
+
+def add_extra_drawbacks(entries, extra=None):
+    """The Player Companion drawbacks typed in tools/extra_drawbacks.py, as Trait entries with sub 'Drawback'; names already there are skipped."""
+    have = {norm(e['name']) for e in entries if e['cat'] == 'Trait'}
+    added = 0
+    for name, source, text in (extra_drawbacks.DRAWBACKS if extra is None else extra):
+        if norm(name) in have:
+            continue
+        entries.append(dict(cat='Trait', sub='Drawback', name=name, source=source, summary='', html='<p>%s</p>' % html.escape(text),
+                            meta='{}', text=name + ' drawback ' + text, late=True))
+        have.add(norm(name))
+        added += 1
+    return added
 
 
 def tag_racial_traits(entries):

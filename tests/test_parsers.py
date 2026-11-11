@@ -133,10 +133,22 @@ class Drawbacks(unittest.TestCase):
         entries = [dict(cat='Rules', sub='', name='Drawbacks', source='Ultimate Campaign', html=self.HTML),
                    dict(cat='Trait', sub='', name='Attached', source='Ultimate Campaign', html='<p>x</p>'),
                    dict(cat='Racial Trait', sub='Dwarf', name='Power-Hungry', source='x', html='')]
-        self.assertEqual(tag_drawbacks(entries), 2)
+        import extra_drawbacks
+        self.assertEqual(tag_drawbacks(entries), 2 + len(extra_drawbacks.DRAWBACKS), 'the two in the rules entry, plus the typed-in ones')
+        del entries[4:]  # keep the checks below to the rules entry's two
         self.assertEqual(entries[1]['sub'], 'Drawback', 'the trait already in the books gets the category')
         self.assertEqual(entries[2]['sub'], 'Dwarf', 'a racial trait of the same name is left alone')
         self.assertEqual([(e['cat'], e['sub'], e['name']) for e in entries[3:]], [('Trait', 'Drawback', 'Power-Hungry')], 'one the books lack is added')
+
+    def test_typed_in_drawbacks(self):
+        from build_data import add_extra_drawbacks
+        import extra_drawbacks
+        names = [n for n, _, _ in extra_drawbacks.DRAWBACKS]
+        self.assertEqual(len(names), len(set(names)), 'no name twice')
+        self.assertTrue(all(src and text.endswith('.') for _, src, text in extra_drawbacks.DRAWBACKS), 'each has a source and a full sentence')
+        entries = [dict(cat='Trait', sub='Drawback', name='Sleepy', source='x', html='')]
+        self.assertEqual(add_extra_drawbacks(entries, [('Sleepy', 'Q', 'A.'), ('Anxious', 'Q', 'B.')]), 1, 'a name already there is skipped')
+        self.assertEqual((entries[1]['sub'], entries[1]['name'], entries[1]['source'], entries[1]['html']), ('Drawback', 'Anxious', 'Q', '<p>B.</p>'))
 
 
 if __name__ == '__main__':

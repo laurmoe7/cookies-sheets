@@ -17,7 +17,7 @@ export const CHANGELOG = [
       'Level up: a level that opens a new spell level says so, and prepared casters (paladin, ranger, cleric...) are asked to choose spells whenever the Spells tab has none of a level they can cast.',
       'Characters: “🪦 Lay to rest” sends a character who died or retired to the graveyard, as a headstone with the date and an epitaph. Open them any time, or bring them back.',
       'Characters: the import buttons sit together, and a class level no longer wraps onto a line of its own.',
-      'Traits: drawbacks have their own list, in the Traits card and in the traits window, and the 17 from Ultimate Campaign are in the compendium as drawbacks.',
+      'Traits: drawbacks have their own list, in the Traits card and in the traits window, and the compendium has 65 of them (Ultimate Campaign and the Player Companions).',
       'Traits: pick your table’s drawback rule. Optional (the book: one drawback gives a third trait) or one drawback for every trait, and the sheet and level up keep count.',
       'Skills: traits that make “one of these skills (your choice)” a class skill, like Child of Nature and Devotee of the Green, let you pick it on the Skills tab or in the Traits list.',
       'Skills: trait bonuses on Knowledge skills (Black Sheep, Savage, Scholar of Ruins...) now count.',
