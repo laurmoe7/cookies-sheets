@@ -21,3 +21,9 @@ test('the version in Options is in the changelog, and only versions newer than i
   for (const e of CHANGELOG) assert.equal(!!e.next, newer(e.version, VERSION), `${e.version} is ${e.next ? '' : 'not '}marked next`);
   assert.ok(CHANGELOG.filter(e => !e.next).every(e => /^\d{4}-\d{2}-\d{2}$/.test(e.date)), 'released versions have a date');
 });
+
+test('a changelog line shows its area in bold', async () => {
+  const { changelogItem } = await import('../web/js/options.js');
+  assert.equal(changelogItem('Spells: cure <b> spells'), '<b>Spells:</b> cure &lt;b&gt; spells');
+  assert.equal(changelogItem('Fixed the app getting stuck on "Loading…": now it opens.'), 'Fixed the app getting stuck on &quot;Loading…&quot;: now it opens.', 'no area: left as it is');
+});

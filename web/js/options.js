@@ -248,17 +248,26 @@ export function showOptions() {
   }, { top: true });
 }
 
-/** The "What’s new" window. */
 /** The Open Game License text that covers the game content. */
 export async function showLicense() {
   const text = await (await fetch('ogl.html')).text();
   return modal('Game content: Open Game License v1.0a', body => { body.innerHTML = `<div class="entry-body">${text}</div>`; }, { wide: true });
 }
 
+/** A changelog line with its "Area: " in bold ("Spells: touch spells..."); a line with no short area first is left as it is. */
+export function changelogItem(text) {
+  const m = /^([^:]{2,24}): (.+)$/s.exec(text);
+  return m ? `<b>${esc(m[1])}:</b> ${esc(m[2])}` : esc(text);
+}
+
+/** The "What’s new" window: the coming update and the version you have are open, older versions fold away. */
 export function showChangelog() {
   return modal('What’s new', body => {
-    body.innerHTML = CHANGELOG.map(e => `<h3>Version ${esc(e.version)}${e.date ? ` <span class="muted small">${esc(e.date)}</span>` : ''}${e.next ? ' <span class="pill">next update</span>' : ''}${e.version === VERSION ? ' <span class="pill good">you have this</span>' : ''}</h3>
-      <ul class="changelog">${e.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`).join('');
+    const head = e => `Version ${esc(e.version)}${e.date ? ` <span class="muted small">${esc(e.date)}</span>` : ''}${e.next ? ' <span class="pill">next update</span>' : ''}${e.version === VERSION ? ' <span class="pill good">you have this</span>' : ''}`;
+    const list = e => `<ul class="changelog">${e.items.map(i => `<li>${changelogItem(i)}</li>`).join('')}</ul>`;
+    body.innerHTML = CHANGELOG.map(e => (e.next || e.version === VERSION)
+      ? `<h3>${head(e)}</h3>${list(e)}`
+      : `<details class="changelog-old"><summary>${head(e)} <span class="muted small">· ${e.items.length === 1 ? '1 change' : `${e.items.length} changes`}</span></summary>${list(e)}</details>`).join('');
   }, { wide: true });
 }
 

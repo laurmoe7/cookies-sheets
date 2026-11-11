@@ -737,6 +737,9 @@ html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="
 
 .changelog { margin: 0 0 14px; padding-left: 20px; }
 .changelog li { margin: 5px 0; }
+.changelog-old { border-top: 1px solid var(--line); padding: 8px 0; }
+.changelog-old summary { cursor: pointer; font-weight: 600; }
+.changelog-old[open] summary { margin-bottom: 6px; }
 
 .card-details { margin-bottom: 14px; padding: 0 16px 6px; background: var(--panel); box-shadow: var(--shadow); }
 .card-details > summary { padding: 12px 0; }
