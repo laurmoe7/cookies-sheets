@@ -39,7 +39,7 @@ The full list is in **[dev-docs/ui-conventions.md](dev-docs/ui-conventions.md)**
 - **Escaping:** `esc()` for anything user- or data-supplied that goes into HTML.
 - **Text selection is off app-wide**; anything copyable opts in with `user-select: text`.
 - **Dev-only tools** live in `web/dev/` and never ship.
-- **Changelog and version:** `web/js/changelog.js` has one entry per version number, newest first; add a line to the top entry (marked `next: true` until it ships, then give it a date and start a new one). Raise `web/js/version.js` per shared build.
+- **Changelog and version:** `web/js/changelog.js` has one entry per version number, newest first; add a line to the top entry (marked `next: true` until it ships, then give it a date and start a new one). Start each line with its area (`'Spells: ...'`) and put it next to the other lines of that area, never as a second run of the same area further down; the What's new window (`groupChangelog` in `options.js`) shows each area once with its lines under it. Raise `web/js/version.js` per shared build.
 
 ## Commands
 

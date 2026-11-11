@@ -23,7 +23,20 @@ test('the version in Options is in the changelog, and only versions newer than i
 });
 
 test('a changelog line shows its area in bold', async () => {
-  const { changelogItem } = await import('../web/js/options.js');
-  assert.equal(changelogItem('Spells: cure <b> spells'), '<b>Spells:</b> cure &lt;b&gt; spells');
-  assert.equal(changelogItem('Fixed the app getting stuck on "Loading…": now it opens.'), 'Fixed the app getting stuck on &quot;Loading…&quot;: now it opens.', 'no area: left as it is');
+  const { groupChangelog, changelogGroup } = await import('../web/js/options.js');
+  const html = items => groupChangelog(items).map(changelogGroup).join('');
+  assert.equal(html(['Spells: cure <b> spells']), '<li><b>Spells:</b> cure &lt;b&gt; spells</li>');
+  assert.equal(html(['Fixed the app getting stuck on "Loading…": now it opens.']), '<li>Fixed the app getting stuck on &quot;Loading…&quot;: now it opens.</li>', 'no area: left as it is');
+});
+
+test('lines of the same area are shown together, under the area once, in the order the areas first come up', async () => {
+  const { groupChangelog, changelogGroup } = await import('../web/js/options.js');
+  const items = ['Characters: one', 'Spells: two', 'A line with no area.', 'Characters: three'];
+  assert.deepEqual(groupChangelog(items), [
+    { area: 'Characters', items: ['one', 'three'] },
+    { area: 'Spells', items: ['two'] },
+    { area: '', items: ['A line with no area.'] },
+  ]);
+  assert.equal(changelogGroup({ area: 'Characters', items: ['one', 'three'] }),
+    '<li><b>Characters</b><ul class="changelog-sub"><li>One</li><li>Three</li></ul></li>', 'the area once, each line under it');
 });

@@ -254,17 +254,35 @@ export async function showLicense() {
   return modal('Game content: Open Game License v1.0a', body => { body.innerHTML = `<div class="entry-body">${text}</div>`; }, { wide: true });
 }
 
-/** A changelog line with its "Area: " in bold ("Spells: touch spells..."); a line with no short area first is left as it is. */
-export function changelogItem(text) {
-  const m = /^([^:]{2,24}): (.+)$/s.exec(text);
-  return m ? `<b>${esc(m[1])}:</b> ${esc(m[2])}` : esc(text);
+/**
+ * A version's lines grouped by their "Area: ", each area once, in the order it first comes up, so all the Spells lines sit
+ * together however the list was written. Lines with no area are a group with area ''.
+ * @returns {{area: string, items: string[]}[]} items without their "Area: "
+ */
+export function groupChangelog(items) {
+  const groups = new Map();
+  for (const text of items) {
+    const m = /^([^:]{2,24}): (.+)$/s.exec(text);
+    const area = m ? m[1] : '';
+    if (!groups.has(area)) groups.set(area, []);
+    groups.get(area).push(m ? m[2] : text);
+  }
+  return [...groups].map(([area, list]) => ({ area, items: list }));
+}
+
+/** One area's lines as list items (escaped): a single line stays "Area: text", several get the area once with the lines under it. */
+export function changelogGroup({ area, items }) {
+  if (!area) return items.map(i => `<li>${esc(i)}</li>`).join('');
+  if (items.length === 1) return `<li><b>${esc(area)}:</b> ${esc(items[0])}</li>`;
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  return `<li><b>${esc(area)}</b><ul class="changelog-sub">${items.map(i => `<li>${esc(cap(i))}</li>`).join('')}</ul></li>`;
 }
 
 /** The "What’s new" window: the coming update and the version you have are open, older versions fold away. */
 export function showChangelog() {
   return modal('What’s new', body => {
     const head = e => `Version ${esc(e.version)}${e.date ? ` <span class="muted small">${esc(e.date)}</span>` : ''}${e.next ? ' <span class="pill">next update</span>' : ''}${e.version === VERSION ? ' <span class="pill good">you have this</span>' : ''}`;
-    const list = e => `<ul class="changelog">${e.items.map(i => `<li>${changelogItem(i)}</li>`).join('')}</ul>`;
+    const list = e => `<ul class="changelog">${groupChangelog(e.items).map(changelogGroup).join('')}</ul>`;
     body.innerHTML = CHANGELOG.map(e => (e.next || e.version === VERSION)
       ? `<h3>${head(e)}</h3>${list(e)}`
       : `<details class="changelog-old"><summary>${head(e)} <span class="muted small">· ${e.items.length === 1 ? '1 change' : `${e.items.length} changes`}</span></summary>${list(e)}</details>`).join('');

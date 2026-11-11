@@ -1,6 +1,7 @@
 // What changed, one entry per version number, newest first. Shown in the "What's new" window (sidebar and Options).
 // Changes that have not shipped yet go under the next version (give it `next: true`; drop that and add a date when you release it).
-// Keep each item to one short, plain sentence.
+// Keep each item to one short, plain sentence. Start it with its area ("Spells: ..."), and put a new line next to the others of its
+// area (the What's new window groups them by area anyway).
 
 export const CHANGELOG = [
   {
@@ -11,6 +12,7 @@ export const CHANGELOG = [
       'New race: the Ganzi (Planar Adventures), with its racial traits, all 13 oddities to choose from, and its favored class options.',
       'Level up: the 18 prestige classes of the Core Rulebook and the Advanced Player’s Guide with their requirements, plus the Unicorn Charger (Legendary Games). A level that adds spellcasting asks which class it advances.',
       'Characters: “🪦 Lay to rest” sends a character who died or retired to the graveyard, as a headstone with the date and an epitaph. Open them any time, or bring them back.',
+      'Characters: the import buttons sit together, and a class level no longer wraps onto a line of its own.',
       'Companions: summons have their own Summons page, and it opens there after you summon something.',
       'Spells: touch spells can be delivered as a touch, a ranged touch with Reach Spell, or a magus’s Spellstrike (ranged weapons for the eldritch archer).',
       'Spells: “＋ Add” stays open so you can add several spells, and spells you already know show as known.',
@@ -19,7 +21,6 @@ export const CHANGELOG = [
       'Compendium: browsing with an empty search starts at A.',
       'Look: nicer checkboxes, boxes line up in the Hit Points, Defense, Offense and Biography cards, Damage and Heal keep their colours on parchment, and with no portrait the hit points get the room.',
       'Narrow windows: the sheet tabs show only their icons so they fit on one row, nothing scrolls sideways, and the tab bar no longer jumps when you switch tabs.',
-      'Characters: the import buttons sit together, and a class level no longer wraps onto a line of its own.',
       'Cookie: his speech bubble no longer shows on top of open windows.',
     ],
   },
