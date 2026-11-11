@@ -83,7 +83,7 @@ export async function renderHome(main) {
       <div class="muted">${esc(c.race)} · ${esc(c.summary)}</div>
       <div class="muted small">Last edited ${new Date(c.updated * 1000).toLocaleString()}</div></div>
       <button class="btn small" data-export="${esc(c.id)}">Export</button>
-      <button class="btn small" data-retire="${esc(c.id)}" title="Move to the graveyard: a character who died or retired">⚰️ Graveyard</button>
+      <button class="btn small" data-retire="${esc(c.id)}" title="Move to the graveyard: for a character who died or retired">🪦 Lay to rest</button>
       <button class="btn small danger" data-del="${esc(c.id)}">Delete</button></div>`).join('');
   el.onclick = async e => {
     const del = e.target.closest('[data-del]');
@@ -179,7 +179,7 @@ function renderGraveyard(box, fallen) {
     const d = new Date(r.date + 'T12:00:00');
     return isNaN(d) ? r.date : d.toLocaleDateString();
   };
-  box.innerHTML = `<details class="bin graveyard" ${graveOpen ? 'open' : ''}><summary class="muted">⚰️ Graveyard (${fallen.length})</summary>
+  box.innerHTML = `<details class="bin graveyard" ${graveOpen ? 'open' : ''}><summary class="muted">🪦 Graveyard (${fallen.length})</summary>
     <div class="muted small">Characters who died or retired. Click one to read their sheet.</div>
     <div class="graves">${fallen.map(c => `<div class="char-card grave ${c.retired.status}" data-id="${esc(c.id)}">
       <div class="rip">${c.retired.status === 'dead' ? '† Here lies' : 'Retired'}</div>

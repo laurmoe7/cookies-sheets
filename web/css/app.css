@@ -257,11 +257,26 @@ details.bin { margin-top: 22px; }
 details.bin summary { cursor: pointer; font-size: 13px; }
 details.bin .char-card { margin-top: 10px; cursor: default; border-style: dashed; opacity: .85; }
 details.bin .char-card:hover { border-color: var(--line); }
-details.graveyard .graves { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
-details.graveyard .char-card.grave { cursor: pointer; border-style: solid; border-radius: 90px 90px var(--radius) var(--radius); padding: 22px 16px 14px; text-align: center; flex-direction: column; align-items: stretch; gap: 4px; filter: grayscale(.6); opacity: .9; }
-details.graveyard .char-card.grave:hover { border-color: var(--accent); filter: none; opacity: 1; }
-details.graveyard .grave .rip { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-details.graveyard .grave .epitaph { font-style: italic; margin: 4px 0; user-select: text; }
+/* The graveyard: each character is a carved headstone on a stone plinth. The #char-graveyard selectors outweigh the themes' paper cards. */
+details.graveyard .graves { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px 34px; padding: 14px 10px 18px; }
+#char-graveyard .char-card.grave { position: relative; cursor: pointer; flex-direction: column; align-items: stretch; gap: 3px; text-align: center; padding: 30px 18px 16px; margin-bottom: 12px;
+  border: 1px solid #47443e; border-radius: 50% 50% 6px 6px / 64px 64px 6px 6px; color: #2a2824; clip-path: none;
+  background: radial-gradient(ellipse 70% 45% at 50% 18%, rgba(255,255,255,.28), rgba(255,255,255,0) 70%),
+    radial-gradient(circle at 22% 70%, rgba(70,82,55,.12) 0 6px, transparent 20px), radial-gradient(circle at 80% 85%, rgba(70,82,55,.1) 0 5px, transparent 16px),
+    linear-gradient(180deg, #b7b4ab 0%, #9c9990 55%, #807d75 100%);
+  box-shadow: inset 0 2px 3px rgba(255,255,255,.35), inset 0 -14px 22px rgba(0,0,0,.28), inset 6px 0 10px rgba(0,0,0,.12), inset -6px 0 10px rgba(0,0,0,.18), 0 8px 14px rgba(0,0,0,.45);
+  transition: transform .15s, box-shadow .15s; }
+#char-graveyard .char-card.grave::before { content: ""; position: absolute; inset: 7px; border: 1px solid rgba(40,38,34,.35); border-radius: 50% 50% 3px 3px / 58px 58px 3px 3px; box-shadow: 0 1px 0 rgba(255,255,255,.3); pointer-events: none; }
+#char-graveyard .char-card.grave::after { content: ""; position: absolute; left: -10px; right: -10px; bottom: -13px; height: 13px; border-radius: 3px;
+  background: linear-gradient(180deg, #8a877f, #5f5c55); border: 1px solid #3c3a35; box-shadow: 0 4px 8px rgba(0,0,0,.45); }
+#char-graveyard .char-card.grave:hover { border-color: #47443e; transform: translateY(-2px); box-shadow: inset 0 2px 3px rgba(255,255,255,.35), inset 0 -14px 22px rgba(0,0,0,.28), inset 6px 0 10px rgba(0,0,0,.12), inset -6px 0 10px rgba(0,0,0,.18), 0 12px 20px rgba(0,0,0,.5); }
+#char-graveyard .grave h3 { color: #24221f; font-size: 1.35em; text-shadow: 0 1px 0 rgba(255,255,255,.4), 0 -1px 0 rgba(0,0,0,.25); }
+#char-graveyard .grave .muted, #char-graveyard .grave .rip { color: #3f3c37; text-shadow: 0 1px 0 rgba(255,255,255,.3); }
+#char-graveyard .grave .rip { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; }
+#char-graveyard .grave .epitaph { font-style: italic; margin: 4px 0; color: #2f2d29; user-select: text; text-shadow: 0 1px 0 rgba(255,255,255,.3); }
+#char-graveyard .grave .btn { background: rgba(255,255,255,.18); border-color: rgba(40,38,34,.45); color: #2a2824; }
+#char-graveyard .grave .btn:hover { background: rgba(255,255,255,.32); }
+#char-graveyard .grave.retired { filter: sepia(.25); }
 .empty { text-align: center; padding: 40px 20px; }
 
 /* ---------- compendium ---------- */
