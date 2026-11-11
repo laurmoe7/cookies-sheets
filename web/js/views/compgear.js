@@ -120,6 +120,12 @@ function renderActions() {
   const worn = d.kind === 'barding' ? g.equipped !== false : g.worn !== false;
   const nameRow = g.id ? '' : `<label class="wide"><span>Name</span><input data-cd-name value="${esc(g.name || '')}" placeholder="${d.kind === 'barding' ? 'Barding' : 'Item name'}"></label>`;
   const wornRow = `<label class="row" style="gap:6px"><span>Worn</span><input type="checkbox" data-cd-worn ${worn ? 'checked' : ''}></label>`;
+  // With a description in the panel (its compendium entry, or one found by name), your notes go under it, as for inventory items; without one, they are the big box here.
+  const body = d.el.parentElement?.querySelector('.entry-body');
+  body?.querySelector('.item-foot')?.remove();
+  const described = !!body?.textContent.trim();
+  const notesBig = described ? '' : `<label class="wide"><span>Your notes</span><textarea class="item-notes-big" data-bind="${base}.notes" rows="8" placeholder="Describe it, what it does, where you got it...">${esc(g.notes || '')}</textarea></label>`;
+  if (described) body.insertAdjacentHTML('beforeend', `<div class="item-foot"><label class="small muted">Your notes</label><textarea data-bind="${base}.notes" rows="5" placeholder="Anything to remember about it">${esc(g.notes || '')}</textarea></div>`);
   const del = `<div class="wide row end"><button class="btn small danger" data-cd-del>Remove from ${esc(state.char.companions[d.ci].name || 'the companion')}</button></div>`;
   if (d.kind === 'barding') {
     const fx = armorFx(g).summary || '';
@@ -130,18 +136,14 @@ function renderActions() {
       <div class="wide row plus-row">${plus}</div>
       <div class="wide item-fx"><div>${fx ? esc(fx) : '<span class="muted">No enchantments or special material</span>'}</div>
         <div class="row" style="margin-top:4px"><button class="btn small" data-cd-fx title="Masterwork, special material (mithral...) and special abilities (fortification...)">✦ Enchant</button></div></div>
-      ${del}</div>`;
+      ${notesBig}${del}</div>`;
   } else {
     const fx = g.effects || [], sug = suggestEffects(g.name);
     d.el.innerHTML = `<div class="item-actions">${nameRow}${wornRow}
       <div class="wide item-fx">
         <div>${fx.length ? esc(effectsText(fx)) : '<span class="muted">No bonuses</span>'}${fx.length && !worn ? ' <span class="small bad">not worn, so they do not count</span>' : ''}</div>
         <div class="row" style="gap:6px;margin-top:4px"><button class="btn small" data-cd-fx>✦ ${fx.length ? 'Edit' : 'Add'} bonuses</button>${!fx.length && sug.length ? `<button class="btn small" data-cd-fx-auto title="Fill in what this kind of item normally gives">Use the usual: ${esc(effectsText(sug))}</button>` : ''}</div></div>
-      ${g.id ? '' : `<label class="wide"><span>Your notes</span><textarea class="item-notes-big" data-bind="${base}.notes" rows="8" placeholder="Describe the item, what it does, where you got it...">${esc(g.notes || '')}</textarea></label>`}
-      ${del}</div>`;
-    const body = d.el.parentElement?.querySelector('.entry-body'); // a compendium item has its text, so your notes go under it
-    body?.querySelector('.item-foot')?.remove();
-    if (g.id && body) body.insertAdjacentHTML('beforeend', `<div class="item-foot"><label class="small muted">Your notes</label><textarea data-bind="${base}.notes" rows="5" placeholder="Anything to remember about it">${esc(g.notes || '')}</textarea></div>`);
+      ${notesBig}${del}</div>`;
   }
   const redo = () => { changed({ rerender: true }); renderActions(); markOpen(); };
   d.el.onchange = e => {
