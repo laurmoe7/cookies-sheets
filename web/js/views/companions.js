@@ -20,6 +20,7 @@ import { esc, $, $$, getPath, modal, pickEntry, textField, confirmBox, showCusto
 import { picAction, picFrame } from '../cropper.js';
 import { renderSummons, summonsView } from './summons.js';
 import { gearCard, gearClick } from './compgear.js';
+import { tricksBlock, tricksClick } from './tricks.js';
 
 const PIC = { w: 3, h: 4, out: 800 };
 
@@ -84,10 +85,16 @@ export async function renderCompanions(body, c) {
       const comp = c.companions[+gearHost.dataset.comp], st = computeCompanion(comp, levels, data, masterOf(c, levels));
       if (await gearClick(e, comp, st?.size || 'Large', +gearHost.dataset.comp)) return;
     }
-    const t = e.target.closest('[data-uc-mine],[data-uc-boost],[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-from-creature],[data-statblock],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info]');
+    const t = e.target.closest('[data-uc-mine],[data-uc-boost],[data-chp],[data-sync-level],[data-pic],[data-pic-edit],[data-pic-clear],[data-new],[data-from-creature],[data-statblock],[data-del-comp],[data-add-feat],[data-rm-feat],[data-add-evo],[data-rm-evo],[data-add-skill],[data-evo-info],[data-add-trick],[data-rm-trick],[data-trick-info]');
     if (!t) return;
     e.preventDefault();
-    if (t.dataset.new) { c.companions.push(newCompanion(t.dataset.new, data)); return changed({ rerender: true }); }
+    if (t.dataset.new) {
+      const comp = newCompanion(t.dataset.new, data);
+      // A Unicorn Charger has one unicorn: a second animal companion starts as "Not this one"
+      if (comp.kind === 'animal' && levels['Unicorn Charger'] && c.companions.some(x => x.kind === 'animal' && x.unicornMount !== 'no')) comp.unicornMount = 'no';
+      c.companions.push(comp);
+      return changed({ rerender: true });
+    }
     if (t.dataset.fromCreature !== undefined) {
       const block = await chooseCreature();
       if (block) { c.companions.push(newCreatureCompanion(block)); changed({ rerender: true }); }
@@ -132,6 +139,7 @@ export async function renderCompanions(body, c) {
       remarkOnCompanion(comp, before, comp.hpCur == null || comp.hpCur === '' ? s.hp : num(comp.hpCur), s.hp, s.abilities.con ?? 0);
       return changed({ rerender: true });
     }
+    if (comp.kind === 'animal' && await tricksClick(t, comp, computeCompanion(comp, levels, data, masterOf(c, levels)), () => changed({ rerender: true }))) return;
     if (t.dataset.ucMine !== undefined) { comp.unicornMount = t.dataset.ucMine; return changed({ rerender: true }); }
     if (t.dataset.ucBoost) {
       const [k, a] = t.dataset.ucBoost.split(':');
@@ -148,7 +156,8 @@ export async function renderCompanions(body, c) {
     if (t.dataset.delComp !== undefined) {
       if (await confirmBox(`Remove ${comp.name || 'this companion'}?`, 'Remove')) { c.companions.splice(i, 1); changed({ rerender: true }); }
     } else if (t.dataset.addFeat !== undefined) {
-      const r = await pickEntry('Companion feat', 'Feat');
+      const st = comp.kind === 'animal' ? computeCompanion(comp, levels, data, masterOf(c, levels)) : null;
+      const r = st && (st.abilities.int ?? 0) <= 2 ? await pickAnimalFeat() : await pickEntry('Companion feat', 'Feat');
       if (r) { comp.feats.push({ id: r.id, name: r.name }); changed({ rerender: true }); }
     } else if (t.dataset.rmFeat !== undefined) {
       const f = comp.feats[+t.dataset.rmFeat];
@@ -167,6 +176,30 @@ export async function renderCompanions(body, c) {
     }
   };
 }
+
+// The Core Rulebook's animal feats: what an animal companion with Int 1 or 2 can take (druid, Animal Companion).
+const ANIMAL_FEATS = ['Acrobatic', 'Agile Maneuvers', 'Armor Proficiency, Light', 'Armor Proficiency, Medium', 'Armor Proficiency, Heavy', 'Athletic', 'Blind-Fight',
+  'Combat Reflexes', 'Diehard', 'Dodge', 'Endurance', 'Great Fortitude', 'Improved Bull Rush', 'Improved Initiative', 'Improved Natural Armor',
+  'Improved Natural Attack', 'Improved Overrun', 'Intimidating Prowess', 'Iron Will', 'Lightning Reflexes', 'Mobility', 'Power Attack', 'Run',
+  'Skill Focus', 'Spring Attack', 'Stealthy', 'Toughness', 'Weapon Finesse', 'Weapon Focus'];
+const isAnimalFeat = n => ANIMAL_FEATS.some(f => f.toLowerCase() === String(n).toLowerCase());
+let animalFeatRows = null; // the animal feats' compendium rows, looked up once
+async function animalFeatList() {
+  if (animalFeatRows) return animalFeatRows;
+  const found = await Promise.all(ANIMAL_FEATS.map(n => api.search(n, 'Feat', 20).then(rs => rs.filter(r => r.name.toLowerCase() === n.toLowerCase())
+    .sort((a, b) => (b.source === 'Core Rulebook') - (a.source === 'Core Rulebook'))[0]).catch(() => null)));
+  return (animalFeatRows = found.filter(Boolean));
+}
+/** The feat chooser for an animal with Int 1 or 2: the animal feats first; "Any feat" searches them all (as the GM allows). */
+const pickAnimalFeat = () => pickEntry('Companion feat', 'Feat', {
+  subs: [['Any feat (GM’s call)', 'any']], subLabel: 'Animal feats (Int 1–2)',
+  search: async (q, sub) => {
+    if (sub === 'any') return api.search(q, 'Feat', 150);
+    const rows = await animalFeatList();
+    return rows.filter(r => !q || r.name.toLowerCase().includes(q.toLowerCase()));
+  },
+  renderRow: r => (isAnimalFeat(r.name) ? '🐾 ' : '') + (r.summary || r.source),
+});
 
 /** Under an attack: what the feats taken for it changed ("Improved Natural Attack: 1d8 → 2d6"). */
 const attackFeatNote = a => {
@@ -442,9 +475,7 @@ function buildEditors(comp, s, p, { data, levels }) {
         <button class="btn small" data-add-skill>Add</button></div>
       ${!isAnimal ? `<p class="small muted">Eidolons choose 4 more class skills at 1st level: ${(comp.extraClassSkills || []).length}/4 chosen.
         ${select(`${p}.extraClassSkills.${(comp.extraClassSkills || []).length}`, '', [['', '＋ class skill…'], ...SKILLS.map(x => x.name).filter(x => !classSkills.includes(x)).map(x => [x, x])])}</p>` : ''}
-      ${isAnimal ? `<h4>Tricks <span class="muted small">(${s.bonusTricks} bonus tricks; Int ${s.abilities.int ?? '—'} allows ${s.abilities.int ? 3 * s.abilities.int : 0} trained tricks)</span></h4>
-        ${tf(`${p}.tricks`, { multiline: true, placeholder: 'e.g. attack, come, defend, down, guard, heel, track', read: { title: `${comp.name} tricks`, cat: 'Tricks' } })}
-        <p class="small">${'<a href="#" class="ref" data-entry="Handle Animal" data-cat="Skill">Handle Animal and tricks</a>'}</p>` : ''}
+      ${isAnimal ? tricksBlock(comp, s) : ''}
     </section>`;
   return { strip, abilities: abilities + uc, ...adjust(comp, p), cards: build + gearCard(comp, s, +p.split(".")[1]) + notesCard(comp, p, 'Personality, conditions…') };
 }
