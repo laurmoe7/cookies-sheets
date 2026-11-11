@@ -12,6 +12,7 @@ export const CHANGELOG = [
       'Nicer checkboxes everywhere, and the roll window’s In play and Cast it options are rows that light up when ticked.',
       'Spells: touch spells get a “Deliver as” choice in the roll window: Touch, Reach Spell (a ranged touch, with the feat) or a magus’s Spellstrike with each weapon (ranged weapons for the eldritch archer).',
       'Tidier layout: boxes line up in the Hit Points, Defense, Offense and Biography cards, Damage and Heal keep their colours on parchment, a narrow window no longer scrolls sideways, and the import buttons on Characters sit together.',
+      'Roll window: about half the height. What to roll, bonuses, penalties and your own number are one labelled list, and the ticks (Keep modifiers, In play, Cast it) sit on one line at the bottom.',
       'Companions: summons have their own Summons page next to your companions, and it opens there after you summon something.',
     ],
   },

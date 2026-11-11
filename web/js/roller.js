@@ -64,10 +64,19 @@ const withMode = expr => { expr = addMods(expr, modsTotal()); return mode && /^d
 const withModLabel = (label, expr) => (mods.length && /^d20/.test(expr) ? [label, modsLabel(mods)].filter(Boolean).join(' ') : label);
 /** Preset chips in two rows: bonuses, then penalties. */
 const hasTwf = () => (state.char?.feats || []).some(f => /^two-weapon fighting$/i.test(String(f.name || '').replace(/\s*\(.*$/, '').trim()));
+/** One labelled row of the roll windows' grid (label on the left, chips or boxes on the right). */
+const rwRow = (label, html, cls = '') => '<div class="rw-lab ' + cls + '">' + label + '</div><div class="rw-val">' + html + '</div>';
 const presetGroups = list => [['Bonuses', 'plus', list.filter(m => m.n > 0)], ['Penalties', 'minus', list.filter(m => adjustPreset(m, hasTwf()).n < 0)]]
   .filter(([, , l]) => l.length)
-  .map(([head, cls, l]) => '<div class="small mod-head ' + cls + '">' + head + '</div><div class="roll-bar" style="margin:4px 0 8px">' +
-    l.map(m => '<button class="rchip ' + (mods.some(x => x.label === m.label) ? 'on' : '') + '" data-mod-preset="' + MOD_PRESETS.indexOf(m) + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(bonusText(adjustPreset(m, hasTwf()).n)) + '</button>').join(' ') + '</div>').join('');
+  .map(([head, cls, l]) => rwRow(head,
+    l.map(m => '<button class="rchip ' + (mods.some(x => x.label === m.label) ? 'on' : '') + '" data-mod-preset="' + MOD_PRESETS.indexOf(m) + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(bonusText(adjustPreset(m, hasTwf()).n)) + '</button>').join(''), cls)).join('');
+/** A compact on/off toggle for the bottom of the roll windows; the longer explanation is its hover text. */
+const toggle = (id, on, label, sub, tip, disabled = false) => '<label class="check-row mini" title="' + esc(tip) + '"><input type="checkbox" id="' + id + '" ' + (on ? 'checked' : '') + (disabled ? ' disabled' : '') + '><span>' + label + (sub ? ' <span class="sub">· ' + sub + '</span>' : '') + '</span></label>';
+const keepToggle = () => toggle('mod-keep', keepMods, 'Keep modifiers', '', 'Keep these modifiers for my next rolls too, until I clear them');
+const customRow = (wd = false) => rwRow('Custom', '<input id="mod-n" class="' + (wd ? 'w5' : 'w3') + '" type="' + (wd ? 'text' : 'number') + '" placeholder="' + (wd ? '2d6 or ±' : '±') + '" aria-label="Modifier" ' + (wd ? 'title="A number, or dice such as 2d6 for precision or other extra damage"' : '') + '><input id="mod-label" class="grow" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button>', 'custom');
+const nowLine = () => mods.length ? '<div class="rw-now">Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b></div>' : '';
+const modeChips = attr => '<button class="rchip ' + (mode === 'adv' ? 'on' : '') + '" ' + attr + '="adv" title="Roll the d20 twice and keep the higher">Advantage</button><button class="rchip ' + (mode === 'dis' ? 'on' : '') + '" ' + attr + '="dis" title="Roll the d20 twice and keep the lower">Disadvantage</button>';
+const LASTING = 'Lasting effects (charging, shaken, power attack…) come from the Buffs &amp; Conditions tab by themselves.';
 
 const afterRoll = () => { mode = ''; if (!keepMods) mods = []; syncBar(); };
 
@@ -76,25 +85,19 @@ function buffNote(p) {
   const buffs = (p.parts || []).filter(x => x.buff && x.value);
   const ignored = (p.parts || []).filter(x => x.ignored);
   const any = (state.char?.modifiers || []).some(m => m.active);
-  if (!buffs.length && !ignored.length) return any ? '<p class="small muted rw-buffs">No active buff or condition changes this roll.</p>' : '';
-  return '<div class="rw-buffs"><span class="small">' + (buffs.length ? 'Active buffs in this roll:' : 'Active, but not counted:') + '</span> ' +
-    buffs.map(b => '<span class="rw-buff ' + (b.value < 0 ? 'neg' : 'pos') + '">' + esc(b.label) + ' <b>' + esc(bonusText(b.value)) + '</b></span>').join(' ') +
-    ignored.map(b => '<span class="rw-buff off" title="Bonuses of the same type do not add up: only the highest one counts">' + esc(b.label) + ' ' + esc(bonusText(b.was)) + ' <i>(does not stack)</i></span>').join(' ') + '</div>';
+  if (!buffs.length && !ignored.length) return any ? rwRow('Buffs', '<span class="small muted">None of your active buffs change this roll.</span>') : '';
+  return rwRow('Buffs', buffs.map(b => '<span class="rw-buff ' + (b.value < 0 ? 'neg' : 'pos') + '" title="Active on the Buffs &amp; Conditions tab">' + esc(b.label) + ' <b>' + esc(bonusText(b.value)) + '</b></span>').join('') +
+    ignored.map(b => '<span class="rw-buff off" title="Bonuses of the same type do not add up: only the highest one counts">' + esc(b.label) + ' ' + esc(bonusText(b.was)) + ' <i>(does not stack)</i></span>').join(''));
 }
 
 /** The Modifier window: preset situational modifiers (toggle them), your own number, and whether they stay after the next roll. */
 function modsWindow() {
   modal('Roll modifier', (body, close) => {
     const draw = () => {
-      body.innerHTML = `<p class="small muted">Added to your d20 rolls (attacks, saves, skills, checks) ${keepMods ? 'until you clear it' : 'for the next roll only'}.</p>
-        <div class="roll-bar" style="margin:4px 0 8px">
-          <button class="rchip ${mode === 'adv' ? 'on' : ''}" data-rmode="adv" title="Roll the next d20 twice and keep the higher">Advantage</button>
-          <button class="rchip ${mode === 'dis' ? 'on' : ''}" data-rmode="dis" title="Roll the next d20 twice and keep the lower">Disadvantage</button></div>
-        ${presetGroups(MOD_PRESETS)}
-        <div class="row" style="margin:10px 0"><input id="mod-n" class="w3" type="number" placeholder="±" aria-label="Modifier"><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>
-        <div class="small" style="margin:6px 0">${mods.length ? 'Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b>' : '<span class="muted">No modifier set.</span>'}</div>
-        <label class="check-row"><input type="checkbox" id="mod-keep" ${keepMods ? 'checked' : ''}><span>Keep these modifiers<span class="sub">for my next rolls too, until I clear them</span></span></label>
-        <div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn small" id="mod-clear">Clear</button><button class="btn primary small" id="mod-done">Done</button></div>`;
+      body.innerHTML = `<p class="small muted rw-intro">Added to your d20 rolls (attacks, saves, skills, checks) ${keepMods ? 'until you clear it' : 'for the next roll only'}.</p>
+        <div class="rw-grid">${rwRow('Roll', modeChips('data-rmode'))}${presetGroups(MOD_PRESETS)}${customRow()}</div>
+        ${nowLine() || '<div class="rw-now muted">No modifier set.</div>'}
+        <div class="rw-foot"><div class="rw-opts">${keepToggle()}</div><span class="rw-btns"><button class="btn small" id="mod-clear">Clear</button><button class="btn primary small" id="mod-done">Done</button></span></div>`;
     };
     draw();
     const add = () => {
@@ -234,12 +237,8 @@ function rollWindow(p0, attack0, sp = null) {
     return { ...p0, expr: addDamageMods(base.expr, dmods, wd.base, mult), label: base.label + (dmods.length ? ' ' + damageLabel(dmods, mult) : '') };
   };
   const sameMod = (x, m) => x.label === m.label && x.n === m.n && x.dice === m.dice && x.extraBase === m.extraBase;
-  const damageBlock = () => {
-    const chip = (m, i) => '<button class="rchip ' + (dmods.some(x => sameMod(x, m)) ? 'on' : '') + '" data-dmg-preset="' + i + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(m.dice ? '+' + m.dice : m.extraBase ? '×' + (m.extraBase + 1) : bonusText(m.n)) + '</button>';
-    return (wd.crit ? '<div class="small mod-head plus">Hit</div><div class="roll-bar" style="margin:4px 0 8px"><button class="rchip ' + (useCrit ? '' : 'on') + '" data-dmg-crit="0">Normal hit</button><button class="rchip ' + (useCrit ? 'on' : '') + '" data-dmg-crit="1" title="Rolls the multiplied damage; extra dice from enchantments are added once">Critical hit</button></div>' : '')
-      + (wd.presets.length ? '<div class="small mod-head plus">Extra damage</div><div class="roll-bar" style="margin:4px 0 8px">' + wd.presets.map(chip).join(' ') + '</div>' : '')
-      + (dmods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(dmods.map(m => (m.dice ? '+' + m.dice : m.extraBase ? 'weapon dice \u00d7' + (m.extraBase * (m.crit && useCrit && wd.crit ? wd.crit.mult : 1) + 1) : bonusText(m.n * (m.crit && useCrit && wd.crit ? wd.crit.mult : 1))) + ' ' + m.label).join(', ')) + (useCrit && wd.crit && dmods.some(m => m.crit) ? ' (multiplied by the critical hit)' : '') + '</div>' : '');
-  };
+  const dchip = (m, i) => '<button class="rchip ' + (dmods.some(x => sameMod(x, m)) ? 'on' : '') + '" data-dmg-preset="' + i + '" title="' + esc(m.tip || '') + '">' + esc(m.label) + ' ' + esc(m.dice ? '+' + m.dice : m.extraBase ? '×' + (m.extraBase + 1) : bonusText(m.n)) + '</button>';
+  const dmgNow = () => dmods.length ? '<div class="rw-now">Now: ' + esc(dmods.map(m => (m.dice ? '+' + m.dice : m.extraBase ? 'weapon dice ×' + (m.extraBase * (m.crit && useCrit && wd.crit ? wd.crit.mult : 1) + 1) : bonusText(m.n * (m.crit && useCrit && wd.crit ? wd.crit.mult : 1))) + ' ' + m.label).join(', ')) + (useCrit && wd.crit && dmods.some(m => m.crit) ? ' (multiplied by the critical hit)' : '') + '</div>' : '';
   const cur = () => {
     if (wd) return { p: damageRoll(), attack: false };
     if (!sp) return { p: p0, attack: attack0 };
@@ -261,25 +260,28 @@ function rollWindow(p0, attack0, sp = null) {
       const shown = exprs[0] + (exprs.length > 1 ? ' … and ' + (exprs.length - 1) + ' more' : '');
       const presets = d20 ? presetsFor(attack, sp && { kind: ch.kind }) : [];
       const sending = !!(options().webhook && options().rollSend);
-      body.innerHTML = (sp ? '<p class="small muted">' + esc(sp.facts) + '.</p><div style="margin:8px 0">' +
-          ['Hit', 'Deliver as', 'Damage', 'Healing', 'Checks'].map(g => {
-            const mine = sp.choices.map((c, i) => [c, i]).filter(([c]) => c.group === g);
-            return mine.length ? '<div class="sp-group-row"><span class="sp-group-lab">' + g + '</span>' + mine.map(([c, i]) => '<button class="rchip ' + (i === pick ? 'on' : '') + '" data-sp-pick="' + i + '" title="' + esc(c.tip || '') + '">' + esc(c.label) + '</button>').join(' ') + '</div>' : '';
-          }).join('') + '</div>' +
-          (ch.dice ? '<div class="row" style="margin:8px 0"><input id="spell-dice" class="w12" value="' + esc(diceVal) + '" placeholder="e.g. 5d6" autocomplete="off" aria-label="Spell dice"></div>' : '') +
-          (ch.multi && sp.noun ? '<div class="row" style="margin:8px 0"><label class="small" title="One roll for each. Lower it when some go at another target">' + esc(sp.noun === 'shuriken' ? 'Shuriken' : sp.noun[0].toUpperCase() + sp.noun.slice(1) + 's') + ' <input id="spell-count" class="w3" type="number" min="1" max="' + sp.count + '" value="' + countVal + '" aria-label="How many"></label> <span class="small muted">of ' + sp.count + '</span></div>' : '') : '') +
-        '<p class="rw-expr">Rolling <b>' + esc(shown) + '</b></p>' + buffNote(p) + (wd ? damageBlock() : '') +
-        (d20 ? '<div class="roll-bar" style="margin:8px 0"><button class="rchip ' + (mode === 'adv' ? 'on' : '') + '" data-win-mode="adv">Advantage</button><button class="rchip ' + (mode === 'dis' ? 'on' : '') + '" data-win-mode="dis">Disadvantage</button></div>' : '') +
-        (presets.length ? presetGroups(presets) : '') +
-        (d20 ? '<p class="small muted" style="margin:0">Charging, fighting defensively, shaken, power attack and other conditions that last or change your AC are on the Buffs &amp; Conditions tab and apply by themselves.</p>' : '') +
-        '<div class="row" style="margin:8px 0"><input id="mod-n" class="' + (wd ? 'w5' : 'w3') + '" type="' + (wd ? 'text' : 'number') + '" placeholder="' + (wd ? '2d6 or ±' : '±') + '" aria-label="Modifier" ' + (wd ? 'title="A number, or dice such as 2d6 for precision or other extra damage"' : '') + '><input id="mod-label" class="w12" placeholder="Reason (optional)" autocomplete="off" aria-label="Reason"><button class="btn small" id="mod-add">Add</button></div>' +
-        (d20 && mods.length ? '<div class="small" style="margin:4px 0">Now: ' + esc(mods.map(m => bonusText(m.n) + ' ' + m.label).join(', ')) + ' = <b>' + esc(bonusText(modsTotal()) || '+0') + '</b></div>' : '') +
-        (d20 ? '<label class="check-row"><input type="checkbox" id="mod-keep" ' + (keepMods ? 'checked' : '') + '><span>Keep these modifiers<span class="sub">for my next rolls too, until I clear them</span></span></label>' : '') +
-        (sp?.live ? '<label class="check-row" title="Already cast and still going, like Flaming Sphere: rolls use no slot. Rest clears it."><input type="checkbox" id="sp-live" ' + (sp.live.on ? 'checked' : '') + '><span>In play<span class="sub">Already cast and still going: rolling uses no slot</span></span></label>' : '') +
-        (sp?.cast && !sp.live?.on ? '<label class="check-row" title="Rolling counts as casting the spell. Untick it if you already cast it or are only checking a number."><input type="checkbox" id="sp-cast" ' + (castOn ? 'checked' : '') + (sp.cast.left <= 0 ? ' disabled' : '') + '><span>' + (/^Cast it: /.test(sp.cast.label) ? 'Cast it' : esc(sp.cast.label)) + '<span class="sub">' + esc(sp.cast.label.replace(/^Cast it: /, '').replace(/^./, ch => ch.toUpperCase())) + (sp.cast.left <= 0 ? ' · none left' : sp.cast.recent ? ' · counted already for the roll you just made' : sp.cast.left === Infinity ? '' : ' · ' + sp.cast.left + ' left') + '</span></span></label>' : '') +
-        '<div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn small" id="win-cancel">Cancel</button>' +
+      const spRows = sp ? ['Hit', 'Deliver as', 'Damage', 'Healing', 'Checks'].map(g => {
+        const mine = sp.choices.map((c, i) => [c, i]).filter(([c]) => c.group === g);
+        return mine.length ? rwRow(g, mine.map(([c, i]) => '<button class="rchip ' + (i === pick ? 'on' : '') + '" data-sp-pick="' + i + '" title="' + esc(c.tip || '') + '">' + esc(c.label) + '</button>').join('')) : '';
+      }).join('') +
+        (ch.dice ? rwRow('Dice', '<input id="spell-dice" class="w12" value="' + esc(diceVal) + '" placeholder="e.g. 5d6" autocomplete="off" aria-label="Spell dice">') : '') +
+        (ch.multi && sp.noun ? rwRow(esc(sp.noun === 'shuriken' ? 'Shuriken' : sp.noun[0].toUpperCase() + sp.noun.slice(1) + 's'), '<input id="spell-count" class="w3" type="number" min="1" max="' + sp.count + '" value="' + countVal + '" aria-label="How many" title="One roll for each. Lower it when some go at another target"> <span class="small muted">of ' + sp.count + '</span>') : '') : '';
+      const dmgRows = wd ? (wd.crit ? rwRow('Hit', '<button class="rchip ' + (useCrit ? '' : 'on') + '" data-dmg-crit="0">Normal hit</button><button class="rchip ' + (useCrit ? 'on' : '') + '" data-dmg-crit="1" title="Rolls the multiplied damage; extra dice from enchantments are added once">Critical hit</button>') : '')
+        + (wd.presets.length ? rwRow('Extra', wd.presets.map(dchip).join(''), 'plus') : '') : '';
+      const opts = (d20 ? keepToggle() : '') +
+        (sp?.live ? toggle('sp-live', sp.live.on, 'In play', '', 'Already cast and still going, like Flaming Sphere: rolling uses no slot. Rest clears it.') : '') +
+        (sp?.cast && !sp.live?.on ? toggle('sp-cast', castOn, /^Cast it: /.test(sp.cast.label) ? 'Cast it' : esc(sp.cast.label),
+          sp.cast.left <= 0 ? 'none left' : sp.cast.recent ? 'counted already' : sp.cast.left === Infinity ? '' : sp.cast.left + ' left',
+          'Rolling counts as casting the spell: ' + sp.cast.label.replace(/^Cast it: /, '') + '. Untick it if you already cast it or are only checking a number.', sp.cast.left <= 0) : '');
+      body.innerHTML = (sp ? '<p class="small muted rw-intro">' + esc(sp.facts) + '.</p>' : '') +
+        '<div class="rw-grid">' + spRows + (sp ? '<div class="rw-rule"></div>' : '') +
+        rwRow('Roll', '<b class="rw-expr">' + esc(shown) + '</b>' + (d20 ? '<span class="rw-modes">' + modeChips('data-win-mode') + '</span>' : '')) +
+        buffNote(p) + dmgRows + (presets.length ? presetGroups(presets) : '') + customRow(wd) + '</div>' +
+        (wd ? dmgNow() : d20 ? nowLine() : '') +
+        (d20 ? '<p class="rw-note">' + LASTING + '</p>' : '') +
+        '<div class="rw-foot">' + (opts ? '<div class="rw-opts">' + opts + '</div>' : '') + '<span class="rw-btns"><button class="btn small" id="win-cancel">Cancel</button>' +
         '<button class="rchip go" data-win-go="roll">🎲 Roll</button>' +
-        '<button class="' + discordClass() + '" id="win-discord" title="Post this roll to your Discord channel, or keep it on the sheet">' + esc(discordLabel()) + '</button></div>';
+        '<button class="' + discordClass() + '" id="win-discord" title="Post this roll to your Discord channel, or keep it on the sheet">' + esc(discordLabel()) + '</button></span></div>';
       if (ch?.dice) { const di = body.querySelector('#spell-dice'); di.focus(); di.setSelectionRange(di.value.length, di.value.length); }
       else body.querySelector('[data-win-go]')?.focus();
     };
@@ -303,7 +305,7 @@ function rollWindow(p0, attack0, sp = null) {
       if (e.target.id === 'spell-count') countVal = Math.max(1, Math.trunc(Number(e.target.value)) || 1);
       else if (e.target.id === 'spell-dice') diceVal = e.target.value;
       else return;
-      const b = body.querySelector('.rw-expr b'), { p } = cur(), items = p.items || [p];
+      const b = body.querySelector('b.rw-expr'), { p } = cur(), items = p.items || [p];
       if (b) b.textContent = withMode(items[0].expr) + (items.length > 1 ? ' … and ' + (items.length - 1) + ' more' : '');
     };
     body.onclick = e => {

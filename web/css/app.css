@@ -227,11 +227,23 @@ input.sub { margin-left: 6px; font-size: 12px; padding: 2px 5px; }
 
 html[data-theme] .btn.primary.discord-btn, .btn.discord-btn { background: #5865f2; border-color: #5865f2; color: #fff; }
 html[data-theme] .btn.primary.discord-btn:hover, .btn.discord-btn:hover { background: #4752c4; border-color: #4752c4; }
-.mod-head { margin-top: 4px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; font-size: 11px; }
-.mod-head.plus { color: var(--good); }
-.mod-head.minus { color: var(--bad); }
-.rw-expr { margin: 0; font-size: 1.05em; }
-.rw-buffs { margin: 8px 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+/* The roll windows: one labelled grid (what to roll, buffs, bonuses, penalties, your own number), compact toggles and the buttons in a footer. */
+.rw-intro { margin: 0 0 12px; }
+.rw-grid { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 14px; align-items: center; }
+.rw-lab { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.rw-lab.plus { color: var(--good); } .rw-lab.minus { color: var(--bad); }
+.rw-val { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
+.rw-val > input.grow { flex: 1; min-width: 120px; }
+.rw-rule { grid-column: 1 / -1; border-top: 1px solid var(--line); margin: 2px 0; }
+.rw-expr { font-size: 1.1em; margin-right: 6px; }
+.rw-modes { display: inline-flex; gap: 6px; }
+.rw-now { font-size: 12px; margin: 10px 0 0; }
+.rw-note { font-size: 11.5px; color: var(--muted); margin: 10px 0 0; }
+.rw-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.rw-opts { display: flex; gap: 6px; flex-wrap: wrap; }
+.rw-btns { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+label.check-row.mini { margin: 0; padding: 4px 11px 4px 8px; gap: 7px; border-radius: 99px; font-size: 13px; }
+label.check-row.mini .sub { display: inline; font-size: 11.5px; }
 .rw-buff { border: 1px solid var(--line); border-radius: 99px; padding: 1px 10px; font-size: 12px; background: var(--accent-soft); }
 .rw-buff.pos { border-color: #4f7a2e; }
 .rw-buff.neg { border-color: #a8372c; }
@@ -831,8 +843,6 @@ html[data-motion="off"] .fx-spark { display: none; }
 .rest-btn { margin-right: 8px; }
 
 /* The spell roll window: what to roll, in rows (Hit, Damage or Healing, Checks) */
-.sp-group-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0; }
-.sp-group-lab { min-width: 62px; white-space: nowrap; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 
 /* Paper doll (Gear tab): slots around a figure */
 .doll { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(200px, 1.1fr) minmax(150px, 1fr); gap: 12px; align-items: start; margin: 8px 0; }
