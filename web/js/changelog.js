@@ -19,6 +19,7 @@ export const CHANGELOG = [
       'Look: nicer checkboxes, boxes line up in the Hit Points, Defense, Offense and Biography cards, Damage and Heal keep their colours on parchment, and with no portrait the hit points get the room.',
       'Narrow windows: the sheet tabs show only their icons so they fit on one row, nothing scrolls sideways, and the tab bar no longer jumps when you switch tabs.',
       'Characters: the import buttons sit together, and a class level no longer wraps onto a line of its own.',
+      'Cookie: his speech bubble no longer shows on top of open windows.',
     ],
   },
   {

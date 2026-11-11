@@ -243,7 +243,7 @@
 @keyframes cig-smoke { 0% { stroke-dashoffset: 34; opacity: 0; } 15% { opacity: .9; } 70% { stroke-dashoffset: 0; opacity: .5; } 100% { stroke-dashoffset: 0; opacity: 0; transform: translate(3px, -8px); } }
 html[data-motion="off"] #cookie *, html[data-motion="off"] #cookie { animation: none !important; transition: none !important; }
 
-.cookie-bubble { position: absolute; left: calc(2px + 142px * var(--cs)); top: calc(92px * var(--cs)); transform: translateY(var(--ty, -100%)); z-index: 55; width: max-content; max-width: min(320px, 40vw); padding: 10px 14px; border-radius: 14px 14px 14px 4px;
+.cookie-bubble { position: absolute; left: calc(2px + 142px * var(--cs)); top: calc(92px * var(--cs)); transform: translateY(var(--ty, -100%)); z-index: 45; /* over the side panel (40), under windows (50) */ width: max-content; max-width: min(320px, 40vw); padding: 10px 14px; border-radius: 14px 14px 14px 4px;
   background: var(--panel); color: var(--ink); border: 2px solid var(--line, #3a3d46); box-shadow: 0 6px 22px rgba(0, 0, 0, .45); font-size: 14px; line-height: 1.35;
   animation: cookie-pop .22s cubic-bezier(.2, 1.4, .4, 1); pointer-events: none; transform-origin: left bottom; }
 .cookie-bubble[hidden] { display: none; }
