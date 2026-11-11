@@ -198,7 +198,7 @@ function overview(body, c, d) {
 
     <section class="card defense">
       <h3>Defense</h3>
-      <div class="stat-row">
+      <div class="stat-row fill">
         ${[['ac.total', 'ac.totalMisc', ref('Armor Class', 'Rules', 'AC'), 'AC'], ['ac.touch', 'ac.touchMisc', ref('Touch Attacks', 'Rules', 'Touch'), 'Touch AC'],
     ['ac.flat', 'ac.flatMisc', ref('Flat-Footed', 'Rules', 'Flat-footed'), 'Flat-footed AC'], ['cmd', 'cmdMisc', ref('Combat Maneuver Defense', 'Rules', 'CMD'), 'CMD']].map(([v, misc, label, name]) => `
         <div class="stat"><div class="label">${label}</div>${sum(v, name, calc(v, 'plain', 'big'), { base: 10 })}
@@ -226,7 +226,7 @@ function overview(body, c, d) {
     <div class="stack">
     <section class="card offense">
       <h3>Offense</h3>
-      <div class="stat-row">
+      <div class="stat-row fill">
         <div class="stat"><div class="label">${ref('Initiative', 'Rules')}</div>${roll('init', 'Initiative', calc('init', 'sign', 'big'))}</div>
         <div class="stat"><div class="label">${ref('Base Attack Bonus', 'Rules', 'BAB')}</div>${sum('bab', 'Base attack bonus', '<span class="big" id="bab-text"></span>')}</div>
         <div class="stat"><div class="label">Melee</div>${roll('melee', 'Melee attack', calc('melee', 'sign', 'big'))}</div>
@@ -1181,7 +1181,7 @@ function gear(body, c, d) {
   <section class="card">
     <div class="row"><h3 class="grow">${ref('Carrying Capacity', 'Rules', 'Encumbrance')}</h3>
       <label class="small"><input type="checkbox" data-bind="noEncumbrance" ${c.noEncumbrance ? 'checked' : ''} data-rerender> Ignore encumbrance</label></div>
-    <div class="stat-row">
+    <div class="stat-row fill">
       <div class="stat"><div class="label">Carried</div><span class="big">${calc('encumbrance.weight')}</span> lb</div>
       <div class="stat"><div class="label">Light</div>≤ ${calc('encumbrance.light')}</div>
       <div class="stat"><div class="label">Medium</div>≤ ${calc('encumbrance.medium')}</div>

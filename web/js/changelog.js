@@ -11,7 +11,7 @@ export const CHANGELOG = [
       'Level up: the Unicorn Charger prestige class (Legendary Games), with its own paladin spells.',
       'Nicer checkboxes everywhere, and the roll window’s In play and Cast it options are rows that light up when ticked.',
       'Spells: touch spells get a “Deliver as” choice in the roll window: Touch, Reach Spell (a ranged touch, with the feat) or a magus’s Spellstrike with each weapon (ranged weapons for the eldritch archer).',
-      'Tidier layout: boxes line up in the Hit Points, Defense, Offense and Biography cards, Damage and Heal keep their colours on parchment, and a narrow window no longer scrolls sideways.',
+      'Tidier layout: boxes line up in the Hit Points, Defense, Offense and Biography cards, Damage and Heal keep their colours on parchment, a narrow window no longer scrolls sideways, and the import buttons on Characters sit together.',
     ],
   },
   {

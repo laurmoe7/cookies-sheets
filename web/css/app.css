@@ -192,6 +192,7 @@ input.sub { margin-left: 6px; font-size: 12px; padding: 2px 5px; }
 
 /* ---------- overview ---------- */
 .stat-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+.stat-row.fill > .stat { flex: 1 1 0; } /* Defense, Offense, Encumbrance: the tiles share the card width instead of leaving a gap on the right */
 .stat { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; min-width: 76px; text-align: center; }
 .stat .label { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
 .stat .big { font-size: 22px; }
@@ -289,6 +290,9 @@ html[data-theme] .btn.primary.discord-btn:hover, .btn.discord-btn:hover { backgr
 
 /* ---------- characters ---------- */
 .hero { margin-bottom: 18px; }
+/* "Import from" and its three sources, kept together so they wrap as one group */
+.btn-group { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.btn-group > .lbl { color: var(--muted); font-size: 13px; margin: 0 2px 0 8px; }
 .char-list { display: grid; gap: 10px; }
 .char-card { display: flex; gap: 10px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; cursor: pointer; box-shadow: var(--shadow); }
 .char-card:hover, .char-card.current { border-color: var(--accent); }
@@ -320,12 +324,13 @@ details.graveyard .graves { display: grid; grid-template-columns: repeat(auto-fi
 .empty { text-align: center; padding: 40px 20px; }
 
 /* ---------- compendium ---------- */
-.compendium { display: grid; grid-template-columns: 170px 360px 1fr; height: 100%; }
+.compendium { display: grid; grid-template-columns: 186px 360px 1fr; height: 100%; }
 .comp-cats { border-right: 1px solid var(--line); overflow: auto; padding: 10px 6px; background: var(--panel); }
 .cat { all: unset; display: flex; justify-content: space-between; width: calc(100% - 20px); padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; }
 .cat:hover { background: var(--panel-2); }
 .cat.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
-.cat .n { color: var(--muted); font-size: 11px; }
+.cat .n { color: var(--muted); font-size: 11px; flex: none; }
+.cat { gap: 8px; white-space: nowrap; }
 .comp-list { display: flex; flex-direction: column; border-right: 1px solid var(--line); min-height: 0; }
 .comp-search { padding: 10px; border-bottom: 1px solid var(--line); background: var(--panel); }
 .spell-filters select { flex: 1; min-width: 0; }
@@ -488,7 +493,10 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 .skills-tbl td.skill-note { width: 40%; }
 .skills-tbl td.skill-note input { width: 100%; min-width: 120px; }
 .skills-tbl td.skill-note input:placeholder-shown:not(:focus) { opacity: .4; } /* an empty note fades back, a written one stands out */
-.cs-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); vertical-align: middle; }
+/* A class skill from the class itself: drawn as a ticked checkbox (so the column reads as one set of boxes) that cannot be unticked. */
+.cs-dot { display: inline-grid; place-content: center; width: 17px; height: 17px; margin: 0 4px 0 0; vertical-align: -3px; border-radius: 5px;
+  background: var(--accent); border: 1.5px solid var(--accent); opacity: .8; cursor: help; }
+.cs-dot::before { content: ""; width: 9px; height: 5px; border: solid var(--accent-ink); border-width: 0 0 2.2px 2.2px; transform: translateY(-1px) rotate(-45deg); }
 /* Overview: Offense with the Notes card filling the space under it */
 .stack { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .stack > .card { margin: 0; }

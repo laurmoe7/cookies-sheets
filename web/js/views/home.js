@@ -39,9 +39,10 @@ export async function renderHome(main) {
       <div class="row">
         <button class="btn primary" id="new-char">＋ New character</button>
         <button class="btn" id="open-folder">Open save folder</button>
-        <button class="btn" id="cs-import-btn" title="Bring a character over from charactersheet.co.uk">Import from charactersheet.co.uk</button>
-        <button class="btn" id="gs-import-btn" title="Bring a character over from a Google Sheets character sheet">Import from Google Sheet</button>
-        <label class="btn">Import .json<input type="file" id="import" accept=".json" hidden></label>
+        <span class="btn-group"><span class="lbl">Import from</span>
+          <button class="btn" id="cs-import-btn" title="Bring a character over from charactersheet.co.uk">charactersheet.co.uk</button>
+          <button class="btn" id="gs-import-btn" title="Bring a character over from a Google Sheets character sheet">Google Sheet</button>
+          <label class="btn" title="A character file saved by Cookie’s Sheets (Export)">.json file<input type="file" id="import" accept=".json" hidden></label></span>
       </div>
     </div>
     <div id="char-list" class="char-list"><p class="muted">Loading…</p></div>

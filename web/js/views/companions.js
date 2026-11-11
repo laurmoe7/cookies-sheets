@@ -197,7 +197,7 @@ function topPanels(comp, s, p, ed = {}) {
       <table class="tbl"><thead><tr><th></th><th>Score</th><th>Mod</th></tr></thead><tbody>${ABIL.map(a => `<tr><th>${a.toUpperCase()}</th>
         <td class="big">${s.abilities[a] ?? '—'}</td><td class="big accent">${M(a)}</td></tr>`).join('')}</tbody></table>${ed.abilities || ''}</section>
     <section class="card defense"><h3>Defense</h3>
-      <div class="stat-row">${stat('AC', s.ac.total)}${stat('Touch', s.ac.touch)}${stat('Flat-footed', s.ac.flat)}${stat('CMD', s.cmd)}</div>
+      <div class="stat-row fill">${stat('AC', s.ac.total)}${stat('Touch', s.ac.touch)}${stat('Flat-footed', s.ac.flat)}${stat('CMD', s.cmd)}</div>
       ${ed.ac || ''}
       <p class="small muted">${s.kind === 'creature' ? 'AC from the stat block' + (num(comp.acMisc) ? ` ${sign(num(comp.acMisc))} adjustment` : '') : `AC = 10 ${[s.mods.dex ? `${sign(s.mods.dex)} Dex` : '', s.natural ? `+${s.natural} natural` : '', s.sizeMods.ac ? `${sign(s.sizeMods.ac)} size` : '', num(comp.acMisc) ? `${sign(num(comp.acMisc))} adjustment` : ''].filter(Boolean).join(' ')}`}</p>
       <table class="tbl saves"><thead><tr><th>Save</th><th>Total</th></tr></thead><tbody>
@@ -206,7 +206,7 @@ function topPanels(comp, s, p, ed = {}) {
       ${defenseLine(s)}
     </section>
     <section class="card offense"><h3>Offense</h3>
-      <div class="stat-row">${stat('Init', rb(s.init, 'initiative', s.bd?.init))}${stat('BAB', sign(s.bab))}${stat('CMB', rb(s.cmb, 'CMB', s.bd?.cmb))}${stat('Speed', `${esc(String(s.speed))}`)}</div>
+      <div class="stat-row fill">${stat('Init', rb(s.init, 'initiative', s.bd?.init))}${stat('BAB', sign(s.bab))}${stat('CMB', rb(s.cmb, 'CMB', s.bd?.cmb))}${stat('Speed', `${esc(String(s.speed))}`)}</div>
       ${s.attacks.length ? `<table class="tbl"><thead><tr><th>Attack</th><th>Bonus</th><th>Damage</th></tr></thead><tbody>${s.attacks.map(a => `<tr>
         <td>${a.count > 1 ? a.count + ' ' : ''}${linkTerms(a.name)}${a.secondary ? ' <span class="dim small">(secondary)</span>' : ''}</td><td class="big accent">${rb(a.bonus, a.name + ' attack', a.parts)}</td>
         <td>${a.dice ? `<button class="nb" data-roll-dice="${esc(a.damage)}" data-roll-label="${esc(comp.name + ' ' + a.name + ' damage')}" data-tip="${esc(`${comp.name} ${a.name} damage` + '\n' + 'Click to roll ' + a.damage)}">${esc(a.damage)}</button>${a.extra ? ' ' + linkTerms(a.extra) : ''}` : '—'}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">No natural attacks.</p>'}
