@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { classResources, currentOf } from '../web/js/resources.js';
+import { classResources, currentOf, poolChanges } from '../web/js/resources.js';
 
 const mods = { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0, ...{} };
 const byId = (levels, m = {}) => Object.fromEntries(classResources(levels, { ...mods, ...m }).map(r => [r.id, r]));
@@ -24,7 +24,19 @@ test('ki pool needs monk level 4; ninja level 2', () => {
 });
 test('bardic performance and lay on hands', () => {
   assert.equal(byId({ Bard: 1 }, { cha: 3 }).bardic.max, 7, '4 + 3');
-  assert.equal(byId({ Paladin: 1 }, { cha: 0 })['lay-on-hands'].max, 1, 'minimum 1');
+  assert.equal(byId({ Paladin: 2 }, { cha: 0 })['lay-on-hands'].max, 1, 'floor(2/2) + 0 = 1');
+  assert.equal(byId({ Paladin: 2 }, { cha: -1 })['lay-on-hands'].max, 1, '1 - 1 = 0 -> minimum 1');
+  assert.equal(byId({ Paladin: 6 }, { cha: 2 })['lay-on-hands'].max, 5, 'floor(6/2) + 2 = 5');
+  assert.equal(byId({ Paladin: 1 }, { cha: 3 })['lay-on-hands'], undefined, 'lay on hands is a 2nd-level feature');
+});
+test('poolChanges: new pools and changed capacity, unchanged ones left out', () => {
+  const m = { ...mods, cha: 2 };
+  const ch = Object.fromEntries(poolChanges(classResources({ Paladin: 1 }, m), classResources({ Paladin: 2 }, m)).map(r => [r.id, r]));
+  assert.deepEqual(ch['lay-on-hands'], { id: 'lay-on-hands', name: 'Lay on hands', cls: 'Paladin', from: 0, to: 3, isNew: true }, 'new at 2nd: 1 + 2 = 3');
+  assert.equal(ch['smite-evil'], undefined, 'smite stays 1/day from 1st to 2nd');
+  const at4 = Object.fromEntries(poolChanges(classResources({ Paladin: 3 }, m), classResources({ Paladin: 4 }, m)).map(r => [r.id, r]));
+  assert.deepEqual([at4['smite-evil'].from, at4['smite-evil'].to], [1, 2], 'smite evil 2/day at 4th');
+  assert.deepEqual([at4['lay-on-hands'].from, at4['lay-on-hands'].to], [3, 4], 'floor(3/2)+2 = 3 -> floor(4/2)+2 = 4');
 });
 test('classes with no pool give none; stored value wins over the daily start', () => {
   assert.equal(classResources({ Fighter: 5 }, mods).length, 0);

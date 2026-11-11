@@ -11,7 +11,7 @@ import { choosePicture, repositionPicture } from '../cropper.js';
 import { classFeatures, archetypesOf } from '../features.js';
 import { chooseArchetypes } from './archetypes.js';
 import { chooseTraits } from './traitpicker.js';
-import { ADDITIONAL_TRAITS } from '../traits.js';
+import { ADDITIONAL_TRAITS, isDrawback, drawbackRule, traitBalance, DRAWBACK_RULES } from '../traits.js';
 import { replacesOf, replacedConflicts } from '../racetraits.js';
 import { summonSpell } from '../summons.js';
 import { rollBar, fillSpellRolls, SLA_KEY as SLA } from '../roller.js';
@@ -22,7 +22,7 @@ import { hpSegments, segsHtml } from '../bars.js';
 import { playSfx } from '../sfx.js';
 import { hpFx } from '../healfx.js';
 import { view as petView } from '../pet/pet.js';
-import { renderResources, resourceBlock, wire as wireResources, wireRest } from './resources.js';
+import { renderResources, resourcesHtml, wire as wireResources, wireRest } from './resources.js';
 import { weaponFxRow, wireWeaponFx } from './weaponfx.js';
 import { armorFxChip, wireArmorFx } from './armorfx.js';
 import { paperDollCard, wirePaperDoll } from './paperdoll.js';
@@ -574,25 +574,44 @@ function skills(body, c, d) {
 // =====================================================================
 export const featureLookupName = f => f.replace(/\s*[+−-]?\d+d\d+.*$/, '').replace(/\s*\(.*?\)/g, '').replace(/\s*[+−-]?\d+(\/day)?.*$/, '').replace(/\s+\d+(st|nd|rd|th).*$/, '').trim();
 
+// A racial trait on the sheet (standard or alternate): its category is a race's name, or it replaces one. Neither a trait nor a drawback.
+const RACE_KEYS = new Set(Object.keys(RACES).map(k => k.toLowerCase().replace(/[^a-z]/g, '')));
+const isRacialTrait = t => !!(t.racial || t.replaces?.length) || RACE_KEYS.has(String(t.sub || '').toLowerCase().replace(/[^a-z]/g, ''));
+
 function feats(body, c, d) {
   const lv = classLevels(c);
   const features = classFeatures(c, state.classesByName);
   const KIND = { feats: 'Custom feat', traits: 'Custom trait', specials: 'Custom ability' };
-  const listBlock = (key, title, cat, pickTitle) => `
-    <section class="card">
-      <div class="row"><h3 class="grow">${title}</h3>
-        ${key === 'feats' ? `<span class="pill ${c.feats.length > d.featSlots ? 'warn' : ''}">${c.feats.length} taken · ${d.featSlots} from levels${d.race.bonusFeat ? ' (incl. human bonus)' : ''} + class bonus feats</span>` : ''}
-        <button class="btn small" data-pick="${key}" data-cat="${cat}" data-title="${esc(pickTitle)}">＋ Add from compendium</button>
-        <button class="btn small ghost" data-custom="${key}">＋ Custom</button></div>
-      ${c[key].length ? `<table class="tbl"><tbody>${c[key].map((f, i) => `<tr>
+  // Traits and drawbacks share c.traits; the card lists them apart (row paths keep their index in c.traits).
+  const rule = drawbackRule(c);
+  const bal = traitBalance(c.traits, rule, isRacialTrait);
+  const traitRows = c.traits.map((f, i) => [f, i]).filter(([f]) => !isDrawback(f));
+  const drawbackRows = c.traits.map((f, i) => [f, i]).filter(([f]) => isDrawback(f));
+  const drawbackBlock = () => `<div class="row drawback-head"><h4 class="grow">Drawbacks</h4>
+      <span class="pill ${bal.missing ? 'warn' : ''}" title="${esc(rule === 'perTrait' ? 'This character takes one drawback for each trait (racial traits not counted).' : 'Drawbacks are optional; one taken at 1st level gives a third trait.')}">${bal.drawbacks} drawback${bal.drawbacks === 1 ? '' : 's'}${rule === 'perTrait' ? ` · ${bal.positive} needed` : ''}</span>
+      <label class="small">Rule <select data-bind="drawbackRule" data-rerender>${Object.entries(DRAWBACK_RULES).map(([k, v]) => `<option value="${k}" ${k === rule ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select></label>
+      <button class="btn small" data-pick-drawback>＋ Add drawback</button>
+      <button class="btn small ghost" data-custom="traits" data-drawback>＋ Custom</button></div>
+    ${drawbackRows.length ? `<table class="tbl"><tbody>${drawbackRows.map(([f, i]) => listRow('traits', f, i)).join('')}</tbody></table>` : '<p class="muted small">None. Drawbacks are traits in reverse: a penalty and a roleplaying hook.</p>'}`;
+  const listRow = (key, f, i) => `<tr>
         <td class="nowrap w12">${f.id ? refId(f.id, f.name)
           : tf(`${key}.${i}.name`, { placeholder: 'Name', read: { title: f.name || 'Untitled', titlePath: `${key}.${i}.name`, cat: KIND[key], path: `${key}.${i}.notes` } })}</td>
         <td class="muted small"><span class="nowrap">${esc(f.sub || '')}${f.level && key !== 'traits' ? ` · L${f.level}` : ''}</span>${f.replaces?.length ? `<div class="alt-note" title="An alternate racial trait">replaces ${esc(f.replaces.join(', '))}</div>` : ''}${key === 'traits' ? (d.traitChoices || []).filter(ch => ch.index === i).map(ch => `<div class="trait-choice">${traitChoiceSelect(ch)}</div>`).join('') : ''}</td>
         <td class="grow-cell">${tf(`${key}.${i}.notes`, { multiline: true, placeholder: f.id ? 'Add notes' : 'Add a description',
           read: { title: f.name || 'Notes', titlePath: `${key}.${i}.name`, cat: f.id ? 'Your notes' : KIND[key] } })}</td>
-        <td><button class="icon-btn" data-del="${key}.${i}">✕</button></td></tr>`).join('')}</tbody></table>`
-        : '<p class="muted">None yet.</p>'}
+        <td><button class="icon-btn" data-del="${key}.${i}">✕</button></td></tr>`;
+  const listBlock = (key, title, cat, pickTitle) => {
+    const rows = key === 'traits' ? traitRows : c[key].map((f, i) => [f, i]);
+    return `
+    <section class="card">
+      <div class="row"><h3 class="grow">${title}</h3>
+        ${key === 'feats' ? `<span class="pill ${c.feats.length > d.featSlots ? 'warn' : ''}">${c.feats.length} taken · ${d.featSlots} from levels${d.race.bonusFeat ? ' (incl. human bonus)' : ''} + class bonus feats</span>` : ''}
+        <button class="btn small" data-pick="${key}" data-cat="${cat}" data-title="${esc(pickTitle)}">＋ Add from compendium</button>
+        <button class="btn small ghost" data-custom="${key}">＋ Custom</button></div>
+      ${rows.length ? `<table class="tbl"><tbody>${rows.map(([f, i]) => listRow(key, f, i)).join('')}</tbody></table>` : '<p class="muted">None yet.</p>'}
+      ${key === 'traits' ? drawbackBlock() : ''}
     </section>`;
+  };
   body.innerHTML = `<div class="grid two">
     <div>
       <section class="card"><h3>Archetype</h3>
@@ -625,7 +644,7 @@ function feats(body, c, d) {
       const isTraits = p.dataset.pick === 'traits', isFeats = p.dataset.pick === 'feats';
       const search = isTraits ? async (q, sub, race) => (race ? await api.search(q, 'Racial Trait', 150, 0, '=' + race)
         : (await Promise.all(['Trait', 'Racial Trait'].map(k => api.search(q, k, 100, 0, sub)))).flat().sort((a, b) => a.name.localeCompare(b.name))) : undefined;
-      const r = await pickEntry(p.dataset.title, p.dataset.cat, { renderRow: r => r.summary || r.source, search,
+      const r = await pickEntry(p.dataset.title, p.dataset.cat, { renderRow: r => r.summary || r.source, search, extraFilter: isTraits ? r => !isDrawback(r) : undefined,
         subs: isTraits ? TRAIT_CATEGORIES : isFeats ? FEAT_TYPES : null, subLabel: isTraits ? 'Any category' : 'Any type',
         races: isTraits });
       if (r) {
@@ -634,13 +653,17 @@ function feats(body, c, d) {
         c[p.dataset.pick].push(entry);
         changed({ rerender: true });
         if (p.dataset.pick === 'feats' && r.name.toLowerCase() === ADDITIONAL_TRAITS.toLowerCase()) { // the feat gives two more traits
-          const got = await chooseTraits({ count: 2, have: c.traits, title: 'Additional Traits: choose two traits' });
+          const got = await chooseTraits({ count: 2, have: c.traits, title: 'Additional Traits: choose two traits', rule: drawbackRule(c) });
           if (got) { for (const t of got) c.traits.push({ id: t.id, name: t.name, sub: t.sub, notes: '', ...(t.replaces ? { replaces: t.replaces } : {}) }); changed({ rerender: true }); }
         }
       }
     } else if (cu) {
-      c[cu.dataset.custom].push({ name: '', notes: '' });
+      c[cu.dataset.custom].push({ name: '', notes: '', ...(cu.hasAttribute('data-drawback') ? { drawback: true } : {}) });
       changed({ rerender: true });
+    } else if (e.target.closest('[data-pick-drawback]')) {
+      const r = await pickEntry('Add drawback', 'Trait', { renderRow: r => r.summary || r.source, extraFilter: isDrawback,
+        search: async q => api.search(q, 'Trait', 150, 0, 'Drawback') });
+      if (r) { c.traits.push({ id: r.id, name: r.name, sub: r.sub, notes: '' }); changed({ rerender: true }); }
     } else if (ar) {
       const cls = ar.dataset.arch;
       const picked = await chooseArchetypes(cls, archetypesOf(c, cls));
@@ -658,19 +681,25 @@ function feats(body, c, d) {
 // =====================================================================
 // SPELLS
 // =====================================================================
+/** The Class resources & trackers card (lay on hands, smite evil, rage...) at the top of the Spells tab too; wired by wireResources(body). */
+const resCard = c => { const h = resourcesHtml(c, { hideEmpty: true }); return h ? `<section class="card res-on-spells">${h}</section>` : ''; };
+/** A prepared caster that prepares straight from its class list (cleric, druid, paladin, ranger...), not from a spellbook or a known list. */
+const wholeList = (cls, sc, l) => sc.kind === 'prepared' && sc.slots[l] != null && !sc.known.some(k => k != null)
+  && !['Wizard', 'Witch', 'Magus', 'Alchemist', 'Investigator', 'Arcanist'].includes(cls);
 const ORD = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
 
 function spells(body, c, d) {
   const casters = Object.entries(d.spellcasting);
   if (!casters.length) {
-    body.innerHTML = `<section class="card spellbook">${slaCard(c, d)}</section><section class="card"><h3>Spells</h3><p class="muted">None of your classes cast spells (yet), but you can still keep spells here: add any compendium spell or your own under <b>Spell-likes &amp; other spells</b> above. Paladins and rangers start casting at 4th level.</p>
+    body.innerHTML = `${resCard(c)}<section class="card spellbook">${slaCard(c, d)}</section><section class="card"><h3>Spells</h3><p class="muted">None of your classes cast spells (yet), but you can still keep spells here: add any compendium spell or your own under <b>Spell-likes &amp; other spells</b> above. Paladins and rangers start casting at 4th level.</p>
       <p>Looking something up? Try the ${'<a href="#" data-goto="compendium">Compendium</a>'} or ${'<a href="#" data-goto="rules">Quick Rules</a>'}.</p></section>`;
     $$('[data-goto]', body).forEach(a => (a.onclick = e => { e.preventDefault(); go(a.dataset.goto); }));
     wireSla(body, c);
+    wireResources(body, c);
     if (spellDrawer?.el?.isConnected) renderSpellActions();
     return;
   }
-  body.innerHTML = casters.map(([cls, sc], ci) => {
+  body.innerHTML = resCard(c) + casters.map(([cls, sc], ci) => {
     const book = (c.spellbooks[cls] ||= { spells: [], used: Array(10).fill(0), extraSlot: false });
     book.used ||= Array(10).fill(0);
     const prepared = sc.kind === 'prepared' || sc.kind === 'arcanist';
@@ -691,7 +720,6 @@ function spells(body, c, d) {
           ${sc.hasExtraSlot ? `<label class="small" title="Cleric/druid domain, wizard specialist school, or shaman spirit slot">${chk(`spellbooks.${cls}.extraSlot`, { rerender: true })} Domain / school slot</label>` : ''}
         </div>
       </div>
-      ${cls === 'Arcanist' ? resourceBlock(c, 'arcane-reservoir') : ''}
       <table class="tbl slot-tbl"><thead><tr><th>Level</th>${levels.map(l => `<th>${ORD[l]}</th>`).join('')}</tr></thead><tbody>
         <tr><th>${spont ? 'Per day' : 'Slots'}</th>${levels.map(l => `<td><b>${fmtSlots(sc.slots[l])}</b></td>`).join('')}</tr>
         ${sc.known.some(k => k != null) ? `<tr><th>Known</th>${levels.map(l => `<td>${knownCount(book, l)} / ${sc.known[l] ?? '—'}</td>`).join('')}</tr>` : ''}
@@ -719,7 +747,7 @@ function spells(body, c, d) {
             <button class="btn small ghost" data-add-spell="${l}">＋ Add</button>
             <button class="btn small ghost" data-custom-spell="${l}" title="A spell that isn't in the compendium">＋ Custom</button></div>
           ${list.length ? `<div class="sp-chips">${list.map(chip).join('')}</div>`
-            : '<p class="muted small sl-none">No spells yet.</p>'}
+            : `<p class="muted small sl-none">${wholeList(cls, sc, l) ? `${esc(cls)}s can prepare any ${l === 0 ? 'cantrip or orison' : ORD[l] + '-level'} ${esc(cls.toLowerCase())} spell. Use <b>＋ Add</b> to put the ones you prepare (or like to have handy) here.` : 'No spells yet.'}</p>`}
         </div>`;
       }).join('')}
     </section>`;

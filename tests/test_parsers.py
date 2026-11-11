@@ -119,5 +119,25 @@ class AlternateRacialTraits(unittest.TestCase):
         self.assertEqual(replaced_traits('A standard racial trait.'), [])
 
 
+class Drawbacks(unittest.TestCase):
+    HTML = ('<p>Drawbacks are traits in reverse.</p><h4>Attached</h4><p>You take a &mdash;1 penalty.</p>'
+            '<h4>Power-Hungry</h4><p>You crave power.</p><h4>Empty</h4>')
+
+    def test_split_by_heading(self):
+        from build_data import split_drawbacks
+        self.assertEqual(split_drawbacks(self.HTML), [('Attached', '<p>You take a &mdash;1 penalty.</p>'), ('Power-Hungry', '<p>You crave power.</p>')],
+                         'the intro is skipped, and a heading with no text is left out')
+
+    def test_tag_existing_traits_and_add_missing(self):
+        from build_data import tag_drawbacks
+        entries = [dict(cat='Rules', sub='', name='Drawbacks', source='Ultimate Campaign', html=self.HTML),
+                   dict(cat='Trait', sub='', name='Attached', source='Ultimate Campaign', html='<p>x</p>'),
+                   dict(cat='Racial Trait', sub='Dwarf', name='Power-Hungry', source='x', html='')]
+        self.assertEqual(tag_drawbacks(entries), 2)
+        self.assertEqual(entries[1]['sub'], 'Drawback', 'the trait already in the books gets the category')
+        self.assertEqual(entries[2]['sub'], 'Dwarf', 'a racial trait of the same name is left alone')
+        self.assertEqual([(e['cat'], e['sub'], e['name']) for e in entries[3:]], [('Trait', 'Drawback', 'Power-Hungry')], 'one the books lack is added')
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -5,13 +5,6 @@
 
 export const CHANGELOG = [
   {
-    version: '1.3.8', date: '2026-11-11',
-    items: [
-      'Skills: traits that make “one of these skills (your choice)” a class skill, like Child of Nature and Devotee of the Green, let you pick it on the Skills tab or in the Traits list.',
-      'Skills: trait bonuses on Knowledge skills (Black Sheep, Savage, Scholar of Ruins...) now count.',
-    ],
-  },
-  {
     version: '1.3.7', date: '2026-11-11',
     items: [
       'Create character: a Starting gold card gives your class’s starting wealth at 1st level (average or 🎲 rolled), or the Wealth by Level amount when you start higher (33,000 gp at 8th), or a custom amount you type in.',
@@ -19,11 +12,21 @@ export const CHANGELOG = [
       'Create character: a class picked right after making a new character no longer gets unpicked a moment later.',
       'New race: the Ganzi (Planar Adventures), with its racial traits, all 13 oddities to choose from, and its favored class options.',
       'Level up: the 18 prestige classes of the Core Rulebook and the Advanced Player’s Guide with their requirements, plus the Unicorn Charger (Legendary Games). A level that adds spellcasting asks which class it advances.',
+      'Level up: a trait that lets you pick a class skill, like Child of Nature, asks which one right after you choose it.',
+      'Level up: What changes lists your daily pools going up (lay on hands 3 → 4, smite evil 2/day...), and a feature with options, like a paladin’s mercy or a rage power, is marked “choose one”.',
+      'Level up: a level that opens a new spell level says so, and prepared casters (paladin, ranger, cleric...) are asked to choose spells whenever the Spells tab has none of a level they can cast.',
       'Characters: “🪦 Lay to rest” sends a character who died or retired to the graveyard, as a headstone with the date and an epitaph. Open them any time, or bring them back.',
       'Characters: the import buttons sit together, and a class level no longer wraps onto a line of its own.',
+      'Traits: drawbacks have their own list, in the Traits card and in the traits window, and the 17 from Ultimate Campaign are in the compendium as drawbacks.',
+      'Traits: pick your table’s drawback rule. Optional (the book: one drawback gives a third trait) or one drawback for every trait, and the sheet and level up keep count.',
+      'Skills: traits that make “one of these skills (your choice)” a class skill, like Child of Nature and Devotee of the Green, let you pick it on the Skills tab or in the Traits list.',
+      'Skills: trait bonuses on Knowledge skills (Black Sheep, Savage, Scholar of Ruins...) now count.',
       'Companions: summons have their own Summons page, and it opens there after you summon something.',
       'Spells: touch spells can be delivered as a touch, a ranged touch with Reach Spell, or a magus’s Spellstrike (ranged weapons for the eldritch archer).',
       'Spells: “＋ Add” stays open so you can add several spells, and spells you already know show as known.',
+      'Spells: the Class resources & trackers card (lay on hands, smite evil, rage, channel...) is on the Spells tab too.',
+      'Spells: an empty spell level of a paladin, ranger, cleric or druid explains that you can prepare any spell of that level and to add them with ＋ Add.',
+      'Class resources: lay on hands starts at 2nd level, as in the book, not 1st.',
       'Roll window: about half the height. What to roll and its bonuses are one labelled list, and the In play, Cast it and Keep modifiers ticks sit on one line.',
       'Damage and Heal: the amount box says HP, and pressing either with it empty asks for a number.',
       'Compendium: browsing with an empty search starts at A.',

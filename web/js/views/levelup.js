@@ -11,9 +11,11 @@ import { levelWarnings } from '../levelcheck.js';
 import { featureLookupName } from './sheet.js';
 import { chooseArchetypes } from './archetypes.js';
 import { chooseTraits } from './traitpicker.js';
-import { traitAllowance, countTraits } from '../traits.js';
+import { traitAllowance, countTraits, countDrawbacks, drawbacksLeft, drawbackRule, isDrawback, DRAWBACK_RULES } from '../traits.js';
+import { traitChoices } from '../autofx.js';
 import { racialTraitsOf, remainingBaseline, alternativesFor, replacesOf } from '../racetraits.js';
 import { chooseSpells } from './spellpicker.js';
+import { classResources, poolChanges } from '../resources.js';
 import { ROLL_METHODS, rollSet, assignRoll, rolledBases, diceText, setQuality, unplaced } from '../statroll.js';
 import { startingWealth, rollStartingGold } from '../wealth.js';
 
@@ -401,7 +403,8 @@ function detail(el, c, d, newLevel) {
   const getsFeat = newLevel % 2 === 1;
   const getsAbility = newLevel % 4 === 0;
   const features = featuresFor(draft.cls, clsLevel, draft.archetypes, def).filter(f => f.level === clsLevel);
-  const traitCount = traitAllowance(newLevel, draft.feats);
+  const rule = drawbackRule(c);
+  const traitCount = traitAllowance(newLevel, draft.feats, { rule, drawbacks: countDrawbacks(draft.traits) });
   if (draft.racialRace !== c.race) { draft.racialRace = c.race; draft.racial = []; } // the choices belong to the race they were made for
   const racialBlock = newLevel === 1 ? racialSection(el, c, d, newLevel) : '';
   const nTraits = getsAbility ? 6 : 5;
@@ -409,6 +412,8 @@ function detail(el, c, d, newLevel) {
   // Racial traits picked in the same window do not use up the allowance. Drop the extra character traits if Additional Traits was taken back out.
   for (let i = draft.traits.length - 1; i >= 0 && countTraits(draft.traits) > traitCount; i--) if (!draft.traits[i].racial) draft.traits.splice(i, 1);
   const hpGain = after.hp.max - d.hp.max;
+  const modsOf = x => Object.fromEntries(Object.entries(x.abilities).map(([a, v]) => [a, v.mod]));
+  const pools = poolChanges(classResources(d.classLevels || {}, modsOf(d), c.resourceAdj), classResources(after.classLevels || {}, modsOf(after), c.resourceAdj));
   const delta = (a, b, f = sign) => `<span class="dim">${f(a)}</span> → <b>${f(b)}</b>${b !== a ? ` <span class="up">(${b > a ? '+' : ''}${b - a})</span>` : ''}`;
 
   el.innerHTML = `
@@ -440,12 +445,13 @@ function detail(el, c, d, newLevel) {
         <tr><th>Will</th><td>${delta(d.saves.will.total, after.saves.will.total)}</td></tr>
         <tr><th>CMB / CMD</th><td>${delta(d.cmb, after.cmb)} / ${delta(d.cmd, after.cmd, x => x)}</td></tr>
         <tr><th>Max skill ranks</th><td>${delta(d.level, newLevel, x => x)}</td></tr>
+        ${pools.map(r => `<tr><th>${esc(r.name)}</th><td>${r.isNew ? `<b class="good">New:</b> <b>${r.to}</b>` : `<span class="dim">${r.from}</span> → <b>${r.to}</b> <span class="up">(${r.to > r.from ? '+' : ''}${r.to - r.from})</span>`} <span class="small muted">per day</span></td></tr>`).join('')}
         ${after.iteratives.length > d.iteratives.length ? `<tr><th>Attacks</th><td class="good"><b>New iterative attack!</b> ${after.iteratives.map(sign).join('/')}</td></tr>` : ''}
       </tbody></table>
       <h4>New class features</h4>
       ${features.length ? `<ul class="features" style="columns:1">${features.map((f, i) => f.kind === 'archetype'
         ? `<li><a href="#" class="ref" data-arch-feat="${i}">${esc(f.name)}</a><span class="arch-badge">${esc(f.archetype)}</span>${f.replaces.length ? ` <span class="rep">replaces ${esc(f.replaces.join(', '))}</span>` : ''}</li>`
-        : `<li><a href="#" class="ref" data-entry="${esc(featureLookupName(f.name))}">${esc(f.name)}</a>${f.modified ? ` <span class="mod">modified by ${esc(f.modified.join(', '))}</span>` : ''}</li>`).join('')}</ul>`
+        : `<li><a href="#" class="ref" data-entry="${esc(featureLookupName(f.name))}">${esc(f.name)}</a>${f.modified ? ` <span class="mod">modified by ${esc(f.modified.join(', '))}</span>` : ''}${CHOICE.test(f.name) ? ' <span class="pill warn small" title="This feature has options: read it, pick one and write it in the notes for this level at the bottom">choose one</span>' : ''}</li>`).join('')}</ul>`
         : '<p class="muted">No new features this level (numbers improve automatically).</p>'}
       ${targets.map(t => spellDiff(state.classesByName[t], d, after, t !== def.name)).join('')}
     </section>
@@ -479,9 +485,12 @@ function detail(el, c, d, newLevel) {
         <div class="seg">${ABILITIES.map(a => `<button class="seg-btn ${draft.abilityIncrease === a ? 'on' : ''}" data-ability="${a}">${a.toUpperCase()} ${after.abilities[a].score - (draft.abilityIncrease === a ? 1 : 0)}→${after.abilities[a].score + (draft.abilityIncrease === a ? 0 : 1)}</button>`).join('')}</div>` : ''}
 
       ${traitCount || racialBlock ? `<h3 class="lu-sep">${nTraits} · Traits</h3>
-        ${traitCount ? `<p>${newLevel === 1 ? 'Choose two character traits, each from a different category.' : 'Additional Traits gives you two more, from categories you have no trait in yet.'}${newLevel === 1 && traitCount > 2 ? ' Additional Traits adds two more.' : ''}</p>
-        <div class="chips">${draft.traits.map((t, i) => `<span class="chip on">${esc(t.name)} <span class="dim small">${esc(t.sub || '')}</span> <button class="icon-btn" data-rm-trait="${i}">✕</button></span>`).join('')}</div>
-        <button class="btn small" data-choose-traits>＋ Choose traits (${traitCount - countTraits(draft.traits)} left)</button>` : ''}
+        ${traitCount ? `<div class="row"><p class="grow">${newLevel === 1 ? 'Choose two character traits, each from a different category.' : 'Additional Traits gives you two more, from categories you have no trait in yet.'}${draft.feats.some(f => /^additional traits$/i.test(String(f.name || '').trim())) && newLevel === 1 ? ' Additional Traits adds two more.' : ''}</p>
+          <label class="small">Drawbacks <select data-bind="drawbackRule" data-rerender>${Object.entries(DRAWBACK_RULES).map(([k, v]) => `<option value="${k}" ${k === rule ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select></label></div>
+        <div class="chips">${draft.traits.map((t, i) => `<span class="chip on ${isDrawback(t) ? 'drawback' : ''}">${esc(t.name)} <span class="dim small">${esc(t.sub || '')}</span> <button class="icon-btn" data-rm-trait="${i}">✕</button></span>`).join('')}</div>
+        ${draft.traits.map((t, i) => [t, i]).filter(([t]) => traitChoices(t.name)).map(([t, i]) => `<div class="row trait-choice"><span class="small"><b>${esc(t.name)}</b>: class skill</span>
+          <span class="seg" role="group">${traitChoices(t.name).map(o => `<button class="seg-btn ${o === t.choice ? 'on' : ''}" data-draft-choice="${i}" data-skill="${esc(o)}">${esc(o)}</button>`).join('')}</span>${t.choice ? '' : '<span class="pill warn">choose one</span>'}</div>`).join('')}
+        <button class="btn small" data-choose-traits>＋ Choose traits (${[`${Math.max(0, traitCount - countTraits(draft.traits))} left`, drawbacksLeft(rule, draft.traits) ? `${drawbacksLeft(rule, draft.traits)} drawback${drawbacksLeft(rule, draft.traits) === 1 ? '' : 's'} needed` : ''].filter(Boolean).join(', ')})</button>` : ''}
         ${racialBlock}` : ''}
 
       <h3 class="lu-sep">${nFeats} · Feats</h3>
@@ -508,7 +517,7 @@ function detail(el, c, d, newLevel) {
     }).join('')}</div>
   </section>
 
-  ${targets.map(t => spellPicks(c, state.classesByName[t], after)).join('')}
+  ${targets.map(t => spellPicks(c, state.classesByName[t], after, d)).join('')}
 
   <section class="card apply">
     <label class="grow">Notes for this level <input id="lu-notes" class="full" value="${esc(draft.notes)}" placeholder="e.g. chose Weapon Training (heavy blades)"></label>
@@ -547,10 +556,12 @@ function detail(el, c, d, newLevel) {
   $$('[data-undo-racial]', el).forEach(b => (b.onclick = () => { draft.racial.splice(+b.dataset.undoRacial, 1); rerender(); }));
   const tb = $('[data-choose-traits]', el);
   if (tb) tb.onclick = async () => {
-    await chooseTraits({ count: traitAllowance(newLevel, draft.feats), have: c.traits, picks: draft.traits, title: 'Choose traits' });
+    await chooseTraits({ count: picks => traitAllowance(newLevel, draft.feats, { rule: drawbackRule(c), drawbacks: countDrawbacks(picks) }),
+      have: c.traits, picks: draft.traits, title: 'Choose traits', rule: drawbackRule(c) });
     rerender();
   };
   $$('[data-rm-trait]', el).forEach(b => (b.onclick = () => { draft.traits.splice(+b.dataset.rmTrait, 1); rerender(); }));
+  $$('[data-draft-choice]', el).forEach(b => (b.onclick = () => { draft.traits[+b.dataset.draftChoice].choice = b.dataset.skill; rerender(); }));
   $$('[data-rm-feat]', el).forEach(b => (b.onclick = () => { draft.feats.splice(+b.dataset.rmFeat, 1); rerender(); }));
   wireGold(el, c);
   const archBtn = $('[data-choose-arch]', el);
@@ -606,6 +617,7 @@ function spellDiff(def, d, after, viaPrestige) {
   const levels = [...Array((def.casting.max_level || 0) + 1).keys()];
   const cell = (arr, l) => (arr?.[l] == null ? '—' : arr[l]);
   const changedLv = l => (prevRow?.spells_per_day?.[l] ?? null) !== (row.spells_per_day?.[l] ?? null);
+  const opened = newSpellLevels(d, after, def.name);
   return `<h4>Spellcasting${viaPrestige ? `: ${esc(def.name)} (as ${ORD(lvAfter)} level)` : ''}</h4>
     <table class="tbl slot-tbl"><thead><tr><th></th>${levels.map(l => `<th>${SL[l]}</th>`).join('')}</tr></thead><tbody>
       <tr><th>Per day (table)</th>${levels.map(l => `<td class="${changedLv(l) ? 'up' : ''}">${cell(row.spells_per_day, l)}</td>`).join('')}</tr>
@@ -613,10 +625,23 @@ function spellDiff(def, d, after, viaPrestige) {
       ${row.spells_known ? `<tr><th>Known</th>${levels.map(l => `<td class="${(prevRow?.spells_known?.[l] ?? null) !== (row.spells_known[l] ?? null) ? 'up' : ''}">${cell(row.spells_known, l)}</td>`).join('')}</tr>` : ''}
       ${sc ? `<tr><th>Save DC</th>${levels.map(l => `<td>${sc.dcs[l]}</td>`).join('')}</tr>` : ''}
     </tbody></table>
+    ${opened.length ? `<p class="good"><b>New:</b> you can now cast ${opened.map(l => `${SL[l]}-level spells (${sc.slots[l] === Infinity ? 'at will' : `${sc.slots[l]} per day`})`).join(', ')}. Choose them below.</p>` : ''}
     ${sc ? `<p class="small muted">Caster level ${sc.cl} · concentration ${sign(sc.concentration)} · bonus spells from ${def.casting.stat.toUpperCase()} ${sign(sc.statMod)}</p>` : '<p class="small muted">Spellcasting begins at a later level.</p>'}`;
 }
 
-function spellPicks(c, def, after) {
+/** Spell levels the class can cast after this level but could not before. */
+function newSpellLevels(d, after, cls) {
+  const was = d.spellcasting?.[cls]?.slots || [], now = after.spellcasting?.[cls]?.slots || [];
+  return now.map((v, l) => (v != null && was[l] == null ? l : -1)).filter(l => l >= 0);
+}
+
+/** "1st", "1st or 2nd", "1st, 2nd or 3rd". */
+const listOf = xs => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} or ${xs[xs.length - 1]}`);
+
+// Class features that come with a list of options (mercy, rage power, rogue talent, hex, ...).
+const CHOICE = /^(mercy|rage power|rogue talent|advanced talent|slayer talent|investigator talent|ninja trick|master trick|discovery|hex|major hex|grand hex|revelation|magus arcana|arcane discovery|exploit|greater exploit|favored enemy|favored terrain|combat style|bonus feat|deed|mystery|bloodline|domain|wild talent|infusion|evolution|bardic masterpiece|order|spirit|blessing|social talent|vigilante talent|stalker talent|avenger talent)\b/i;
+
+function spellPicks(c, def, after, d) {
   if (!def.casting || !after.spellcasting[def.name]) return '';
   const allowance = spellAllowance(c, def, after);
   const picks = draft.spellsBy[def.name] || [], favs = draft.favsBy[def.name] || [];
@@ -638,7 +663,12 @@ function spellPicks(c, def, after) {
   const chips = picks.map((s, i) => `<span class="chip on">${s.level === 0 ? 'Cantrip' : 'L' + s.level} ${esc(s.name)} <button class="icon-btn" ${cls} data-rm-spell="${i}">✕</button></span>`).join('');
   const favChips = favs.map((s, i) => `<span class="chip on">${s.level === 0 ? 'Cantrip' : 'L' + s.level} ${esc(s.name)} <button class="icon-btn" ${cls} data-rm-fav="${i}">✕</button></span>`).join('');
   if (allowance.kind === 'none') {
-    return `<section class="card"><div class="row"><h3 class="grow">Spells${of} <span class="muted small">(optional)</span></h3><button class="btn small primary" ${cls} data-choose-favs>Choose spells</button></div>
+    // Spell levels the class can cast with nothing on the Spells tab yet (just opened, or never filled in).
+    const sc = after.spellcasting[def.name], book = c.spellbooks[def.name] || { spells: [] };
+    const empty = sc.slots.map((v, l) => (v != null && v !== 0 && l > 0 && ![...book.spells, ...favs].some(s => s.level === l) ? l : -1)).filter(l => l >= 0);
+    const opened = newSpellLevels(d, after, def.name);
+    return `<section class="card ${empty.length ? 'lu-spells-due' : ''}"><div class="row"><h3 class="grow">Spells${of} ${empty.length ? '' : '<span class="muted small">(optional)</span>'}</h3><button class="btn small primary" ${cls} data-choose-favs>Choose spells</button></div>
+      ${empty.length ? `<p class="warn">Your Spells tab has no ${listOf(empty.map(l => SL[l]))}-level ${def.name.toLowerCase()} spells yet${opened.length ? ` (${listOf(opened.map(l => SL[l]))} level is new this level)` : ''}. Choose the ones you want to prepare.</p>` : ''}
       <p>${def.name}s prepare from their entire spell list, so you do not have to learn anything. Pick any spells you want quick access to and they are put on your Spells tab, ready to prepare. You can add more there any time.</p>
       <div class="chips">${favChips}</div></section>`;
   }
@@ -665,7 +695,9 @@ async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after
   const spent = ABILITIES.reduce((s, a) => s + (POINT_BUY[num(c.abilities[a].base)] ?? NaN), 0);
   const warnings = levelWarnings({
     newLevel, rankBudget, ranksUsed, getsFeat: newLevel % 2 === 1, bonusFeat: newLevel === 1 && !!ri.bonusFeat, featsChosen: draft.feats.length,
-    traitsLeft: Math.max(0, traitAllowance(newLevel, draft.feats) - countTraits(draft.traits)),
+    traitsLeft: Math.max(0, traitAllowance(newLevel, draft.feats, { rule: drawbackRule(c), drawbacks: countDrawbacks(draft.traits) }) - countTraits(draft.traits)),
+    drawbacksLeft: drawbacksLeft(drawbackRule(c), draft.traits),
+    traitChoicesLeft: draft.traits.filter(t => traitChoices(t.name) && !traitChoices(t.name).includes(t.choice)).length,
     getsAbility, abilityIncrease: draft.abilityIncrease, isFav: (c.favoredClass || (newLevel === 1 ? def.name : '')) === def.name, fcb: draft.fcb, fcbNote: draft.fcbNote,
     spellsLeft,
     pointsLeft: isNaN(spent) || draft.scoreMode === 'roll' ? 0 : draft.budget - spent, name: c.name,
@@ -697,7 +729,7 @@ async function apply(c, def, newLevel, rankBudget, ranksUsed, getsAbility, after
       if (!have.has(t.name.toLowerCase())) c.traits.push({ id: t.id, name: t.name, sub: t.sub, notes: '', ...(t.replaces?.length ? { replaces: t.replaces } : {}) });
     }
   }
-  for (const t of draft.traits) c.traits.push({ id: t.id, name: t.name, sub: t.sub, notes: '', ...(t.replaces ? { replaces: t.replaces } : {}) });
+  for (const t of draft.traits) c.traits.push({ id: t.id, name: t.name, sub: t.sub, notes: '', ...(t.replaces ? { replaces: t.replaces } : {}), ...(t.choice ? { choice: t.choice } : {}) });
   for (const f of draft.feats) c.feats.push({ id: f.id, name: f.name, sub: f.sub, notes: '', level: newLevel, addedAt: newLevel });
   for (const t of targets) {
     const add = [...(draft.spellsBy[t] || []), ...(draft.favsBy[t] || [])];

@@ -378,6 +378,34 @@ def merge_extra_entries(entries):
     return added
 
 
+def split_drawbacks(html_text):
+    """The Ultimate Campaign "Drawbacks" rules entry as [(name, body_html)], one per <h4> heading. Pure (tested)."""
+    parts = re.split(r'<h4>(.*?)</h4>', html_text or '')
+    return [(clean(re.sub(r'<[^>]+>', '', name)), body.strip()) for name, body in zip(parts[1::2], parts[2::2]) if body.strip()]
+
+
+def tag_drawbacks(entries):
+    """Drawbacks are traits in reverse. The books file them as Trait entries with no category; the ones the Ultimate Campaign
+    "Drawbacks" rules entry lists get sub 'Drawback' (any it lists that are missing are added), so pickers can tell them apart."""
+    src = next((e for e in entries if e['cat'] == 'Rules' and e['name'] == 'Drawbacks' and e['source'] == 'Ultimate Campaign'), None)
+    if not src:
+        return 0
+    listed = split_drawbacks(src['html'])
+    names = {norm(n) for n, _ in listed}
+    tagged = 0
+    for e in entries:
+        if e['cat'] == 'Trait' and not e['sub'] and norm(e['name']) in names:
+            e['sub'] = 'Drawback'
+            names.discard(norm(e['name']))
+            tagged += 1
+    for name, body in listed:  # listed but not filed as a trait
+        if norm(name) in names:
+            entries.append(dict(cat='Trait', sub='Drawback', name=name, source=src['source'], summary='', html=body, meta='{}',
+                                text=name + ' drawback ' + re.sub(r'<[^>]+>', ' ', body), late=True))
+            tagged += 1
+    return tagged
+
+
 def tag_racial_traits(entries):
     """One name per race, and for each alternate racial trait what it replaces (meta.replaces, and "Replaces X." as its summary)."""
     tagged = 0
@@ -701,6 +729,7 @@ def main():
     print('added', merge_aon_archetypes(entries), 'archetypes from Archives of Nethys')
     print('added', merge_aon_race_traits(entries), 'standard racial traits from Archives of Nethys')
     print('added', merge_extra_entries(entries), 'hand-typed entries')
+    print('drawbacks tagged:', tag_drawbacks(entries))
     print('alternate racial traits tagged:', tag_racial_traits(entries))
     gear_list = equipment.build(books)
     stats = equipment.enrich(entries, gear_list, equipment.weapon_groups(books))

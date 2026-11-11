@@ -26,7 +26,7 @@ export function classResources(levels, mods, adj = {}) {
   if (L('Bloodrager')) add('Bloodrager', 'bloodrage', 'Bloodrage rounds', 4 + mods.con + 2 * (L('Bloodrager') - 1), '4 + Con modifier + 2 per level after 1st, rounds per day.', { entry: 'Bloodrage' });
   if (L('Bard')) add('Bard', 'bardic', 'Bardic performance rounds', 4 + mods.cha + 2 * (L('Bard') - 1), '4 + Cha modifier + 2 per level after 1st, rounds per day.', { entry: 'Bardic Performance' });
   if (L('Skald')) add('Skald', 'raging-song', 'Raging song rounds', 4 + mods.cha + 2 * (L('Skald') - 1), '4 + Cha modifier + 2 per level after 1st, rounds per day.', { entry: 'Raging Song' });
-  if (L('Paladin')) add('Paladin', 'lay-on-hands', 'Lay on hands', atLeast1(Math.floor(L('Paladin') / 2) + mods.cha), '½ paladin level + Cha modifier uses per day.', { entry: 'Lay On Hands' });
+  if (L('Paladin') >= 2) add('Paladin', 'lay-on-hands', 'Lay on hands', atLeast1(Math.floor(L('Paladin') / 2) + mods.cha), '½ paladin level + Cha modifier uses per day.', { entry: 'Lay On Hands' });
   if (L('Cleric')) add('Cleric', 'channel', 'Channel energy', 3 + mods.cha, '3 + Cha modifier uses per day.', { entry: 'Channel Energy' });
   if (L('Monk') >= 4) add('Monk', 'ki-monk', 'Ki pool', Math.floor(L('Monk') / 2) + mods.wis, '½ monk level + Wis modifier points.', { entry: 'Ki Pool' });
   if (L('Ninja') >= 2) add('Ninja', 'ki-ninja', 'Ki pool', Math.floor(L('Ninja') / 2) + mods.cha, '½ ninja level + Cha modifier points.', { entry: 'Ki Pool' });
@@ -51,6 +51,16 @@ export function classResources(levels, mods, adj = {}) {
     const max = Math.max(0, r.max + bonus);
     return { ...r, max, start: Math.max(0, Math.min(r.start + startBonus, max)), baseMax: r.max, bonus, startBonus };
   });
+}
+
+/**
+ * What a level changes in the pools: `before` and `after` are classResources() lists.
+ * Returns [{id, name, cls, from, to, isNew}] for each pool that is new or whose capacity changed.
+ */
+export function poolChanges(before, after) {
+  const old = Object.fromEntries(before.map(r => [r.id, r]));
+  return after.filter(r => !old[r.id] || old[r.id].max !== r.max)
+    .map(r => ({ id: r.id, name: r.name, cls: r.cls, from: old[r.id]?.max ?? 0, to: r.max, isNew: !old[r.id] }));
 }
 
 /** Points currently held: the stored value, else the start-of-day value. Never below zero. */

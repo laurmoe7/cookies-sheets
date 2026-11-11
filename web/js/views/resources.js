@@ -67,21 +67,21 @@ export function wireRest(el, c) {
 
 /** Overview card: every class pool plus the player's own trackers. */
 export function renderResources(el, c) {
+  el.innerHTML = resourcesHtml(c);
+  wire(el, c);
+}
+
+/** The same card's contents, for a page that wires its own element (the Spells tab). Empty when there is nothing to track. */
+export function resourcesHtml(c, { hideEmpty = false } = {}) {
   c.trackers ||= [];
   const pools = poolsFor(c);
-  el.innerHTML = `<div class="row"><h3 class="grow" style="margin:0">Class resources &amp; trackers</h3>
+  if (hideEmpty && !pools.length && !c.trackers.length) return '';
+  return `<div class="row"><h3 class="grow" style="margin:0">Class resources &amp; trackers</h3>
       <button class="btn small" data-tr-new>＋ Tracker</button>
       <button class="btn small ghost" data-res-rest title="Refill every pool below for a new day (the 🌙 Rest button at the top does that and more)">New day</button></div>
     ${pools.map(r => counter(r, currentOf(r, c.resources), c)).join('')}
     ${c.trackers.map(custom).join('')}
     ${pools.length || c.trackers.length ? '' : '<p class="muted small">Nothing to track yet. Classes such as arcanist, barbarian, bard, magus and monk show their pools here; “＋ Tracker” adds your own counter for anything else.</p>'}`;
-  wire(el, c);
-}
-
-/** A single pool inside a spell card (the arcanist's reservoir). */
-export function resourceBlock(c, id) {
-  const res = poolsFor(c).find(r => r.id === id);
-  return res ? `<div class="res-inline">${counter(res, currentOf(res, c.resources), c)}</div>` : '';
 }
 
 /** Delegated click handling for any element holding counters. */

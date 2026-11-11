@@ -10,6 +10,8 @@ export function levelWarnings(x) {
   const feats = (x.getsFeat ? 1 : 0) + (x.bonusFeat ? 1 : 0);
   if (feats > (x.featsChosen || 0)) out.push(`${plural(feats - (x.featsChosen || 0), 'feat')} not chosen yet.`);
   if (x.traitsLeft > 0) out.push(`${plural(x.traitsLeft, 'trait')} not chosen yet.`);
+  if (x.drawbacksLeft > 0) out.push(`${plural(x.drawbacksLeft, 'drawback')} still needed: this character takes one drawback per trait.`);
+  if (x.traitChoicesLeft > 0) out.push(`${plural(x.traitChoicesLeft, 'trait')} still ${x.traitChoicesLeft === 1 ? 'needs' : 'need'} a class skill picked.`);
   if (x.getsAbility && !x.abilityIncrease) out.push('No ability score increase chosen for this level.');
   if (x.isFav) {
     if (x.fcb === 'racial' && !x.fcbNote) out.push('Favored class bonus: no racial option picked.');
