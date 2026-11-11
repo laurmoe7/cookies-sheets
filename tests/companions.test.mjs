@@ -268,3 +268,27 @@ test('unicorn charger levels stack with the class that grants the mount', () => 
   assert.equal(companionSources({ Cavalier: 6, 'Unicorn Charger': 3 }).animal, 9, 'cavalier mount: 6 + 3');
   assert.equal(companionSources({ Fighter: 6, 'Unicorn Charger': 2 }).animal, 0, 'no class that grants a mount: the charger levels add nothing on their own');
 });
+
+test('unicorn mount: gore, Int 6 and the +2s every 3 charger levels', () => {
+  const horse = { ...newCompanion('animal', data), species: 'Horse' };
+  // Paladin 6 / Unicorn Charger 2: mount level (6 + 2) − 3 = 5. Horse advanced at 4th: Str 16 + 2 (advance) + 1 (level 5 row) = 19.
+  const s = computeCompanion(horse, { Paladin: 6, 'Unicorn Charger': 2, _animal: 5 }, data);
+  assert.equal(s.abilities.str, 19, 'horse 16 + 2 advanced + 1 from the level 5 row');
+  assert.equal(s.abilities.int, 6, 'unicorn mount: Intelligence 6 (a horse has 2)');
+  const gore = s.attacks.find(a => a.name === 'Gore');
+  assert.ok(gore, 'a gore attack');
+  assert.equal(gore.secondary, false, 'primary');
+  assert.equal(gore.bonus, 6, 'BAB +3 + Str +4 + Large −1');
+  assert.equal(gore.damage, '1d8+4', 'Large gore 1d8, full Str (+4) as a primary attack among several');
+  assert.match(s.qualities, /Sylvan/);
+  assert.equal(s.unicorn.count, 0, 'no +2 before charger level 3');
+
+  // Charger 6: two +2s, the charger's choice.
+  const s6 = computeCompanion({ ...horse, unicornBoosts: ['cha', 'cha'] }, { Paladin: 6, 'Unicorn Charger': 6, _animal: 9 }, data);
+  assert.equal(s6.unicorn.count, 2, 'charger levels 3 and 6');
+  assert.equal(s6.abilities.cha, 10, 'horse Cha 6 + 2 + 2');
+
+  // Turned off for a companion that is not the unicorn mount, or no charger levels at all.
+  assert.equal(computeCompanion({ ...horse, unicornMount: 'no' }, { 'Unicorn Charger': 2, _animal: 5 }, data).attacks.some(a => a.name === 'Gore'), false);
+  assert.equal(computeCompanion(horse, { Paladin: 8, _animal: 5 }, data).abilities.int, 2, 'a plain paladin mount keeps Int 2');
+});

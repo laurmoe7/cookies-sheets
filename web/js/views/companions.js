@@ -373,6 +373,11 @@ function buildEditors(comp, s, p, { data, levels }) {
         : '<a href="#" class="ref" data-entry="Eidolon" data-cat="Rules">eidolon rules</a>'}</span>${STAT_BTN}</div></div>`;
   const abilities = s.increases ? `<h4>Ability score increases (${s.increases})</h4><div class="row">${Array.from({ length: s.increases }, (_, k) =>
     select(`${p}.increases.${k}`, comp.increases?.[k], [['', 'choose…'], ...ABIL.map(a => [a, '+1 ' + a.toUpperCase()])])).join('')}</div>` : '';
+  // Unicorn Charger levels: the mount's extras, and the +2s every 3 charger levels
+  const uc = isAnimal && levels['Unicorn Charger'] ? `<h4>Unicorn mount <span class="small muted">(Unicorn Charger ${levels['Unicorn Charger']})</span></h4>
+    <div class="row" style="gap:8px;flex-wrap:wrap">${select(`${p}.unicornMount`, comp.unicornMount || '', [['', 'This is my unicorn mount'], ['no', 'Not my unicorn mount']])}</div>
+    ${s.unicorn?.count ? `<div class="row" style="gap:6px;margin-top:6px"><span class="small muted">+2 enhancement:</span>${Array.from({ length: s.unicorn.count }, (_, k) =>
+      select(`${p}.unicornBoosts.${k}`, comp.unicornBoosts?.[k] || '', [['', 'choose…'], ['int', '+2 Int'], ['wis', '+2 Wis'], ['cha', '+2 Cha']])).join('')}</div>` : ''}` : '';
   const build = `<section class="card span2"><h3>Build</h3>
       ${!isAnimal ? evolutionsBlock(comp, s, data, p) : ''}
       <h4>Feats <span class="pill ${featsLeft < 0 ? 'bad' : featsLeft ? 'warn' : 'good'}">${s.featsUsed} / ${s.featSlots}</span></h4>
@@ -395,7 +400,7 @@ function buildEditors(comp, s, p, { data, levels }) {
         ${tf(`${p}.tricks`, { multiline: true, placeholder: 'e.g. attack, come, defend, down, guard, heel, track', read: { title: `${comp.name} tricks`, cat: 'Tricks' } })}
         <p class="small">${'<a href="#" class="ref" data-entry="Handle Animal" data-cat="Skill">Handle Animal and tricks</a>'}</p>` : ''}
     </section>`;
-  return { strip, abilities, ...adjust(comp, p), cards: build + notesCard(comp, p, 'Gear, personality, conditions…') };
+  return { strip, abilities: abilities + uc, ...adjust(comp, p), cards: build + notesCard(comp, p, 'Gear, personality, conditions…') };
 }
 
 /** The familiar's controls: kind, archetype, what the feat and alignment need, and the master's level. */

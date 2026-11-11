@@ -219,6 +219,21 @@ function specialsUpTo(prog, level) {
   return { list, increases };
 }
 
+/** A gore's damage for the creature's size (Bestiary natural attacks table). */
+const GORE = { Fine: '1', Diminutive: '1d2', Tiny: '1d3', Small: '1d4', Medium: '1d6', Large: '1d8', Huge: '2d6', Gargantuan: '2d8', Colossal: '4d6' };
+
+/**
+ * Unicorn Charger (Legendary Games), Unicorn Mount: the charger's mount gets a primary gore, Intelligence 6, Sylvan and a glowing horn,
+ * and at charger level 3 and every 3 levels after a +2 enhancement bonus to Int, Wis or Cha (the charger's choice, `comp.unicornBoosts`).
+ * Null when the owner has no charger levels or the player turned it off for this companion (`comp.unicornMount === 'no'`).
+ */
+export function unicornMount(comp, chargerLevel, size = 'Large') {
+  if (!chargerLevel || comp.unicornMount === 'no') return null;
+  const count = Math.floor(chargerLevel / 3);
+  const boosts = Array.from({ length: count }, (_, k) => ['int', 'wis', 'cha'].includes(comp.unicornBoosts?.[k]) ? comp.unicornBoosts[k] : '');
+  return { chargerLevel, gore: GORE[size] || '1d8', count, boosts };
+}
+
 function computeAnimal(comp, levels, data) {
   const auto = animalCompanionLevel(levels);
   const level = Math.max(1, Math.min(20, num(comp.levelOverride) || auto || 1));
@@ -232,12 +247,20 @@ function computeAnimal(comp, levels, data) {
   const { list: specials, increases } = specialsUpTo(data.progression, level);
   (comp.increases || []).slice(0, increases).forEach(a => { if (a && abilities[a] != null) abilities[a] += 1; });
   const attacks = (adv?.attacks?.length ? adv.attacks : sp.attacks).map(a => ({ ...a }));
+  const size = adv?.size || sp.size || 'Medium';
+  const unicorn = unicornMount(comp, levels['Unicorn Charger'] || 0, size);
+  if (unicorn) {
+    abilities.int = Math.max(abilities.int ?? 0, 6);
+    for (const a of unicorn.boosts) if (a && abilities[a] != null) abilities[a] += 2;
+    if (!attacks.some(x => /^gore$/i.test(x.name))) attacks.unshift({ name: 'Gore', count: 1, dice: unicorn.gore, secondary: false });
+  }
   const out = {
-    kind: 'animal', level, autoLevel: auto, species: sp, advanced: !!adv, size: (adv?.size || sp.size || 'Medium'),
+    kind: 'animal', level, autoLevel: auto, species: sp, advanced: !!adv, size,
     speed: sp.speed, abilities, hd: row.hd, hdAvg: 4.5, hdDie: 8, bab: row.bab,
     saves: { fort: row.fort, ref: row.ref, will: row.will }, natural: sp.natural + (adv?.natural || 0) + row.natural + featCount(comp, 'Improved Natural Armor'),
     attacks, specials, increases, skillRanks: row.skills, featSlots: row.feats, bonusTricks: row.tricks, multiattackSpecial: specials.some(s => /multiattack/i.test(s)),
-    qualities: [sp.specialQualities, adv?.specialQualities].filter(Boolean).join(', '),
+    qualities: [sp.specialQualities, adv?.specialQualities, unicorn && 'speaks and understands Sylvan, horn sheds light at will (unicorn mount)'].filter(Boolean).join(', '),
+    unicorn,
     specialAttacks: [sp.specialAttacks, adv?.specialAttacks].filter(Boolean).join(', '),
     bonusFeats: [sp.bonusFeat, adv?.bonusFeat].filter(Boolean).join(', '),
     classSkills: ANIMAL_SKILLS,

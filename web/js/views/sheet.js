@@ -1617,7 +1617,6 @@ function gear(body, c, d) {
       const where = worn ? `<span class="sp-s">${esc(slotName(g.slot))}</span><span class="pips"><i class="pip"></i></span>` : '';
       return `<button class="sp-chip ${isItemActive(i) ? 'on' : ''} ${worn ? 'ready' : g.hint ? 'idle' : ''}" data-item="${i}" title="${worn ? 'Equipped: ' + esc(slotName(g.slot)) + '. ' : ''}Click for details"><span class="sp-n">${esc(g.name || 'New item')}</span>${qty}${fxMark}${where}</button>`;
     }).join('')}</div>` : '<p class="muted">Nothing carried.</p>'}
-    <p class="small muted">🛡 Armor and shields count toward your AC while worn (tick Worn in their panel, or use the paper doll).</p>
   </section>
   <section class="card">
     <h3>Money</h3>
