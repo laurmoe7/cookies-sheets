@@ -1,6 +1,6 @@
 import { api } from '../api.js';
 import { state, openCharacter, createCharacter, flushSave, go } from '../app.js';
-import { esc, $, confirmBox, toast } from '../ui.js';
+import { esc, $, confirmBox, toast, modal } from '../ui.js';
 import { isCsCharacter } from '../importcs.js';
 import { openCsImport, openGsImport } from './csimport.js';
 
@@ -45,6 +45,7 @@ export async function renderHome(main) {
       </div>
     </div>
     <div id="char-list" class="char-list"><p class="muted">Loading…</p></div>
+    <div id="char-graveyard"></div>
     <div id="char-bin"></div>
     <div id="char-history"></div>
   </div>`;
@@ -66,12 +67,15 @@ export async function renderHome(main) {
       openCharacter(r.id);
     } catch (err) { toast('Import failed: ' + err.message, 'err'); }
   };
-  const [list, gone, older] = await Promise.all([api.characters(), api.deleted().catch(() => []), api.history().catch(() => [])]);
+  const [all, gone, older] = await Promise.all([api.characters(), api.deleted().catch(() => []), api.history().catch(() => [])]);
+  const list = all.filter(c => !c.retired);
+  renderGraveyard($('#char-graveyard'), all.filter(c => c.retired));
   renderBin($('#char-bin'), gone);
   renderHistory($('#char-history'), older);
   const el = $('#char-list');
   if (!list.length) {
-    el.innerHTML = `<div class="empty"><p>No characters yet.</p><p class="muted">Click <b>New character</b> to roll one up. The level-up wizard walks you through 1st level.</p></div>`;
+    el.innerHTML = all.length ? `<div class="empty"><p>No one is adventuring right now.</p><p class="muted">Click <b>New character</b> to roll one up, or bring someone back from the graveyard below.</p></div>`
+      : `<div class="empty"><p>No characters yet.</p><p class="muted">Click <b>New character</b> to roll one up. The level-up wizard walks you through 1st level.</p></div>`;
     return;
   }
   el.innerHTML = list.map(c => `<div class="char-card ${state.char?.id === c.id ? 'current' : ''}" data-id="${esc(c.id)}">
@@ -79,10 +83,25 @@ export async function renderHome(main) {
       <div class="muted">${esc(c.race)} · ${esc(c.summary)}</div>
       <div class="muted small">Last edited ${new Date(c.updated * 1000).toLocaleString()}</div></div>
       <button class="btn small" data-export="${esc(c.id)}">Export</button>
+      <button class="btn small" data-retire="${esc(c.id)}" title="Move to the graveyard: a character who died or retired">⚰️ Graveyard</button>
       <button class="btn small danger" data-del="${esc(c.id)}">Delete</button></div>`).join('');
   el.onclick = async e => {
     const del = e.target.closest('[data-del]');
     const exp = e.target.closest('[data-export]');
+    const ret = e.target.closest('[data-retire]');
+    if (ret) {
+      e.stopPropagation();
+      const who = list.find(c => c.id === ret.dataset.retire);
+      const r = await askRetire(who?.name || 'this character');
+      if (r) {
+        try {
+          await setRetired(ret.dataset.retire, r);
+          toast(`${who?.name || 'The character'} ${r.status === 'dead' ? 'was laid to rest' : 'retired'}.`);
+          renderHome(main);
+        } catch (err) { toast(err.message, 'err'); }
+      }
+      return;
+    }
     if (del) {
       e.stopPropagation();
       if (await confirmBox('Delete this character? (It is moved to a .deleted folder inside the save folder, so you can recover it.)', 'Delete')) {
@@ -101,6 +120,81 @@ export async function renderHome(main) {
       a.href = URL.createObjectURL(new Blob([JSON.stringify(c, null, 1)], { type: 'application/json' }));
       a.download = (c.name || 'character').replace(/[^\w -]/g, '') + '.json';
       a.click();
+      return;
+    }
+    const card = e.target.closest('.char-card');
+    if (card) openCharacter(card.dataset.id).catch(err => toast(`Could not open this character: ${err.message}`, 'err'));
+  };
+}
+
+/** Marks a saved character as dead or retired (value = {status, date, note}) or brings them back (null). The open character is changed in place so a pending save cannot undo it. */
+async function setRetired(id, value) {
+  await flushSave();
+  if (state.char?.id === id) {
+    state.char.retired = value;
+    state.dirty = true;
+    await flushSave();
+    return;
+  }
+  const c = await api.character(id);
+  c.retired = value;
+  await api.saveCharacter(c);
+}
+
+const RIP_TEXT = {
+  dead: ['Cause of death or epitaph', 'e.g. Failed a Reflex save against a red dragon. Brave to the last.'],
+  retired: ['Why they hung up their sword', 'e.g. Opened a tavern in Sandpoint with the treasure.'],
+};
+
+/** The "move to the graveyard" window: died or retired, when, and a line for the headstone. Resolves {status, date, note}, or undefined if cancelled. */
+function askRetire(name) {
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  return modal(`To the graveyard: ${name}`, (body, close) => {
+    let status = 'dead';
+    body.innerHTML = `<p class="muted">The character leaves the list of active characters. You can still open them, and bring them back at any time.</p>
+      <div class="seg"><button class="seg-btn on" data-st="dead">† Died</button><button class="seg-btn" data-st="retired">Retired</button></div>
+      <div class="form">
+        <label>Date <input type="date" id="rip-date" value="${today}"></label>
+        <label><span id="rip-note-label">${RIP_TEXT.dead[0]}</span> <textarea id="rip-note" class="full" rows="3" placeholder="${esc(RIP_TEXT.dead[1])}"></textarea></label>
+      </div>
+      <div class="row end"><button class="btn" data-no>Cancel</button><button class="btn primary" data-yes>Move to the graveyard</button></div>`;
+    body.querySelectorAll('[data-st]').forEach(b => (b.onclick = () => {
+      status = b.dataset.st;
+      body.querySelectorAll('[data-st]').forEach(x => x.classList.toggle('on', x === b));
+      $('#rip-note-label', body).textContent = RIP_TEXT[status][0];
+      $('#rip-note', body).placeholder = RIP_TEXT[status][1];
+    }));
+    $('[data-no]', body).onclick = () => close(undefined);
+    $('[data-yes]', body).onclick = () => close({ status, date: $('#rip-date', body).value || today, note: $('#rip-note', body).value.trim() });
+  });
+}
+
+let graveOpen = true; // the graveyard is unfolded until the player folds it, kept across re-draws of the page
+
+/** Characters who died or retired: still openable, with a headstone line, and a way back to the active list. */
+function renderGraveyard(box, fallen) {
+  if (!fallen.length) { box.innerHTML = ''; return; }
+  const when = r => {
+    const d = new Date(r.date + 'T12:00:00');
+    return isNaN(d) ? r.date : d.toLocaleDateString();
+  };
+  box.innerHTML = `<details class="bin graveyard" ${graveOpen ? 'open' : ''}><summary class="muted">⚰️ Graveyard (${fallen.length})</summary>
+    <div class="muted small">Characters who died or retired. Click one to read their sheet.</div>
+    <div class="graves">${fallen.map(c => `<div class="char-card grave ${c.retired.status}" data-id="${esc(c.id)}">
+      <div class="rip">${c.retired.status === 'dead' ? '† Here lies' : 'Retired'}</div>
+      <h3>${esc(c.name)}</h3>
+      <div class="muted">${esc(c.race)} · ${esc(c.summary)}</div>
+      ${c.retired.note ? `<div class="epitaph">“${esc(c.retired.note)}”</div>` : ''}
+      <div class="muted small">${c.retired.status === 'dead' ? 'Fell' : 'Retired'}${c.retired.date ? ' ' + esc(when(c.retired)) : ''}</div>
+      <div><button class="btn small" data-revive="${esc(c.id)}" title="Back to the active characters">${c.retired.status === 'dead' ? 'Raise dead' : 'Bring back'}</button></div></div>`).join('')}</div>
+  </details>`;
+  $('details', box).ontoggle = e => { graveOpen = e.target.open; };
+  box.onclick = async e => {
+    const revive = e.target.closest('[data-revive]');
+    if (revive) {
+      e.stopPropagation();
+      try { await setRetired(revive.dataset.revive, null); toast('Back among the living.', 'good'); go('home'); } catch (err) { toast(err.message, 'err'); }
       return;
     }
     const card = e.target.closest('.char-card');

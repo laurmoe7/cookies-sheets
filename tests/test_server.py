@@ -42,6 +42,18 @@ class CharacterStorage(unittest.TestCase):
         self.assertEqual(app.load_character(r['id'])['name'], 'Valeros')
         listed = {c['id']: c for c in app.list_characters()}
         self.assertEqual(listed[r['id']]['summary'], 'Fighter 2 / Rogue 1')
+        self.assertIsNone(listed[r['id']]['retired'], 'still adventuring')
+
+    def test_graveyard_marker_is_listed(self):
+        """The Characters page puts a save with `retired` in the graveyard; an odd status reads as retired."""
+        a = app.save_character({'name': 'Fallen', 'retired': {'status': 'dead', 'date': '2026-11-11', 'note': 'Eaten by a grue'}})
+        b = app.save_character({'name': 'Odd', 'retired': {'status': 'zombie'}})
+        try:
+            listed = {c['id']: c for c in app.list_characters()}
+            self.assertEqual(listed[a['id']]['retired'], {'status': 'dead', 'date': '2026-11-11', 'note': 'Eaten by a grue'})
+            self.assertEqual(listed[b['id']]['retired']['status'], 'retired')
+        finally:
+            app.delete_character(a['id']); app.delete_character(b['id'])
 
     def test_a_hand_edited_file_does_not_break_the_list(self):
         """One file with a bad 'updated' used to make the sort throw, so the Characters page showed nothing at all."""
@@ -246,7 +258,14 @@ class HttpApi(unittest.TestCase):
     def test_classes(self):
         status, data = self.call('/api/classes')
         self.assertEqual(status, 200)
-        self.assertEqual(len(data), 32)
+        self.assertEqual(len(data), 32 + 18, '32 base classes + 18 prestige classes (Core Rulebook 10, APG 8)')
+        theurge = next(c for c in data if c['name'] == 'Mystic Theurge')
+        self.assertTrue(theurge['prestige'])
+        self.assertEqual(len(theurge['levels']), 10)
+        self.assertEqual(theurge['levels'][0]['advances'], ['arcane', 'divine'])
+        self.assertTrue(any('Knowledge (arcana) 3 ranks' in r for r in theurge['requirements']))
+        knight = next(c for c in data if c['name'] == 'Eldritch Knight')
+        self.assertNotIn('advances', knight['levels'][0], '1st level eldritch knight adds no spellcasting')
 
     def test_companion_data(self):
         status, data = self.call('/api/companions')

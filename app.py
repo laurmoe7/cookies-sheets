@@ -394,6 +394,15 @@ def _summary(c):
     return ' / '.join(out) or 'Level 0'
 
 
+def _retired(c):
+    """The graveyard marker of a save, cleaned up for the list: {status, date, note} or None."""
+    r = c.get('retired')
+    if not isinstance(r, dict):
+        return None
+    status = r.get('status') if r.get('status') in ('dead', 'retired') else 'retired'
+    return dict(status=status, date=str(r.get('date') or '')[:10], note=str(r.get('note') or '')[:500])
+
+
 def list_characters():
     os.makedirs(CHAR_DIR, exist_ok=True)
     out = []
@@ -408,7 +417,7 @@ def list_characters():
             if not isinstance(updated, (int, float)):  # a hand-edited file; one bad value must not stop the whole list sorting
                 updated = os.path.getmtime(path)
             out.append(dict(id=c.get('id'), name=c.get('name') or 'Unnamed', race=c.get('race', ''),
-                            summary=_summary(c), updated=updated))
+                            summary=_summary(c), updated=updated, retired=_retired(c)))
         except Exception:
             continue
     return sorted(out, key=lambda c: -c['updated'])

@@ -15,6 +15,7 @@ export function newCharacter() {
     homeland: '', languages: 'Common', xpTrack: 'medium', xp: 0,
     race: 'Human', raceChoice: 'str', customRace: { name: '', mods: {}, size: 'Medium', speed: 30 },
     favoredClass: '',
+    retired: null, // in the graveyard: {status: 'dead' | 'retired', date: 'YYYY-MM-DD', note} (Characters page); null = still adventuring
     abilities,
     levelUps: [], // {cls, hp, fcb, fcbNote, abilityIncrease, feats:[], ranks:{skillKey:n}, spells:[], features}
     archetypes: {}, // {Class: [archetype data from features.bakeArchetype]}

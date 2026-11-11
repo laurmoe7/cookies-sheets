@@ -257,6 +257,11 @@ details.bin { margin-top: 22px; }
 details.bin summary { cursor: pointer; font-size: 13px; }
 details.bin .char-card { margin-top: 10px; cursor: default; border-style: dashed; opacity: .85; }
 details.bin .char-card:hover { border-color: var(--line); }
+details.graveyard .graves { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+details.graveyard .char-card.grave { cursor: pointer; border-style: solid; border-radius: 90px 90px var(--radius) var(--radius); padding: 22px 16px 14px; text-align: center; flex-direction: column; align-items: stretch; gap: 4px; filter: grayscale(.6); opacity: .9; }
+details.graveyard .char-card.grave:hover { border-color: var(--accent); filter: none; opacity: 1; }
+details.graveyard .grave .rip { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+details.graveyard .grave .epitaph { font-style: italic; margin: 4px 0; user-select: text; }
 .empty { text-align: center; padding: 40px 20px; }
 
 /* ---------- compendium ---------- */
