@@ -262,7 +262,8 @@ export function compute(c, classesByName, opts = {}) {
   let weight = 0;
   for (const g of c.gear) weight += num(g.weight) * (g.qty === '' || g.qty == null ? 1 : num(g.qty));
   for (const a of c.armor) weight += num(a.weight) * armorFx(a).weightMult;
-  for (const w of c.weapons) weight += num(w.weight) * weaponFx(w).weightMult;
+  const carried = new Set(c.gear.map(g => g.uid).filter(Boolean));
+  for (const w of c.weapons) if (!carried.has(w.gearUid)) weight += num(w.weight) * weaponFx(w).weightMult; // a row linked to an inventory item weighs nothing more
   weight += (num(c.money.pp) + num(c.money.gp) + num(c.money.sp) + num(c.money.cp)) / 50;
   const cap = carryingCapacity(d.abilities.str.score, size);
   let load = 'light';

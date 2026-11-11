@@ -33,7 +33,7 @@ import { armorFxChip, wireArmorFx } from './armorfx.js';
 import { paperDollCard, wirePaperDoll } from './paperdoll.js';
 import { suggestEffects, effectsText, plusOptions, setPlus, plusOf } from '../itemfx.js';
 import { parseMagicWeapon, parseMagicArmor } from '../magicgear.js';
-import { weaponFromTemplate, armorFromTemplate, blankWeapon, blankArmor } from '../equipment.js';
+import { weaponFromTemplate, armorFromTemplate, blankWeapon, blankArmor, weaponTemplateFor, inventoryWeapons, attackFor, gearFor, addAttackFromGear, addGearFromAttack, setWeaponPlus, linkByName } from '../equipment.js';
 import { chooseWeapon, chooseArmor } from './equipment.js';
 import { SLOTS, slotName, hintFromSub, sortByName } from '../paperdoll.js';
 
@@ -177,7 +177,48 @@ export function renderSheet(main) {
 // =====================================================================
 // OVERVIEW
 // =====================================================================
+// ---- inventory weapons and the Weapons & Attacks table (linked by g.uid / w.gearUid, see equipment.js) ----
+let weaponTpl = null, weaponTplLoading = null;
+/** The standard weapon list, loaded once; the page redraws when it arrives. */
+function weaponTemplates() {
+  if (!weaponTpl && !weaponTplLoading) weaponTplLoading = api.equipment().then(d => { weaponTpl = d.weapons || []; render(); }).catch(() => { weaponTplLoading = null; });
+  return weaponTpl;
+}
+const hasFinesse = c => c.feats.some(f => /^weapon finesse/i.test(f.name || ''));
+/** Adds inventory item `i` to the attacks; true when it is a weapon we know. */
+function gearToAttack(c, i) {
+  const g = c.gear[i], tpl = weaponTemplateFor(g?.name, weaponTemplates());
+  if (!tpl) return false;
+  addAttackFromGear(c, g, tpl, state.derived?.size || 'Medium', hasFinesse(c));
+  return true;
+}
+/** Asks whether to remove a weapon from one place or both: 'one', 'both' or null (cancelled). */
+function removeWhere(name, here, there) {
+  return modal('Remove', (body, close) => {
+    body.innerHTML = `<p>Remove “${esc(name || 'this weapon')}”?</p><p class="small muted">It is in your ${esc(here)} and your ${esc(there)}.</p>
+      <div class="row end"><button class="btn" data-no>Cancel</button><button class="btn" data-one>From ${esc(here)} only</button><button class="btn primary" data-both>From both</button></div>`;
+    $('[data-no]', body).onclick = () => close(null);
+    $('[data-one]', body).onclick = () => close('one');
+    $('[data-both]', body).onclick = () => close('both');
+  });
+}
+/** Under a weapon row's name: whether it is in the inventory too, or a button to put it there. */
+const weaponInvMark = (c, w, i) => gearFor(c, w) >= 0
+  ? '<span class="small muted" title="This weapon is also in your inventory (Inventory tab), where its weight is counted">🎒 in inventory</span>'
+  : `<button class="wbtn" data-w-to-inv="${i}" title="Put this weapon in your inventory too">＋ Inventory</button>`;
+/** Below the Weapons & Attacks table: inventory weapons that have no attack row yet. */
+function inventoryWeaponStrip(c) {
+  const tpl = weaponTemplates();
+  if (!tpl) return '';
+  const missing = inventoryWeapons(c, tpl).filter(x => x.attack < 0);
+  if (!missing.length) return '';
+  return `<div class="row inv-weapons" style="gap:6px;flex-wrap:wrap;margin:6px 0"><span class="small muted">In your inventory, not in attacks yet:</span>
+    ${missing.map(x => `<button class="btn small ghost" data-inv-attack="${x.i}" title="Add an attack row for it (${esc(x.tpl.name)})">＋ ${esc(c.gear[x.i].name)}</button>`).join('')}
+    ${missing.length > 1 ? '<button class="btn small" data-inv-attack-all>Add all</button>' : ''}</div>`;
+}
+
 function overview(body, c, d) {
+  if (linkByName(c)) changed(); // a weapon row and an inventory item of the same weapon are one weapon
   const activeMods = c.modifiers.filter(m => m.active);
   body.innerHTML = `
   <div class="buff-strip">
@@ -291,7 +332,7 @@ function overview(body, c, d) {
         <th title="Misc attack bonus (masterwork +1, Weapon Focus, etc.)">Atk+</th><th>Dice</th><th title="Which ability adds to damage, and how much of it">Damage stat</th><th title="Misc damage">Dmg+</th>
         <th>Range</th><th>Type</th><th></th></tr></thead><tbody>
         ${c.weapons.map((w, i) => `<tr>
-          <td class="w10"${entryAttrs(w)}>${tf(`weapons.${i}.name`, { placeholder: 'Name (double-click)' })}${weaponFxRow(c, i)}</td>
+          <td class="w10"${entryAttrs(w)}>${tf(`weapons.${i}.name`, { placeholder: 'Name (double-click)' })}${weaponFxRow(c, i)}${weaponInvMark(c, w, i)}</td>
           <td class="big accent nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="attack">${calc(`weapons.${i}.attackText`)}</button>${d.iteratives.length > 1 ? `<button class="rchip" data-roll-weapon="${i}" data-roll-kind="full">Full</button>` : ''}</td>
           <td class="big nowrap"><button class="nb" data-roll-weapon="${i}" data-roll-kind="damage">${calc(`weapons.${i}.damageText`)}</button></td>
           <td>${inp(`weapons.${i}.crit`, { cls: 'w5', ph: '19-20/x2' })}</td>
@@ -305,8 +346,9 @@ function overview(body, c, d) {
           <td>${inp(`weapons.${i}.dmgMisc`, { type: 'num', cls: 'w2' })}</td>
           <td>${inp(`weapons.${i}.range`, { cls: 'w4' })}</td>
           <td>${inp(`weapons.${i}.type`, { cls: 'w3', ph: 'S' })}</td>
-          <td><button class="icon-btn" data-del="weapons.${i}" title="Remove">✕</button></td></tr>`).join('')}
+          <td><button class="icon-btn" data-del-weapon="${i}" title="Remove">✕</button></td></tr>`).join('')}
       </tbody></table>` : '<p class="muted">No weapons yet. Add one to see its attack and damage calculated.</p>'}
+      ${inventoryWeaponStrip(c)}
       <p class="small muted">Full attack uses BAB iteratives (${d.iteratives.map(sign).join('/')}). Buffs such as Power Attack, Haste, and Bless apply automatically. ${ref('Two-Weapon Fighting', 'Rules')} · ${ref('Critical Hits', 'Rules')}</p>
     </section>
 
@@ -317,6 +359,24 @@ function overview(body, c, d) {
   wireWeaponFx(body, c);
   $('[data-pick-weapon]', body).onclick = () => addMagicGear('weapon');
   $('[data-add-weapon]', body).onclick = () => addFromList('weapon');
+  body.addEventListener('click', async e => {
+    const t = e.target.closest('[data-inv-attack],[data-inv-attack-all],[data-w-to-inv],[data-del-weapon]');
+    if (!t) return;
+    e.preventDefault();
+    if (t.dataset.invAttack !== undefined) gearToAttack(c, +t.dataset.invAttack);
+    else if (t.dataset.invAttackAll !== undefined) for (const x of inventoryWeapons(c, weaponTemplates() || []).filter(x => x.attack < 0)) gearToAttack(c, x.i);
+    else if (t.dataset.wToInv !== undefined) { addGearFromAttack(c, c.weapons[+t.dataset.wToInv]); toast(`${c.weapons[+t.dataset.wToInv].name || 'The weapon'} is in your inventory now.`); }
+    else {
+      const i = +t.dataset.delWeapon, w = c.weapons[i], gi = gearFor(c, w);
+      if (gi >= 0) {
+        const where = await removeWhere(w.name, 'attacks', 'inventory');
+        if (!where) return;
+        if (where === 'both') { c.gear.splice(gi, 1); if (itemDrawer) { itemDrawer = null; closeDrawer(); } }
+      } else if ((w.name || num(w.misc)) && !await confirmBox(`Remove “${w.name || 'this weapon'}”?`, 'Remove')) return;
+      c.weapons.splice(i, 1);
+    }
+    changed({ rerender: true });
+  });
   wireRest(body, c);
   wireImages(body, c);
   renderResources($('#res-card', body), c);
@@ -1205,6 +1265,8 @@ const WEARABLE = () => [['', 'Not worn'], ...SLOTS.filter(x => !['armor', 'shiel
 function openItem(i) {
   const g = state.char.gear[i];
   if (!g) return;
+  weaponTemplates(); // the panel shows "Add to attacks" for weapons
+  if (linkByName(state.char)) changed();
   itemDrawer = { i, armed: true, id: g.id || null };
   document.querySelectorAll('.sp-chip[data-item].on').forEach(x => x.classList.remove('on'));
   document.querySelector(`[data-item="${i}"]`)?.classList.add('on');
@@ -1228,12 +1290,17 @@ function renderItemActions() {
   if (!g) { it.el.innerHTML = ''; return; }
   const p = k => `gear.${it.i}.${k}`;
   const fx = g.effects || [], sug = suggestEffects(g.name), pluses = plusOptions(g.name, g.value), cur = plusOf(g.name);
+  const wtpl = weaponTemplateFor(g.name, weaponTemplates()), atk = wtpl ? attackFor(c, g) : -1;
+  const weaponRow = !wtpl ? '' : `<div class="wide item-weapon">${atk >= 0
+    ? `<div class="row" style="gap:6px;flex-wrap:wrap"><span class="small">⚔ In <b>Weapons &amp; Attacks</b> (Overview)</span><span class="grow"></span><span class="small muted">Bonus</span>${[0, 1, 2, 3, 4, 5].map(n => `<button class="btn small ${n === num(c.weapons[atk].enh) ? 'primary' : 'ghost'}" data-weapon-plus="${n}" title="${n ? `A +${n} weapon: +${n} to attack and damage` : 'No enhancement bonus'}">+${n}</button>`).join('')}</div>`
+    : `<button class="btn small" data-item-attack title="Add an attack row for it on the Overview (${esc(wtpl.name)})">⚔ Add to attacks</button>`}</div>`;
   it.el.innerHTML = `<div class="item-actions">
     ${g.id ? '' : `<label class="wide"><span>Name</span><input data-item-name value="${esc(g.name || '')}" placeholder="Item name"></label>`}
     <label><span>Worn in</span>${sel(p('slot'), WEARABLE(), { rerender: true })}</label>
     <label><span>Qty</span>${inp(p('qty'), { type: 'num', cls: 'w3', rerender: true })}</label>
     <label><span>Weight (each)</span>${inp(p('weight'), { type: 'num', cls: 'w3' })}</label>
     <label><span>Value</span>${inp(p('value'), { cls: 'w6' })}</label>
+    ${weaponRow}
     ${pluses.length ? `<div class="wide row item-plus" style="gap:6px"><span class="small muted">Bonus</span>${pluses.map(o => `<button class="btn small ${o.plus === cur ? 'primary' : 'ghost'}" data-item-plus="${o.plus}" title="${esc(`Make it a +${o.plus}${o.price ? ` (${o.price})` : ''}`)}">+${o.plus}</button>`).join('')}</div>` : ''}
     <div class="wide item-fx">
       <div>${fx.length ? esc(effectsText(fx)) : '<span class="muted">none</span>'}${fx.length && !g.slot ? ' <span class="small bad">not worn yet, so they do not count</span>' : ''}</div>
@@ -1256,6 +1323,16 @@ function renderItemActions() {
       if (m) { g.effects = m.effects; changed({ rerender: true }); renderItemActions(); }
       return;
     }
+    if (e.target.closest('[data-item-attack]')) {
+      if (gearToAttack(c, it.i)) toast(`${g.name} is in Weapons & Attacks on the Overview.`);
+      changed({ rerender: true }); renderItemActions(); return;
+    }
+    const wp = e.target.closest('[data-weapon-plus]');
+    if (wp) {
+      setWeaponPlus(c, g, +wp.dataset.weaponPlus);
+      const h2 = document.querySelector('#drawer h2'); if (h2) h2.textContent = g.name;
+      changed({ rerender: true }); renderItemActions(); return;
+    }
     const pl = e.target.closest('[data-item-plus]');
     if (pl) {
       setPlus(g, +pl.dataset.itemPlus);
@@ -1264,7 +1341,12 @@ function renderItemActions() {
     }
     if (e.target.closest('[data-item-fx-auto]')) { g.effects = suggestEffects(g.name); changed({ rerender: true }); renderItemActions(); return; }
     if (!e.target.closest('[data-item-del]')) return;
-    if (!await confirmBox(`Remove “${g.name || 'this item'}” from your inventory?`, 'Remove')) return;
+    const ai = attackFor(c, g), linked = ai >= 0 && c.weapons[ai].gearUid && c.weapons[ai].gearUid === g.uid;
+    if (linked) {
+      const where = await removeWhere(g.name, 'inventory', 'attacks');
+      if (!where) return;
+      if (where === 'both') c.weapons.splice(ai, 1);
+    } else if (!await confirmBox(`Remove “${g.name || 'this item'}” from your inventory?`, 'Remove')) return;
     c.gear.splice(it.i, 1);
     itemDrawer = null;
     closeDrawer();
@@ -1523,6 +1605,7 @@ function gear(body, c, d) {
     const w = parseFloat((en.html.match(/<dt>Weight<\/dt><dd>([\d.]+)/) || [])[1]) || 0;
     const price = (en.html.match(/<dt>Price<\/dt><dd>([^<]+)/) || [])[1] || '';
     c.gear.push({ id: r.id, name: r.name, qty: 1, weight: w, value: price, notes: '', slot: '', hint: hintFromSub(r.sub), effects: suggestEffects(r.name) });
+    if (gearToAttack(c, c.gear.length - 1)) toast(`${r.name} is in Weapons & Attacks on the Overview too.`);
     changed({ rerender: true });
     openItem(c.gear.length - 1);
   };

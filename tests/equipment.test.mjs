@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { weaponFromTemplate, armorFromTemplate, filterTemplates, blankWeapon, blankArmor } from '../web/js/equipment.js';
+import { weaponFromTemplate, armorFromTemplate, filterTemplates, blankWeapon, blankArmor, weaponTemplateFor, inventoryWeapons, attackFor, gearFor, addAttackFromGear, addGearFromAttack, setWeaponPlus, linkByName } from '../web/js/equipment.js';
 import { rootPath, make, calc } from './helpers.mjs';
 
 const data = JSON.parse(readFileSync(rootPath + 'data/equipment.json', 'utf-8'));
@@ -69,4 +69,72 @@ test('searching and filtering the list', () => {
   assert.equal(filterTemplates(data.weapons, 'long zzzz').length, 0, 'but every word must be');
   assert.ok(filterTemplates(data.weapons, '', t => t.prof === 'Simple').every(t => t.prof === 'Simple'));
   assert.equal(filterTemplates(data.armor, 'zzzz').length, 0);
+});
+
+test('inventory weapons: which items are weapons, and their standard stats', () => {
+  const W = data.weapons;
+  assert.equal(weaponTemplateFor('Longsword', W).name, 'Longsword');
+  assert.equal(weaponTemplateFor('Longsword +1', W).name, 'Longsword', 'the +N is not part of the kind');
+  assert.equal(weaponTemplateFor('+2 Cold Iron Longsword', W).name, 'Longsword', 'nor are the bonus and the material');
+  assert.equal(weaponTemplateFor('Hooked Lance', W).name, 'Hooked lance', 'the longest name that fits, not Lance');
+  assert.equal(weaponTemplateFor('Lance', W).name, 'Lance');
+  assert.equal(weaponTemplateFor('Headband of Alluring Charisma +2', W), null, 'not a weapon');
+  assert.equal(weaponTemplateFor('Cloak of Resistance +2', W), null);
+});
+
+test('inventory weapons: adding one to the attacks links the two and counts its weight once', () => {
+  const W = data.weapons;
+  const c = make({ raceChoice: 'cha', base: { str: 10 }, levels: ['Fighter'] });
+  c.gear = [{ name: 'Longsword +1', qty: 1, weight: 4 }, { name: 'Lance', qty: 1, weight: 10 }, { name: 'Rope', qty: 1, weight: 10 }];
+  assert.deepEqual(inventoryWeapons(c, W).map(x => [x.i, x.tpl.name, x.attack]), [[0, 'Longsword', -1], [1, 'Lance', -1]], 'two weapons, neither in attacks; the rope is not one');
+  const i = addAttackFromGear(c, c.gear[0], weaponTemplateFor(c.gear[0].name, W));
+  const w = c.weapons[i];
+  assert.equal(w.name, 'Longsword +1');
+  assert.equal(w.enh, 1, 'the +1 in its name is its enhancement bonus');
+  assert.equal(w.damage, '1d8', 'Medium longsword');
+  assert.equal(w.gearUid, c.gear[0].uid, 'linked');
+  assert.equal(attackFor(c, c.gear[0]), i);
+  assert.equal(addAttackFromGear(c, c.gear[0], weaponTemplateFor('Longsword', W)), i, 'adding again gives the same row, not a second one');
+  const d = calc(c);
+  assert.equal(d.weapons[0].attackText.split('/')[0], '+2', 'fighter 1 BAB +1, Str 10 +0 (the human’s +2 goes to Cha), enhancement +1');
+  assert.equal(d.encumbrance.weight, 24, 'longsword 4 + lance 10 + rope 10; the linked attack row adds nothing');
+});
+
+test('inventory weapons: a hand-made attack row goes into the inventory, and +N changes both', () => {
+  const c = make({ levels: ['Fighter'] });
+  c.gear = [];
+  c.weapons = [{ name: 'Lance', weight: 10, enh: 0 }];
+  const gi = addGearFromAttack(c, c.weapons[0]);
+  assert.equal(c.gear[gi].name, 'Lance');
+  assert.equal(gearFor(c, c.weapons[0]), gi, 'linked');
+  assert.equal(calc(c).encumbrance.weight, 10, 'counted once');
+  setWeaponPlus(c, c.gear[gi], 2);
+  assert.equal(c.gear[gi].name, 'Lance +2');
+  assert.equal(c.weapons[0].name, 'Lance +2');
+  assert.equal(c.weapons[0].enh, 2);
+  setWeaponPlus(c, c.gear[gi], 0);
+  assert.equal(c.gear[gi].name, 'Lance', '+0 takes the bonus off the name');
+  assert.equal(c.weapons[0].enh, 0);
+});
+
+test('inventory weapons: an attack row of the same kind made before counts as its attack', () => {
+  const c = make({ levels: ['Fighter'] });
+  c.gear = [{ name: 'Longsword', qty: 1, weight: 4 }];
+  c.weapons = [{ name: 'Longsword', weight: 4, enh: 0 }];
+  assert.equal(inventoryWeapons(c, data.weapons)[0].attack, 0, 'not offered again');
+  addAttackFromGear(c, c.gear[0], weaponTemplateFor('Longsword', data.weapons));
+  assert.equal(c.weapons.length, 1, 'linked instead of a second row');
+  assert.equal(c.weapons[0].gearUid, c.gear[0].uid);
+});
+
+test('inventory weapons: a row and an item of the same weapon made separately get linked, one to one', () => {
+  const c = make({ levels: ['Fighter'] });
+  c.gear = [{ name: 'Lance', qty: 1, weight: 10 }, { name: 'Dagger', weight: 1 }, { name: 'Dagger', weight: 1 }];
+  c.weapons = [{ name: 'Lance', weight: 10, enh: 2 }, { name: 'Dagger', weight: 1 }];
+  assert.equal(linkByName(c), true);
+  assert.equal(c.weapons[0].gearUid, c.gear[0].uid);
+  assert.equal(c.weapons[1].gearUid, c.gear[1].uid, 'the first dagger');
+  assert.equal(c.gear[2].uid, undefined, 'the second dagger has no row of its own');
+  assert.equal(calc(c).encumbrance.weight, 12, 'lance 10 + two daggers 1 each; the linked rows add nothing');
+  assert.equal(linkByName(c), false, 'nothing more to link');
 });
