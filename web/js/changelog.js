@@ -44,6 +44,7 @@ export const CHANGELOG = [
       'Inventory: armor and shields are part of the inventory list (🛡), with no separate Armor & Shields table. Click one for its numbers, Worn, +0 to +5 buttons and ✦ Enchant.',
       'Inventory: ＋ Armor/shield adds standard armor, a magic armor or shield from ＋ Magic item goes with your armor, and an item that is armor gets a 🛡 Use as armor button so it counts toward your AC.',
       'Inventory: a weapon in your inventory has ⚔ Add to attacks and +0 to +5 buttons in its panel.',
+      'Inventory: what your companions wear (barding, their items) is listed too, marked 🐾 with the companion’s name; it counts for them, not you.',
       'Overview: Weapons & Attacks lists the weapons in your inventory that have no attack yet, to add with one click; an attack that is not in your inventory has a button to put it there.',
       'Overview: removing a weapon that is in both your attacks and your inventory asks whether to remove it from one or both, and its weight counts only once.',
       'Spells: bloodline and mystery bonus spells do not count against your spells known.',

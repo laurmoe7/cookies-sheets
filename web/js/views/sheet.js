@@ -1601,6 +1601,10 @@ export function pickSpell(cls, sc, level, { known = [], onPick } = {}) {
 // =====================================================================
 // GEAR
 // =====================================================================
+/** What the companions wear (their Gear cards), listed in the inventory too: [{name, comp, ci}]. It counts for them, not for the character. */
+const compGear = c => (c.companions || []).flatMap((comp, ci) => [comp.barding?.name || (comp.barding ? 'Barding' : ''), ...(comp.items || []).map(it => it.name || 'Item')]
+  .filter(Boolean).map(name => ({ name, comp: comp.name || 'Companion', ci })));
+
 function gear(body, c, d) {
   const enc = d.encumbrance;
   body.innerHTML = `<div class="grid two">
@@ -1608,7 +1612,7 @@ function gear(body, c, d) {
   <section class="card span2">
     <div class="row"><h3 class="grow">Inventory</h3>
       <button class="btn small ghost" data-sort-gear title="Put the inventory in alphabetical order">A–Z</button><button class="btn small" data-pick-item title="A magic item from the compendium (magic armor and shields go with your armor)">＋ Magic item</button><button class="btn small" data-add-armor title="Standard armor or a shield">＋ Armor/shield</button><button class="btn small" data-add="gear">＋ Item</button></div>
-    ${c.armor.length || c.gear.length ? `<div class="sp-chips inv-chips">${c.armor.map((a, i) => {
+    ${c.armor.length || c.gear.length || compGear(c).length ? `<div class="sp-chips inv-chips">${c.armor.map((a, i) => {
       const ac = num(a.bonus) + num(a.enh), worn = !!a.equipped;
       return `<button class="sp-chip armor-chip ${isArmorActive(i) ? 'on' : ''} ${worn ? 'ready' : 'idle'}" data-armor-item="${i}" title="${worn ? 'Worn. ' : 'Not worn. '}Click for its numbers, +N and enchantments"><span class="sp-n">🛡 ${esc(a.name || (a.type === 'shield' ? 'Shield' : 'Armor'))}</span><span class="sp-s">AC +${ac}</span>${worn ? '<span class="pips"><i class="pip"></i></span>' : ''}</button>`;
     }).join('')}${c.gear.map((g, i) => {
@@ -1616,7 +1620,7 @@ function gear(body, c, d) {
       const fxMark = (g.effects || []).length ? `<span class="sp-s" title="${esc(effectsText(g.effects))}${worn ? '' : ' (counts once worn)'}">✦</span>` : '';
       const where = worn ? `<span class="sp-s">${esc(slotName(g.slot))}</span><span class="pips"><i class="pip"></i></span>` : '';
       return `<button class="sp-chip ${isItemActive(i) ? 'on' : ''} ${worn ? 'ready' : g.hint ? 'idle' : ''}" data-item="${i}" title="${worn ? 'Equipped: ' + esc(slotName(g.slot)) + '. ' : ''}Click for details"><span class="sp-n">${esc(g.name || 'New item')}</span>${qty}${fxMark}${where}</button>`;
-    }).join('')}</div>` : '<p class="muted">Nothing carried.</p>'}
+    }).join('')}${compGear(c).map(x => `<button class="sp-chip comp-gear-chip" data-comp-gear="${x.ci}" title="Equipped by ${esc(x.comp)}, so it counts for them, not you. Click to open it on the Companions tab"><span class="sp-n">${esc(x.name)}</span><span class="sp-s">🐾 ${esc(x.comp)}</span></button>`).join('')}</div>` : '<p class="muted">Nothing carried.</p>'}
   </section>
   <section class="card">
     <h3>Money</h3>
@@ -1645,6 +1649,7 @@ function gear(body, c, d) {
   wirePaperDoll(body);
   equipTemplates(); // the armor list, to tell armor added to the inventory
   body.addEventListener('click', e => {
+    if (e.target.closest('[data-comp-gear]')) { state.sheetTab = 'companions'; render(); return; } // a companion's gear lives on its Gear card
     const a = e.target.closest('[data-armor-item]');
     if (a) { openArmor(+a.dataset.armorItem); return; }
     const t = e.target.closest('[data-item]'); if (t) openItem(+t.dataset.item);
