@@ -66,7 +66,8 @@ export function armorFx(a) {
   const enh = Math.max(0, num(a.enh));
   const total = enh + fx.reduce((s, f) => s + f.plus, 0);
   const mw = !!a.mw || !!mat.mw || enh > 0;
-  // An enhancement bonus alone does not lower the check penalty again: saves made before this had the real one typed in.
+  // An enhancement bonus alone does not lower the check penalty: rows typed in by hand may hold the lowered one already. Setting a +N in the app
+  // ticks `mw` instead, and migrate() ticks it on saved +N armor whose penalty is still the plain one.
   const out = {
     mw, acpDelta: (mat.acp || 0) - (a.mw || mat.mw ? 1 : 0), maxDexDelta: mat.maxDex || 0, asfDelta: mat.asf || 0, weightMult: mat.weight || 1, lighter: !!mat.lighter,
     dr: [], sr: 0, resist: [], fort: 0, skills: {}, notes: [],

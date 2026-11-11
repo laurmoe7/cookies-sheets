@@ -1,8 +1,10 @@
 import { ABILITIES, SKILLS } from './data.js';
 import { suggestEffects } from './itemfx.js';
+import { standardArmor } from './magicgear.js';
 
-export const MODEL_VERSION = 3; // 2: a prepared spell's "prepared" count is what is left to cast (casting uses one, resting gives them back)
+export const MODEL_VERSION = 4; // 2: a prepared spell's "prepared" count is what is left to cast (casting uses one, resting gives them back)
 // 3: items saved with no bonuses get the ones suggestEffects now knows (skill items, belts and headbands for several abilities)
+// 4: +N armor and shields are masterwork (the check penalty 1 lower); saved ones whose penalty is still the standard armor's get `mw`
 
 export function newCharacter() {
   const abilities = {};
@@ -94,6 +96,12 @@ export function migrate(c) {
   }
   // Items saved before their names were known carry no bonuses; give them the ones the name now says (an imported cloak of elvenkind)
   if ((c.version || 1) < 3) for (const g of c.gear || []) if (!g.effects.length) g.effects = suggestEffects(g.name);
+  // Magic armor is masterwork. Before version 4 a +N set in the app did not tick masterwork, so +1 full plate kept the plain −6; tick it
+  // when the penalty is still the standard armor's. A penalty typed in already lowered (−5) stays as it is.
+  if ((c.version || 1) < 4) for (const a of c.armor || []) {
+    const std = standardArmor(a.tpl || a.name);
+    if ((parseFloat(a.enh) || 0) > 0 && !a.mw && std && std.acp && Math.abs(parseFloat(a.acp) || 0) === Math.abs(std.acp)) a.mw = true;
+  }
   // A save made by a newer build keeps its number, so an older build opening it does not stamp it as its own and re-run steps later.
   // Buffs saved before these effects existed: Haste's extra attack, and Power Attack's x1.5 two-handed damage.
   for (const m of c.modifiers || []) {

@@ -30,6 +30,13 @@ export const ARMORS = {
   'heavy wooden shield': A('heavy', 2, '', -2, 15, 10, 'shield'), 'heavy steel shield': A('heavy', 2, '', -2, 15, 15, 'shield'), 'tower shield': A('heavy', 4, 2, -10, 50, 45, 'shield'), 'shield': A('heavy', 2, '', -2, 15, 15, 'shield'),
 };
 
+/** The standard armor or shield a name is ("Full Plate +1" → full plate's numbers), longest name first, or null. */
+export function standardArmor(name) {
+  const n = ` ${String(name || '').toLowerCase().replace(/[^a-z-]+/g, ' ')} `;
+  const k = key(ARMORS).find(k => k !== 'shield' && n.includes(` ${k} `));
+  return k ? ARMORS[k] : null;
+}
+
 const MATERIALS = [['adamantine', 'adamantine'], ['cold iron', 'coldiron'], ['alchemical silver', 'silver'], ['silver', 'silver'], ['mithral', 'mithral'], ['darkwood', 'darkwood']];
 
 /** The description text after the stat block, plain, first part only. */
@@ -93,7 +100,7 @@ export function parseMagicArmor(entry) {
   const mat = materialOf(entry);
   return {
     id: entry.id, name: entry.name, type: t.type, category: t.category, bonus: t.bonus, enh, maxDex: t.maxDex, acp: t.acp, asf: t.asf,
-    weight: entryWeight(entry) ?? t.weight, equipped: true, mw: false, material: (t.type === 'shield' ? ['mithral', 'darkwood'] : ['mithral', 'adamantine']).includes(mat) ? mat : '', slot: '',
+    weight: entryWeight(entry) ?? t.weight, equipped: true, mw: enh > 0, material: (t.type === 'shield' ? ['mithral', 'darkwood'] : ['mithral', 'adamantine']).includes(mat) ? mat : '', slot: '',
     fx: abilitiesIn(words, ARMOR_ABILITIES, ARMOR_ALIASES).map(id => ({ id })),
   };
 }

@@ -52,6 +52,7 @@ export const CHANGELOG = [
       'Inventory: ＋ Armor/shield adds standard armor, a magic armor or shield from ＋ Magic item goes with your armor, and an item that is armor gets a 🛡 Use as armor button so it counts toward your AC.',
       'Inventory: a weapon in your inventory has ⚔ Add to attacks and +0 to +5 buttons in its panel.',
       'Inventory: what your companions wear (barding, their items) is listed too, marked 🐾 with the companion’s name; it counts for them, not you.',
+      'Inventory: +1 or better armor and shields count as masterwork, so their check penalty is 1 lower (+1 full plate is −5, not −6). Saved characters are fixed when opened.',
       'Overview: Weapons & Attacks lists the weapons in your inventory that have no attack yet, to add with one click; an attack that is not in your inventory has a button to put it there.',
       'Overview: removing a weapon that is in both your attacks and your inventory asks whether to remove it from one or both, and its weight counts only once.',
       'Spells: bloodline and mystery bonus spells do not count against your spells known.',

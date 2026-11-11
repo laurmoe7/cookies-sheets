@@ -127,6 +127,7 @@ export function setWeaponPlus(c, g, plus) {
 export function setArmorPlus(a, plus) {
   a.name = withPlus(a.name, plus);
   a.enh = plus;
+  if (plus > 0) a.mw = true; // magic armor is masterwork: its check penalty is 1 lower
 }
 
 /** Is this item plainly armor or a shield (to file it with the armor when it is added): the compendium says so, or its name is exactly a standard one. */
@@ -179,7 +180,7 @@ export function armorFromGear(g, templates) {
   if (!tpl && g.hint !== 'armor' && g.hint !== 'shield') return null;
   const row = tpl ? armorFromTemplate(tpl) : { ...blankArmor(), type: g.hint === 'shield' ? 'shield' : 'armor' };
   const n = String(g.name || '').toLowerCase();
-  return { ...row, name: g.name || row.name, enh: plusIn(g.name), mw: /\b(masterwork|mwk)\b/.test(n), material: (ARMOR_MATERIAL.exec(n) || [])[1] || '',
+  return { ...row, name: g.name || row.name, enh: plusIn(g.name), mw: /\b(masterwork|mwk)\b/.test(n) || plusIn(g.name) > 0, material: (ARMOR_MATERIAL.exec(n) || [])[1] || '',
     weight: num(g.weight) || row.weight, ...(g.id ? { id: g.id } : {}) };
 }
 

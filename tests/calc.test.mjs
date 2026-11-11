@@ -689,3 +689,18 @@ test('a damaged save still opens: wrong-typed groups get their defaults and null
   assert.deepEqual([c.weapons, c.gear, c.feats.map(f => f.name)], [[], [], ['Dodge']], 'nothing real is lost');
   assert.equal(d.saves.fort.total, 2, 'saveMisc back to zeros: Fighter 1 base Fort 2 + Con 0');
 });
+
+test('+N armor is masterwork: +1 full plate and a +1 heavy steel shield have a check penalty of -6, also in old saves', async () => {
+  const { migrate } = await import('../web/js/model.js');
+  const plate = { name: 'Full Plate +1', tpl: 'Full plate', type: 'armor', category: 'heavy', bonus: 9, enh: 1, maxDex: 1, acp: -6, asf: 35, weight: 50, equipped: true, mw: false, material: '', fx: [] };
+  const shield = { name: 'Heavy Steel Shield +1', type: 'shield', category: 'heavy', bonus: 2, enh: 1, maxDex: '', acp: -2, asf: 15, weight: 15, equipped: true, mw: false, material: '', fx: [] };
+  const old = make({ base: { str: 18 }, levels: ['Fighter'], armor: [{ ...plate }, { ...shield }] });
+  old.version = 3;
+  assert.equal(calc(migrate(old)).acp, -6, 'full plate -6 + 1 masterwork = -5; heavy steel shield -2 + 1 = -1; total -6');
+  const typed = make({ base: { str: 18 }, levels: ['Fighter'], armor: [{ ...plate, acp: -5 }, { ...shield, acp: -1 }] });
+  typed.version = 3;
+  assert.equal(calc(migrate(typed)).acp, -6, 'penalties typed in already lowered (-5, -1) are not lowered again');
+  const plain = make({ base: { str: 18 }, levels: ['Fighter'], armor: [{ ...plate, name: 'Full plate', enh: 0 }] });
+  plain.version = 3;
+  assert.equal(calc(migrate(plain)).acp, -6, 'plain full plate keeps -6');
+});

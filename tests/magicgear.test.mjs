@@ -31,6 +31,7 @@ test('something that is no weapon we know gives null', () => {
 test('Armor of Insults: +1 studded leather', () => {
   const a = parseMagicArmor(entry('Armor Of Insults', 'Each metal bit of this suit of <i>+1 studded leather</i> looks like a tiny sneering face.', '20 lbs.'));
   assert.deepEqual([a.type, a.category, a.bonus, a.enh, a.maxDex, a.acp, a.asf, a.weight], ['armor', 'light', 3, 1, 5, -1, 15, 20]);
+  assert.equal(a.mw, true, 'magic armor is masterwork: studded leather\'s -1 becomes 0');
 });
 test('shadow and slick with grades: "+4 greater shadow greater slick leather armor"', () => {
   const a = parseMagicArmor(entry('Armor of the Shadow Lord', 'This suit of <i>+4 greater shadow greater slick leather</i> armor fits snugly.', '15 lbs.'));

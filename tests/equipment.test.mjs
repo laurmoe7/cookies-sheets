@@ -185,6 +185,7 @@ test('armor in the inventory: +N, and which added items go with the armor', () =
   setArmorPlus(a, 2);
   assert.equal(a.name, 'Breastplate +2');
   assert.equal(a.enh, 2, '+2 armor: +2 enhancement to its armor bonus');
+  assert.equal(a.mw, true, 'magic armor is masterwork');
   setArmorPlus(a, 0);
   assert.equal(a.name, 'Breastplate', '+0 takes the +N off');
   assert.equal(withPlus('+1 Longsword', 3), 'Longsword +3', 'a +N in front moves to the end');

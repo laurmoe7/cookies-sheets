@@ -50,7 +50,7 @@ export function editArmorFx(i, given = null) {
         else if (!t.checked && k >= 0) a.fx.splice(k, 1);
       } else if (t.dataset.aMat !== undefined) a.material = t.value;
       else if (t.dataset.aMw !== undefined) a.mw = t.checked;
-      else if (t.dataset.aEnh !== undefined) a.enh = Math.max(0, Math.min(10, +t.value || 0));
+      else if (t.dataset.aEnh !== undefined) { a.enh = Math.max(0, Math.min(10, +t.value || 0)); if (a.enh > 0) a.mw = true; } // magic armor is masterwork
       else return;
       changed({ rerender: true });
       draw();
