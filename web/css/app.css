@@ -95,6 +95,25 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); ou
 input.num { text-align: center; padding: 4px 2px; }
 input.bad { border-color: var(--bad); color: var(--bad); }
 input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+/* Checkboxes are drawn by the app, so they match the theme: a sunken rounded box that fills with the accent colour and a tick that pops in. */
+input[type=checkbox] { -webkit-appearance: none; appearance: none; flex: none; display: inline-grid; place-content: center; width: 17px; height: 17px; margin: 0 4px 0 0; padding: 0; vertical-align: -3px; cursor: pointer;
+  background: var(--input); border: 1.5px solid color-mix(in srgb, var(--ink) 40%, transparent); border-radius: 5px; box-shadow: inset 0 1px 2px rgba(0, 0, 0, .35);
+  transition: background-color .12s, border-color .12s, box-shadow .12s; }
+input[type=checkbox]::before { content: ""; width: 9px; height: 5px; border: solid var(--accent-ink); border-width: 0 0 2.2px 2.2px; transform: translateY(-1px) rotate(-45deg) scale(0); transition: transform .14s cubic-bezier(.3, 1.6, .6, 1); }
+input[type=checkbox]:checked { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
+input[type=checkbox]:checked::before { transform: translateY(-1px) rotate(-45deg) scale(1); }
+input[type=checkbox]:hover:not(:disabled) { border-color: var(--accent); }
+input[type=checkbox]:focus { outline: none; }
+input[type=checkbox]:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+input[type=checkbox]:disabled { opacity: .45; cursor: not-allowed; }
+/* A ticked option written out in full (the roll window's In play / Cast it): a row that lights up while it is on. */
+label.check-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; padding: 9px 12px; border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent); border-radius: 8px;
+  background: color-mix(in srgb, var(--ink) 5%, transparent); cursor: pointer; transition: background-color .12s, border-color .12s; }
+label.check-row:hover { border-color: color-mix(in srgb, var(--accent) 60%, transparent); }
+label.check-row:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+label.check-row:has(input:disabled) { cursor: not-allowed; opacity: .7; }
+label.check-row input[type=checkbox] { margin: 0; }
+label.check-row .sub { display: block; font-size: 12px; opacity: .75; }
 input[type=number] { -moz-appearance: textfield; }
 .w2 { width: 40px; } .w3 { width: 48px; } .w4 { width: 70px; } .w5 { width: 84px; } .w6 { width: 100px; } .w8 { width: 130px; }
 .w10 { width: 160px; } .w12 { width: 190px; } .w16 { width: 240px; } .w20 { width: 300px; }
@@ -585,7 +604,7 @@ td .tf.ml:not(.editing) { display: -webkit-box; }
 /* ---------- options window ---------- */
 .opt-grid { display: grid; gap: 4px; margin-bottom: 14px; min-width: 420px; }
 .opt-row { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 10px 0; border-bottom: 1px solid var(--line); }
-.opt-row input[type=checkbox] { width: 18px; height: 18px; flex: none; }
+.opt-row input[type=checkbox] { width: 19px; height: 19px; }
 .opt-row .vol { display: inline-flex; align-items: center; gap: 8px; flex: none; }
 .opt-row .vol input[type=range] { width: 170px; }
 .opt-row .vol b { min-width: 40px; text-align: right; }

@@ -9,6 +9,7 @@ export const CHANGELOG = [
       'Characters: “🪦 Lay to rest” moves a character who died or retired to the graveyard, as a headstone with the date and an epitaph. Open them any time, or bring them back.',
       'Level up: the 18 prestige classes of the Core Rulebook and the Advanced Player’s Guide, with their requirements. A level that adds spellcasting asks which of your classes it advances.',
       'Level up: the Unicorn Charger prestige class (Legendary Games), with its own paladin spells.',
+      'Nicer checkboxes everywhere, and the roll window’s In play and Cast it options are rows that light up when ticked.',
     ],
   },
   {
