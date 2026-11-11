@@ -39,6 +39,15 @@ test('Owlbear: the numbers come straight from the stat block', () => {
   assert.equal(s.skills.find(k => k.name === 'Perception').total, 12);
 });
 
+test('a creature can roll the skills its stat block leaves out, from its ability modifiers and size', () => {
+  const u = Object.fromEntries(computeCreature(newCreatureCompanion(owlbear)).untrained.map(k => [k.name, k.total]));
+  // Owlbear: Str 19 (+4), Dex 12 (+1), Int 2 (-4), Large (-4 Stealth, -2 Fly)
+  assert.equal(u.Climb, 4, 'Str +4');
+  assert.equal(u.Stealth, 1 - 4, 'Dex +1, Large -4');
+  assert.equal(u.Appraise, -4, 'Int -4');
+  assert.ok(!('Perception' in u), 'Perception is in the stat block');
+});
+
 test('adjustments are added on top of the stat block', () => {
   const comp = { ...newCreatureCompanion(owlbear), hpMisc: 3, acMisc: 2, attackMisc: 1 };
   const s = computeCreature(comp);

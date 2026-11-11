@@ -5,6 +5,12 @@
 
 export const CHANGELOG = [
   {
+    version: '1.4.1', next: true,
+    items: [
+      'Companions: an Untrained skills fold-out under a companion’s Skills lists every other skill it can try without ranks (Acrobatics, Climb, Swim…), each one click to roll.',
+    ],
+  },
+  {
     version: '1.4', date: '2026-11-11',
     items: [
       'Companions: Unicorn Charger levels stack with the class that grants your mount (paladin 6 / charger 2 has an 8th-level mount).',

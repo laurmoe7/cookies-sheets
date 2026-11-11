@@ -35,6 +35,22 @@ test('wolf at druid 1', () => {
   assert.equal(s.attacks[0].text, 'bite +2 (1d6+1 plus trip)', 'only attack: 1.5 x Str 1');
 });
 
+test('untrained skills: every skill usable without ranks, from the ability modifier and size', () => {
+  const s = computeCompanion(animal('Wolf'), { Druid: 1 }, data);
+  const u = Object.fromEntries(s.untrained.map(k => [k.name, k.total]));
+  // Wolf: Str 13 (+1), Dex 15 (+2), Int 2 (-4), Wis 12 (+1), Cha 6 (-2), Medium (no size bonus), no ranks anywhere.
+  assert.equal(u.Acrobatics, 2, 'Dex +2');
+  assert.equal(u.Swim, 1, 'Str +1');
+  assert.equal(u.Stealth, 2, 'Dex +2, Medium adds nothing');
+  assert.equal(u.Appraise, -4, 'Int -4');
+  assert.equal(u.Bluff, -2, 'Cha -2');
+  assert.equal(u.Perception, 1, 'Wis +1');
+  for (const n of ['Disable Device', 'Handle Animal', 'Knowledge (nature)', 'Spellcraft', 'Craft', 'Perform']) assert.ok(!(n in u), `${n} needs training or a specialty`);
+  const big = computeCompanion(animal('Wolf', { skills: { Stealth: 2 } }), { Druid: 7 }, data);
+  assert.ok(!big.untrained.some(k => k.name === 'Stealth'), 'a skill with ranks is not repeated');
+  assert.equal(big.untrained.find(k => k.name === 'Fly').total, 2 - 2, 'Fly: Dex 15 (+2), Large -2');
+});
+
 test('wolf at druid 7 advances to Large', () => {
   const s = computeCompanion(animal('Wolf'), { Druid: 7 }, data);
   assert.equal(s.size, 'Large');

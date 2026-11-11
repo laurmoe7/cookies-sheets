@@ -77,6 +77,13 @@ export async function renderCompanions(body, c) {
     if (card) hpFx(card, fx);
   }
 
+  if (!body.dataset.untrainedWatch) { // toggle does not bubble, so it is caught on the way down
+    body.dataset.untrainedWatch = '1';
+    body.addEventListener('toggle', e => {
+      const id = e.target.dataset?.untrained;
+      if (id) { if (e.target.open) untrainedOpen.add(id); else untrainedOpen.delete(id); }
+    }, true);
+  }
   body.onclick = async e => {
     const tab = e.target.closest('[data-comp-tab]');
     if (tab) { compTab = tab.dataset.compTab; return renderCompanions(body, c); }
@@ -304,7 +311,8 @@ function topPanels(comp, s, p, ed = {}) {
         <p class="small muted">Hit points are half the master’s, attacks use the master’s base attack bonus, and saves and skill ranks are the better of the familiar’s or the master’s. Feats and conditional skill bonuses (such as Skill Focus) are shown as printed. Improved Familiar kinds and the celestial, entropic, fiendish and resolute archetypes are calculated; other changes (such as the Evolved Familiar feat) aren’t, so note them below.</p>` : ''}
       ${s.abilityNotes?.length ? `<h4>Special abilities</h4>${s.abilityNotes.map(a => `<div class="small"><b>${esc(a.name)}.</b> ${safeHtml(a.html)}</div>`).join('')}` : ''}
       ${s.specials.length ? `<h4>Special abilities</h4><div class="chips">${s.specials.map(x => `<a href="#" class="chip ref" data-entry="${esc(x.replace(/ \d+$/, ''))}" data-cat="Class Feature">${esc(x)}</a>`).join('')}</div>` : ''}
-      <h4>Skills</h4><div class="stat-row">${skillTiles(s).map(k => stat(esc(k.name), rb(k.total, k.name, skillParts(k)))).join('')}</div>
+      <h4>Skills</h4><div class="stat-row">${skillTiles(s).map(k => stat(esc(k.name), rb(k.total, k.name, k.parts || skillParts(k)))).join('')}</div>
+      ${untrainedBlock(comp, s, rb)}
     </section>${ed.cards || ''}</div>`;
 }
 
@@ -325,7 +333,19 @@ function qualitiesText(s) {
 /** Perception is always shown (it is in every stat block), then the trained skills. */
 function skillTiles(s) {
   const out = s.skills.filter(k => k.name !== 'Perception');
-  return [{ name: 'Perception', total: s.skills.find(k => k.name === 'Perception')?.total ?? s.mods.wis ?? 0 }, ...out];
+  const perc = s.skills.find(k => k.name === 'Perception') || s.untrained?.find(k => k.name === 'Perception');
+  return [perc || { name: 'Perception', total: s.mods.wis ?? 0 }, ...out];
+}
+
+// Companions (by id) whose untrained skills list is open; kept across redraws so an edit elsewhere does not fold it away.
+const untrainedOpen = new Set();
+/** Every other skill the companion can roll without ranks, as a fold-out grid of small roll buttons. */
+function untrainedBlock(comp, s, rb) {
+  const list = (s.untrained || []).filter(k => k.name !== 'Perception');
+  if (!list.length) return '';
+  return `<details class="untrained-skills" data-untrained="${esc(comp.id)}"${untrainedOpen.has(comp.id) ? ' open' : ''}>
+    <summary>Untrained skills <span class="dim small">(${list.length}, click one to roll)</span></summary>
+    <div class="untrained-grid">${list.map(k => `<div class="u-skill"><span>${esc(k.name)}</span>${rb(k.total, k.name, k.parts)}</div>`).join('')}</div></details>`;
 }
 
 /** Feats, evolutions, tricks and defensive abilities: the rest of what the full stat block lists. */

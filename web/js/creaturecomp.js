@@ -3,6 +3,7 @@
 // Pure functions, no DOM. computeCreature() returns the same shape the Companions tab's panels read from computeCompanion().
 import { SIZES } from './data.js';
 import { mod } from './calc.js';
+import { untrainedSkills } from './companions.js';
 
 const ABILS = [['str', 'strength'], ['dex', 'dexterity'], ['con', 'constitution'], ['int', 'intelligence'], ['wis', 'wisdom'], ['cha', 'charisma']];
 
@@ -84,7 +85,7 @@ export function computeCreature(comp) {
     ...a, bonus: a.bonus + misc, secondary: false, parts: [...stat(a.bonus), ...(misc ? [{ label: 'Misc attack bonus', value: misc }] : [])],
   }));
   const bab = n0(b.base_attack);
-  return {
+  const out = {
     kind: 'creature', size, type: [b.creature_type, b.creature_subtype && `(${b.creature_subtype})`].filter(Boolean).join(' ').toLowerCase(), cr: b.cr || '', hd, level: hd, autoLevel: 0,
     hp, abilities, mods, sizeMods: sz, ac, natural, saves, init: n0(b.init), bab, speed: b.speed || '—',
     cmb: firstNum(b.cmb) ?? bab + M('str') + sz.cmb, cmd: firstNum(b.cmd) ?? 10 + bab + M('str') + M('dex') + sz.cmb,
@@ -94,4 +95,6 @@ export function computeCreature(comp) {
     defense: { defensive: b.defensive_abilities || '', dr: b.dr || '', immune: b.immune || '', resist: b.resist || '' }, sr: b.sr || '', weaknesses: b.weaknesses || '',
     hpText: b.hp || '', space: b.space || '', reach: b.reach || '', aura: b.aura || '', languages: b.languages || '', abilityNotes: b.abilities || [],
   };
+  out.untrained = untrainedSkills(out);
+  return out;
 }

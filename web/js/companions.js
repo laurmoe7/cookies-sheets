@@ -1,7 +1,7 @@
 // Stat blocks for animal companions and eidolons, computed from the progression tables and species /
 // base-form data in data/companions.json (built by tools/companions.py).
 import { mod, num, sign } from './calc.js';
-import { SIZES } from './data.js';
+import { SIZES, SKILLS } from './data.js';
 import { companionGear, reducedSpeed } from './compgear.js';
 import { stepDice, featsForAttack, attackIs } from './featchoice.js';
 
@@ -16,6 +16,30 @@ const SKILL_ABILITY = {
   Spellcraft: 'int', Stealth: 'dex', Survival: 'wis', Swim: 'str', 'Use Magic Device': 'cha',
 };
 export const skillAbility = s => SKILL_ABILITY[s] || (s.startsWith('Knowledge') ? 'int' : 'int');
+
+// Skills anyone may try without ranks. Craft and Perform need a specialty, so they are left out.
+const UNTRAINED = SKILLS.filter(k => !k.trained && k.name !== 'Craft' && k.name !== 'Perform').map(k => k.name);
+/**
+ * The skills a stat block does not list that the companion can still roll untrained: the ability modifier, size
+ * (Stealth, Fly) and whatever `extra(name)` adds as [{label, value}] (gear, barding, racial bonuses). A creature with
+ * no score in the skill's ability (a mindless one's Int) cannot make the check, so the skill is skipped.
+ */
+export function untrainedSkills(s, extra = () => []) {
+  const have = new Set((s.skills || []).map(k => k.name));
+  const sz = s.sizeMods || {};
+  return UNTRAINED.filter(n => !have.has(n) && s.mods?.[skillAbility(n)] != null).map(name => {
+    const ab = skillAbility(name);
+    const parts = [{ label: `${ab.toUpperCase()} modifier`, value: s.mods[ab] },
+      { label: 'Size', value: name === 'Stealth' ? sz.stealth || 0 : name === 'Fly' ? sz.fly || 0 : 0 }, ...extra(name)].filter(p => p.value);
+    return { name, total: parts.reduce((n, p) => n + p.value, 0), parts };
+  });
+}
+/** Gear's share of a skill check: worn items, the barding's armor check penalty (Str and Dex skills) and its abilities. */
+const gearSkillParts = (gear, name) => {
+  const bard = gear.barding, ab = skillAbility(name);
+  return [{ label: 'Gear', value: gear.skill(name) }, { label: 'Barding check penalty', value: bard && (ab === 'str' || ab === 'dex') ? bard.acp : 0 },
+    { label: 'Barding', value: bard?.fx.skills[name] || 0 }];
+};
 
 // Natural attacks: primary unless listed here (Core Rulebook "Natural Attacks").
 const SECONDARY = new Set(['hoof', 'hooves', 'tentacle', 'wing', 'wing buffet', 'pincer', 'pincers', 'tail', 'tail slap']);
@@ -210,6 +234,7 @@ function finish(out, comp) {
     return { name, ranks: num(r), total, isClass };
   });
   out.skillRanksUsed = out.skills.reduce((n, s) => n + s.ranks, 0);
+  out.untrained = untrainedSkills(out, name => gearSkillParts(gear, name));
   out.featsUsed = (comp.feats || []).length;
   return out;
 }
@@ -327,6 +352,8 @@ function computeFamiliar(comp, levels, data, master) {
     return { name, ranks: r, total: Math.max(book ?? -Infinity, own), isClass, fromMaster: own > (book ?? -Infinity) };
   }).sort((a, b) => a.name.localeCompare(b.name));
   out.skillRanksUsed = 0;
+  const gear = companionGear(comp);
+  out.untrained = untrainedSkills(out, name => [{ label: 'Racial', value: sp.racial[name] || 0 }, ...gearSkillParts(gear, name)]);
   return out;
 }
 
