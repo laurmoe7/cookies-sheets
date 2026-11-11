@@ -84,7 +84,7 @@ export function migrate(c) {
   // Weapons, armor and gear saved before enchantments, materials and the paper doll lack their fields; code reads them as "none", this makes them explicit.
   for (const w of c.weapons || []) { w.mw ??= false; w.material ??= ''; w.improvedCritical ??= false; w.fx ||= []; w.slot ??= ''; }
   for (const a of c.armor || []) { a.mw ??= false; a.material ??= ''; a.fx ||= []; }
-  for (const g of c.gear || []) { g.slot ??= ''; g.hint ??= ''; g.effects ||= []; }
+  for (const g of c.gear || []) { g.slot ??= ''; g.hint ??= ''; g.effects ||= []; g.charges ??= null; } // charges: see charges.js
   for (const w of c.weapons || []) w.dmgAbility ??= ''; // which ability adds to damage ('' = Strength; none for ranged weapons)
   for (const s of c.skills || []) s.notes ??= ''; // a note on each skill (Skills tab)
   c.money = { ...base.money, ...(c.money || {}) };

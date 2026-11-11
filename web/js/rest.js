@@ -1,6 +1,8 @@
+import { restCharges } from './charges.js';
+
 // A night's rest (8 hours), applied to a character in place. Pure, no DOM: the sheet calls it and shows the summary.
 // Rules: hit points come back at 1 per character level, nonlethal damage is gone, each ability's damage drops by 1,
-// per-day class pools and spell slots refill, and the spells cast today are prepared again. Drain, temp HP and buffs are left alone.
+// per-day class pools, items' daily uses and spell slots refill, and the spells cast today are prepared again. Drain, temp HP and buffs are left alone.
 
 const num = v => parseFloat(v) || 0;
 
@@ -27,6 +29,8 @@ export function fullRest(c, { maxHp, level }) {
   let trackers = 0;
   for (const t of c.trackers || []) if (num(t.cur) !== num(t.max)) { t.cur = t.max; trackers++; }
   if (trackers) said.push(`${trackers} tracker${trackers === 1 ? '' : 's'} refilled`);
+  const items = restCharges(c);
+  if (items) said.push(`daily uses back on ${items} item${items === 1 ? '' : 's'}`);
 
   let spells = false;
   for (const book of Object.values(c.spellbooks || {})) {

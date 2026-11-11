@@ -27,6 +27,7 @@ import { grantsData, grantPickerHtml, wireGrantPicker, addGrantedSpells } from '
 import { renderResources, resourcesHtml, poolsFor, wire as wireResources, wireRest } from './resources.js';
 import { usableAbilities, abilityActions } from '../classabilities.js';
 import { merciesOf } from '../mercy.js';
+import { guessCharges, chargesRecord, chargesLeft, spendCharges } from '../charges.js';
 import { mercyBlock, pickMercies } from './mercy.js';
 import { abilityRollWindow } from '../roller.js';
 import { currentOf } from '../resources.js';
@@ -501,7 +502,7 @@ function wireCommon(body) {
     e.preventDefault();
     if (t.dataset.add) {
       const blank = {
-        gear: { name: '', qty: 1, weight: 0, value: '', notes: '', slot: '', hint: '', effects: [] },
+        gear: { name: '', qty: 1, weight: 0, value: '', notes: '', slot: '', hint: '', effects: [], charges: null },
         specials: { name: '', notes: '' },
         'money.custom': { name: '', amount: 0 },
         sessions: { date: new Date().toISOString().slice(0, 10), name: '', notes: '' },
@@ -1370,6 +1371,41 @@ function renderArmorActions() {
     changed({ rerender: true });
   };
 }
+/** An item with charges or daily uses left to spend. */
+const chargeable = g => !!g.charges && chargesLeft(g.charges) > 0;
+/** The inventory chip's count: pips up to 10, "37/50" above that. */
+function chargesChip(g) {
+  const ch = g.charges;
+  if (!ch) return '';
+  const left = chargesLeft(ch), max = num(ch.max), tip = `${left} of ${max} ${ch.unit || 'charges'} left${ch.per === 'day' ? ' today' : ''}`;
+  return max > 10 || max < 1 ? `<span class="sp-s ${left ? '' : 'bad'}" title="${esc(tip)}">${left}/${max}</span>`
+    : `<span class="pips" title="${esc(tip)}">${'<i class="pip"></i>'.repeat(left)}${'<i class="pip used"></i>'.repeat(Math.max(0, max - left))}</span>`;
+}
+/** The item panel's charges: the counter, a Use button per spell (a staff's spells cost 1 to 3), and what kind of count it is. */
+function chargesBlock(g, i, el) {
+  const ch = g.charges, p = k => `gear.${i}.charges.${k}`;
+  if (!ch) {
+    const gc = guessCharges(g.name, el?.parentElement?.querySelector('.entry-body')?.innerHTML || '');
+    const what = gc && `${gc.max} ${gc.unit}${gc.per === 'day' ? ' per day' : ''}`;
+    return `<div class="wide row">${gc ? `<button class="btn small" data-ch-add="${esc(JSON.stringify(gc))}" title="From the item's description">⚡ Track ${esc(what)}</button>` : ''}
+      <button class="btn small ${gc ? 'ghost' : ''}" data-ch-add="" title="Charges (a wand, a staff) or uses per day">⚡ ${gc ? 'Other count' : 'Track charges or uses'}</button></div>`;
+  }
+  const left = chargesLeft(ch), max = num(ch.max), unit = ch.unit || 'charges';
+  const one = unit.replace(/s$/, '');
+  const uses = ch.spells?.length ? ch.spells : [{ name: '', cost: 1 }];
+  const note = /^staff\b/i.test(g.name || '') ? 'A staff holds up to 10 charges. Once a day, a caster who has one of its spells prepared or known can give up a spell slot of that level to put 1 charge back (＋).'
+    : /^wand\b/i.test(g.name || '') ? 'A wand starts with 50 charges and cannot be recharged. Bought used, it may have fewer: type the number.' : '';
+  return `<div class="wide item-charges">
+    <div class="row"><b class="grow">⚡ ${esc(unit.charAt(0).toUpperCase() + unit.slice(1))}${ch.per === 'day' ? ' per day' : ''}</b>
+      <span class="stepper"><button data-ch-d="-1" ${left ? '' : 'disabled'} title="Spend one" aria-label="Spend one">−</button><span class="ch-val ${left ? '' : 'bad'}">${inp(p('cur'), { type: 'num', cls: 'w3', rerender: true, title: 'Left' })} / ${inp(p('max'), { type: 'num', cls: 'w3', rerender: true, title: 'Maximum' })}</span><button data-ch-d="1" ${left >= max ? 'disabled' : ''} title="Get one back" aria-label="Get one back">＋</button></span></div>
+    <div class="row ch-uses">${uses.map(s => `<button class="btn small ${left >= s.cost ? 'primary' : ''}" data-ch-use="${s.cost}" data-label="${esc(s.name || g.name)}" ${left >= s.cost ? '' : 'disabled'} title="Spend ${s.cost} ${esc(s.cost === 1 ? one : unit)}">${s.name ? esc(s.name) : 'Use'}${s.cost !== 1 || uses.length > 1 ? ` <span class="ch-cost">· ${s.cost}</span>` : ''}</button>`).join('')}</div>
+    <div class="row small">${sel(p('unit'), [['charges', 'Charges'], ['uses', 'Uses'], ['rounds', 'Rounds']], { rerender: true })}
+      ${sel(p('per'), [['total', 'until used up'], ['day', 'per day (back on a rest)']], { rerender: true })}<span class="grow"></span>
+      ${ch.per === 'day' ? `<button class="btn small ghost" data-ch-refill ${left >= max ? 'disabled' : ''}>Refill</button>` : ''}
+      <button class="icon-btn" data-ch-del title="Stop tracking charges on this item" aria-label="Stop tracking charges">✕</button></div>
+    ${note ? `<p class="small muted">${note}</p>` : ''}</div>`;
+}
+
 /** "+1 · mithral · fortification (light)" for the armor panel. */
 const armorFxChipText = a => armorFx(a).summary || '';
 
@@ -1392,6 +1428,7 @@ function renderItemActions() {
     <label><span>Weight (each)</span>${inp(p('weight'), { type: 'num', cls: 'w3' })}</label>
     <label><span>Value</span>${inp(p('value'), { cls: 'w6' })}</label>
     ${weaponRow}${asArmor}
+    ${chargesBlock(g, it.i, it.el)}
     ${pluses.length ? `<div class="wide row plus-row">${plusButtons(pluses.map(o => ({ plus: o.plus, title: `Make it a +${o.plus}${o.price ? ` (${o.price})` : ''}` })), cur, 'data-item-plus')}</div>` : ''}
     <div class="wide item-fx">
       <div>${fx.length ? esc(effectsText(fx)) : '<span class="muted">none</span>'}${fx.length && !g.slot ? ' <span class="small bad">not worn yet, so they do not count</span>' : ''}</div>
@@ -1405,10 +1442,25 @@ function renderItemActions() {
   it.el.onchange = e => {
     if (!e.target.matches('[data-item-name]')) return;
     g.name = e.target.value;
+    const gc = !g.charges && guessCharges(g.name);
+    if (gc?.auto) { // "Wand of cure light wounds" typed in gets its 50 charges; "(23 charges)" in the name sets how many are left, then goes
+      g.charges = chargesRecord(gc);
+      g.name = e.target.value = g.name.replace(/\s*\(\d+\s*charges?\)\s*$/i, '');
+    }
     setDrawerTitle(g.name || 'New item');
     changed({ rerender: true });
   };
   it.el.onclick = async e => {
+    const ch = e.target.closest('[data-ch-d],[data-ch-use],[data-ch-add],[data-ch-del],[data-ch-refill]');
+    if (ch) {
+      if (ch.dataset.chAdd !== undefined) g.charges = ch.dataset.chAdd ? chargesRecord(JSON.parse(ch.dataset.chAdd)) : { max: 10, cur: 10, per: 'total', unit: 'charges' };
+      else if (ch.dataset.chDel !== undefined) g.charges = null;
+      else if (ch.dataset.chRefill !== undefined) g.charges.cur = num(g.charges.max);
+      else if (ch.dataset.chD !== undefined) spendCharges(g.charges, -ch.dataset.chD);
+      else if (!spendCharges(g.charges, +ch.dataset.chUse)) return toast(`Not enough ${g.charges.unit || 'charges'} left`, 'bad');
+      else toast(`${ch.dataset.label ? ch.dataset.label + ': ' : ''}${chargesLeft(g.charges)} ${g.charges.unit || 'charges'} left`);
+      changed({ rerender: true }); renderItemActions(); return;
+    }
     if (e.target.closest('[data-item-fx]')) {
       const m = await editModifier({ name: g.name || 'Item', note: '', active: true, effects: structuredClone(g.effects || []).concat(g.effects?.length ? [] : [{ target: 'ac', value: 1, type: 'untyped' }]) });
       if (m) { g.effects = m.effects; changed({ rerender: true }); renderItemActions(); }
@@ -1650,7 +1702,7 @@ function gear(body, c, d) {
       const worn = !!g.slot, qty = num(g.qty) > 1 ? `<span class="sp-s">×${esc(g.qty)}</span>` : '';
       const fxMark = (g.effects || []).length ? `<span class="sp-s" title="${esc(effectsText(g.effects))}${worn ? '' : ' (counts once worn)'}">✦</span>` : '';
       const where = worn ? `<span class="sp-s">${esc(slotName(g.slot))}</span><span class="pips"><i class="pip"></i></span>` : '';
-      return `<button class="sp-chip ${isItemActive(i) ? 'on' : ''} ${worn ? 'ready' : g.hint ? 'idle' : ''}" data-item="${i}" title="${worn ? 'Equipped: ' + esc(slotName(g.slot)) + '. ' : ''}Click for details"><span class="sp-n">${esc(g.name || 'New item')}</span>${qty}${fxMark}${where}</button>`;
+      return `<button class="sp-chip ${isItemActive(i) ? 'on' : ''} ${worn || chargeable(g) ? 'ready' : g.hint || g.charges ? 'idle' : ''}" data-item="${i}" title="${worn ? 'Equipped: ' + esc(slotName(g.slot)) + '. ' : ''}Click for details"><span class="sp-n">${esc(g.name || 'New item')}</span>${qty}${fxMark}${chargesChip(g)}${where}</button>`;
     }).join('')}${compGear(c).map(x => `<button class="sp-chip comp-gear-chip" data-comp-gear="${x.ci}" data-kind="${x.kind}" data-k="${x.k}" title="Equipped by ${esc(x.comp)}, so it counts for them, not you. Click for details"><span class="sp-n">${esc(x.name)}</span><span class="sp-s">🐾 ${esc(x.comp)}</span></button>`).join('')}</div>` : '<p class="muted">Nothing carried.</p>'}
   </section>
   <section class="card">
@@ -1703,7 +1755,8 @@ function gear(body, c, d) {
     const en = await api.entry(r.id);
     const w = parseFloat((en.html.match(/<dt>Weight<\/dt><dd>([\d.]+)/) || [])[1]) || 0;
     const price = (en.html.match(/<dt>Price<\/dt><dd>([^<]+)/) || [])[1] || '';
-    const g = { id: r.id, name: r.name, qty: 1, weight: w, value: price, notes: '', slot: '', hint: hintFromSub(r.sub), effects: suggestEffects(r.name) };
+    const gc = guessCharges(r.name, en.html); // a staff's or ring of the ram's charges; daily uses are offered in its panel instead
+    const g = { id: r.id, name: r.name, qty: 1, weight: w, value: price, notes: '', slot: '', hint: hintFromSub(r.sub), effects: suggestEffects(r.name), charges: gc?.auto ? chargesRecord(gc) : null };
     if (isPlainArmor(g, equipTemplates()?.armor)) { // magic armor and shields: read its base armor, +N and abilities from the text
       const row = parseMagicArmor(en) || armorFromGear(g, equipTemplates()?.armor) || { ...blankArmor(), name: r.name, type: g.hint === 'shield' ? 'shield' : 'armor', id: r.id };
       c.armor.push({ ...row, equipped: false });

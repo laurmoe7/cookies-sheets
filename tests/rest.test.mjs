@@ -67,3 +67,16 @@ test('rest ends spells that are in play (Flaming Sphere ticked "In play")', () =
   assert.equal(c.spellbooks.Wizard.spells[0].active, false);
   assert.equal(c.spellLikes[0].active, false);
 });
+
+test('rest gives back items’ daily uses, but not a wand’s or staff’s charges', () => {
+  const c = newCharacter();
+  c.gear = [
+    { name: 'Boots of Speed', charges: { max: 10, cur: 3, per: 'day', unit: 'rounds' } },
+    { name: 'Wand of Cure Light Wounds', charges: { max: 50, cur: 12, per: 'total', unit: 'charges' } },
+    { name: 'Rope' },
+  ];
+  const said = fullRest(c, { maxHp: 10, level: 1 });
+  assert.equal(c.gear[0].charges.cur, 10, 'boots of speed: 10 rounds each day');
+  assert.equal(c.gear[1].charges.cur, 12, 'a wand is never recharged');
+  assert.ok(said.includes('daily uses back on 1 item'), said.join('; '));
+});

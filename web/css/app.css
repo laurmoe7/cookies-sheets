@@ -957,6 +957,13 @@ html[data-motion="off"] .fx-spark { display: none; }
 .item-foot { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; user-select: text; }
 .item-foot textarea { width: 100%; box-sizing: border-box; min-height: 90px; resize: vertical; }
 .item-fx { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+/* An item's charges or daily uses (charges.js): the counter, a Use button per spell, the kind of count */
+.item-charges { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; display: flex; flex-direction: column; gap: 6px; }
+.item-charges .row { gap: 6px; flex-wrap: wrap; }
+.item-charges .ch-val { display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; font-weight: 600; }
+.item-charges .ch-val.bad input { color: var(--bad); }
+.item-charges .ch-cost { opacity: .75; font-weight: normal; }
+.item-charges p { margin: 0; }
 .plus-row { gap: 6px; flex-wrap: wrap; }
 .inv-chips .comp-gear-chip { border-style: dashed; opacity: .85; } /* worn by a companion */
 /* A companion's name: the heading of its top card, typed into in place. */

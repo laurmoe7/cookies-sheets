@@ -4,6 +4,7 @@ import { classResources, currentOf } from '../resources.js';
 import { segsHtml } from '../bars.js';
 import { esc, textField, getPath, toast, confirmBox } from '../ui.js';
 import { fullRest } from '../rest.js';
+import { chargesLeft, spendCharges, restCharges } from '../charges.js';
 
 const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
 
@@ -52,6 +53,17 @@ function custom(t, i) {
     <button class="icon-btn" data-tr-del title="Remove this tracker">✕</button></div>`;
 }
 
+/** An inventory item with charges (a wand, a staff, boots of speed): spent here too, so it is at hand in a fight. */
+function itemRow(g, i) {
+  const ch = g.charges, left = chargesLeft(ch), max = Math.max(0, Math.round(+ch.max) || 0);
+  const pct = max ? Math.max(0, Math.min(100, left / max * 100)) : 0;
+  return `<div class="res-row" data-gear-ch="${i}">
+    <div class="res-name"><span>⚡ ${esc(g.name || 'Item')}</span> <span class="muted small">${esc(ch.per === 'day' ? `${ch.unit || 'uses'} per day` : ch.unit || 'charges')}</span></div>
+    <div class="res-bar"><div style="width:${pct}%"></div>${segsHtml(segs(max))}</div>
+    <span class="stepper"><button data-gc-d="-1" title="Spend one" aria-label="Spend one">−</button><button data-gc-d="1" title="Get one back" aria-label="Get one back">＋</button></span>
+    <b class="res-val">${left} / ${max}</b></div>`;
+}
+
 /** The Rest button at the top of the Overview. */
 export function wireRest(el, c) {
   el.querySelector('[data-full-rest]')?.addEventListener('click', async () => {
@@ -75,13 +87,15 @@ export function renderResources(el, c) {
 export function resourcesHtml(c, { hideEmpty = false } = {}) {
   c.trackers ||= [];
   const pools = poolsFor(c);
-  if (hideEmpty && !pools.length && !c.trackers.length) return '';
+  const items = (c.gear || []).map((g, i) => [g, i]).filter(([g]) => g.charges);
+  if (hideEmpty && !pools.length && !c.trackers.length && !items.length) return '';
   return `<div class="row"><h3 class="grow" style="margin:0">Class resources &amp; trackers</h3>
       <button class="btn small" data-tr-new>＋ Tracker</button>
       <button class="btn small ghost" data-res-rest title="Refill every pool below for a new day (the 🌙 Rest button at the top does that and more)">New day</button></div>
     ${pools.map(r => counter(r, currentOf(r, c.resources), c)).join('')}
     ${c.trackers.map(custom).join('')}
-    ${pools.length || c.trackers.length ? '' : '<p class="muted small">Nothing to track yet. Classes such as arcanist, barbarian, bard, magus and monk show their pools here; “＋ Tracker” adds your own counter for anything else.</p>'}`;
+    ${items.map(([g, i]) => itemRow(g, i)).join('')}
+    ${pools.length || c.trackers.length || items.length ? '' : '<p class="muted small">Nothing to track yet. Classes such as arcanist, barbarian, bard, magus and monk show their pools here; “＋ Tracker” adds your own counter for anything else.</p>'}`;
 }
 
 /** Delegated click handling for any element holding counters. */
@@ -95,7 +109,7 @@ export function wire(el, c) {
     changed({ rerender: true });
   });
   el.addEventListener('click', e => {
-    const t = e.target.closest('[data-res-d],[data-res-reset],[data-res-rest],[data-res-edit],[data-res-edit-clear],[data-tr-new],[data-tr-d],[data-tr-reset],[data-tr-del]');
+    const t = e.target.closest('[data-res-d],[data-res-reset],[data-res-rest],[data-res-edit],[data-res-edit-clear],[data-tr-new],[data-tr-d],[data-tr-reset],[data-tr-del],[data-gc-d]');
     if (!t) return;
     e.preventDefault();
     c.resources ||= {};
@@ -104,6 +118,12 @@ export function wire(el, c) {
     if (t.dataset.resRest !== undefined) {
       c.resources = {};
       for (const tr of c.trackers) tr.cur = tr.max;
+      restCharges(c); // items used so many times per day
+      return changed({ rerender: true });
+    }
+    if (t.dataset.gcD !== undefined) {
+      const g = c.gear?.[+t.closest('[data-gear-ch]').dataset.gearCh];
+      if (g?.charges) spendCharges(g.charges, -t.dataset.gcD);
       return changed({ rerender: true });
     }
     const row = t.closest('[data-res],[data-tracker]');
