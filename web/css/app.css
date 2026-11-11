@@ -167,6 +167,10 @@ textarea { width: 100%; resize: vertical; }
 /* Rolled ability scores in the create-character wizard: tiles dragged from the pool onto an ability's slot. */
 .roll-empty { display: flex; align-items: center; gap: 12px; margin: 10px 0; padding: 14px; border: 1px dashed var(--line); border-radius: 10px; }
 .roll-empty-die { font-size: 30px; }
+.gold-amount { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0 10px; }
+.gold-amount b { font-size: 1.6em; color: var(--accent); }
+.gold-card .row > span, .gold-amount > span { flex: 1 1 14em; min-width: 0; } /* long hints wrap instead of running off a half-width card */
+.gold-dim .gold-amount { opacity: .45; } /* a custom amount is used instead */
 .roll-pool { display: flex; flex-wrap: wrap; gap: 8px; min-height: 62px; align-items: center; padding: 8px 10px; margin: 8px 0; border: 1px dashed var(--line); border-radius: 10px; transition: background .15s, border-color .15s; }
 .roll-pool.done { min-height: 0; padding: 6px 10px; border-style: solid; border-color: var(--good); color: var(--good); }
 .roll-pool-label { min-width: 5.5em; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-right: 2px; }

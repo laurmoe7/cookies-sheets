@@ -15,6 +15,7 @@ import { traitAllowance, countTraits } from '../traits.js';
 import { racialTraitsOf, remainingBaseline, alternativesFor, replacesOf } from '../racetraits.js';
 import { chooseSpells } from './spellpicker.js';
 import { ROLL_METHODS, rollSet, assignRoll, rolledBases, diceText, setQuality, unplaced } from '../statroll.js';
+import { startingWealth, rollStartingGold } from '../wealth.js';
 
 let draft = null;
 let fcbData = null; // racial favored class options, loaded once
@@ -41,11 +42,13 @@ export function renderLevelUp(main) {
       ${d.level > 0 ? '<button class="btn ghost" data-cancel>Back to sheet</button>' : ''}</div>
     ${d.level === 0 ? basicsCard(c, d) : ''}
     <section class="card"><h3>1 · Choose a class</h3>${classPicker(c)}</section>
+    ${d.level === 0 && !draft.cls ? goldCard(c) : ''}
     <div id="lu-detail"></div>
   </div>`;
   const cancel = $('[data-cancel]', main);
   if (cancel) cancel.onclick = () => go('sheet');
   wireBasics(main, c);
+  wireGold(main, c);
   $$('[data-pick-class]', main).forEach(b => (b.onclick = () => {
     draft.cls = b.dataset.pickClass;
     draft.ranks = {}; draft.spellsBy = {}; draft.favsBy = {};
@@ -236,6 +239,73 @@ function wireBasics(main, c) {
   }));
 }
 
+// ---------------------------------------------------------------- starting gold (creation only)
+/** The gold this card would give: a roll made for the current class, else the table or the class average. */
+function goldOffer() {
+  const lv = draft.goldLevel || 1;
+  const w = startingWealth(lv, draft.cls);
+  const roll = lv === 1 && draft.goldRoll?.cls === draft.cls ? draft.goldRoll : null;
+  const custom = customGold();
+  return { lv, w, roll, custom, gp: custom ?? (roll ? roll.gp : w.gp) };
+}
+/** The amount typed in the Custom box, or null when it is empty or not a number of 0 or more. */
+function customGold() {
+  const v = String(draft.goldCustom ?? '').trim();
+  const n = v === '' ? NaN : Math.round(+v * 100) / 100;
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
+function goldCard(c) {
+  const { lv, w, roll, gp, custom } = goldOffer();
+  const have = num(c.money.pp) * 10 + num(c.money.gp) + num(c.money.sp) / 10 + num(c.money.cp) / 100;
+  const body = lv > 1
+    ? `<div class="gold-amount"><b>${w.gp.toLocaleString()} gp</b><span class="small muted">Character Wealth by Level, ${ORD(lv)} level. Spend no more than half of it on any single item.</span></div>`
+    : !draft.cls ? '<p class="small muted">Choose a class above: a 1st-level character starts with its class’s starting wealth.</p>'
+    : !w.dice ? `<p class="small muted">${esc(draft.cls)} has no starting wealth listed here. Type the gold in on the Inventory tab.</p>`
+    : `<div class="row"><div class="seg" role="group">
+        <button class="seg-btn ${roll ? '' : 'on'}" data-gold-avg>Average ${w.gp} gp</button>
+        <button class="seg-btn ${roll ? 'on' : ''}" data-gold-roll>🎲 ${roll ? 'Roll again' : `Roll ${w.dice}d6 × 10`}</button></div></div>
+      <div class="gold-amount"><b>${gp.toLocaleString()} gp</b><span class="small muted">${roll ? `${esc(draft.cls)}: (${roll.rolls.join(' + ')}) × 10` : esc(w.source)}</span></div>`;
+  return `<section class="card gold-card"><h3>Starting gold</h3>
+    <div class="row"><label class="small">Starting level <select id="gold-level">${Array.from({ length: 20 }, (_, i) => i + 1).map(n => `<option value="${n}" ${n === lv ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
+      <span class="grow"></span><span class="small muted">Purse now: ${have.toLocaleString()} gp</span></div>
+    <div class="${custom != null ? 'gold-dim' : ''}" data-gold-body>${body}</div>
+    <div class="row"><label class="small">Or a custom amount <input type="number" min="0" step="any" class="num w5" id="gold-custom" placeholder="gp" value="${esc(draft.goldCustom ?? '')}"> gp</label>
+      <span class="small muted">Your GM’s number, if it differs. Leave it empty to use the one above.</span></div>
+    <div class="row"><button class="btn primary" data-gold-set ${gp == null ? 'hidden' : ''}>Set gold to ${(gp ?? 0).toLocaleString()} gp</button>
+      ${lv > 1 ? '<span class="small muted">Then finish 1st level and level up to the level you start at.</span>' : ''}</div>
+  </section>`;
+}
+function wireGold(main, c) {
+  const sel = $('#gold-level', main);
+  if (sel) sel.onchange = () => { draft.goldLevel = +sel.value; render({ keepScroll: true }); };
+  const avg = $('[data-gold-avg]', main);
+  if (avg) avg.onclick = () => { draft.goldRoll = null; render({ keepScroll: true }); };
+  const roll = $('[data-gold-roll]', main);
+  if (roll) roll.onclick = () => {
+    const w = startingWealth(1, draft.cls);
+    draft.goldRoll = { cls: draft.cls, ...rollStartingGold(w.dice) };
+    render({ keepScroll: true });
+  };
+  const set = $('[data-gold-set]', main);
+  const custom = $('#gold-custom', main);
+  if (custom) custom.oninput = () => { // no redraw while typing (it would take the focus away): update the button in place
+    draft.goldCustom = custom.value;
+    const { gp, custom: n } = goldOffer();
+    set.hidden = gp == null;
+    set.textContent = `Set gold to ${(gp ?? 0).toLocaleString()} gp`;
+    $('[data-gold-body]', main)?.classList.toggle('gold-dim', n != null);
+  };
+  if (set) set.onclick = async () => {
+    const { gp } = goldOffer();
+    if (gp == null) return;
+    const m = c.money;
+    if ((num(m.pp) || num(m.gp) || num(m.sp) || num(m.cp)) && !await confirmBox(`Replace the coins in the purse with ${gp.toLocaleString()} gp?`, 'Set gold')) return;
+    Object.assign(m, { pp: 0, gp, sp: 0, cp: 0 });
+    toast(`Purse set to ${gp.toLocaleString()} gp`);
+    changed({ rerender: true });
+  };
+}
+
 // ---------------------------------------------------------------- class picker
 function classPicker(c) {
   const lv = classLevels(c);
@@ -350,10 +420,10 @@ function detail(el, c, d, newLevel) {
       ${slot.options.length ? `<select data-advance="${i}">${slot.options.map(o => `<option ${draft.advances[i] === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}<option value="" ${draft.advances[i] ? '' : 'selected'}>None</option></select>`
         : '<span class="warn">You have no class that fits, so this level adds no spellcasting.</span>'}</p>`).join('')}
     <p class="small muted">The class you pick gets this level for spells per day, spells known and caster level, as if it had gained a level (its other class features do not improve).</p></section>` : ''}
-  ${lvBefore === 0 && !def.prestige ? `<section class="card">
+  ${lvBefore === 0 && !def.prestige ? `<div class="${d.level === 0 ? 'grid two' : ''}">${d.level === 0 ? goldCard(c) : ''}<section class="card">
     <h3>Archetype <span class="muted small">(optional; replaces some ${esc(def.name)} features with new ones)</span></h3>
     <div class="row"><span class="grow" id="lu-arch">${draft.archetypes.length ? `<b>${esc(draft.archetypes.map(a => a.name).join(', '))}</b>` : '<span class="muted">Standard class</span>'}</span>
-      <button class="btn" data-choose-arch>${draft.archetypes.length ? 'Change archetype…' : 'Choose archetype…'}</button></div></section>`
+      <button class="btn" data-choose-arch>${draft.archetypes.length ? 'Change archetype…' : 'Choose archetype…'}</button></div></section></div>`
     : draft.archetypes.length ? `<p class="small muted">Archetype: <b>${esc(draft.archetypes.map(a => a.name).join(', '))}</b> (change it on the sheet's Feats & Abilities tab).</p>` : ''}
   <div class="grid two">
     <section class="card">
@@ -480,6 +550,7 @@ function detail(el, c, d, newLevel) {
   };
   $$('[data-rm-trait]', el).forEach(b => (b.onclick = () => { draft.traits.splice(+b.dataset.rmTrait, 1); rerender(); }));
   $$('[data-rm-feat]', el).forEach(b => (b.onclick = () => { draft.feats.splice(+b.dataset.rmFeat, 1); rerender(); }));
+  wireGold(el, c);
   const archBtn = $('[data-choose-arch]', el);
   if (archBtn) archBtn.onclick = async () => {
     const picked = await chooseArchetypes(draft.cls, draft.archetypes);
