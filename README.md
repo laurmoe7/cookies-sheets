@@ -5,13 +5,16 @@ A standalone Windows desktop app for **Pathfinder 1st Edition** characters. It c
 ## Running it
 
 - **Packaged app:** `dist\Cookie's Sheets\Cookie's Sheets.exe`. Copy the whole `Cookie's Sheets` folder anywhere you like and pin the .exe to your taskbar.
-- **In a web browser:** `Cookie's Sheets in browser.bat` (next to the .exe) or `python app.py --web` opens the app in your default browser and keeps a tray icon (double-click to reopen the page, right-click for Quit). It quits by itself a few seconds after the last page is closed (the page pings `/api/ping` and says `/api/bye` as it closes; `Presence` in `app.py` decides; Options, Look can turn this off). Without the icon, `python app.py --browser` just serves until you stop it. Options, Look has "Open Cookie's Sheets in" (own window or web browser), kept in `settings.json` as `openIn`; `--web` and `--window` override it. Either way it listens on `127.0.0.1` only. `tray.py` draws the icon with plain ctypes.
+- **In a web browser:** `Cookie's Sheets in browser.bat` (next to the .exe) or `python app.py --web` opens the app in your default browser and keeps a tray icon (double-click to reopen the page, right-click for Quit). It quits by itself a few seconds after the last page is closed (Options, Look can turn this off). To always open in the browser, set Options, Look, "Open Cookie's Sheets in"; `--web` and `--window` override that choice. Either way it listens on `127.0.0.1` only, so nothing else on your network can reach it.
 - **From source:** double-click the **Run Cookie's Sheets** shortcut (needs Python 3.10+ and `pip install -r requirements.txt`). `Run Cookie's Sheets.bat` does the same thing.
   - If you move the folder, recreate the shortcut with `powershell -ExecutionPolicy Bypass -File tools\make_shortcut.ps1`. Add `-Desktop` to also put one on your desktop.
   - The icon comes from `tools/make_icon.py`.
   - `python tools/brand.py launcher` makes `.launcher\Cookie's Sheets.exe`, a copy of Python with the app's name and icon. The shortcut uses it when it exists, so Task Manager lists the app as "Cookie's Sheets" instead of "Python".
 
-Characters save automatically, as plain `.json` files, to `Documents\Pathfinder Characters` (the **Change folder…** button on the Characters page picks another folder, such as one in Dropbox or OneDrive, and copies your characters there). Deleted characters go to the `.deleted` subfolder, so you can get them back.
+Characters save automatically, as plain `.json` files, to `Documents\Pathfinder Characters` (the **Change folder…** button on the Characters page picks another folder, such as one in Dropbox or OneDrive, and copies your characters there). The Characters page also keeps:
+- **Earlier saves:** the last few versions of each character, to go back to one.
+- **Deleted characters:** they go to the `.deleted` subfolder, with Restore and Delete for good.
+- **The graveyard:** a character who died or retired can be laid to rest; it keeps its file and is listed apart.
 
 ## Importing from charactersheet.co.uk
 
@@ -32,39 +35,47 @@ Whenever an import has to put a difference into a Misc box to make a number matc
 ## Features
 
 **Character sheet**: every number updates instantly.
-- Ability scores (base, racial, level-up increases, enhancement, misc, damage, drain), a point-buy counter, and 36 races with their racial modifiers
+- Ability scores (base, racial, level-up increases, enhancement, misc, damage, drain), a point-buy counter or rolled scores, and 37 races (plus a custom one) with their racial modifiers, standard and alternate racial traits
+- Starting gold: rolled or averaged for your class, or the wealth-by-level table for a character made above 1st level
 - HP with damage/heal buttons, temp HP and nonlethal damage, plus disabled/dying/dead status
 - AC, touch, and flat-footed, with a breakdown by bonus type; CMB/CMD; initiative; speed (reduced by medium/heavy armor or load)
 - Saves, BAB with iterative attacks, and a weapons table that calculates attack and damage (Str ×1, ×1½, ×½)
 - Skills: class-skill +3, armor check penalty, size modifiers for Fly/Stealth, ranks spent vs. available, max ranks
-- Feats, traits, and racial/special abilities picked from the compendium; class features listed automatically per level
-- Spellbooks for every casting class: slots with bonus spells, spells known, save DCs, concentration, casting-defensively DCs, prepare/cast tracking, domain/school slot, and a rest button
-- Gear, money, magic items, and encumbrance (with a tick to ignore encumbrance), an alphabetical sort button, and a paper doll of worn items
+- Feats, traits (with drawbacks and your table's drawback rule), and racial/special abilities picked from the compendium; class features listed automatically per level. Feats for one weapon or skill (Weapon Focus, Skill Focus...) and always-on trait bonuses count on the sheet.
+- Spellbooks for every casting class: slots with bonus spells, spells known, save DCs, concentration, casting-defensively DCs, prepare/cast tracking, and domain/school slot
+- Domains, bloodlines, mysteries, patrons and spirits: choose one and its spells are added as you level
+- Class resources & trackers: daily pools (rage rounds, ki, lay on hands with its mercies, channel energy, arcane reservoir...) and your own counters; the class abilities you use sit on the Spells tab as chips with a Use button
+- Gear, money, magic items, and encumbrance (with a tick to ignore encumbrance), an alphabetical sort button, and a paper doll of worn items. Worn items give their bonuses (cloak of resistance, ring of protection, ability belts and headbands...), and wands, staves and other charged items count their charges.
+- Dice: click any number to roll it, with situational modifiers and advantage/disadvantage; hover to see where the number comes from. Rolls can also be sent to a Discord channel (Options, Discord).
 - Weapons and armor: **＋ Add weapon** and **＋ Add armor/shield** open a list of about 170 weapons and 44 armors and shields to start from (or a blank row), and each weapon can use any ability for damage
 - Spell-likes & other spells: a block on the Spells tab for spells outside your class list, with uses per day, a Use button and rolls; adding a spell can search another class's spell list
 - A Notes box on every skill
-- Weapon enchantments: enhancement, masterwork, special materials and 30 special abilities that change attack, damage, threat range and critical hit damage
+- Weapon enchantments: enhancement, masterwork, special materials and 30 special abilities that change attack, damage, threat range and critical hit damage. Armor and shields get the same (enhancement, materials and special abilities, which change the check penalty, Dex cap, spell failure, weight and speed).
+- **＋ Magic item** on weapons and armor reads a magic weapon or armor from the compendium (+N, abilities, material)
 - A Rest button for a night's rest (HP, ability damage, daily class pools, spell slots)
 - Archetypes: choose them when you take a class (descriptions and what each replaces). Their features replace the class features they replace, and class-skill and spellcasting changes apply automatically.
 - Portrait (Overview tab) and a small name icon (top bar), stored in the character file as downscaled images
-- Companions tab: any creature from the Monster Codex can be taken as a companion, with hit points to track and its full stat block; animal companions (68 species, advancing at 4th/7th level) and eidolons (base forms, evolution points) with full stat blocks, plus familiars (26 kinds from the Bestiary, Ultimate Magic and Bestiary 3, advancing with your wizard, sorcerer and witch levels, plus 25 Improved Familiar kinds and the celestial, entropic, fiendish and resolute archetypes) and free-form entries for mounts and cohorts
+- Companions tab: any creature from the Monster Codex can be taken as a companion, with hit points to track and its full stat block; animal companions (68 species, advancing at 4th/7th level, with tricks, feats and gear such as barding) and eidolons (base forms, evolution points) with full stat blocks, plus familiars (26 kinds from the Bestiary, Ultimate Magic and Bestiary 3, advancing with your wizard, sorcerer and witch levels, plus 25 Improved Familiar kinds and the celestial, entropic, fiendish and resolute archetypes) and free-form entries for mounts and cohorts
 - A search box in the top bar (Ctrl+F) finds anything on the open character, from skills to spells to notes, and jumps to it
 - Summons: a "Summon…" button beside Summon Monster / Summon Nature's Ally spells (and at the top of Companions) picks a creature by list level; it is tracked under Companions → Summons with its key stats, hit points, rounds left, template and stat block
 - Custom traits, feats, items and spells read like official ones: click to read the full text, double-click to edit
+- A Notes tab with story, general notes, quests, NPCs, lore and a session log, plus a short notes box on the Overview
 - **Buffs & conditions** with correct bonus-type stacking: Power Attack, Deadly Aim, and Combat Expertise scale with your BAB. Also Rage, Haste, Bless, Heroism, Enlarge Person, Shaken, Sickened, Fatigued, Grappled, and more, plus custom modifiers.
 
-**Updating**: Options, Look has "Check for updates now" (and a switch to check at start-up, off by default). It downloads the new release from https://github.com/laurmoe7/cookies-sheets-releases, installs it and reopens the app.
+**Look and feel**: themes (Dusty tome is the default), accent colour, text size, a compact layout, page-turn animations and sounds, and Cookie, the rude thrush in the sidebar who comments on what happens to your character (he cannot be turned off, only made quieter).
+
+**Updating**: Options, Look has "Check for updates now" (and a switch to check at start-up, off by default). It downloads the new release from https://github.com/laurmoe7/cookies-sheets-releases, installs it and reopens the app. Only the packaged app updates itself; from source, use `git pull`. Characters, sounds and options live outside the app folder, so an update never touches them.
 
 **Level Up wizard**: choose a class and it shows the before → after for HP, BAB, saves, CMB/CMD, and spells per day. It also handles:
 - HP: average, roll, max, or manual
-- Favored class bonus
 - Feats every odd level, ability increases every 4th level
 - Favored class bonus: +1 HP, +1 skill rank, or your race's own option for that class (about 430 options from the Advanced Player's Guide, Advanced Race Guide and Advanced Class Guide)
 - Skill rank allocation with a live budget
 - New class features (click any feature to read it)
 - Spells to learn: only levels you can actually learn, with a "left to choose" counter (e.g. bard 1: 4 cantrips and 2 1st-level spells). Spellbook casters get every cantrip automatically.
+- A list of anything left undone (unspent ranks, an empty feat or spell pick) before the level is applied
 
-You can undo the last level from the Bio tab. 32 classes are supported: the 11 core classes, plus APG, Magus, Gunslinger, Ninja, Samurai, Antipaladin, and all 10 ACG hybrid classes.
+You can undo the last level from the Bio tab. 32 base classes are supported: the 11 core classes, plus the 6 APG classes, Magus, Gunslinger, Ninja, Samurai, Antipaladin, and all 10 ACG hybrid classes. There are also 19 prestige classes (see Known gaps below).
 
 **Monster Codex** (under the Compendium): about 1,850 creature stat blocks from the Bestiaries, the NPC and Monster Codex and other books. Search by name, filter by type and CR, read the full stat block, and take one as a companion.
 
@@ -82,7 +93,9 @@ python tools/build_data.py
 powershell -ExecutionPolicy Bypass -File build_exe.ps1
 ```
 
-`build_data.py` regenerates `data/pf1e.db` and the JSON files in `data/` (classes, companions, creatures, equipment, summons and racial options) from `tools/sources/`. `build_exe.ps1` rebuilds the .exe into `dist/`.
+`build_data.py` regenerates `data/pf1e.db` and the JSON files in `data/` (classes, companions, creatures, equipment, summons, granted spells and racial options) from `tools/sources/`. `build_exe.ps1` rebuilds the .exe into `dist/`.
+
+`tools/sources/` is not in the repository; see "Data pipeline" in `CLAUDE.md` for what goes in it and where to get it.
 
 ## Testing
 
@@ -97,19 +110,23 @@ This runs the rules-math and importer tests (Node.js) and the server tests (Pyth
 | Path | What it is |
 | --- | --- |
 | `app.py` | Local server (127.0.0.1 only) and the pywebview desktop window |
+| `tray.py`, `updater.py`, `windowstate.py` | Tray icon for browser mode, self-update, and remembering the window's position |
 | `web/` | The UI: plain HTML/CSS/JS modules, no build step |
 | `web/js/calc.js` | All character math (stacking rules, AC, saves, skills, spells) |
 | `web/js/rulesdata.js` | Quick-rules cards |
+| `data/` | Generated game data (the compendium database and JSON tables) |
 | `tools/build_data.py` | Converts the source data into the compendium database |
-| `tools/sources/` | Raw OGL data (PSRD-Data SQLite files and the spell spreadsheet) |
+| `tools/sources/` | Raw OGL data (PSRD-Data SQLite files, the spell spreadsheet, cached Archives of Nethys pages); not in the repository |
+| `tests/` | Rules, importer and server tests (`npm test`) |
+| `dev-docs/` | Developer notes, starting with the UI conventions |
 
 ## Data sources and license
 
 Game rules text is Open Game Content under the Open Game License v1.0a (the full license is in the app's sidebar footer). Sources:
-[PSRD-Data](https://github.com/devonjones/PSRD-Data) and the community spell spreadsheet via [pathfinder_spells](https://github.com/sturlabragason/pathfinder_spells).
+[PSRD-Data](https://github.com/devonjones/PSRD-Data), the community spell spreadsheet via [pathfinder_spells](https://github.com/sturlabragason/pathfinder_spells), and [Archives of Nethys](https://www.aonprd.com/) for the Ninja, Samurai and Antipaladin archetypes and the non-core races' standard racial traits, which PSRD-Data lacks. A few entries (drawbacks from the Player Companions, some rules text) are typed in by hand.
 This app is not published, endorsed, or approved by Paizo Inc.
 
-Known gaps: PSRD-Data stops around 2015 (Advanced Class Guide). Later books (Occult Adventures, Ultimate Intrigue, and so on) are covered only for spells, through the spreadsheet. Prestige classes are the 18 from the Core Rulebook and the APG; later books' prestige classes are not in the data. Unchained summoner eidolons aren't in the data.
+Known gaps: PSRD-Data stops around 2015 (Advanced Class Guide). Later books (Occult Adventures, Ultimate Intrigue, and so on) are covered only for spells, through the spreadsheet. Prestige classes are the 18 from the Core Rulebook and the APG, plus the Unicorn Charger (Legendary Games); later books' prestige classes are not in the data. Unchained summoner eidolons aren't in the data.
 
 ## Sound credits
 
