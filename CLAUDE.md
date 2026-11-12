@@ -19,7 +19,8 @@ Read the doc for the area you touch before changing it:
 
 | Doc | Covers |
 | --- | --- |
-| [dev-docs/ui-conventions.md](dev-docs/ui-conventions.md) | Per-area UI rules: bindings, layouts, rolls, spells and notes tabs, options, themes, Cookie the mascot, sounds, pictures, companions, sharing |
+| [dev-docs/ui-conventions.md](dev-docs/ui-conventions.md) | Per-area UI rules: bindings, side panel, layouts, rolls, spells tab, resources and notes, level up and import, companions, options, save folder, dev tools |
+| [dev-docs/look-and-sound.md](dev-docs/look-and-sound.md) | Themes and keeping them cheap to paint, the page turn, Cookie the mascot, sound effects, the heal animation |
 | [dev-docs/web-modules.md](dev-docs/web-modules.md) | What each `web/js` module does and the save fields it owns (enchantments, paper doll, item bonuses, magic gear, archetypes...) |
 | [dev-docs/server.md](dev-docs/server.md) | `app.py`: start modes, request guard, caching, the FTS index, character storage (history, deleted, graveyard), the importer fetch, the launcher exe |
 | [dev-docs/data-pipeline.md](dev-docs/data-pipeline.md) | Source data, class tables and prestige classes, archetypes, companions, granted spells, equipment, creatures, summons |
