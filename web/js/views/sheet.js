@@ -31,7 +31,7 @@ import { guessCharges, chargesRecord, chargesLeft, spendCharges } from '../charg
 import { mercyBlock, pickMercies } from './mercy.js';
 import { abilityRollWindow } from '../roller.js';
 import { itemSpellOf } from '../itemspell.js';
-import { rollItemSpell } from './itemroll.js';
+import { rollItemSpell, rollable } from './itemroll.js';
 import { currentOf } from '../resources.js';
 import { weaponFxRow, wireWeaponFx } from './weaponfx.js';
 import { editArmorFx } from './armorfx.js';
@@ -996,11 +996,33 @@ async function loadFeatTexts(names) {
 }
 
 /** Class abilities (detect evil, smite evil, lay on hands...) as chips like the spells': name, uses as pips, at will. */
-function classAbilityChips(c) {
+/** The class features as usableAbilities() wants them, and the names whose text is not loaded yet. */
+function abilityFeatures(c) {
   const features = classFeatures(c, state.classesByName).map(f => ({ name: f.name, cls: f.cls, level: f.level, archetype: f.kind === 'archetype',
     lookup: f.kind === 'archetype' ? f.name : featureLookupName(f.name), html: f.html }));
   for (const f of features) if (f.archetype) featTexts[f.lookup] ??= f.html || '';
-  const need = [...new Set(features.filter(f => !(f.lookup in featTexts)).map(f => f.lookup))];
+  return { features, need: [...new Set(features.filter(f => !(f.lookup in featTexts)).map(f => f.lookup))] };
+}
+
+// The trackers card: a pool's name (lay on hands, smite evil, rage) opens the ability's panel on the right, with its Roll, uses and Use,
+// like the item names there. A pool with no ability of its own to use opens its rules text instead.
+document.addEventListener('click', async e => {
+  const t = e.target.closest?.('[data-open-pool]');
+  const c = state.char;
+  if (!t || !c) return;
+  e.preventDefault();
+  const { features, need } = abilityFeatures(c);
+  if (need.length) await loadFeatTexts(need);
+  if (state.char !== c) return;
+  const a = usableAbilities(features, featTexts, poolsFor(c)).find(x => x.pool?.id === t.dataset.openPool);
+  if (a) openAbility(a);
+  else showEntry(t.dataset.poolEntry, 'Class Feature');
+});
+// Points spent in the trackers card show in the open ability panel too.
+document.addEventListener('pool-changed', () => { if (abilOpen && document.querySelector('[data-abil-panel]')) openAbility(abilOpen, true); });
+
+function classAbilityChips(c) {
+  const { features, need } = abilityFeatures(c);
   if (need.length && !featLoading) featLoading = loadFeatTexts(need).then(() => { featLoading = null; if (state.view === 'sheet' && state.sheetTab === 'spells') render({ keepScroll: true }); });
   const list = usableAbilities(features, featTexts, poolsFor(c));
   shownAbilities = list;
@@ -1323,6 +1345,14 @@ document.addEventListener('entry-shown', e => {
   else if (!it.armed) clearItem(); // the panel moved on to something else
 });
 document.addEventListener('drawer-closed', () => clearItem());
+// The trackers card: an item's name opens its panel, and charges spent there show in the open panel too.
+document.addEventListener('click', e => {
+  const t = e.target.closest?.('[data-open-item]');
+  if (!t || !state.char) return;
+  e.preventDefault();
+  openItem(+t.dataset.openItem);
+});
+document.addEventListener('gear-charges-changed', () => { if (itemDrawer?.kind === 'gear' && !itemDrawer.armed) renderItemActions(); });
 function clearItem() { itemDrawer = null; document.querySelectorAll('.inv-chips .sp-chip.on').forEach(x => x.classList.remove('on')); }
 
 /** Armor or a shield in the side panel: its numbers, +N, enchantments and whether it is worn. */
@@ -1383,6 +1413,7 @@ function chargesChip(g) {
   return max > 10 || max < 1 ? `<span class="sp-s ${left ? '' : 'bad'}" title="${esc(tip)}">${left}/${max}</span>`
     : `<span class="pips" title="${esc(tip)}">${'<i class="pip"></i>'.repeat(left)}${'<i class="pip used"></i>'.repeat(Math.max(0, max - left))}</span>`;
 }
+const itemRollBtn = (spell, cost) => `<button class="rchip go" data-ch-roll="${esc(spell)}" data-cost="${cost}" title="Roll ${esc(spell)}: its attack, damage or healing, with the item’s caster level and save DC">🎲 Roll</button>`;
 /** The item panel's charges: the counter, a Use button per spell (a staff's spells cost 1 to 3), and what kind of count it is. */
 function chargesBlock(g, i, el) {
   const ch = g.charges, p = k => `gear.${i}.charges.${k}`;
@@ -1400,7 +1431,10 @@ function chargesBlock(g, i, el) {
   return `<div class="wide item-charges">
     <div class="row"><b class="grow">⚡ ${esc(unit.charAt(0).toUpperCase() + unit.slice(1))}${ch.per === 'day' ? ' per day' : ''}</b>
       <span class="stepper"><button data-ch-d="-1" ${left ? '' : 'disabled'} title="Spend one" aria-label="Spend one">−</button><span class="ch-val ${left ? '' : 'bad'}">${inp(p('cur'), { type: 'num', cls: 'w3', rerender: true, title: 'Left' })} / ${inp(p('max'), { type: 'num', cls: 'w3', rerender: true, title: 'Maximum' })}</span><button data-ch-d="1" ${left >= max ? 'disabled' : ''} title="Get one back" aria-label="Get one back">＋</button></span></div>
-    <div class="row ch-uses">${uses.map(s => `<button class="btn small ${left >= s.cost ? 'primary' : ''}" data-ch-use="${s.cost}" data-label="${esc(s.name || g.name)}" ${left >= s.cost ? '' : 'disabled'} title="Spend ${s.cost} ${esc(s.cost === 1 ? one : unit)}">${s.name ? esc(s.name) : 'Use'}${s.cost !== 1 || uses.length > 1 ? ` <span class="ch-cost">· ${s.cost}</span>` : ''}</button>${s.name ? `<button class="btn small ch-roll" data-ch-roll="${esc(s.name)}" data-cost="${s.cost}" title="Roll ${esc(s.name)}: its attack, damage or healing, with the item’s caster level and save DC" aria-label="Roll ${esc(s.name)}">🎲</button>` : ''}`).join('')}</div>
+    ${uses[0].name ? `<div class="use-list">${uses.map(s => `<div class="use-line ${left >= s.cost ? '' : 'out'}"><b class="use-name">${esc(s.name)}</b><span class="use-cost">${s.cost} ${esc(s.cost === 1 ? one : unit)}</span>
+      <span class="use-btns"><span data-ch-slot="${esc(s.name)}" data-cost="${s.cost}">${rollable(s.name) ? itemRollBtn(s.name, s.cost) : ''}</span>
+        <button class="btn small ${left >= s.cost ? 'primary' : ''} sp-cast" data-ch-use="${s.cost}" data-label="${esc(s.name)}" ${left >= s.cost ? '' : 'disabled'} title="Use it without rolling: spend ${s.cost} ${esc(s.cost === 1 ? one : unit)}">Use</button></span></div>`).join('')}</div>`
+      : `<div class="row ch-uses"><button class="btn small ${left ? 'primary' : ''} sp-cast" data-ch-use="1" data-label="${esc(g.name)}" ${left ? '' : 'disabled'} title="Spend 1 ${esc(one)}">Use</button></div>`}
     <div class="row small">${sel(p('unit'), [['charges', 'Charges'], ['uses', 'Uses'], ['rounds', 'Rounds']], { rerender: true })}
       ${sel(p('per'), [['total', 'until used up'], ['day', 'per day (back on a rest)']], { rerender: true })}<span class="grow"></span>
       ${ch.per === 'day' ? `<button class="btn small ghost" data-ch-refill ${left >= max ? 'disabled' : ''}>Refill</button>` : ''}
@@ -1412,7 +1446,7 @@ function chargesBlock(g, i, el) {
 function itemSpellRow(g) {
   const sp = itemSpellOf(g.name);
   if (!sp || (g.charges?.spells || []).length) return '';
-  return `<div class="wide row"><button class="btn small" data-ch-roll="${esc(sp.spell)}" title="Roll its attack, damage or healing, with the item’s caster level and save DC">🎲 Roll ${esc(sp.spell)}</button></div>`;
+  return `<div class="wide row"><button class="rchip go" data-ch-roll="${esc(sp.spell)}" title="Roll its attack, damage or healing, with the item’s caster level and save DC">🎲 Roll ${esc(sp.spell)}</button></div>`;
 }
 
 /** "+1 · mithral · fortification (light)" for the armor panel. */
@@ -1444,6 +1478,9 @@ function renderItemActions() {
       <div class="row" style="gap:6px;margin-top:4px"><button class="btn small" data-item-fx>✦ ${fx.length ? 'Edit' : 'Add'} bonuses</button>${!fx.length && sug.length ? `<button class="btn small" data-item-fx-auto title="Fill in what this kind of item normally gives">Use the usual: ${esc(effectsText(sug))}</button>` : ''}</div></div>
     ${g.id ? '' : `<label class="wide"><span>Your notes</span><textarea class="item-notes-big" data-bind="${p('notes')}" rows="10" placeholder="Describe the item, what it does, where you got it...">${esc(g.notes || '')}</textarea></label>`}
     <div class="wide row end"><button class="btn small danger" data-item-del>Remove from inventory</button></div></div>`;
+  for (const slot of it.el.querySelectorAll('[data-ch-slot]')) { // 🎲 Roll only on spells with something to roll
+    if (!slot.firstElementChild) rollable(slot.dataset.chSlot, true).then(ok => { if (ok && slot.isConnected && !slot.firstElementChild) slot.innerHTML = itemRollBtn(slot.dataset.chSlot, +slot.dataset.cost); });
+  }
   // A compendium item already has its text, so your own notes go at the bottom of the page
   const body = it.el.parentElement?.querySelector('.entry-body');
   body?.querySelector('.item-foot')?.remove();

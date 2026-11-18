@@ -7,6 +7,24 @@ import { num } from '../calc.js';
 import { chargesLeft, spendCharges } from '../charges.js';
 import { itemSpellOf, itemClFromHtml, itemCasting } from '../itemspell.js';
 import { itemSpellWindow } from '../roller.js';
+import { spellInfo } from '../spellinfo.js';
+
+const canRoll = new Map(); // spell name (lower case) -> whether its roll window would have anything in it
+/**
+ * Whether a spell has something to roll (an attack, damage or healing dice, or spell resistance to beat). Without `ask` it answers from
+ * what is already known (false until then); with `ask` it looks the spell up and resolves to the answer.
+ */
+export function rollable(name, ask = false) {
+  const k = String(name || '').toLowerCase();
+  if (!ask) return canRoll.get(k) === true;
+  if (canRoll.has(k)) return Promise.resolve(canRoll.get(k));
+  return api.entryByName(name, 'Spell').then(en => {
+    const i = en?.name ? spellInfo(en, 1) : null;
+    const ok = !!(i && (i.kind || i.attack || i.sr));
+    canRoll.set(k, ok);
+    return ok;
+  }).catch(() => false);
+}
 
 let lastItemUse = { key: '', at: 0 }; // the item spell a roll last used up, so its damage roll right after does not spend again
 

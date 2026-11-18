@@ -5,7 +5,6 @@ import { segsHtml } from '../bars.js';
 import { esc, textField, getPath, toast, confirmBox } from '../ui.js';
 import { fullRest } from '../rest.js';
 import { chargesLeft, spendCharges, restCharges } from '../charges.js';
-import { rollItemSpell } from './itemroll.js';
 
 const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
 
@@ -33,7 +32,7 @@ function editor(res, c) {
 function counter(res, cur, c) {
   const pct = res.max ? Math.max(0, Math.min(100, cur / res.max * 100)) : 0;
   return `<div class="res-row" data-res="${esc(res.id)}">
-    <div class="res-name"><a href="#" class="ref" data-entry="${esc(res.entry)}" data-cat="Class Feature">${esc(res.name)}</a>
+    <div class="res-name"><a href="#" class="ref" data-open-pool="${esc(res.id)}" data-pool-entry="${esc(res.entry)}" title="Open it on the right to roll or use it and read what it does">${esc(res.name)}</a>
       <span class="muted small">${esc(res.cls)}</span></div>
     <div class="res-bar"><div style="width:${pct}%"></div>${segsHtml(segs(res.max))}</div>
     <span class="stepper"><button data-res-d="-1" title="Spend one" aria-label="Spend one">−</button><button data-res-d="1" title="Regain one" aria-label="Regain one">＋</button></span>
@@ -55,22 +54,23 @@ function custom(t, i) {
 }
 
 /**
- * An inventory item with charges (a wand, a staff, boots of speed): spent here too, so it is at hand in a fight. Each of its spells has a
- * Use button (spends its cost) and a 🎲 (the spell's roll window, see itemroll.js). `g.charges.min` folds the row away into a chip.
+ * An inventory item with charges (a wand, a staff, boots of speed): spent here too, so it is at hand in a fight. Its name opens the
+ * item's panel on the right (sheet.js), where its spells are rolled and used. `g.charges.min` folds the row away into a chip.
  */
 function itemRow(g, i) {
   const ch = g.charges, left = chargesLeft(ch), max = Math.max(0, Math.round(+ch.max) || 0);
   const pct = max ? Math.max(0, Math.min(100, left / max * 100)) : 0;
-  const unit = ch.unit || 'charges', one = unit.replace(/s$/, '');
-  const spells = (ch.spells || []).filter(s => s.name);
+  const unit = ch.unit || 'charges';
   return `<div class="res-row" data-gear-ch="${i}">
-    <div class="res-name"><span>⚡ ${esc(g.name || 'Item')}</span> <span class="muted small">${esc(ch.per === 'day' ? `${ch.unit || 'uses'} per day` : unit)}</span></div>
+    <div class="res-name"><a href="#" class="ref" data-open-item="${i}" title="Open the item on the right to roll or use its spells and read what it does">⚡ ${esc(g.name || 'Item')}</a> <span class="muted small">${esc(ch.per === 'day' ? `${ch.unit || 'uses'} per day` : unit)}</span></div>
     <div class="res-bar"><div style="width:${pct}%"></div>${segsHtml(segs(max))}</div>
     <span class="stepper"><button data-gc-d="-1" title="Spend one" aria-label="Spend one">−</button><button data-gc-d="1" title="Get one back" aria-label="Get one back">＋</button></span>
     <b class="res-val">${left} / ${max}</b>
-    <button class="icon-btn" data-gc-min title="Minimize: keep only its name and count here" aria-label="Minimize ${esc(g.name || 'item')}">▴</button>
-    ${spells.length ? `<div class="res-note res-uses">${spells.map(s => `<span class="res-use"><button class="btn small ${left >= s.cost ? 'primary' : ''}" data-gc-use="${s.cost}" data-label="${esc(s.name)}" ${left >= s.cost ? '' : 'disabled'} title="Use it: spend ${s.cost} ${esc(s.cost === 1 ? one : unit)}">${esc(s.name)}${s.cost !== 1 || spells.length > 1 ? ` <span class="ch-cost">· ${s.cost}</span>` : ''}</button><button class="btn small" data-gc-roll="${esc(s.name)}" data-cost="${s.cost}" title="Roll ${esc(s.name)}: its attack, damage or healing, with the item’s caster level and save DC" aria-label="Roll ${esc(s.name)}">🎲</button></span>`).join('')}</div>` : ''}</div>`;
+    <button class="icon-btn" data-gc-min title="Minimize: keep only its name and count here" aria-label="Minimize ${esc(g.name || 'item')}">▴</button></div>`;
 }
+
+/** Tells the item's side panel, when it is open, that its charges changed here (sheet.js listens). */
+const gearChanged = () => document.dispatchEvent(new Event('gear-charges-changed'));
 
 /** A minimized item: its name and what is left; click to bring its counter back. */
 function itemChip(g, i) {
@@ -122,9 +122,10 @@ export function wire(el, c) {
     if (!res) return;
     (c.resources ||= {})[res.id] = Math.max(0, Math.min(res.max, Math.round(Number(input.value)) || 0));
     changed({ rerender: true });
+    document.dispatchEvent(new Event('pool-changed'));
   });
   el.addEventListener('click', e => {
-    const t = e.target.closest('[data-res-d],[data-res-reset],[data-res-rest],[data-res-edit],[data-res-edit-clear],[data-tr-new],[data-tr-d],[data-tr-reset],[data-tr-del],[data-gc-d],[data-gc-use],[data-gc-roll],[data-gc-min],[data-gc-max]');
+    const t = e.target.closest('[data-res-d],[data-res-reset],[data-res-rest],[data-res-edit],[data-res-edit-clear],[data-tr-new],[data-tr-d],[data-tr-reset],[data-tr-del],[data-gc-d],[data-gc-min],[data-gc-max]');
     if (!t) return;
     e.preventDefault();
     c.resources ||= {};
@@ -145,13 +146,10 @@ export function wire(el, c) {
     if (gearRow) {
       const g = c.gear?.[+gearRow.dataset.gearCh], ch = g?.charges;
       if (!ch) return;
-      if (t.dataset.gcRoll !== undefined) return void rollItemSpell(g, t.dataset.gcRoll, +t.dataset.cost); // the window's "Use it" tick spends the charge
       if (t.dataset.gcMin !== undefined) ch.min = true;
-      else if (t.dataset.gcUse !== undefined) {
-        if (!spendCharges(ch, +t.dataset.gcUse)) return toast(`Not enough ${ch.unit || 'charges'} left`, 'bad');
-        toast(`${t.dataset.label}: ${chargesLeft(ch)} ${ch.unit || 'charges'} left`);
-      } else spendCharges(ch, -t.dataset.gcD);
-      return changed({ rerender: true });
+      else spendCharges(ch, -t.dataset.gcD);
+      changed({ rerender: true });
+      return gearChanged();
     }
     const row = t.closest('[data-res],[data-tracker]');
     if (row?.dataset.res) {
@@ -161,6 +159,8 @@ export function wire(el, c) {
       else if (t.dataset.resEditClear !== undefined) { delete (c.resourceAdj ||= {})[res.id]; editing.delete(res.id); }
       else if (t.dataset.resReset !== undefined) delete c.resources[res.id];
       else c.resources[res.id] = Math.max(0, Math.min(res.max, currentOf(res, c.resources) + +t.dataset.resD));
+      changed({ rerender: true });
+      return void document.dispatchEvent(new Event('pool-changed')); // the ability's panel, when open (sheet.js)
     } else if (row?.dataset.tracker !== undefined) {
       const tr = c.trackers[+row.dataset.tracker];
       if (t.dataset.trDel !== undefined) c.trackers.splice(+row.dataset.tracker, 1);
