@@ -9,6 +9,9 @@ export const CHANGELOG = [
     items: [
       'Inventory: wands (50 charges), staves (10, with each spell’s cost) and items with charges get a charge counter: pips or 37/50 on the item, − / ＋ and a Use button per spell in its panel, and a row in Class resources & trackers.',
       'Inventory: an item used so many times or rounds a day (boots of speed, a cape of the mountebank) offers to track it, and a rest or New day gives them back. Any item can track charges or uses by hand.',
+      'Inventory: a 🎲 button next to each spell of a wand or staff, and on scrolls, potions and oils, rolls the spell (attack, damage or healing, save DC) at the item’s caster level, and can spend the charge or the scroll.',
+      'Inventory: a staff’s spells use your own caster level and save DC when they are better. “(CL 8)” in a wand’s or scroll’s name sets its caster level.',
+      'Inventory: a wand’s or staff’s row in Class resources & trackers has a Use button and a 🎲 for each spell, and ▴ minimizes the row to a chip with its name and count (click it to bring the counter back).',
       'Class abilities: a paladin’s lay on hands lists the mercies it carries (from 3rd level), with Choose mercies to pick them by level; until then they are read from the level-up notes. Greater Mercy adds its +1d6 heal to the roll.',
       'Companions: an Untrained skills fold-out under a companion’s Skills lists every other skill it can try without ranks (Acrobatics, Climb, Swim…), each one click to roll.',
       'Companions: a roll modifier you set for yourself (a range increment, a kept −2…) no longer comes off your companion’s rolls too. Each companion keeps its own, and its roll window no longer talks about your buffs.',

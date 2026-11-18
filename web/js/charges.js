@@ -1,7 +1,7 @@
 // Charges and daily uses on inventory items: wands (50 charges), staves (10, each spell costing 1 or more), items that
 // "have 50 charges" (ring of the ram), and items used so many times or rounds per day (boots of speed). Pure, no DOM.
 // An item stores g.charges = {max, cur, per: 'total' | 'day', unit: 'charges' | 'uses' | 'rounds', spells?: [{name, cost}]}
-// or null. Per-day ones refill on a rest; charges do not (a staff is recharged by hand, a wand never).
+// or null (plus `min: true` while its row in the trackers card is minimized). Per-day ones refill on a rest; charges do not (a staff is recharged by hand, a wand never).
 
 const plain = html => String(html || '').replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;?/g, ' ').replace(/\s+/g, ' ').trim();
 const WORDS = { once: 1, twice: 2, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };

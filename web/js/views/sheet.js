@@ -30,6 +30,8 @@ import { merciesOf } from '../mercy.js';
 import { guessCharges, chargesRecord, chargesLeft, spendCharges } from '../charges.js';
 import { mercyBlock, pickMercies } from './mercy.js';
 import { abilityRollWindow } from '../roller.js';
+import { itemSpellOf } from '../itemspell.js';
+import { rollItemSpell } from './itemroll.js';
 import { currentOf } from '../resources.js';
 import { weaponFxRow, wireWeaponFx } from './weaponfx.js';
 import { editArmorFx } from './armorfx.js';
@@ -1398,12 +1400,19 @@ function chargesBlock(g, i, el) {
   return `<div class="wide item-charges">
     <div class="row"><b class="grow">⚡ ${esc(unit.charAt(0).toUpperCase() + unit.slice(1))}${ch.per === 'day' ? ' per day' : ''}</b>
       <span class="stepper"><button data-ch-d="-1" ${left ? '' : 'disabled'} title="Spend one" aria-label="Spend one">−</button><span class="ch-val ${left ? '' : 'bad'}">${inp(p('cur'), { type: 'num', cls: 'w3', rerender: true, title: 'Left' })} / ${inp(p('max'), { type: 'num', cls: 'w3', rerender: true, title: 'Maximum' })}</span><button data-ch-d="1" ${left >= max ? 'disabled' : ''} title="Get one back" aria-label="Get one back">＋</button></span></div>
-    <div class="row ch-uses">${uses.map(s => `<button class="btn small ${left >= s.cost ? 'primary' : ''}" data-ch-use="${s.cost}" data-label="${esc(s.name || g.name)}" ${left >= s.cost ? '' : 'disabled'} title="Spend ${s.cost} ${esc(s.cost === 1 ? one : unit)}">${s.name ? esc(s.name) : 'Use'}${s.cost !== 1 || uses.length > 1 ? ` <span class="ch-cost">· ${s.cost}</span>` : ''}</button>`).join('')}</div>
+    <div class="row ch-uses">${uses.map(s => `<button class="btn small ${left >= s.cost ? 'primary' : ''}" data-ch-use="${s.cost}" data-label="${esc(s.name || g.name)}" ${left >= s.cost ? '' : 'disabled'} title="Spend ${s.cost} ${esc(s.cost === 1 ? one : unit)}">${s.name ? esc(s.name) : 'Use'}${s.cost !== 1 || uses.length > 1 ? ` <span class="ch-cost">· ${s.cost}</span>` : ''}</button>${s.name ? `<button class="btn small ch-roll" data-ch-roll="${esc(s.name)}" data-cost="${s.cost}" title="Roll ${esc(s.name)}: its attack, damage or healing, with the item’s caster level and save DC" aria-label="Roll ${esc(s.name)}">🎲</button>` : ''}`).join('')}</div>
     <div class="row small">${sel(p('unit'), [['charges', 'Charges'], ['uses', 'Uses'], ['rounds', 'Rounds']], { rerender: true })}
       ${sel(p('per'), [['total', 'until used up'], ['day', 'per day (back on a rest)']], { rerender: true })}<span class="grow"></span>
       ${ch.per === 'day' ? `<button class="btn small ghost" data-ch-refill ${left >= max ? 'disabled' : ''}>Refill</button>` : ''}
       <button class="icon-btn" data-ch-del title="Stop tracking charges on this item" aria-label="Stop tracking charges">✕</button></div>
     ${note ? `<p class="small muted">${note}</p>` : ''}</div>`;
+}
+
+/** A scroll's, potion's or oil's Roll button (a wand's and a staff's sit next to their Use buttons in the charges block). */
+function itemSpellRow(g) {
+  const sp = itemSpellOf(g.name);
+  if (!sp || (g.charges?.spells || []).length) return '';
+  return `<div class="wide row"><button class="btn small" data-ch-roll="${esc(sp.spell)}" title="Roll its attack, damage or healing, with the item’s caster level and save DC">🎲 Roll ${esc(sp.spell)}</button></div>`;
 }
 
 /** "+1 · mithral · fortification (light)" for the armor panel. */
@@ -1428,7 +1437,7 @@ function renderItemActions() {
     <label><span>Weight (each)</span>${inp(p('weight'), { type: 'num', cls: 'w3' })}</label>
     <label><span>Value</span>${inp(p('value'), { cls: 'w6' })}</label>
     ${weaponRow}${asArmor}
-    ${chargesBlock(g, it.i, it.el)}
+    ${itemSpellRow(g)}${chargesBlock(g, it.i, it.el)}
     ${pluses.length ? `<div class="wide row plus-row">${plusButtons(pluses.map(o => ({ plus: o.plus, title: `Make it a +${o.plus}${o.price ? ` (${o.price})` : ''}` })), cur, 'data-item-plus')}</div>` : ''}
     <div class="wide item-fx">
       <div>${fx.length ? esc(effectsText(fx)) : '<span class="muted">none</span>'}${fx.length && !g.slot ? ' <span class="small bad">not worn yet, so they do not count</span>' : ''}</div>
@@ -1451,6 +1460,8 @@ function renderItemActions() {
     changed({ rerender: true });
   };
   it.el.onclick = async e => {
+    const rl = e.target.closest('[data-ch-roll]');
+    if (rl) return rollItemSpell(g, rl.dataset.chRoll, rl.dataset.cost === undefined ? null : +rl.dataset.cost, renderItemActions);
     const ch = e.target.closest('[data-ch-d],[data-ch-use],[data-ch-add],[data-ch-del],[data-ch-refill]');
     if (ch) {
       if (ch.dataset.chAdd !== undefined) g.charges = ch.dataset.chAdd ? chargesRecord(JSON.parse(ch.dataset.chAdd)) : { max: 10, cur: 10, per: 'total', unit: 'charges' };

@@ -505,20 +505,41 @@ async function spellWindow(btn) {
   let entry = null;
   if (sp.id) { try { entry = await api.entry(sp.id); } catch { /* the window still works without the entry */ } }
   else if (sp.notes) entry = { summary: sp.notes, html: '', meta: {} };
-  const info = spellInfo(entry, sc.cl);
-  const known = !!(entry && sp.id); // custom spells have no data, so offer every chip
-  const dc = sla ? sc.dc : sc.dcs[sp.level]; // a spell-like ability's own level can be blank or odd; its DC was worked out from the clamped one
-  const delivery = known ? touchDeliveries(info, c, d) : [];
+  const active = !!sp.active; // already cast and still going (Flaming Sphere, Spiritual Weapon): rolls are for its damage and use nothing up
+  openSpellRoll({
+    name, entry, known: !!(entry && sp.id), // custom spells have no data, so offer every chip
+    cl: sc.cl, conc: sc.concentration, level: sp.level, path,
+    dc: sla ? sc.dc : sc.dcs[sp.level], // a spell-like ability's own level can be blank or odd; its DC was worked out from the clamped one
+    head: sla ? `Spell-like ability, caster level ${sc.cl}` : `${cls} caster level ${sc.cl}`,
+    cast: spellCast(cls, sp, sc, idx),
+    live: { on: active, set(v) { this.on = v; sp.active = v; changed({ rerender: true }); document.dispatchEvent(new Event('spell-changed')); } },
+  });
+}
+
+/**
+ * A spell cast out of an item (a wand, staff, scroll or potion), in the spells' roll window with the item's caster level and save DC
+ * (itemspell.js works them out). No concentration checks, Reach Spell or spellstrike: the item casts it, you only aim it.
+ * `cast` is the "Use it" tick that spends a charge or one of the item: {label, left, recent, on, spend()}.
+ */
+export function itemSpellWindow({ name, entry, cl, dc, level, head, cast = null }) {
+  openSpellRoll({ name, entry, known: !!entry, cl, dc, level, head, cast, item: true });
+}
+
+/** The spell roll window, for a spell on the Spells tab or one from an item (`item`: no concentration chips, plain touch attacks only). */
+function openSpellRoll({ name, entry, known, cl, conc = 0, dc, level, path = '', head, cast = null, live = null, item = false }) {
+  const c = state.char, d = state.derived;
+  const info = spellInfo(entry, cl);
+  const delivery = known && !item ? touchDeliveries(info, c, d) : [];
   const deliverAs = delivery.length > 1; // Reach Spell or spellstrike can carry it: a "Deliver as" row instead of the plain melee touch
   const chip = (label, n, kind, path) => ({ label: label + ' ' + (bonusText(n) || '+0'), n, tip: 'Roll d20 ' + kind, name: name + ' ' + kind, parts: d.bd?.[path] });
   const chips = [
     ...(!known || info.attack === 'ranged' ? [chip('To hit: ranged ' + (info.touch === false ? 'attack' : 'touch'), d.ranged, 'ranged ' + (info.touch === false ? 'attack' : 'touch attack'), 'ranged')] : []),
     ...(!known || (info.attack === 'melee' && !deliverAs) ? [chip('To hit: melee ' + (info.touch === false ? 'attack' : 'touch'), d.melee, 'melee ' + (info.touch === false ? 'attack' : 'touch attack'), 'melee')] : []),
-    chip('Concentration', sc.concentration, 'concentration check', `${path}.concentration`),
-    chip('Cast defensively (DC ' + (15 + 2 * (Number(sp.level) || 0)) + ')', sc.concentration, 'cast defensively, DC ' + (15 + 2 * (Number(sp.level) || 0)), `${path}.concentration`),
-    ...(!known || info.sr ? [chip('Caster level check', sc.cl, 'caster level check' + (info.sr ? ' to beat spell resistance' : ''), `${path}.cl`)] : []),
+    ...(item ? [] : [chip('Concentration', conc, 'concentration check', `${path}.concentration`),
+      chip('Cast defensively (DC ' + (15 + 2 * (Number(level) || 0)) + ')', conc, 'cast defensively, DC ' + (15 + 2 * (Number(level) || 0)), `${path}.concentration`)]),
+    ...(!known || info.sr ? [chip('Caster level check', cl, 'caster level check' + (info.sr ? ' to beat spell resistance' : ''), `${path}.cl`)] : []),
   ];
-  const facts = [sla ? `Spell-like ability, caster level ${sc.cl}` : `${cls} caster level ${sc.cl}`,
+  const facts = [head,
     info.save ? `${info.save.label}${dc != null && info.save.type ? `, DC ${dc}` : ''}` : known ? 'no saving throw' : (dc != null ? `save DC ${dc}` : ''),
     known ? (info.sr ? 'spell resistance applies' : 'ignores spell resistance') : ''].filter(Boolean);
   const what = info.kind === 'healing' ? 'healing' : info.kind === 'damage' ? 'damage' : '';
@@ -543,12 +564,10 @@ async function spellWindow(btn) {
     ...(info.undead ? [{ group: 'Damage', label: 'Damage to undead' + (info.dice ? ' ' + info.dice : ''), dice: true, label2: `${name} damage to undead`, tip: 'Undead take the healing as damage (Will half' + (info.sr ? ', spell resistance applies' : '') + ')' }] : []),
   ];
   const first = choices.findIndex(ch => ch.attack && !ch.undead), dmg = choices.findIndex(ch => ch.dice);
-  const active = !!sp.active; // already cast and still going (Flaming Sphere, Spiritual Weapon): rolls are for its damage and use nothing up
+  const active = !!live?.on;
   if (active) facts.unshift('In play: rolling uses no slot');
-  const cast = spellCast(cls, sp, sc, idx);
   rollWindow(null, false, {
-    title: name, facts: facts.join(' · '), choices, cast, dice: info.dice,
-    live: { on: active, set(v) { this.on = v; sp.active = v; changed({ rerender: true }); document.dispatchEvent(new Event('spell-changed')); } },
+    title: name, facts: facts.join(' · '), choices, cast, dice: info.dice, live,
     count: info.count, noun: info.noun,
     start: active ? dmg : first >= 0 && known ? first : (info.dice ? dmg : 0),
   });

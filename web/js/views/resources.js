@@ -5,6 +5,7 @@ import { segsHtml } from '../bars.js';
 import { esc, textField, getPath, toast, confirmBox } from '../ui.js';
 import { fullRest } from '../rest.js';
 import { chargesLeft, spendCharges, restCharges } from '../charges.js';
+import { rollItemSpell } from './itemroll.js';
 
 const tf = (path, opts) => textField(path, getPath(state.char, path), opts);
 
@@ -53,15 +54,28 @@ function custom(t, i) {
     <button class="icon-btn" data-tr-del title="Remove this tracker">✕</button></div>`;
 }
 
-/** An inventory item with charges (a wand, a staff, boots of speed): spent here too, so it is at hand in a fight. */
+/**
+ * An inventory item with charges (a wand, a staff, boots of speed): spent here too, so it is at hand in a fight. Each of its spells has a
+ * Use button (spends its cost) and a 🎲 (the spell's roll window, see itemroll.js). `g.charges.min` folds the row away into a chip.
+ */
 function itemRow(g, i) {
   const ch = g.charges, left = chargesLeft(ch), max = Math.max(0, Math.round(+ch.max) || 0);
   const pct = max ? Math.max(0, Math.min(100, left / max * 100)) : 0;
+  const unit = ch.unit || 'charges', one = unit.replace(/s$/, '');
+  const spells = (ch.spells || []).filter(s => s.name);
   return `<div class="res-row" data-gear-ch="${i}">
-    <div class="res-name"><span>⚡ ${esc(g.name || 'Item')}</span> <span class="muted small">${esc(ch.per === 'day' ? `${ch.unit || 'uses'} per day` : ch.unit || 'charges')}</span></div>
+    <div class="res-name"><span>⚡ ${esc(g.name || 'Item')}</span> <span class="muted small">${esc(ch.per === 'day' ? `${ch.unit || 'uses'} per day` : unit)}</span></div>
     <div class="res-bar"><div style="width:${pct}%"></div>${segsHtml(segs(max))}</div>
     <span class="stepper"><button data-gc-d="-1" title="Spend one" aria-label="Spend one">−</button><button data-gc-d="1" title="Get one back" aria-label="Get one back">＋</button></span>
-    <b class="res-val">${left} / ${max}</b></div>`;
+    <b class="res-val">${left} / ${max}</b>
+    <button class="icon-btn" data-gc-min title="Minimize: keep only its name and count here" aria-label="Minimize ${esc(g.name || 'item')}">▴</button>
+    ${spells.length ? `<div class="res-note res-uses">${spells.map(s => `<span class="res-use"><button class="btn small ${left >= s.cost ? 'primary' : ''}" data-gc-use="${s.cost}" data-label="${esc(s.name)}" ${left >= s.cost ? '' : 'disabled'} title="Use it: spend ${s.cost} ${esc(s.cost === 1 ? one : unit)}">${esc(s.name)}${s.cost !== 1 || spells.length > 1 ? ` <span class="ch-cost">· ${s.cost}</span>` : ''}</button><button class="btn small" data-gc-roll="${esc(s.name)}" data-cost="${s.cost}" title="Roll ${esc(s.name)}: its attack, damage or healing, with the item’s caster level and save DC" aria-label="Roll ${esc(s.name)}">🎲</button></span>`).join('')}</div>` : ''}</div>`;
+}
+
+/** A minimized item: its name and what is left; click to bring its counter back. */
+function itemChip(g, i) {
+  const ch = g.charges, left = chargesLeft(ch), max = Math.max(0, Math.round(+ch.max) || 0);
+  return `<button class="sp-chip ${left ? 'ready' : 'idle'}" data-gc-max="${i}" title="${left} of ${max} ${esc(ch.unit || 'charges')} left${ch.per === 'day' ? ' today' : ''}. Click to show its counter"><span class="sp-n">⚡ ${esc(g.name || 'Item')}</span><span class="sp-s ${left ? '' : 'bad'}">${left}/${max}</span></button>`;
 }
 
 /** The Rest button at the top of the Overview. */
@@ -94,7 +108,8 @@ export function resourcesHtml(c, { hideEmpty = false } = {}) {
       <button class="btn small ghost" data-res-rest title="Refill every pool below for a new day (the 🌙 Rest button at the top does that and more)">New day</button></div>
     ${pools.map(r => counter(r, currentOf(r, c.resources), c)).join('')}
     ${c.trackers.map(custom).join('')}
-    ${items.map(([g, i]) => itemRow(g, i)).join('')}
+    ${items.filter(([g]) => !g.charges.min).map(([g, i]) => itemRow(g, i)).join('')}
+    ${items.some(([g]) => g.charges.min) ? `<div class="res-row res-min">${items.filter(([g]) => g.charges.min).map(([g, i]) => itemChip(g, i)).join('')}</div>` : ''}
     ${pools.length || c.trackers.length || items.length ? '' : '<p class="muted small">Nothing to track yet. Classes such as arcanist, barbarian, bard, magus and monk show their pools here; “＋ Tracker” adds your own counter for anything else.</p>'}`;
 }
 
@@ -109,7 +124,7 @@ export function wire(el, c) {
     changed({ rerender: true });
   });
   el.addEventListener('click', e => {
-    const t = e.target.closest('[data-res-d],[data-res-reset],[data-res-rest],[data-res-edit],[data-res-edit-clear],[data-tr-new],[data-tr-d],[data-tr-reset],[data-tr-del],[data-gc-d]');
+    const t = e.target.closest('[data-res-d],[data-res-reset],[data-res-rest],[data-res-edit],[data-res-edit-clear],[data-tr-new],[data-tr-d],[data-tr-reset],[data-tr-del],[data-gc-d],[data-gc-use],[data-gc-roll],[data-gc-min],[data-gc-max]');
     if (!t) return;
     e.preventDefault();
     c.resources ||= {};
@@ -121,9 +136,21 @@ export function wire(el, c) {
       restCharges(c); // items used so many times per day
       return changed({ rerender: true });
     }
-    if (t.dataset.gcD !== undefined) {
-      const g = c.gear?.[+t.closest('[data-gear-ch]').dataset.gearCh];
-      if (g?.charges) spendCharges(g.charges, -t.dataset.gcD);
+    if (t.dataset.gcMax !== undefined) { // a minimized item's chip: its counter again
+      const g = c.gear?.[+t.dataset.gcMax];
+      if (g?.charges) delete g.charges.min;
+      return changed({ rerender: true });
+    }
+    const gearRow = t.closest('[data-gear-ch]');
+    if (gearRow) {
+      const g = c.gear?.[+gearRow.dataset.gearCh], ch = g?.charges;
+      if (!ch) return;
+      if (t.dataset.gcRoll !== undefined) return void rollItemSpell(g, t.dataset.gcRoll, +t.dataset.cost); // the window's "Use it" tick spends the charge
+      if (t.dataset.gcMin !== undefined) ch.min = true;
+      else if (t.dataset.gcUse !== undefined) {
+        if (!spendCharges(ch, +t.dataset.gcUse)) return toast(`Not enough ${ch.unit || 'charges'} left`, 'bad');
+        toast(`${t.dataset.label}: ${chargesLeft(ch)} ${ch.unit || 'charges'} left`);
+      } else spendCharges(ch, -t.dataset.gcD);
       return changed({ rerender: true });
     }
     const row = t.closest('[data-res],[data-tracker]');
