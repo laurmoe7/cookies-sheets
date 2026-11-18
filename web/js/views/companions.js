@@ -264,7 +264,7 @@ function topPanels(comp, s, p, ed = {}) {
         <div class="portrait-tools"><button class="icon-btn" data-pic title="Change picture">✎</button><button class="icon-btn" data-pic-edit title="Recenter or resize">⤢</button><button class="icon-btn" data-pic-clear title="Remove picture">✕</button></div></div>`
     : '<button class="portrait-frame empty" data-pic title="Add a picture">＋ Add a picture</button>';
   const M = a => (s.mods[a] == null ? '—' : sign(s.mods[a]));
-  const rb = (n, label, parts) => `<button class="nb" data-roll-add="${n}" data-roll-label="${esc(comp.name + ' ' + label)}" data-tip="${esc(tipText(`${comp.name} ${label}`, n, parts, `Click to roll d20${sign(n)}`))}">${sign(n)}</button>`;
+  const rb = (n, label, parts) => `<button class="nb" data-roll-add="${n}" data-roll-scope="${esc(comp.id || '')}" data-roll-label="${esc(comp.name + ' ' + label)}" data-tip="${esc(tipText(`${comp.name} ${label}`, n, parts, `Click to roll d20${sign(n)}`))}">${sign(n)}</button>`;
   // A skill's parts, worked out from the stat block; whatever they do not cover (a species' listed bonus, the master's ranks) is shown as other bonuses.
   const skillParts = k => { if (s.kind === 'creature') return [{ label: 'Stat block', value: k.total }].filter(x => x.value); const ab = skillAbility(k.name), sz = s.sizeMods || {}; return [{ label: 'Ranks', value: k.ranks || 0 }, { label: `${ab.toUpperCase()} modifier`, value: s.mods?.[ab] ?? 0 }, { label: 'Class skill', value: k.isClass && k.ranks > 0 ? 3 : 0 }, { label: 'Size', value: k.name === 'Stealth' ? sz.stealth || 0 : k.name === 'Fly' ? sz.fly || 0 : 0 }].filter(p => p.value); };
   const stat = (label, v) => `<div class="stat"><div class="label">${label}</div><span class="big">${v}</span></div>`;
@@ -300,7 +300,7 @@ function topPanels(comp, s, p, ed = {}) {
       <div class="stat-row fill">${stat('Init', rb(s.init, 'initiative', s.bd?.init))}${stat('BAB', sign(s.bab))}${stat('CMB', rb(s.cmb, 'CMB', s.bd?.cmb))}${speedTile(s.speed)}</div>
       ${s.attacks.length ? `<table class="tbl"><thead><tr><th>Attack</th><th>Bonus</th><th>Damage</th></tr></thead><tbody>${s.attacks.map(a => `<tr>
         <td>${a.count > 1 ? a.count + ' ' : ''}${linkTerms(a.name)}${a.secondary ? ' <span class="dim small">(secondary)</span>' : ''}${attackFeatNote(a)}</td><td class="big accent">${rb(a.bonus, a.name + ' attack', a.parts)}</td>
-        <td>${a.dice ? `<button class="nb" data-roll-dice="${esc(a.damage)}" data-roll-label="${esc(comp.name + ' ' + a.name + ' damage')}" data-tip="${esc(`${comp.name} ${a.name} damage` + '\n' + 'Click to roll ' + a.damage)}">${esc(a.damage)}</button>${a.extra ? ' ' + linkTerms(a.extra) : ''}` : '—'}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">No natural attacks.</p>'}
+        <td>${a.dice ? `<button class="nb" data-roll-dice="${esc(a.damage)}" data-roll-scope="${esc(comp.id || '')}" data-roll-label="${esc(comp.name + ' ' + a.name + ' damage')}" data-tip="${esc(`${comp.name} ${a.name} damage` + '\n' + 'Click to roll ' + a.damage)}">${esc(a.damage)}</button>${a.extra ? ' ' + linkTerms(a.extra) : ''}` : '—'}</td></tr>`).join('')}</tbody></table>` : '<p class="muted">No natural attacks.</p>'}
       ${s.specialAttacks ? `<p><b>Special attacks</b> ${linkTerms(s.specialAttacks)}</p>` : ''}
       ${ed.atk || ''}
     </section>

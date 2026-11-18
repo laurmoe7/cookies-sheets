@@ -11,6 +11,7 @@ export const CHANGELOG = [
       'Inventory: an item used so many times or rounds a day (boots of speed, a cape of the mountebank) offers to track it, and a rest or New day gives them back. Any item can track charges or uses by hand.',
       'Class abilities: a paladin’s lay on hands lists the mercies it carries (from 3rd level), with Choose mercies to pick them by level; until then they are read from the level-up notes. Greater Mercy adds its +1d6 heal to the roll.',
       'Companions: an Untrained skills fold-out under a companion’s Skills lists every other skill it can try without ranks (Acrobatics, Climb, Swim…), each one click to roll.',
+      'Companions: a roll modifier you set for yourself (a range increment, a kept −2…) no longer comes off your companion’s rolls too. Each companion keeps its own, and its roll window no longer talks about your buffs.',
     ],
   },
   {

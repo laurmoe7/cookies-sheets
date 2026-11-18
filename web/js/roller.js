@@ -23,6 +23,18 @@ let mode = ''; // '', 'adv' or 'dis': applies to the next d20 roll only
 let mods = []; // situational modifiers added to d20 rolls: {label, n, group?}
 let keepMods = false; // false: they apply to the next roll only, like Advantage
 
+// Whose roll the modifiers belong to: 'self' (the character, and what the roll bar shows) or one companion ('comp:<id>'). Each keeps its own
+// modifiers, advantage and Keep tick, so a penalty set for your own attack is not also taken off the mount's next roll.
+let scope = 'self';
+const stash = {};
+function useScope(s) {
+  if (s === scope) return;
+  stash[scope] = { mods, mode, keepMods };
+  ({ mods, mode, keepMods } = stash[s] || { mods: [], mode: '', keepMods: false });
+  scope = s;
+  syncBar();
+}
+
 export const rollMode = () => mode;
 export const rollMods = () => mods;
 
@@ -82,6 +94,7 @@ const afterRoll = () => { mode = ''; if (!keepMods) mods = []; syncBar(); };
 
 /** The buffs and conditions that change this roll, by name, so it is clear what the number includes. {label, value, buff} parts come from calc.js. */
 function buffNote(p) {
+  if (p.scope) return ''; // a companion's roll: the character's buffs are not part of it
   const buffs = (p.parts || []).filter(x => x.buff && x.value);
   const ignored = (p.parts || []).filter(x => x.ignored);
   const any = (state.char?.modifiers || []).some(m => m.active);
@@ -130,8 +143,10 @@ function plan(el) {
   const d = state.derived, c = state.char;
   if (!d || !c) return null;
   const ds = el.dataset;
-  if (ds.rollAdd !== undefined) return { expr: 'd20' + bonusText(ds.rollAdd), label: ds.rollLabel || '' };
-  if (ds.rollDice !== undefined) return { expr: ds.rollDice, label: ds.rollLabel || '' };
+  // a literal number or dice is a companion's roll, not the character's: it gets its own modifiers and none of the character's buffs
+  const other = 'comp:' + (ds.rollScope || '');
+  if (ds.rollAdd !== undefined) return { expr: 'd20' + bonusText(ds.rollAdd), label: ds.rollLabel || '', scope: other };
+  if (ds.rollDice !== undefined) return { expr: ds.rollDice, label: ds.rollLabel || '', scope: other };
   if (ds.rollWeapon !== undefined) {
     const i = +ds.rollWeapon, w = c.weapons[i], dw = d.weapons[i];
     if (!w || !dw) return null;
@@ -216,8 +231,9 @@ const isAttack = (p, el) => {
 
 /** Clicking a number opens the roll window (unless Options says not to, or Shift is held): edit the roll, then roll it here or send it to Discord. */
 function askRoll(p, el, shift) {
-  if (!options().rollAsk || shift || !(p.items || [p]).length) return doRoll(p);
-  rollWindow(p, isAttack(p, el));
+  useScope(p.scope || 'self');
+  if (!options().rollAsk || shift || !(p.items || [p]).length) return doRoll(p).finally(() => useScope('self'));
+  rollWindow(p, isAttack(p, el)); // goes back to 'self' when the window closes
 }
 
 /**
@@ -276,7 +292,7 @@ function rollWindow(p0, attack0, sp = null) {
         '<div class="rw-grid">' + spRows + (sp ? '<div class="rw-rule"></div>' : '') +
         rwRow('Roll', '<b class="rw-expr">' + esc(shown) + '</b>' + (d20 ? '<span class="rw-modes">' + modeChips('data-win-mode') + '</span>' : '')) +
         buffNote(p) + dmgRows + (presets.length ? presetGroups(presets) : '') + customRow(wd) + (wd ? dmgNow() : d20 ? nowLine() : '') + '</div>' +
-        (d20 ? '<p class="rw-note">' + LASTING + '</p>' : '') +
+        (d20 ? '<p class="rw-note">' + (p.scope ? 'Only this companion’s rolls get these modifiers. Your own buffs and roll modifiers do not apply to it.' : LASTING) + '</p>' : '') +
         '<div class="rw-foot">' + (opts ? '<div class="rw-opts">' + opts + '</div>' : '') + '<span class="rw-btns"><button class="btn small" id="win-cancel">Cancel</button>' +
         '<button class="rchip go" data-win-go="roll">🎲 Roll</button>' +
         '<button class="' + discordClass() + '" id="win-discord" title="Post this roll to your Discord channel, or keep it on the sheet">' + esc(discordLabel()) + '</button></span></div>';
@@ -342,7 +358,7 @@ function rollWindow(p0, attack0, sp = null) {
       if (e.key === 'Enter' && e.target.id === 'spell-dice') { e.preventDefault(); go(); }
       else if (e.key === 'Enter' && e.target.closest('#mod-n,#mod-label')) { e.preventDefault(); add(); syncBar(); draw(); }
     };
-  }, { top: true }).then(() => { if (!went) { mods = snap.mods; mode = snap.mode; syncBar(); } });
+  }, { top: true }).then(() => { if (!went) { mods = snap.mods; mode = snap.mode; syncBar(); } useScope('self'); });
 }
 
 export function initRoller() {
